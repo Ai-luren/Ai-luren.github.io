@@ -8,8 +8,6 @@ export default function CometCard({ children, className = '', ...props }) {
     if (!card) return;
     card.style.setProperty('--comet-rotate-x', '0deg');
     card.style.setProperty('--comet-rotate-y', '0deg');
-    card.style.setProperty('--comet-glow-x', '50%');
-    card.style.setProperty('--comet-glow-y', '50%');
   };
 
   const handlePointerMove = event => {
@@ -19,10 +17,8 @@ export default function CometCard({ children, className = '', ...props }) {
     const rect = card.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width;
     const y = (event.clientY - rect.top) / rect.height;
-    card.style.setProperty('--comet-rotate-y', `${(x - 0.5) * 10}deg`);
-    card.style.setProperty('--comet-rotate-x', `${(0.5 - y) * 10}deg`);
-    card.style.setProperty('--comet-glow-x', `${x * 100}%`);
-    card.style.setProperty('--comet-glow-y', `${y * 100}%`);
+    card.style.setProperty('--comet-rotate-y', `${(x - 0.5) * 14}deg`);
+    card.style.setProperty('--comet-rotate-x', `${(0.5 - y) * 14}deg`);
   };
 
   return (

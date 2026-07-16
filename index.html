@@ -177,23 +177,21 @@
       .magnetic-archive__card, .magnetic-archive__image, .magnetic-archive__hint, .magnetic-archive__detail { transition: none; }
     }
 
-    /* 精选创作档案：六张 3:4 CometCard，桌面两行排列，移动端横向浏览。 */
-    .comet-archive { display: grid; width: min(100%, 78vw, 1180px); margin: 0 auto; grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: center; gap: clamp(20px, 1.8vw, 30px); padding: 18px 0 34px; }
-    .comet-archive__item { min-width: 0; aspect-ratio: 3 / 4; }
-    .comet-archive__card { position: relative; display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 1px solid rgba(232,240,245,.18); border-radius: 18px; background: rgba(8,13,20,.72); box-shadow: 0 12px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08); color: #fff; cursor: pointer; text-align: left; }
+    /* 精选创作档案：3:5 外层档案卡内嵌 3:4 封面，内容按上下流排列，避免文字与图片重叠。 */
+    .comet-archive { display: grid; width: 100%; margin: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: stretch; gap: clamp(16px, 1.6vw, 26px); padding: 18px 0 34px; }
+    .comet-archive__item { min-width: 0; aspect-ratio: 3 / 5; }
+    .comet-archive__card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; width: 100%; height: 100%; padding: 16px 20px 18px; overflow: visible; border: 1px solid rgba(232,240,245,.18); border-radius: 18px; background: rgba(5,9,15,.88); box-shadow: 0 12px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08); color: #fff; cursor: pointer; text-align: left; perspective: 1000px; transform-style: preserve-3d; }
     .comet-archive__card:focus-visible { outline: 2px solid rgba(255,255,255,.88); outline-offset: 4px; }
-    .comet-archive__image, .comet-archive__veil { position: absolute; inset: 0; pointer-events: none; }
-    .comet-archive__image { background: var(--comet-cover) center / cover no-repeat; filter: saturate(.84) contrast(.94); transition: transform .38s cubic-bezier(.2,.75,.25,1), filter .38s ease; }
-    .comet-archive__card.is-placeholder .comet-archive__image { background: radial-gradient(circle at 50% 34%, rgba(132,181,255,.34), transparent 18%), linear-gradient(145deg, rgba(46,102,184,.64), rgba(11,27,49,.82) 47%, rgba(4,8,14,.98)); }
-    .comet-archive__card.is-placeholder .comet-archive__image::before, .comet-archive__card.is-placeholder .comet-archive__image::after { position: absolute; top: 30%; left: 50%; border: 1px solid rgba(223,237,255,.38); border-radius: 50%; content: ''; transform: translate(-50%, -50%); }
-    .comet-archive__card.is-placeholder .comet-archive__image::before { width: 58%; aspect-ratio: 1; }
-    .comet-archive__card.is-placeholder .comet-archive__image::after { width: 32%; aspect-ratio: 1; border-color: rgba(255,255,255,.7); box-shadow: 0 0 26px rgba(125,184,255,.32); }
-    .comet-archive__veil { background: linear-gradient(180deg, rgba(1,5,10,.04) 28%, rgba(1,5,10,.14) 50%, rgba(1,5,10,.9) 100%); }
-    .comet-archive__copy { position: absolute; right: 18px; bottom: 18px; left: 18px; z-index: 3; display: grid; gap: 8px; transform: translateZ(18px); }
-    .comet-archive__meta { color: rgba(232,240,245,.7); font: 500 10px/1 var(--tech); letter-spacing: .1em; }
-    .comet-archive__copy strong { overflow: hidden; color: #fff; font: 700 clamp(17px, 1.8vw, 24px)/1.1 var(--display); letter-spacing: -.035em; text-overflow: ellipsis; white-space: nowrap; }
-    .comet-archive__hint { color: rgba(255,255,255,.7); font: 500 10px/1 var(--tech); letter-spacing: .08em; }
-    .comet-archive__card:hover .comet-archive__image, .comet-archive__card:focus-visible .comet-archive__image { filter: saturate(1) contrast(1); transform: scale(1.045); }
+    .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 1px solid rgba(255,255,255,.22); border-radius: 12px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 8px 0 rgba(5,9,15,.72), 0 22px 30px rgba(0,0,0,.36); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: translateZ(45px) rotateZ(0deg) scale(1); transition: transform .38s cubic-bezier(.2,.75,.25,1), filter 1s cubic-bezier(.22,.8,.24,1); will-change: transform, filter; }
+    .comet-archive__award { position: relative; z-index: 3; grid-column: 1; grid-row: 1; justify-self: center; align-self: start; max-width: 100%; padding: 5px 7px; border: 1px solid rgba(232,240,245,.18); border-radius: 999px; background: rgba(6,10,16,.58); color: rgba(232,240,245,.88); font: 600 11px/1 var(--sans); letter-spacing: .02em; transform: translateZ(20px) translateY(6px); transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; min-width: 0; }
+    .comet-archive__meta { display: inline-block; flex: 0 1 auto; color: rgba(232,240,245,.58); font: 500 10px/1 var(--tech); letter-spacing: .08em; transform: translateZ(20px); transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__copy strong { display: block; flex: 0 1 auto; max-width: calc(100% - 72px); overflow: hidden; color: #fff; font: 600 clamp(16px, 1.5vw, 19px)/1.16 var(--display); letter-spacing: -.025em; text-align: right; text-overflow: ellipsis; white-space: nowrap; transform: translateZ(30px); transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-card:hover { z-index: 2; }
+    .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { filter: grayscale(0) saturate(1) contrast(1); transform: translateZ(45px) rotateZ(-4deg) scale(1.025); }
+    .comet-card:hover .comet-archive__award, .comet-card:focus-within .comet-archive__award { transform: translateZ(20px) translateY(6px); }
+    .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta { transform: translateZ(20px) translateX(-8px); }
+    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { transform: translateZ(30px) translateX(8px); }
     @media (min-width: 721px) and (max-width: 980px) {
       .comet-archive { width: min(100%, 680px); grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -203,7 +201,7 @@
       .comet-archive__item { flex: 0 0 min(74vw, 300px); scroll-snap-align: start; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .comet-archive__image { transition: none; }
+      .comet-archive__image, .comet-archive__award, .comet-archive__copy, .comet-archive__meta, .comet-archive__copy strong { transform: none !important; transition: none; }
     }
 
     #recognition { padding-top: 104px; padding-bottom: 112px; }
@@ -926,9 +924,9 @@
     <section id="experiments" class="section" aria-labelledby="experiments-title">
       <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">AI实验室</p><h2 id="experiments-title" class="section-title">AI实验室</h2></div></div>
         <div class="experiment-console reveal"><div class="frame-corners" aria-hidden="true"></div><div class="console-header"><span>任务日志 / PROJECTS</span><span>GITHUB / OPEN</span></div><div class="experiment-track">
-          <article class="experiment-rail"><span class="rail-index">01</span><h3>AI 新闻追踪</h3><p>聚合橘鸦、AI HOT 与 follow-builders 的 AI 资讯，解析成飞书卡片，定时推送到群组并自动去重。</p><p class="project-channel"><span class="mono">渠道：</span><a href="https://github.com/Ai-luren/Ainews-to-Feishu" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">02</span><h3>AI文章配图</h3><p>把中文文章里的判断、流程、状态和隐喻，转成白底手绘 AI路人形象配图。</p><p class="project-channel"><span class="mono">渠道：</span><a href="https://github.com/Ai-luren/Ailuren-illustrations" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">03</span><h3>AI网页作品集</h3><p>使用 Codex 搭配 Skill 来 Vibe Coding 制作网页作品集。</p><p class="project-channel"><span class="mono">渠道：</span><span>GitHub 即将开源</span></p></article>
+          <article class="experiment-rail"><span class="rail-index">01</span><h3>AI 新闻追踪</h3><p>聚合橘鸦、AI HOT 与 follow-builders 的 AI 资讯，解析成飞书卡片，定时推送到群组并自动去重。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ainews-to-Feishu" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
+          <article class="experiment-rail"><span class="rail-index">02</span><h3>AI文章配图</h3><p>把中文文章里的判断、流程、状态和隐喻，转成白底手绘 AI路人形象配图。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-illustrations" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
+          <article class="experiment-rail"><span class="rail-index">03</span><h3>AI网页作品集</h3><p>使用 Codex 搭配 Skill 来 Vibe Coding 制作网页作品集。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-portfolio" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
         </div></div>
       </div>
     </section>

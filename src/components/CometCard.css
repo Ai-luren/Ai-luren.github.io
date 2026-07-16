@@ -1,12 +1,11 @@
 .comet-card {
   --comet-rotate-x: 0deg;
   --comet-rotate-y: 0deg;
-  --comet-glow-x: 50%;
-  --comet-glow-y: 50%;
+  --comet-lift: 0px;
   position: relative;
-  transform: perspective(900px) rotateX(var(--comet-rotate-x)) rotateY(var(--comet-rotate-y));
+  transform: perspective(900px) translateY(var(--comet-lift)) rotateX(var(--comet-rotate-x)) rotateY(var(--comet-rotate-y));
   transform-style: preserve-3d;
-  transition: transform .28s cubic-bezier(.2,.75,.25,1), filter .28s ease;
+  transition: transform .28s cubic-bezier(.2,.75,.25,1);
   will-change: transform;
 }
 
@@ -16,18 +15,12 @@
   z-index: 2;
   border: 1px solid rgba(255,255,255,.12);
   border-radius: 18px;
-  background: radial-gradient(circle at var(--comet-glow-x) var(--comet-glow-y), rgba(255,255,255,.16), transparent 34%);
   content: '';
-  opacity: .7;
   pointer-events: none;
-  transition: opacity .28s ease;
 }
 
 .comet-card:hover,
-.comet-card:focus-within { filter: saturate(1.08); }
-
-.comet-card:hover::before,
-.comet-card:focus-within::before { opacity: 1; }
+.comet-card:focus-within { --comet-lift: -8px; }
 
 @media (prefers-reduced-motion: reduce) {
   .comet-card { transform: none !important; transition: none; }
