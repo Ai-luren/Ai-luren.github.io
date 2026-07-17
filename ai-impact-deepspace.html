@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ai路人 AI 影响力案例：深空互动感方向。" />
+  <title>AI影响力 / Deep Space Signals</title>
+  <style>
+    :root { --bg: #03080e; --ink: #eef5f8; --muted: #91a7b4; --blue: #4d91ff; --blue-light: #9cc8ff; --amber: #d7a05b; --line: rgba(185, 216, 234, .2); --sans: "Noto Sans SC", "PingFang SC", sans-serif; --mono: "DM Mono", monospace; }
+    * { box-sizing: border-box; }
+    html { background: var(--bg); scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; overflow-x: hidden; color: var(--ink); background: var(--bg); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { color: inherit; font: inherit; }
+    .space { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: #03080e; }
+    .space video { width: 100%; height: 100%; object-fit: cover; opacity: .52; filter: saturate(.7) contrast(1.08) brightness(.62); }
+    .space::before { position: absolute; inset: 0; z-index: 1; background: radial-gradient(circle at 50% 44%, transparent 0 22%, rgba(3, 8, 14, .48) 72%), linear-gradient(90deg, rgba(3, 8, 14, .68), rgba(3, 8, 14, .18) 50%, rgba(3, 8, 14, .6)); content: ''; }
+    .space::after { position: absolute; inset: 0; z-index: 2; opacity: .2; background-image: radial-gradient(rgba(196, 224, 238, .8) 1px, transparent 1px); background-size: 93px 93px; mask-image: radial-gradient(circle at center, black, transparent 65%); content: ''; }
+    .page { width: min(1260px, calc(100% - 64px)); margin: 0 auto; padding: 25px 0 105px; }
+    .topbar { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 18px; color: rgba(238, 245, 248, .62); font: 10px var(--mono); letter-spacing: .08em; }
+    .topbar strong { color: var(--ink); font-weight: 400; }
+    .topbar a { transition: color .2s ease; }
+    .topbar a:hover, .topbar a:focus-visible { color: var(--blue-light); }
+    .hero { display: grid; grid-template-columns: minmax(0, .9fr) minmax(500px, 1.1fr); align-items: center; gap: clamp(20px, 7vw, 120px); min-height: 78svh; padding: 90px 0 50px; }
+    .eyebrow { color: var(--blue-light); font: 10px var(--mono); letter-spacing: .14em; }
+    h1 { margin: 19px 0 0; font-size: clamp(4rem, 9vw, 9rem); line-height: .88; letter-spacing: -.11em; }
+    .hero-copy p { max-width: 360px; margin: 30px 0 0; color: rgba(238, 245, 248, .75); font-size: 13px; line-height: 1.9; }
+    .readout { display: grid; gap: 8px; margin-top: 46px; color: var(--muted); font: 10px var(--mono); }
+    .readout strong { color: var(--amber); font-weight: 400; }
+    .signal-map { position: relative; min-height: 630px; }
+    .signal-map::before, .signal-map::after { position: absolute; top: 50%; left: 50%; border: 1px solid rgba(156, 200, 255, .2); border-radius: 50%; content: ''; transform: translate(-50%, -50%); pointer-events: none; }
+    .signal-map::before { width: min(62vw, 610px); height: min(62vw, 610px); }
+    .signal-map::after { width: min(38vw, 380px); height: min(38vw, 380px); border-color: rgba(215, 160, 91, .25); }
+    .map-cross { position: absolute; top: 50%; left: 50%; width: min(62vw, 610px); height: min(62vw, 610px); pointer-events: none; transform: translate(-50%, -50%); }
+    .map-cross::before, .map-cross::after { position: absolute; background: rgba(156, 200, 255, .13); content: ''; }
+    .map-cross::before { top: 50%; left: 0; width: 100%; height: 1px; }
+    .map-cross::after { top: 0; left: 50%; width: 1px; height: 100%; }
+    .core { position: absolute; top: 50%; left: 50%; z-index: 3; display: grid; width: 160px; height: 160px; place-items: center; align-content: center; border: 1px solid rgba(156, 200, 255, .72); border-radius: 50%; background: radial-gradient(circle, rgba(45, 104, 210, .46), rgba(3, 12, 24, .82) 66%); box-shadow: 0 0 0 10px rgba(77, 145, 255, .08), 0 0 60px rgba(77, 145, 255, .26); text-align: center; transform: translate(-50%, -50%); transition: transform .35s cubic-bezier(.2, .75, .2, 1); }
+    .core strong { font-size: 23px; letter-spacing: -.08em; }
+    .core span { margin-top: 7px; color: var(--blue-light); font: 9px var(--mono); }
+    .node { position: absolute; z-index: 4; display: grid; grid-template-columns: 34px auto; align-items: center; gap: 10px; min-width: 150px; padding: 8px 11px 8px 8px; border: 1px solid rgba(185, 216, 234, .22); background: rgba(3, 10, 18, .34); text-align: left; cursor: pointer; transition: border-color .25s ease, background .25s ease, transform .25s ease; backdrop-filter: blur(9px); }
+    .node:hover, .node:focus-visible, .node.is-selected { border-color: var(--blue-light); background: rgba(28, 66, 116, .58); outline: none; transform: translateY(-4px) scale(1.03); }
+    .node i { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid rgba(156, 200, 255, .58); border-radius: 50%; color: var(--blue-light); font: 10px var(--mono); font-style: normal; }
+    .node b { display: block; font-size: 12px; font-weight: 500; }
+    .node small { display: block; margin-top: 4px; color: var(--muted); font: 8px var(--mono); }
+    .node.a { top: 14%; left: 18%; } .node.b { top: 24%; right: 1%; } .node.c { bottom: 23%; right: 6%; } .node.d { bottom: 12%; left: 17%; } .node.e { top: 49%; left: -1%; }
+    .panel { position: relative; display: grid; grid-template-columns: minmax(230px, .7fr) minmax(0, 1.3fr); align-items: center; gap: 46px; margin-top: 30px; padding: 32px 0 36px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .panel-image { position: relative; min-height: 280px; display: grid; place-items: center; background: radial-gradient(circle, rgba(77, 145, 255, .19), transparent 58%); }
+    .panel-image::before { position: absolute; inset: 18px; border: 1px solid rgba(185, 216, 234, .12); content: ''; }
+    .panel-image img { position: relative; z-index: 1; width: min(68%, 235px); max-height: 290px; object-fit: contain; border: 1px solid rgba(238, 245, 248, .3); box-shadow: 0 20px 42px rgba(0, 0, 0, .42); transform: rotate(-4deg); }
+    .panel-copy { min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; }
+    .panel-kicker { color: var(--amber); font: 10px var(--mono); letter-spacing: .1em; }
+    .panel h2 { max-width: 560px; margin: 14px 0 0; font-size: clamp(2rem, 5vw, 5rem); line-height: .94; letter-spacing: -.1em; }
+    .panel p { max-width: 530px; margin: 18px 0 0; color: rgba(238, 245, 248, .72); font-size: 13px; line-height: 1.85; }
+    .panel-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 22px; color: var(--muted); font: 9px var(--mono); }
+    .panel-meta strong { color: var(--ink); font-weight: 400; }
+    .footer { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding-top: 110px; color: var(--muted); font: 10px var(--mono); }
+    .footer strong { display: block; margin-top: 10px; color: var(--ink); font: 500 20px var(--sans); letter-spacing: -.06em; }
+    .footer-note { text-align: right; line-height: 1.8; }
+    :focus-visible { outline: 2px solid var(--blue-light); outline-offset: 4px; }
+    @media (max-width: 800px) {
+      .page { width: min(100% - 32px, 620px); }
+      .hero { display: block; min-height: auto; padding-top: 80px; }
+      .hero-copy p { max-width: 460px; }
+      .readout { margin-top: 30px; }
+      .signal-map { min-height: 540px; margin-top: 34px; }
+      .signal-map::before { width: min(94vw, 560px); height: min(94vw, 560px); }
+      .signal-map::after { width: min(57vw, 340px); height: min(57vw, 340px); }
+      .map-cross { width: min(94vw, 560px); height: min(94vw, 560px); }
+      .node { min-width: 124px; grid-template-columns: 28px auto; gap: 7px; padding: 6px; }
+      .node i { width: 28px; height: 28px; font-size: 8px; }
+      .node b { font-size: 10px; }
+      .node small { font-size: 7px; }
+      .node.a { top: 10%; left: 0; } .node.b { top: 24%; right: -2%; } .node.c { bottom: 20%; right: -2%; } .node.d { bottom: 8%; left: 0; } .node.e { top: 50%; left: -6%; }
+      .core { width: 130px; height: 130px; }
+      .core strong { font-size: 18px; }
+      .panel { display: block; }
+      .panel-copy { min-height: 0; margin-top: 28px; }
+      .footer { display: block; padding-top: 78px; }
+      .footer-note { margin-top: 24px; text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; } .space video { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="space" aria-hidden="true"><video muted autoplay loop playsinline preload="metadata"><source src="hero.mp4" type="video/mp4" /></video></div>
+  <main class="page">
+    <div class="topbar"><span><strong>AI IMPACT</strong> / DEEP SPACE SIGNALS</span><a href="ai-impact-concepts.html">BACK TO CONCEPTS ↗</a></div>
+    <section class="hero"><div class="hero-copy"><div class="eyebrow">宁磊 / CREATIVE SIGNAL MAP</div><h1>影响力<br /><span style="color:var(--blue-light)">在轨道上</span></h1><p>每一件作品都像一个信号节点：被平台看见、被行业记录、被真实的人遇见。鼠标只负责把它们从空间里唤醒。</p><div class="readout"><span>MAP STATUS / <strong>LIVE</strong></span><span>PROOFS / 08</span><span>RANGE / 2023—2026</span></div></div><div class="signal-map" id="signal-map" aria-label="AI 影响力信号图"><span class="map-cross"></span><div class="core" id="core"><strong>AI影响力</strong><span>SELECT A SIGNAL</span></div><button class="node a is-selected" data-proof="0"><i>KL</i><span><b>行业奖项</b><small>SUPER AWARD</small></span></button><button class="node b" data-proof="1"><i>MJ</i><span><b>官方作品</b><small>OFFICIAL WORK</small></span></button><button class="node c" data-proof="2"><i>PUBLIC</i><span><b>现实展示</b><small>PUBLIC PROOF</small></span></button><button class="node d" data-proof="3"><i>REACH</i><span><b>内容传播</b><small>SOCIAL SIGNAL</small></span></button><button class="node e" data-proof="4"><i>ID</i><span><b>创作者身份</b><small>PROGRAMS</small></span></button></div></section>
+    <section class="panel" id="proof-panel" aria-live="polite"><div class="panel-image"><img id="panel-image" src="获奖截图/画板 1.jpg" alt="可灵超棒奖证据" /></div><div class="panel-copy"><div><div class="panel-kicker" id="panel-kicker">SIGNAL / 01 · INDUSTRY AWARD</div><h2 id="panel-title">可灵超棒奖</h2><p id="panel-description">一张获奖海报，把作品、平台和结果固定在同一个证据面里。影响力从这里离开个人画布。</p></div><div class="panel-meta"><span>WORK <strong id="panel-work">AI 文旅宣传 · 岳阳楼</strong></span><span>PLATFORM <strong id="panel-platform">可灵 AI</strong></span><span>RESULT <strong id="panel-result">超棒奖</strong></span></div></div></section>
+    <footer class="footer"><div><div class="eyebrow">AI路人 / SIGNALS IN ORBIT</div><strong>把新工具、新效果和真实可用性接在一起。</strong></div><div class="footer-note">MOUSE TO DISCOVER<br />SCROLL TO CONTINUE</div></footer>
+  </main>
+  <script>
+    const proofs = [
+      { title: '可灵超棒奖', kicker: 'SIGNAL / 01 · INDUSTRY AWARD', work: 'AI 文旅宣传 · 岳阳楼', platform: '可灵 AI', result: '超棒奖', image: '获奖截图/画板 1.jpg', description: '一张获奖海报，把作品、平台和结果固定在同一个证据面里。影响力从这里离开个人画布。' },
+      { title: 'Midjourney 官方优秀作品', kicker: 'SIGNAL / 02 · OFFICIAL WORK', work: '人·河流·城市', platform: 'Midjourney', result: '官方收录', image: '获奖截图/画板 7.jpg', description: '作品进入平台官方作品语境，留下可追溯的创作者和作品身份。' },
+      { title: '作品进入现实场景', kicker: 'SIGNAL / 03 · PUBLIC PROOF', work: '人·河流·城市', platform: '公共展示', result: '户外大屏展示', image: '获奖截图/画板 8.jpg', description: '作品离开屏幕里的个人档案，进入真实公共空间，成为可以被遇见的视觉触点。' },
+      { title: '内容开始扩散', kicker: 'SIGNAL / 04 · SOCIAL REACH', work: 'AI 创意效果分享', platform: '抖音 / 小红书', result: '持续传播', image: '获奖截图/画板 5.jpg', description: '创作方法被拆成内容，继续在社交平台上产生新的观看和讨论。' },
+      { title: 'AI 创作者身份', kicker: 'SIGNAL / 05 · CREATOR IDENTITY', work: 'AI 创作者计划', platform: '可灵优创 / 即梦成长 / Vidu', result: '平台认证', image: '获奖截图/画板 2.jpg', description: '平台认证把个人创作从单次作品，延伸为可被识别的长期身份。' }
+    ];
+    const panel = { image: document.querySelector('#panel-image'), kicker: document.querySelector('#panel-kicker'), title: document.querySelector('#panel-title'), description: document.querySelector('#panel-description'), work: document.querySelector('#panel-work'), platform: document.querySelector('#panel-platform'), result: document.querySelector('#panel-result') };
+    const nodes = [...document.querySelectorAll('.node')];
+    function selectProof(index) { const proof = proofs[index]; nodes.forEach((node, nodeIndex) => node.classList.toggle('is-selected', nodeIndex === index)); panel.image.style.opacity = '.25'; window.setTimeout(() => { panel.image.src = proof.image; panel.image.alt = proof.title; panel.image.style.opacity = '1'; }, 150); panel.kicker.textContent = proof.kicker; panel.title.textContent = proof.title; panel.description.textContent = proof.description; panel.work.textContent = proof.work; panel.platform.textContent = proof.platform; panel.result.textContent = proof.result; }
+    nodes.forEach((node, index) => { node.addEventListener('click', () => selectProof(Number(node.dataset.proof))); node.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectProof(index); } }); });
+    const map = document.querySelector('#signal-map'); const core = document.querySelector('#core');
+    map.addEventListener('pointermove', event => { const rect = map.getBoundingClientRect(); const x = (event.clientX - rect.left) / rect.width - .5; const y = (event.clientY - rect.top) / rect.height - .5; core.style.transform = `translate(calc(-50% + ${x * 13}px), calc(-50% + ${y * 13}px))`; map.style.transform = `translate(${x * 5}px, ${y * 5}px)`; });
+    map.addEventListener('pointerleave', () => { core.style.transform = 'translate(-50%, -50%)'; map.style.transform = 'none'; });
+  </script>
+</body>
+</html>
