@@ -17,8 +17,8 @@ export default function CometCard({ children, className = '', ...props }) {
     const rect = card.getBoundingClientRect();
     const x = (event.clientX - rect.left) / rect.width;
     const y = (event.clientY - rect.top) / rect.height;
-    card.style.setProperty('--comet-rotate-y', `${(x - 0.5) * 14}deg`);
-    card.style.setProperty('--comet-rotate-x', `${(0.5 - y) * 14}deg`);
+    card.style.setProperty('--comet-rotate-y', `${(x - 0.5) * 20}deg`);
+    card.style.setProperty('--comet-rotate-x', `${(0.5 - y) * 20}deg`);
   };
 
   return (

@@ -2,26 +2,27 @@
   --comet-rotate-x: 0deg;
   --comet-rotate-y: 0deg;
   --comet-lift: 0px;
+  /* 精选创作的 Z 轴层级，修改这里即可统一调整。 */
+  --comet-z-image: 60px;
+  --comet-z-award: 20px;
+  --comet-z-meta: 30px;
+  --comet-z-title: 40px;
   position: relative;
-  transform: perspective(900px) translateY(var(--comet-lift)) rotateX(var(--comet-rotate-x)) rotateY(var(--comet-rotate-y));
+  perspective: 1000px;
+  perspective-origin: 50% 48%;
   transform-style: preserve-3d;
-  transition: transform .28s cubic-bezier(.2,.75,.25,1);
+}
+
+.comet-card > .comet-archive__card {
+  transform: translate3d(0, var(--comet-lift), 0) rotateX(var(--comet-rotate-x)) rotateY(var(--comet-rotate-y));
+  transform-style: preserve-3d;
+  transition: transform .42s cubic-bezier(.2,.75,.25,1);
   will-change: transform;
 }
 
-.comet-card::before {
-  position: absolute;
-  inset: -1px;
-  z-index: 2;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 18px;
-  content: '';
-  pointer-events: none;
-}
-
 .comet-card:hover,
-.comet-card:focus-within { --comet-lift: -8px; }
+.comet-card:focus-within { --comet-lift: 0px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .comet-card { transform: none !important; transition: none; }
+  .comet-card > .comet-archive__card { transform: none !important; transition: none; }
 }

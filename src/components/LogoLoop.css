@@ -1,0 +1,101 @@
+.logo-loop {
+  position: relative;
+  width: calc(100% + 48px);
+  margin-inline: -24px;
+  padding-inline: 24px;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+}
+
+.logo-loop__track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  will-change: transform;
+}
+
+.logo-loop__list {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--logo-loop-gap);
+  margin: 0;
+  padding: 0 var(--logo-loop-gap) 0 0;
+  list-style: none;
+}
+
+.logo-loop__item {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--logo-loop-height);
+  height: var(--logo-loop-height);
+}
+
+.logo-loop__link,
+.logo-loop__image {
+  display: block;
+}
+
+.logo-loop__link {
+  border-radius: 8px;
+  line-height: 0;
+}
+
+.logo-loop__link:focus-visible {
+  outline: 2px solid var(--impact-blue, #8fbdff);
+  outline-offset: 6px;
+}
+
+.logo-loop__image {
+  width: auto;
+  height: var(--logo-loop-height);
+  max-width: 150px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  opacity: .92;
+  filter: none;
+  transition: opacity .24s ease, transform .24s ease;
+}
+
+.logo-loop__image--light {
+  filter: brightness(0) invert(1);
+}
+
+.logo-loop__item:hover .logo-loop__image,
+.logo-loop__link:focus-visible .logo-loop__image {
+  opacity: 1;
+}
+
+.logo-loop__item--hoverable:hover .logo-loop__image,
+.logo-loop__item--hoverable:focus-within .logo-loop__image {
+  transform: scale(1.08);
+}
+
+@media (max-width: 720px) {
+  .logo-loop__list {
+    gap: 34px;
+    padding-right: 34px;
+  }
+
+  .logo-loop__image {
+    max-width: 124px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-loop__track {
+    transform: none !important;
+  }
+
+  .logo-loop__image {
+    transition: none;
+  }
+}

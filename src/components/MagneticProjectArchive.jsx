@@ -31,6 +31,7 @@ export default function MagneticProjectArchive() {
             aria-label={`${archive.title}，${archive.award}`}
             style={{ '--comet-cover': `url(${archive.cover})` }}
           >
+            <span className="comet-archive__glass" aria-hidden="true" />
             <span className="comet-archive__image" aria-hidden="true" />
             <span className="comet-archive__award">{archive.category}</span>
             <span className="comet-archive__copy">

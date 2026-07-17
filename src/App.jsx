@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
+import ImpactEvidence from './components/ImpactEvidence.jsx';
 
 const BadgeLanyardModal = lazy(() => import('./components/BadgeLanyardModal.jsx'));
 
@@ -78,10 +79,12 @@ export default function App() {
   }, [badgeOpen]);
 
   const projectArchiveRoot = document.getElementById('projects-react-root');
+  const impactEvidenceRoot = document.getElementById('recognition-react-root');
 
   return (
     <>
       {projectArchiveRoot && createPortal(<MagneticProjectArchive />, projectArchiveRoot)}
+      {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       <Suspense fallback={null}>
         {badgeOpen && badgePosition && (
           <BadgeLanyardModal open={badgeOpen} closing={badgeClosing} onClose={closeBadge} position={badgePosition} />

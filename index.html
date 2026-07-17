@@ -173,25 +173,148 @@
       .magnetic-archive__card, .magnetic-archive.is-open .magnetic-archive__card, .magnetic-archive.is-open .magnetic-archive__card.is-open { flex: 0 0 72vw; height: 386px; opacity: 1; filter: none; scroll-snap-align: center; }
       .magnetic-archive__detail { right: 18px; bottom: 20px; left: 18px; width: auto; }
     }
+    /* 统一卡片视觉：工作经历与 AI 实验室共用同一套静态基础层，模块动画仍由原有逻辑负责。 */
+    #profile .timeline {
+      padding: 24px 0 0;
+      border-top: 0;
+      background: transparent;
+    }
+    #profile .timeline-track,
+    #profile .timeline-node {
+      display: none;
+    }
+    #profile .timeline-grid {
+      gap: 16px;
+    }
+    #profile .timeline-track {
+      top: 44px;
+      right: 6%;
+      left: 6%;
+      background: linear-gradient(90deg, transparent, var(--line) 10%, var(--line-strong) 50%, var(--line) 90%, transparent);
+      box-shadow: none;
+    }
+    #profile .timeline-item {
+      min-height: 280px;
+      padding: 22px 20px;
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      background: rgba(11, 24, 37, .74);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(12px);
+    }
+    #profile .timeline-item:hover,
+    #profile .timeline-item:focus-within {
+      border-color: var(--hairline);
+      background: rgba(11, 24, 37, .74);
+      transform: none;
+      transition: none;
+    }
+    #profile .timeline-node {
+      top: 44px;
+      background: var(--space-black);
+      box-shadow: 0 0 0 6px rgba(184, 215, 236, .08);
+    }
+    #profile .timeline-item h3 {
+      margin-top: 18px;
+      font-size: 18px;
+    }
+    #profile .timeline-item h3 span {
+      color: var(--muted);
+    }
+    #profile .timeline-item p {
+      color: var(--body-text);
+      text-shadow: none;
+    }
+    #profile .timeline-honor {
+      color: var(--signal) !important;
+    }
+    #experiments .experiment-console {
+      margin-top: 32px;
+      overflow: visible;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    #experiments .console-header {
+      margin-bottom: 16px;
+      padding: 18px 22px;
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      background: rgba(11, 24, 37, .74);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    #experiments .experiment-track {
+      gap: 16px;
+      min-height: 0;
+      margin-top: 0;
+      padding: 0;
+    }
+    #experiments .experiment-rail,
+    #experiments .experiment-rail:last-of-type {
+      display: flex;
+      flex-direction: column;
+      padding: 22px;
+      border: 1px solid var(--hairline);
+      border-radius: 18px;
+      background: rgba(11, 24, 37, .74);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter: blur(12px);
+    }
+    #experiments .experiment-rail:hover,
+    #experiments .experiment-rail:focus-within {
+      border-color: var(--hairline);
+      background: rgba(11, 24, 37, .74);
+      transform: none;
+      transition: none;
+    }
+    #experiments .rail-index {
+      color: var(--signal);
+    }
+    #experiments .experiment-rail h3 {
+      margin-bottom: 14px;
+      font-size: 20px;
+    }
+    #experiments .experiment-rail p {
+      color: var(--body-text);
+      text-shadow: none;
+    }
+    #experiments .experiment-rail > p:not(.project-channel) {
+      min-height: 3.6em;
+    }
+    #experiments .project-channel a {
+      color: var(--signal);
+    }
+    #experiments .project-channel {
+      margin-top: auto;
+      padding-top: 24px;
+    }
+    @media (max-width: 720px) {
+      #profile .timeline-grid { grid-template-columns: 1fr; gap: 14px; }
+      #profile .timeline-item { min-height: 0; padding: 22px; }
+      #experiments .experiment-track { grid-template-columns: 1fr; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .magnetic-archive__card, .magnetic-archive__image, .magnetic-archive__hint, .magnetic-archive__detail { transition: none; }
     }
 
     /* 精选创作档案：3:5 外层档案卡内嵌 3:4 封面，内容按上下流排列，避免文字与图片重叠。 */
     .comet-archive { display: grid; width: 100%; margin: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: stretch; gap: clamp(16px, 1.6vw, 26px); padding: 18px 0 34px; }
-    .comet-archive__item { min-width: 0; aspect-ratio: 3 / 5; }
-    .comet-archive__card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; width: 100%; height: 100%; padding: 16px 20px 18px; overflow: visible; border: 1px solid rgba(232,240,245,.18); border-radius: 18px; background: rgba(5,9,15,.88); box-shadow: 0 12px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08); color: #fff; cursor: pointer; text-align: left; perspective: 1000px; transform-style: preserve-3d; }
+    .comet-archive__item { min-width: 0; aspect-ratio: 3 / 4.5; }
+    .comet-archive__card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; width: 100%; height: 100%; padding: 16px 20px 18px; overflow: visible; border: 0; border-radius: 18px; background: transparent; box-shadow: none; color: #fff; cursor: pointer; text-align: left; transform-style: preserve-3d; will-change: transform; }
     .comet-archive__card:focus-visible { outline: 2px solid rgba(255,255,255,.88); outline-offset: 4px; }
-    .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 1px solid rgba(255,255,255,.22); border-radius: 12px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 8px 0 rgba(5,9,15,.72), 0 22px 30px rgba(0,0,0,.36); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: translateZ(45px) rotateZ(0deg) scale(1); transition: transform .38s cubic-bezier(.2,.75,.25,1), filter 1s cubic-bezier(.22,.8,.24,1); will-change: transform, filter; }
-    .comet-archive__award { position: relative; z-index: 3; grid-column: 1; grid-row: 1; justify-self: center; align-self: start; max-width: 100%; padding: 5px 7px; border: 1px solid rgba(232,240,245,.18); border-radius: 999px; background: rgba(6,10,16,.58); color: rgba(232,240,245,.88); font: 600 11px/1 var(--sans); letter-spacing: .02em; transform: translateZ(20px) translateY(6px); transition: transform .28s cubic-bezier(.2,.75,.25,1); }
-    .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; min-width: 0; }
-    .comet-archive__meta { display: inline-block; flex: 0 1 auto; color: rgba(232,240,245,.58); font: 500 10px/1 var(--tech); letter-spacing: .08em; transform: translateZ(20px); transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
-    .comet-archive__copy strong { display: block; flex: 0 1 auto; max-width: calc(100% - 72px); overflow: hidden; color: #fff; font: 600 clamp(16px, 1.5vw, 19px)/1.16 var(--display); letter-spacing: -.025em; text-align: right; text-overflow: ellipsis; white-space: nowrap; transform: translateZ(30px); transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__glass { position: absolute; z-index: 0; inset: 0; border: 1px solid var(--glass-border); border-radius: 18px; background: var(--glass-surface); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); pointer-events: none; }
+    .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 0; border-radius: 14px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 24px 32px rgba(0,0,0,.34); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: none; transform-origin: center 42%; transition: transform .42s cubic-bezier(.2,.75,.25,1), filter 1s cubic-bezier(.22,.8,.24,1); will-change: transform, filter; }
+    .comet-archive__award { position: relative; z-index: 3; grid-column: 1; grid-row: 1; justify-self: start; align-self: start; max-width: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; color: rgba(232,240,245,.88); font: 600 11px/1 var(--sans); letter-spacing: .02em; text-align: left; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; min-width: 0; transform-style: preserve-3d; }
+    .comet-archive__meta { display: inline-block; flex: 0 1 auto; color: rgba(232,240,245,.58); font: 500 10px/1 var(--tech); letter-spacing: .08em; transform: none; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__copy strong { display: block; flex: 0 1 auto; max-width: calc(100% - 72px); overflow: hidden; color: #fff; font: 600 clamp(16px, 1.5vw, 19px)/1.16 var(--display); letter-spacing: -.025em; text-align: right; text-overflow: ellipsis; white-space: nowrap; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
     .comet-card:hover { z-index: 2; }
-    .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { filter: grayscale(0) saturate(1) contrast(1); transform: translateZ(45px) rotateZ(-4deg) scale(1.025); }
-    .comet-card:hover .comet-archive__award, .comet-card:focus-within .comet-archive__award { transform: translateZ(20px) translateY(6px); }
-    .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta { transform: translateZ(20px) translateX(-8px); }
-    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { transform: translateZ(30px) translateX(8px); }
+    .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { filter: grayscale(0) saturate(1) contrast(1); transform: translateZ(var(--comet-z-image)) rotateX(12deg) rotateZ(-4deg) scale(1.015); }
+    .comet-card:hover .comet-archive__award, .comet-card:focus-within .comet-archive__award { transform: translateZ(var(--comet-z-award)) translateY(5px); }
+    .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta { transform: translateZ(var(--comet-z-meta)) translateX(-20px); }
+    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { transform: translateZ(var(--comet-z-title)) translateX(20px); }
     @media (min-width: 721px) and (max-width: 980px) {
       .comet-archive { width: min(100%, 680px); grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -771,7 +894,7 @@
     .nav-list a:not(.nav-contact) { display: inline-flex; }
     .nav-list a::after { display: none; }
     .nav-list a::before { position: absolute; top: 50%; left: 7px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px rgba(255,255,255,.72); content: ''; opacity: 0; transform: translateY(-50%) scale(.45); transition: opacity .2s ease, transform .2s ease; }
-    .nav-list a:hover, .nav-list a:focus-visible { background: rgba(232,240,245,.1); color: rgba(255,255,255,.96); }
+    .nav-list a:hover, .nav-list a:focus-visible { background: transparent; color: rgba(255,255,255,.96); }
     .nav-list a.is-active { background: transparent; color: rgba(255,255,255,.94); }
     .nav-list a.is-active::before { opacity: 1; transform: translateY(-50%) scale(1); }
     .nav-badge { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; margin-left: auto; padding: 0 17px; border: 1px solid rgba(126,171,255,.22); border-radius: 999px; background: var(--accent-gradient); box-shadow: 0 5px 14px rgba(31,98,242,.22); color: #fff; font: 600 12px/1 var(--sans); letter-spacing: .01em; transition: box-shadow .2s ease, transform .2s ease; }
@@ -845,6 +968,79 @@
       .nav-list a { width: 100%; min-height: 46px; padding: 0 12px; }
       .nav-list a::after { right: 12px; bottom: 6px; left: 12px; }
     }
+
+    /* 圆角规范：品牌图标、社交入口与所有操作按钮统一为 18px。 */
+    .brand,
+    .footer-avatar,
+    .footer-avatar img,
+    .footer-social a,
+    .footer-social a::before,
+    .nav-badge,
+    .nav-toggle,
+    .hero-actions a,
+    .hero-actions .hero-primary,
+    .archive-nav,
+    .magnetic-archive__detail button { border-radius: 18px; }
+
+    /* 页脚比例：图标退后一步，让品牌与导航成为主要阅读层级。 */
+    .footer-avatar { width: 44px; height: 44px; }
+    .footer-avatar img { border-radius: 18px; }
+    .footer-brand { justify-self: center; gap: 10px; }
+    .footer-brand-copy strong { font-size: 22px; }
+    .footer-brand-copy span { font-size: 9px; letter-spacing: .12em; }
+    .footer-tagline { margin-top: 20px; font-size: 14px; }
+    .footer-social { gap: 12px; margin-top: 26px; }
+    .footer-social a { width: 44px; height: 44px; }
+    .footer-social a::before { width: 44px; height: 44px; }
+    .footer-social .social-icon { width: 20px; height: 20px; }
+    .footer-nav { gap: 16px 22px; margin-top: 38px; }
+
+    /* 社交入口也使用统一玻璃底，不再叠加各平台的纯色圆底。 */
+    .footer-social li:nth-child(n) a {
+      border: 1px solid var(--glass-border);
+      background: var(--glass-surface);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      overflow: hidden;
+    }
+    .footer-social a::before { display: none; }
+
+    /* 统一磨砂玻璃材质：组件形状可以不同，底材参数保持一致。 */
+    :root {
+      --glass-surface: rgba(8, 18, 28, .72);
+      --glass-border: rgba(184, 215, 236, .22);
+      --glass-shadow: 0 16px 36px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .08);
+      --glass-blur: blur(14px) saturate(1.08);
+    }
+    #profile .timeline-item,
+    #experiments .experiment-rail,
+    header.is-condensed {
+      border-color: var(--glass-border);
+      background: var(--glass-surface);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+    .comet-archive__card { border-color: transparent; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+
+    /* 工作经历与 AI 实验室保持静止亮度，鼠标悬停、按住和键盘聚焦都不改变卡片明暗。 */
+    #profile .timeline-item:hover,
+    #profile .timeline-item:focus-within,
+    #profile .timeline-item:active,
+    #experiments .experiment-rail:hover,
+    #experiments .experiment-rail:focus-within,
+    #experiments .experiment-rail:active {
+      border-color: var(--hairline);
+      background: rgba(11, 24, 37, .74);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.08);
+      filter: none;
+      transform: none;
+    }
+    header.is-condensed {
+      background: var(--glass-surface);
+    }
+
   </style>
 </head>
 <body class="is-loading is-on-hero">
@@ -887,10 +1083,6 @@
       </div>
     </section>
 
-    <section id="manifesto" class="section" aria-labelledby="manifesto-title">
-      <div class="manifesto-shell shell"><div class="frame-corners" aria-hidden="true"></div><h2 id="manifesto-title" class="manifesto-heading reveal">关于我</h2><p class="manifesto-line reveal">把审美需求转化为可测试指标，让生成效果达到产品可用标准。</p></div>
-    </section>
-
     <section id="profile" class="section" aria-labelledby="profile-title">
       <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">航行记录</p><h2 id="profile-title" class="section-title">工作经历</h2></div></div>
         <div class="timeline"><div class="timeline-track" aria-hidden="true"></div><div class="timeline-grid">
@@ -911,13 +1103,7 @@
 
     <section id="recognition" class="section" aria-labelledby="recognition-title">
       <div class="shell"><div class="section-intro reveal"><div><h2 id="recognition-title" class="section-title">AI影响力</h2></div></div>
-        <div class="recognition-stage motion-stage" aria-label="AI影响力可交互星图"><div class="frame-corners" aria-hidden="true"></div><div class="orbit orbit--work-1" data-ring="work-1"></div><div class="orbit orbit--work-2" data-ring="work-2"></div><div class="orbit orbit--industry-1" data-ring="industry-1"></div><div class="orbit orbit--industry-2" data-ring="industry-2"></div><div class="orbit orbit--impact" data-ring="impact"></div><div class="recognition-core" aria-hidden="true"></div>
-          <div class="recognition-group g1" data-orbit="middle" data-ring="industry-1" data-angle="-148" data-speed="0.000018" tabindex="0" role="button" aria-expanded="false"><span class="recognition-planet" aria-hidden="true"></span><div><strong>行业奖项</strong><small>可灵、MJ、通义、美图、联想等平台认可</small></div></div>
-          <div class="recognition-group g2" data-orbit="middle" data-ring="industry-2" data-angle="-32" data-speed="0.00003" tabindex="0" role="button" aria-expanded="false"><span class="recognition-planet" aria-hidden="true"></span><div><strong>AI 创作者认证</strong><small>可灵优创、即梦成长、Vidu 艺术家等</small></div></div>
-          <div class="recognition-group g3" data-orbit="inner" data-ring="work-1" data-angle="160" data-speed="0.000045" tabindex="0" role="button" aria-expanded="false"><span class="recognition-planet" aria-hidden="true"></span><div><strong>小米内部荣誉</strong><small>Agent 挑战冠亚军、AI 达人、效率先锋官</small></div></div>
-          <div class="recognition-group g4" data-orbit="inner" data-ring="work-2" data-angle="20" data-speed="0.000022" tabindex="0" role="button" aria-expanded="false"><span class="recognition-planet" aria-hidden="true"></span><div><strong>快手项目成果</strong><small>洛子峰奖 · 快影千万 DAU 产品</small></div></div>
-          <div class="recognition-group g5" data-orbit="outer" data-ring="impact" data-angle="-90" data-speed="0.00001" tabindex="0" role="button" aria-expanded="false"><span class="recognition-planet" aria-hidden="true"></span><div><strong>内容影响力</strong><small>抖音、小红书持续分享 AI 工作流</small></div></div>
-        </div>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI影响力证据"></div>
       </div>
     </section>
 
@@ -936,7 +1122,7 @@
     <div class="shell footer-stack">
       <div class="footer-brand">
         <a class="footer-avatar" href="#top" aria-label="返回顶部"><img src="assets/images/ai-luren-avatar.png" alt="Ai路人" /></a>
-        <div class="footer-brand-copy"><strong>Ai路人</strong><span>AI CREATIVE EFFECTS DESIGN</span></div>
+        <div class="footer-brand-copy"><strong>Ai路人</strong></div>
       </div>
       <p class="footer-tagline">把重复的事，沉淀成可复用的工具与作品。</p>
       <ul class="footer-social" aria-label="联系方式与社交链接">
@@ -1091,8 +1277,6 @@
           gsap.fromTo(selector, fromVars, Object.assign(target, toVars));
         }
         entrance('#top .hero-copy .reveal', { autoAlpha: 0, y: 18 }, { y: 0 }, '#top', { duration: .65, stagger: .08 });
-        entrance('#manifesto .manifesto-heading', { autoAlpha: 0, y: 14, scale: .98 }, { y: 0, scale: 1 }, '#manifesto', { duration: .65 });
-        entrance('#manifesto .manifesto-line', { autoAlpha: 0, y: 22 }, { y: 0 }, '#manifesto', { duration: .6, delay: .12 });
         entrance('#profile .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#profile', { duration: .5 });
         entrance('#profile .timeline-item', { autoAlpha: 0, y: 22 }, { y: 0 }, '#profile .timeline', { duration: .46, stagger: .08 });
         entrance('#projects .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#projects', { duration: .5 });
