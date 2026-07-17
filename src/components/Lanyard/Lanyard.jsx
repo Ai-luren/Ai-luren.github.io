@@ -1,9 +1,8 @@
 /* eslint-disable react/no-unknown-property */
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, extend, useFrame } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
-import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 
 import cardGLB from './card.glb';
@@ -21,19 +20,36 @@ const BLANK_PIXEL =
 const FRONT_UV_RECT = { x: 0, y: 0, w: 0.5, h: 0.755 };
 const BACK_UV_RECT = { x: 0.5, y: 0, w: 0.5, h: 0.757 };
 
+useGLTF.preload(cardGLB);
+
 export default function Lanyard({
   position = [0, 0, 30],
   anchor = [0, 0, 0],
-  gravity = [0, -40, 0],
   fov = 20,
   transparent = true,
   frontImage = null,
   backImage = null,
   imageFit = 'cover',
   lanyardImage = null,
-  lanyardWidth = 1
+  lanyardWidth = 1,
+  onFirstFrame = null,
+  onContextLost = null
 }) {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768);
+  const contextHandlers = useRef(null);
+
+  const handleCreated = useCallback(({ gl }) => {
+    gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1);
+    const canvas = gl.domElement;
+    const previousHandlers = contextHandlers.current;
+    previousHandlers?.canvas.removeEventListener('webglcontextlost', previousHandlers.handleContextLost, false);
+    const handleContextLost = event => {
+      event.preventDefault();
+      onContextLost?.();
+    };
+    canvas.addEventListener('webglcontextlost', handleContextLost, false);
+    contextHandlers.current = { canvas, handleContextLost };
+  }, [onContextLost, transparent]);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -41,26 +57,31 @@ export default function Lanyard({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => () => {
+    const handlers = contextHandlers.current;
+    handlers?.canvas.removeEventListener('webglcontextlost', handlers.handleContextLost, false);
+    contextHandlers.current = null;
+  }, []);
+
   return (
     <div className="lanyard-wrapper">
       <Canvas
         camera={{ position: position, fov: fov }}
-        dpr={[1, isMobile ? 1.5 : 2]}
-        gl={{ alpha: transparent }}
-        onCreated={({ gl }) => gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)}
+        dpr={1}
+        gl={{ alpha: transparent, antialias: false }}
+        onCreated={handleCreated}
       >
         <ambientLight intensity={Math.PI} />
-        <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
-          <Band
-            isMobile={isMobile}
-            anchor={anchor}
-            frontImage={frontImage}
-            backImage={backImage}
-            imageFit={imageFit}
-            lanyardImage={lanyardImage}
-            lanyardWidth={lanyardWidth}
-          />
-        </Physics>
+        <Band
+          isMobile={isMobile}
+          anchor={anchor}
+          frontImage={frontImage}
+          backImage={backImage}
+          imageFit={imageFit}
+          lanyardImage={lanyardImage}
+          lanyardWidth={lanyardWidth}
+        />
+        <ReadyMarker onReady={onFirstFrame} />
         <Environment blur={0.75}>
           <Lightformer
             intensity={2}
@@ -95,9 +116,18 @@ export default function Lanyard({
     </div>
   );
 }
+
+function ReadyMarker({ onReady }) {
+  const hasReported = useRef(false);
+  useFrame(() => {
+    if (hasReported.current) return;
+    hasReported.current = true;
+    onReady?.();
+  });
+  return null;
+}
+
 function Band({
-  maxSpeed = 50,
-  minSpeed = 0,
   isMobile = false,
   anchor = [0, 0, 0],
   frontImage = null,
@@ -106,17 +136,15 @@ function Band({
   lanyardImage = null,
   lanyardWidth = 1
 }) {
-  const band = useRef(),
-    fixed = useRef(),
-    j1 = useRef(),
-    j2 = useRef(),
-    j3 = useRef(),
-    card = useRef();
-  const vec = new THREE.Vector3(),
-    ang = new THREE.Vector3(),
-    rot = new THREE.Vector3(),
-    dir = new THREE.Vector3();
-  const segmentProps = { type: 'dynamic', canSleep: true, colliders: false, angularDamping: 4, linearDamping: 4 };
+  const band = useRef();
+  const cardGroup = useRef();
+  const cardPosition = useRef(new THREE.Vector3(0, 0, 0));
+  const targetPosition = useRef(new THREE.Vector3(0, 0, 0));
+  const dragOffset = useRef(new THREE.Vector3());
+  const vec = new THREE.Vector3();
+  const dir = new THREE.Vector3();
+  const anchorPoint = useMemo(() => new THREE.Vector3(...anchor), [anchor]);
+  const defaultCardPosition = useMemo(() => new THREE.Vector3(0, 0, 0), []);
   const { nodes, materials } = useGLTF(cardGLB);
   const texture = useTexture(lanyardImage || lanyard);
   const frontTex = useTexture(frontImage || BLANK_PIXEL);
@@ -171,14 +199,6 @@ function Band({
   const [dragged, drag] = useState(false);
   const [hovered, hover] = useState(false);
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [
-    [0, 0, 0],
-    [0, 1.5, 0]
-  ]);
-
   useEffect(() => {
     if (hovered) {
       document.body.style.cursor = dragged ? 'grabbing' : 'grab';
@@ -188,8 +208,7 @@ function Band({
 
   useFrame((state, delta) => {
     if (dragged) {
-      // 将指针投影到工牌所在的 z=0 平面，而不是延相机方向无限延伸。
-      // 原实现允许把刚体拖到画布之外，导致绳子和工牌出现穿帮。
+      // 将指针投影到工牌所在的 z=0 平面，拖拽只改变卡片位置，不触发自由落体。
       vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
       dir.copy(vec).sub(state.camera.position).normalize();
       const distanceToCardPlane = -state.camera.position.z / dir.z;
@@ -197,32 +216,24 @@ function Band({
       const cameraDistance = Math.abs(state.camera.position.z);
       const viewHeight = 2 * cameraDistance * Math.tan(THREE.MathUtils.degToRad(state.camera.fov / 2));
       const viewWidth = viewHeight * (state.size.width / state.size.height);
-      // 给原生卡模型预留完整边距，避免拖出画布后绳子与卡体分离。
       const limitX = Math.max(0.25, viewWidth / 2 - 0.9);
-      const limitY = Math.max(0.25, viewHeight / 2 - 1.25);
-      const nextX = THREE.MathUtils.clamp(vec.x - dragged.x, -limitX, limitX);
-      const nextY = THREE.MathUtils.clamp(vec.y - dragged.y, -limitY, limitY);
-      [card, j1, j2, j3, fixed].forEach(ref => ref.current?.wakeUp());
-      card.current?.setNextKinematicTranslation({ x: nextX, y: nextY, z: 0 });
+      const limitY = Math.max(0.25, viewHeight / 2 - 1.4);
+      targetPosition.current.set(
+        THREE.MathUtils.clamp(vec.x - dragOffset.current.x, -limitX, limitX),
+        THREE.MathUtils.clamp(vec.y - dragOffset.current.y, -limitY, limitY),
+        0
+      );
+    } else {
+      targetPosition.current.copy(defaultCardPosition);
     }
-    if (fixed.current) {
-      [j1, j2].forEach(ref => {
-        if (!ref.current.lerped) ref.current.lerped = new THREE.Vector3().copy(ref.current.translation());
-        const clampedDistance = Math.max(0.1, Math.min(1, ref.current.lerped.distanceTo(ref.current.translation())));
-        ref.current.lerped.lerp(
-          ref.current.translation(),
-          delta * (minSpeed + clampedDistance * (maxSpeed - minSpeed))
-        );
-      });
-      curve.points[0].copy(j3.current.translation());
-      curve.points[1].copy(j2.current.lerped);
-      curve.points[2].copy(j1.current.lerped);
-      curve.points[3].copy(fixed.current.translation());
-      band.current.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
-      ang.copy(card.current.angvel());
-      rot.copy(card.current.rotation());
-      card.current.setAngvel({ x: ang.x, y: ang.y - rot.y * 0.25, z: ang.z });
-    }
+    cardPosition.current.lerp(targetPosition.current, 1 - Math.exp(-delta * (dragged ? 18 : 8)));
+    cardGroup.current?.position.copy(cardPosition.current);
+    const cardAttach = vec.set(0, 1.25, 0).add(cardPosition.current);
+    curve.points[0].copy(cardAttach);
+    curve.points[1].lerpVectors(cardAttach, anchorPoint, 0.34);
+    curve.points[2].lerpVectors(cardAttach, anchorPoint, 0.68);
+    curve.points[3].copy(anchorPoint);
+    band.current?.geometry.setPoints(curve.getPoints(isMobile ? 16 : 32));
   });
 
   curve.curveType = 'chordal';
@@ -230,19 +241,7 @@ function Band({
 
   return (
     <>
-      <group position={anchor}>
-        <RigidBody ref={fixed} {...segmentProps} type="fixed" />
-        <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps}>
-          <BallCollider args={[0.1]} />
-        </RigidBody>
-        <RigidBody position={[1, 0, 0]} ref={j2} {...segmentProps}>
-          <BallCollider args={[0.1]} />
-        </RigidBody>
-        <RigidBody position={[1.5, 0, 0]} ref={j3} {...segmentProps}>
-          <BallCollider args={[0.1]} />
-        </RigidBody>
-        <RigidBody position={[2, 0, 0]} ref={card} {...segmentProps} type={dragged ? 'kinematicPosition' : 'dynamic'}>
-          <CuboidCollider args={[0.8, 1.125, 0.01]} />
+      <group ref={cardGroup} position={cardPosition.current}>
           <group
             scale={2.25}
             position={[0, -1.2, -0.05]}
@@ -251,14 +250,13 @@ function Band({
             onPointerUp={e => {
               e.stopPropagation();
               e.target.releasePointerCapture(e.pointerId);
-              card.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
-              card.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
               drag(false);
             }}
             onPointerDown={e => {
               e.stopPropagation();
               e.target.setPointerCapture(e.pointerId);
-              drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
+              dragOffset.current.copy(e.point).sub(cardPosition.current);
+              drag(true);
             }}
           >
             <mesh geometry={nodes.card.geometry}>
@@ -274,7 +272,6 @@ function Band({
             <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
             <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
           </group>
-        </RigidBody>
       </group>
       <mesh ref={band}>
         <meshLineGeometry />

@@ -5,8 +5,8 @@
   /* 精选创作的 Z 轴层级，修改这里即可统一调整。 */
   --comet-z-image: 60px;
   --comet-z-award: 20px;
-  --comet-z-meta: 30px;
-  --comet-z-title: 40px;
+  --comet-z-meta: 50px;
+  --comet-z-title: 50px;
   position: relative;
   perspective: 1000px;
   perspective-origin: 50% 48%;

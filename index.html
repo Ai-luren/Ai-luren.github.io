@@ -29,10 +29,12 @@
       --signal: #b4c2cc;
       --muted: #718392;
       --mist: #e8f0f5;
-      --amber: #5a8dea;
+      --accent-blue: #0066cc;
+      --accent-blue-focus: #0071e3;
+      --accent-blue-on-dark: #2997ff;
       --accent-glow: rgba(66,120,230,.24);
-      --accent-blue-light: #2f84f5;
-      --accent-blue-deep: #1f62f2;
+      --accent-blue-light: var(--accent-blue-on-dark);
+      --accent-blue-deep: var(--accent-blue);
       --accent-gradient: linear-gradient(105deg, var(--accent-blue-light) 0%, #2877f4 56%, var(--accent-blue-deep) 100%);
       --line: rgba(180, 200, 215, .22);
       --hairline: rgba(180, 200, 215, .14);
@@ -54,15 +56,15 @@
     body.is-loading { overflow: hidden; }
     a { color: inherit; text-decoration: none; }
     button { color: inherit; font: inherit; }
-    ::selection { color: var(--space-black); background: var(--amber); }
+    ::selection { color: var(--space-black); background: var(--accent-blue); }
     .mono { font-family: var(--mono); }
-    .eyebrow { margin: 0; color: var(--amber); font: 500 10px/1.5 var(--tech); letter-spacing: .1em; }
+    .eyebrow { margin: 0; color: var(--accent-blue); font: 500 10px/1.5 var(--tech); letter-spacing: .1em; }
     .shell { width: var(--shell); margin: 0 auto; }
 
     #loading { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--space-black); transition: opacity .55s ease, visibility 0s .55s; }
     body.is-loaded #loading { opacity: 0; visibility: hidden; pointer-events: none; }
     .loading-copy { color: var(--muted); font: 500 10px var(--tech); letter-spacing: .18em; }
-    .loading-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--amber); transform-origin: left; animation: loading-line 2.4s cubic-bezier(.16,1,.3,1) forwards; }
+    .loading-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: var(--accent-blue); transform-origin: left; animation: loading-line 2.4s cubic-bezier(.16,1,.3,1) forwards; }
     @keyframes loading-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
     #video-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #071321; }
@@ -76,10 +78,10 @@
     .brand { color: var(--mist); font: 500 11px var(--tech); letter-spacing: .12em; white-space: nowrap; }
     nav { display: flex; align-items: center; gap: 24px; }
     nav a { position: relative; color: rgba(237,244,249,.72); font: 500 12px/1.2 var(--tech); letter-spacing: .04em; transition: color .2s ease; }
-    nav a::after { position: absolute; right: 0; bottom: -10px; left: 0; height: 1px; content: ''; background: var(--amber); transform: scaleX(0); transform-origin: left; transition: transform .22s ease; }
+    nav a::after { position: absolute; right: 0; bottom: -10px; left: 0; height: 1px; content: ''; background: var(--accent-blue); transform: scaleX(0); transform-origin: left; transition: transform .22s ease; }
     nav a:hover, nav a:focus-visible, nav a.is-active { color: var(--mist); }
     nav a.is-active::after { transform: scaleX(1); }
-    .nav-contact { padding: 7px 12px; border: 1px solid rgba(214,163,93,.65); color: var(--amber); }
+    .nav-contact { padding: 7px 12px; border: 1px solid rgba(41,151,255,.52); color: var(--accent-blue-on-dark); }
     .nav-contact::after { display: none; }
 
     main, footer { position: relative; z-index: 1; }
@@ -90,7 +92,7 @@
     .section-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); align-items: end; gap: 48px; margin-bottom: 48px; }
     .section-intro > div { min-width: 0; }
     .section-title { position: relative; margin: 8px 0 0; color: var(--mist); font: 700 clamp(2rem, 3.4vw, 3rem)/1.12 var(--display); letter-spacing: -.025em; text-shadow: 0 2px 12px rgba(1,8,17,.7); text-wrap: balance; }
-    .section-title::after { display: block; width: 42px; height: 1px; margin-top: 18px; background: var(--amber); content: ''; }
+    .section-title::after { display: block; width: 42px; height: 1px; margin-top: 18px; background: var(--accent-blue); content: ''; }
     .section-note { max-width: 320px; margin: 0; padding: 0 0 0 18px; border-left: 1px solid var(--line); color: var(--signal); font-size: 13px; line-height: 1.7; text-wrap: pretty; }
     .reveal { opacity: 0; transform: translateY(18px); }
     .reveal.is-visible { opacity: 1; transform: none; }
@@ -111,23 +113,23 @@
     .hero-readout { position: absolute; right: 0; bottom: 0; display: grid; gap: 7px; color: rgba(237,244,249,.52); font: 500 10px var(--tech); text-align: right; }
     .hero-readout strong { color: var(--signal); font-weight: 400; }
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(184,215,236,.25); transform: translateY(-50%); pointer-events: none; }
-    .scroll-rail span { display: block; width: 3px; height: 100%; margin-left: -1px; background: var(--amber); box-shadow: 0 0 14px rgba(214,163,93,.42); transform: scaleY(0); transform-origin: top; }
+    .scroll-rail span { display: block; width: 3px; height: 100%; margin-left: -1px; background: var(--accent-blue-on-dark); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(0); transform-origin: top; }
 
     #manifesto { padding-top: 144px; padding-bottom: 144px; text-align: center; }
     .manifesto-shell { position: relative; display: grid; justify-items: center; align-content: center; min-height: 46svh; padding: 44px 42px; border: 0; background: radial-gradient(ellipse at 50% 50%, rgba(13,27,40,.34), transparent 68%); text-align: center; }
     .manifesto-heading { max-width: 100%; margin: 0; color: var(--mist); font: 700 clamp(2rem, 3.2vw, 3rem)/1.12 var(--display); letter-spacing: -.025em; text-shadow: 0 2px 12px rgba(3,5,8,.55); }
     .manifesto-line { max-width: 700px; margin: 28px 0 0; padding: 0 22px; color: rgba(232,240,245,.9); font: 500 clamp(1.35rem, 2.1vw, 2.1rem)/1.42 var(--display); letter-spacing: -.015em; text-shadow: 0 2px 10px rgba(3,5,8,.55); text-wrap: balance; }
-    .manifesto-line span { display: inline; margin: 0; color: var(--amber); text-shadow: none; }
+    .manifesto-line span { display: inline; margin: 0; color: var(--accent-blue); text-shadow: none; }
 
     #profile { padding-top: 96px; padding-bottom: 120px; }
     .timeline { position: relative; padding: 20px 0 0; border-top: 1px solid var(--hairline); border-bottom: 0; background: transparent; }
-    .timeline-track { position: absolute; top: 66px; right: 3%; left: 3%; height: 1px; background: linear-gradient(90deg, transparent, var(--line) 8%, var(--amber) 50%, var(--line) 92%, transparent); box-shadow: 0 0 12px rgba(214,163,93,.16); transform-origin: left; }
+    .timeline-track { position: absolute; top: 66px; right: 3%; left: 3%; height: 1px; background: linear-gradient(90deg, transparent, var(--line) 8%, var(--accent-blue-on-dark) 50%, var(--line) 92%, transparent); box-shadow: 0 0 12px rgba(41,151,255,.16); transform-origin: left; }
     .timeline-grid { display: grid; grid-template-columns: .95fr .95fr 1.15fr 1.15fr .95fr; grid-auto-rows: minmax(248px, 1fr); align-items: stretch; gap: 18px; }
     .timeline-item { position: relative; display: flex; min-height: 230px; height: 100%; flex-direction: column; align-items: flex-start; padding: 88px 16px 20px; border: 0; border-bottom: 1px solid var(--hairline); border-radius: 0; background: transparent; box-shadow: none; }
     .timeline-item::before { display: none; }
     .timeline-item > :not(.timeline-node) { position: relative; z-index: 1; }
     .timeline-node { position: absolute; top: 66px; left: 50%; width: 20px; height: 20px; border: 1px solid var(--signal); border-radius: 50%; background: rgba(3,5,8,.82); box-shadow: 0 0 0 6px rgba(184,215,236,.07); transform: translate(-50%, -50%); }
-    .timeline-item.is-primary .timeline-node { border-color: var(--amber); box-shadow: 0 0 0 5px rgba(214,163,93,.12); }
+    .timeline-item.is-primary .timeline-node { border-color: var(--accent-blue-on-dark); box-shadow: 0 0 0 5px rgba(41,151,255,.12); }
     .timeline-date { color: #fff; font: 500 11px var(--tech); }
     .timeline-item h3 { margin: 14px 0 10px; font: 700 16px/1.35 var(--display); letter-spacing: -.02em; text-wrap: balance; }
     .timeline-item h3 span { display: block; margin-top: 5px; color: rgba(237,244,249,.78); font: 400 12px/1.65 var(--sans); }
@@ -236,14 +238,6 @@
       background: transparent;
       box-shadow: none;
     }
-    #experiments .console-header {
-      margin-bottom: 16px;
-      padding: 18px 22px;
-      border: 1px solid var(--hairline);
-      border-radius: 18px;
-      background: rgba(11, 24, 37, .74);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255,255,255,.08);
-    }
     #experiments .experiment-track {
       gap: 16px;
       min-height: 0;
@@ -307,14 +301,17 @@
     .comet-archive__glass { position: absolute; z-index: 0; inset: 0; border: 1px solid var(--glass-border); border-radius: 18px; background: var(--glass-surface); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); pointer-events: none; }
     .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 0; border-radius: 14px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 24px 32px rgba(0,0,0,.34); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: none; transform-origin: center 42%; transition: transform .42s cubic-bezier(.2,.75,.25,1), filter 1s cubic-bezier(.22,.8,.24,1); will-change: transform, filter; }
     .comet-archive__award { position: relative; z-index: 3; grid-column: 1; grid-row: 1; justify-self: start; align-self: start; max-width: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; color: rgba(232,240,245,.88); font: 600 11px/1 var(--sans); letter-spacing: .02em; text-align: left; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
-    .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; min-width: 0; transform-style: preserve-3d; }
+    .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; transform: none; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
     .comet-archive__meta { display: inline-block; flex: 0 1 auto; color: rgba(232,240,245,.58); font: 500 10px/1 var(--tech); letter-spacing: .08em; transform: none; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
-    .comet-archive__copy strong { display: block; flex: 0 1 auto; max-width: calc(100% - 72px); overflow: hidden; color: #fff; font: 600 clamp(16px, 1.5vw, 19px)/1.16 var(--display); letter-spacing: -.025em; text-align: right; text-overflow: ellipsis; white-space: nowrap; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-archive__copy strong { display: block; flex: 0 1 auto; max-width: calc(100% - 72px); overflow: hidden; color: #f0f4f6 !important; font: 600 clamp(16px, 1.5vw, 19px)/1.16 var(--display); letter-spacing: -.025em; text-align: right; text-overflow: ellipsis; white-space: nowrap; opacity: 1; filter: none; mix-blend-mode: normal; text-shadow: none; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
+    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { color: #f0f4f6 !important; opacity: 1; filter: none; mix-blend-mode: normal; }
     .comet-card:hover { z-index: 2; }
     .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { filter: grayscale(0) saturate(1) contrast(1); transform: translateZ(var(--comet-z-image)) rotateX(12deg) rotateZ(-4deg) scale(1.015); }
     .comet-card:hover .comet-archive__award, .comet-card:focus-within .comet-archive__award { transform: translateZ(var(--comet-z-award)) translateY(5px); }
-    .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta { transform: translateZ(var(--comet-z-meta)) translateX(-20px); }
-    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { transform: translateZ(var(--comet-z-title)) translateX(20px); }
+    /* 底部信息整体沿 Z 轴移动，保持同一条基线，避免两个文字各自投影后上下错位。 */
+    .comet-card:hover .comet-archive__copy, .comet-card:focus-within .comet-archive__copy { transform: translateZ(var(--comet-z-title)); }
+    .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta,
+    .comet-card:hover .comet-archive__copy strong, .comet-card:focus-within .comet-archive__copy strong { transform: none; }
     @media (min-width: 721px) and (max-width: 980px) {
       .comet-archive { width: min(100%, 680px); grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
@@ -328,17 +325,17 @@
     }
 
     #recognition { padding-top: 104px; padding-bottom: 112px; }
-    .recognition-stage { position: relative; min-height: 480px; overflow: hidden; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); background: radial-gradient(circle at 50% 53%, rgba(214,163,93,.06), transparent 22%), var(--surface); backdrop-filter: none; }
+    .recognition-stage { position: relative; min-height: 480px; overflow: hidden; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); background: radial-gradient(circle at 50% 53%, rgba(41,151,255,.06), transparent 22%), var(--surface); backdrop-filter: none; }
     .orbit { position: absolute; top: 53%; left: 50%; border: 1px solid rgba(184,215,236,.2); border-radius: 50%; transform: translate(-50%, -50%) rotate(-10deg); transform-origin: center; }
     .orbit--inner { width: 230px; height: 150px; }
     .orbit--middle { width: 460px; height: 245px; }
-    .orbit--outer { width: 760px; height: 340px; border-color: rgba(214,163,93,.16); }
-    .recognition-core { position: absolute; top: 53%; left: 50%; width: 18px; height: 18px; border: 1px solid var(--amber); border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 7px rgba(214,163,93,.1), 0 0 18px rgba(214,163,93,.42); transform: translate(-50%, -50%); }
+    .orbit--outer { width: 760px; height: 340px; border-color: rgba(41,151,255,.16); }
+    .recognition-core { position: absolute; top: 53%; left: 50%; width: 18px; height: 18px; border: 1px solid var(--accent-blue-on-dark); border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 0 7px rgba(41,151,255,.1), 0 0 18px rgba(41,151,255,.42); transform: translate(-50%, -50%); }
     .recognition-group { position: absolute; width: 0; height: 0; color: var(--mist); font-size: 11px; transition: transform .25s ease-out; }
-    .recognition-planet { position: absolute; top: -6px; left: -6px; width: 12px; height: 12px; border: 1px solid var(--signal); border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff 0 12%, var(--amber) 28%, rgba(214,163,93,.28) 58%, var(--space-black) 70%); box-shadow: 0 0 0 3px rgba(214,163,93,.08), 0 0 14px rgba(214,163,93,.38); animation: recognition-star-pulse 4.8s ease-in-out infinite; }
+    .recognition-planet { position: absolute; top: -6px; left: -6px; width: 12px; height: 12px; border: 1px solid var(--signal); border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff 0 12%, var(--accent-blue-on-dark) 28%, rgba(41,151,255,.28) 58%, var(--space-black) 70%); box-shadow: 0 0 0 3px rgba(41,151,255,.08), 0 0 14px rgba(41,151,255,.38); animation: recognition-star-pulse 4.8s ease-in-out infinite; }
     .recognition-group > div { position: absolute; top: -18px; left: 18px; width: 210px; padding: 8px 10px; background: linear-gradient(90deg, rgba(12,32,50,.84), rgba(12,32,50,.62)); border: 1px solid rgba(184,215,236,.18); backdrop-filter: blur(6px) saturate(1.06); }
     .recognition-group.g5 > div { top: 18px; left: 18px; }
-    .recognition-group strong { display: block; color: var(--amber); font: 10px var(--mono); font-weight: 400; }
+    .recognition-group strong { display: block; color: var(--accent-blue-on-dark); font: 10px var(--mono); font-weight: 400; }
     .recognition-group small { display: block; margin-top: 4px; color: rgba(237,244,249,.8); font-size: 11px; line-height: 1.6; }
     .recognition-group.g1 { top: 18%; left: 9%; }
     .recognition-group.g2 { right: 12%; top: 18%; }
@@ -350,14 +347,13 @@
     .recognition-group.g3 .recognition-planet { animation-delay: -1.2s; }
     .recognition-group.g4 .recognition-planet { animation-delay: -1.8s; }
     .recognition-group.g5 .recognition-planet { animation-delay: -2.4s; }
-    @keyframes recognition-star-pulse { 0%, 100% { opacity: .76; box-shadow: 0 0 0 3px rgba(214,163,93,.08), 0 0 10px rgba(214,163,93,.28); } 50% { opacity: 1; box-shadow: 0 0 0 4px rgba(214,163,93,.1), 0 0 16px rgba(214,163,93,.46); } }
+    @keyframes recognition-star-pulse { 0%, 100% { opacity: .76; box-shadow: 0 0 0 3px rgba(41,151,255,.08), 0 0 10px rgba(41,151,255,.28); } 50% { opacity: 1; box-shadow: 0 0 0 4px rgba(41,151,255,.1), 0 0 16px rgba(41,151,255,.46); } }
 
     #experiments { padding-top: 112px; padding-bottom: 120px; }
     .experiment-console { position: relative; overflow: hidden; margin-top: 32px; padding: 0; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface); box-shadow: none; }
     .experiment-console::before, .experiment-console::after { display: none; }
-    .console-header { position: relative; display: flex; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--hairline); color: var(--signal); font: 10px var(--mono); }
     .signal-dot { display: none; }
-    .experiment-track { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; min-height: 320px; margin-top: 20px; padding: 0; }
+    .experiment-track { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; min-height: 320px; margin-top: 0; padding: 0; }
     .experiment-rail { position: relative; z-index: 1; min-width: 0; overflow: visible; padding: 30px 24px 32px; border: 0; border-right: 1px solid var(--hairline); background: transparent; }
     .experiment-rail:last-of-type { border-right: 1px solid rgba(184,215,236,.2); }
     .experiment-rail::before, .experiment-rail::after { display: none; }
@@ -369,8 +365,8 @@
     .experiment-rail p { margin: 0; color: rgba(245,249,252,.94); font-size: 14px; line-height: 1.8; text-shadow: 0 2px 8px rgba(1,8,17,.7); }
     .meter-list { display: none; gap: 15px; margin-top: 20px; }
     .meter-row { display: grid; grid-template-columns: 64px 1fr 36px; gap: 10px; align-items: center; color: rgba(237,244,249,.65); font: 500 10px var(--tech); }
-    .meter-row i { display: block; height: 4px; background: linear-gradient(90deg, var(--amber) var(--value), rgba(180,200,215,.14) var(--value)); box-shadow: none; }
-    .meter-row b { color: var(--amber); font-weight: 400; }
+    .meter-row i { display: block; height: 4px; background: linear-gradient(90deg, var(--accent-blue) var(--value), rgba(180,200,215,.14) var(--value)); box-shadow: none; }
+    .meter-row b { color: var(--accent-blue-on-dark); font-weight: 400; }
 
     footer { min-height: auto; display: grid; align-items: center; padding: 112px 0 60px; }
     .contact-window { position: relative; display: grid; grid-template-columns: 1.05fr .95fr; min-height: 360px; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
@@ -381,34 +377,34 @@
     .contact-visual p { position: relative; z-index: 1; max-width: 300px; margin: 18px 0 0; color: rgba(237,244,249,.86); font-size: 13px; line-height: 1.8; text-shadow: 0 1px 10px rgba(3,10,18,.34); }
     .contact-links { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; gap: 24px 38px; padding: 42px 44px; border-left: 1px solid var(--hairline); background: rgba(8,18,28,.72); }
     .contact-links a { color: rgba(245,249,252,.98); font-size: 15px; line-height: 1.55; text-shadow: 0 1px 10px rgba(3,10,18,.8); transition: color .2s ease; }
-    .contact-links a:hover, .contact-links a:focus-visible { color: var(--amber); }
-    .contact-links .link-label { display: block; margin-bottom: 5px; color: var(--amber); font: 600 11px var(--tech); letter-spacing: .08em; }
+    .contact-links a:hover, .contact-links a:focus-visible { color: var(--accent-blue-on-dark); }
+    .contact-links .link-label { display: block; margin-bottom: 5px; color: var(--accent-blue-on-dark); font: 600 11px var(--tech); letter-spacing: .08em; }
     #profile .section-intro .eyebrow, #projects .section-intro .eyebrow, #experiments .section-intro .eyebrow, footer .eyebrow { display: none; }
     .footer-note { margin-top: 28px; color: rgba(237,244,249,.38); font: 10px var(--mono); }
     .copy-status { position: fixed; bottom: 26px; left: 50%; z-index: 90; padding: 9px 14px; border: 1px solid var(--line); background: rgba(3,5,8,.9); color: var(--mist); font-size: 12px; opacity: 0; pointer-events: none; transform: translate(-50%, 12px); transition: opacity .22s ease, transform .22s ease; }
     .copy-status.is-visible { opacity: 1; transform: translate(-50%, 0); }
-    a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 5px; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 5px; }
 
     /* 视觉基线：深空场景负责气氛，排版负责阅读，HUD 只负责语义提示。 */
     .archive-card:nth-of-type(n) { background: var(--surface-raised); }
     .archive-card:nth-of-type(n)::before { background: linear-gradient(180deg, rgba(255,255,255,.06), transparent 34%, rgba(3,8,14,.66) 88%); }
     .archive-card.is-placeholder { border-color: rgba(180,200,215,.2); }
     .archive-card.is-placeholder h3, .archive-card.is-placeholder p { color: var(--muted); opacity: .72; }
-    .recognition-stage { background: radial-gradient(circle at 50% 53%, rgba(214,163,93,.06), transparent 22%), var(--surface); }
+    .recognition-stage { background: radial-gradient(circle at 50% 53%, rgba(41,151,255,.06), transparent 22%), var(--surface); }
     .recognition-group > div { background: rgba(13,27,40,.82); backdrop-filter: none; }
     .recognition-group strong, .recognition-group small { text-shadow: none; }
     .timeline-date, .archive-index, .rail-index, .link-label { letter-spacing: .08em; }
     .timeline-item h3, .experiment-rail h3, .archive-card h3, .archive-detail h3, .contact-visual h2 { text-shadow: none; }
     .timeline-item p, .experiment-rail p, .contact-visual p, .contact-links a { text-shadow: none; }
     .section-note, .footer-note { color: var(--muted); }
-    .nav-contact { border-color: rgba(214,163,93,.7); }
-    nav a::after { background: var(--amber); }
-    .timeline-track { background: linear-gradient(90deg, transparent, var(--line) 8%, var(--amber) 50%, var(--line) 92%, transparent); box-shadow: none; }
+    .nav-contact { border-color: rgba(41,151,255,.52); }
+    nav a::after { background: var(--accent-blue); }
+    .timeline-track { background: linear-gradient(90deg, transparent, var(--line) 8%, var(--accent-blue) 50%, var(--line) 92%, transparent); box-shadow: none; }
     .timeline-node { box-shadow: 0 0 0 5px rgba(180,200,215,.06); }
-    .archive-stage::after { border-color: rgba(214,163,93,.16); }
-    .orbit--outer { border-color: rgba(214,163,93,.16); }
-    .recognition-planet { background: radial-gradient(circle at 35% 35%, #fff 0 12%, var(--amber) 28%, rgba(214,163,93,.28) 58%, var(--space-black) 70%); box-shadow: 0 0 0 3px rgba(214,163,93,.08), 0 0 12px rgba(214,163,93,.38); }
-    .meter-row i { background: linear-gradient(90deg, var(--amber) var(--value), rgba(180,200,215,.14) var(--value)); box-shadow: none; }
+    .archive-stage::after { border-color: rgba(41,151,255,.16); }
+    .orbit--outer { border-color: rgba(41,151,255,.16); }
+    .recognition-planet { background: radial-gradient(circle at 35% 35%, #fff 0 12%, var(--accent-blue-on-dark) 28%, rgba(41,151,255,.28) 58%, var(--space-black) 70%); box-shadow: 0 0 0 3px rgba(41,151,255,.08), 0 0 12px rgba(41,151,255,.38); }
+    .meter-row i { background: linear-gradient(90deg, var(--accent-blue) var(--value), rgba(180,200,215,.14) var(--value)); box-shadow: none; }
     .evaluation-note { margin-top: 22px !important; color: var(--muted) !important; font-size: 12px !important; }
 
     @media (max-width: 900px) {
@@ -586,7 +582,7 @@
       .contact-links { gap: var(--space-5); padding: var(--space-6) var(--space-5); }
     }
 
-    /* 色彩系统：深空底色、蓝灰信息层、琥珀状态层。 */
+    /* 色彩系统：深空底色、蓝灰信息层、单一蓝色交互层。 */
     :root {
       --body-text: #c5d1d8;
       --subtle-text: #9aabb6;
@@ -622,8 +618,8 @@
     .contact-links { background: var(--surface); }
     .timeline-node { background: var(--space-black); }
     .timeline-track { box-shadow: none; }
-    .recognition-core { box-shadow: 0 0 0 6px rgba(214,163,93,.08), 0 0 12px rgba(214,163,93,.28); }
-    .recognition-planet { box-shadow: 0 0 0 3px rgba(214,163,93,.06), 0 0 10px rgba(214,163,93,.28); }
+    .recognition-core { box-shadow: 0 0 0 6px rgba(41,151,255,.08), 0 0 12px rgba(41,151,255,.28); }
+    .recognition-planet { box-shadow: 0 0 0 3px rgba(41,151,255,.06), 0 0 10px rgba(41,151,255,.28); }
 
     /* 动效系统：视频持续推进，章节只承担一次有方向的进场。 */
     nav a { transition: color .2s ease, transform .2s ease; }
@@ -639,7 +635,7 @@
 
     /* 画面连续性：让视频成为贯穿全页的背景，不被 section 色块切断。 */
     :root { --signal: #9fb3bf; }
-    .hero-title span { margin-left: 0; text-align: left; letter-spacing: -.035em; color: var(--amber); text-shadow: none; }
+    .hero-title span { margin-left: 0; text-align: left; letter-spacing: -.035em; color: var(--accent-blue-on-dark); text-shadow: none; }
     .section::before, .section::after { display: none !important; }
     .archive-stage, .recognition-stage, .experiment-console, .contact-visual, .contact-links { background: transparent; }
     .archive-stage { border-color: var(--hairline); }
@@ -648,7 +644,7 @@
     .contact-window { background: transparent; }
     .recognition-group > div { width: min(210px, 42vw); padding: 0; background: transparent; border: 0; backdrop-filter: none; }
     .recognition-group > div { text-shadow: 0 1px 5px rgba(3,8,14,.9), 0 0 1px rgba(3,8,14,.72); }
-    .recognition-group strong { color: var(--amber); }
+    .recognition-group strong { color: var(--accent-blue-on-dark); }
     .recognition-group small { color: var(--mist); line-height: 1.5; }
     .experiment-rail h3, .experiment-rail p { text-shadow: 0 1px 5px rgba(3,8,14,.78); }
 
@@ -695,7 +691,7 @@
     .hero-subtitle, .section-note, .manifesto-line, .timeline-item p, .experiment-rail p, .contact-visual p, .contact-links a { color: #d2dce2; }
     .timeline-item h3 span, .archive-card p { color: #b8c7d0; }
 
-    /* 时间轴：圆点与年份分开，重点经历使用唯一琥珀色。 */
+    /* 时间轴：圆点与年份分开，重点经历使用唯一蓝色。 */
     @media (min-width: 561px) {
       .timeline { padding-top: 28px; }
       .timeline-track, .timeline-node { top: 42px; }
@@ -707,7 +703,7 @@
     .timeline-item.is-primary .timeline-date { color: #fff; }
     @media (min-width: 561px) {
       .timeline-item:hover .timeline-node,
-      .timeline-item:focus-within .timeline-node { border-color: var(--amber); background: var(--amber); box-shadow: 0 0 0 6px rgba(214,163,93,.14), 0 0 16px rgba(214,163,93,.34); transform: translate(-50%, -50%) scale(1.12); }
+      .timeline-item:focus-within .timeline-node { border-color: var(--accent-blue-on-dark); background: var(--accent-blue); box-shadow: 0 0 0 6px rgba(41,151,255,.14), 0 0 16px rgba(41,151,255,.34); transform: translate(-50%, -50%) scale(1.12); }
     }
     @media (prefers-reduced-motion: reduce) {
       .timeline-item .timeline-node { transition-duration: .01ms; }
@@ -718,11 +714,11 @@
     .recognition-core::before, .recognition-core::after { display: none; }
 
     /* 五条独立轨道：每个星球都有自己的运行半径。 */
-    .orbit--work-1 { width: min(230px, 78vw); height: 150px; border-color: rgba(214,163,93,.34); }
-    .orbit--work-2 { width: min(350px, 86vw); height: 220px; border-color: rgba(214,163,93,.26); }
+    .orbit--work-1 { width: min(230px, 78vw); height: 150px; border-color: rgba(41,151,255,.34); }
+    .orbit--work-2 { width: min(350px, 86vw); height: 220px; border-color: rgba(41,151,255,.26); }
     .orbit--industry-1 { width: min(500px, 94vw); height: 280px; border-color: rgba(184,215,236,.3); }
     .orbit--industry-2 { width: min(680px, 104vw); height: 360px; border-color: rgba(184,215,236,.22); }
-    .orbit--impact { width: min(900px, 114vw); height: 420px; border-color: rgba(214,163,93,.22); }
+    .orbit--impact { width: min(900px, 114vw); height: 420px; border-color: rgba(41,151,255,.22); }
     .recognition-group { cursor: pointer; }
     .recognition-group > div { top: 0; left: 22px; opacity: 0; transform: translateY(-50%) translateX(8px); pointer-events: none; transition: opacity .22s ease, transform .22s ease; }
     .recognition-group.g5 > div { top: 0; left: 22px; }
@@ -750,7 +746,7 @@
     .recognition-stage::before { display: block; position: absolute; inset: 0; z-index: 0; background: radial-gradient(ellipse at 50% 52%, rgba(3,8,14,.28) 0 18%, rgba(3,8,14,.12) 48%, transparent 78%); content: ''; pointer-events: none; }
     .recognition-stage .orbit, .recognition-stage .recognition-core, .recognition-stage .recognition-group { z-index: 1; }
     .recognition-group > div { background: transparent !important; }
-    .recognition-group strong { color: #fff3d0; -webkit-text-stroke: .15px rgba(3,8,14,.36); text-shadow: 0 1px 3px rgba(3,8,14,.52) !important; }
+    .recognition-group strong { color: var(--mist); -webkit-text-stroke: .15px rgba(3,8,14,.36); text-shadow: 0 1px 3px rgba(3,8,14,.52) !important; }
     .recognition-group small { color: #e1e8eb; -webkit-text-stroke: .12px rgba(3,8,14,.3); text-shadow: 0 1px 3px rgba(3,8,14,.48) !important; }
     .section-intro { position: relative; z-index: 0; }
     .section-intro::before { position: absolute; top: -24px; bottom: -24px; left: -32px; z-index: -1; width: min(720px, 78vw); background: radial-gradient(ellipse at 25% 50%, rgba(3,8,14,.24), transparent 72%); content: ''; pointer-events: none; }
@@ -766,7 +762,7 @@
     .hero-copy { max-width: 720px; padding-right: 32px; background: transparent; }
     .hero-title { gap: .02em; letter-spacing: -.05em; }
     .hero-subtitle { max-width: 470px; margin-top: 24px; color: #d2dce2; font-size: 14px; line-height: 1.85; }
-    .manifesto-line::before { display: block; width: 42px; height: 1px; margin: 0 auto 22px; background: var(--amber); content: ''; }
+    .manifesto-line::before { display: block; width: 42px; height: 1px; margin: 0 auto 22px; background: var(--accent-blue); content: ''; }
     @media (max-width: 560px) {
       .hero-title { white-space: normal; }
       .hero-title span:first-child, .hero-title span:last-child { font-size: clamp(2.5rem, 10.5vw, 3.6rem); }
@@ -782,7 +778,7 @@
 
     /* 创作档案：由按钮和拖拽切换，不再拦截页面滚动。 */
     .archive-nav { position: absolute; top: 50%; z-index: 12; display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: rgba(5,13,23,.34); color: var(--mist); font: 22px/1 var(--sans); cursor: pointer; transform: translateY(-50%); transition: border-color .2s ease, color .2s ease, background .2s ease, transform .2s ease; }
-    .archive-nav:hover, .archive-nav:focus-visible { border-color: var(--amber); background: rgba(5,13,23,.54); color: var(--amber); transform: translateY(-50%) scale(1.05); }
+    .archive-nav:hover, .archive-nav:focus-visible { border-color: var(--accent-blue-focus); background: rgba(5,13,23,.54); color: var(--accent-blue-on-dark); transform: translateY(-50%) scale(1.05); }
     .archive-nav--prev { left: 20px; }
     .archive-nav--next { right: 20px; }
     .archive-stage { touch-action: pan-y; }
@@ -809,10 +805,10 @@
     .hero-title span + span { margin-top: .05em; }
     .hero-subtitle { max-width: 590px; margin: 28px auto 0; color: #d2dce2; font-size: 15px; line-height: 1.8; text-align: center; }
     .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 34px; }
-    .hero-actions a { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 10px; padding: 0 19px; border: 1px solid rgba(232,240,245,.42); color: #f0f4f6; font: 500 12px/1 var(--sans); letter-spacing: .02em; transition: background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease; }
-    .hero-actions a:hover, .hero-actions a:focus-visible { border-color: var(--amber); color: var(--amber); transform: translateY(-2px); }
-    .hero-actions .hero-primary { border-color: var(--amber); background: var(--amber); color: #15110b; }
-    .hero-actions .hero-primary:hover, .hero-actions .hero-primary:focus-visible { background: #e7b96f; border-color: #e7b96f; color: #15110b; }
+    .hero-actions a { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 10px; padding: 0 19px; border: 1px solid rgba(232,240,245,.42); color: #f0f4f6; font: 500 12px/1 var(--sans); letter-spacing: .02em; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+    .hero-actions a:hover, .hero-actions a:focus-visible { border-color: var(--accent-blue-focus); color: var(--accent-blue-on-dark); transform: none; }
+    .hero-actions .hero-primary { border-color: var(--accent-blue); background: var(--accent-blue); color: #fff; }
+    .hero-actions .hero-primary:hover, .hero-actions .hero-primary:focus-visible { background: var(--accent-blue-focus); border-color: var(--accent-blue-focus); color: #fff; }
     @media (max-width: 560px) {
       #top { padding-top: 82px; }
       .hero-shell { min-height: calc(100svh - 138px); }
@@ -823,23 +819,27 @@
       .hero-actions a { min-height: 44px; padding: 0 15px; }
     }
 
-    /* 页脚：严格采用品牌、简介、社交、导航、底栏的五层布局。 */
-    footer { display: block; min-height: 0; padding: 64px 0 28px; background: transparent; text-align: center; }
-    .footer-stack { display: grid; justify-items: center; }
-    .footer-brand { display: inline-flex; align-items: center; gap: 12px; }
+    /* 页脚：桌面端采用左右分栏，移动端再收回单列。 */
+    footer { display: block; min-height: 0; padding: 56px 0 28px; background: transparent; text-align: left; }
+    .footer-stack {
+      display: grid;
+      grid-template-columns: minmax(240px, .85fr) minmax(0, 1.15fr);
+      grid-template-areas: 'eyebrow eyebrow' 'brand social' 'tagline social' 'bottom bottom';
+      column-gap: clamp(32px, 6vw, 96px);
+      align-items: start;
+      justify-items: stretch;
+    }
+    .footer-eyebrow { grid-area: eyebrow; text-align: left; }
+    .footer-brand { display: inline-flex; grid-area: brand; align-items: center; gap: 12px; justify-self: start; }
     .footer-avatar { position: relative; display: grid; width: 48px; height: 48px; place-items: center; overflow: visible; border: 1px solid rgba(232,240,245,.2); border-radius: 16px; background: rgba(35,35,35,.86); box-shadow: inset 0 1px 0 rgba(255,255,255,.1); transition: border-color .2s ease, transform .2s ease; }
     .footer-avatar:hover, .footer-avatar:focus-visible { border-color: var(--accent-blue-light); transform: scale(1.08); outline: none; }
     .footer-avatar img { width: 100%; height: 100%; border-radius: 14px; object-fit: cover; }
     .footer-brand-copy { display: grid; gap: 4px; text-align: left; }
     .footer-brand-copy strong { color: #f2f2f2; font: 700 24px/1 var(--display); letter-spacing: -.035em; }
     .footer-brand-copy span { color: var(--subtle-text); font: 500 10px/1 var(--tech); letter-spacing: .1em; }
-    .footer-tagline { max-width: 28rem; margin: 24px auto 0; color: rgba(232,240,245,.68); font-size: 15px; line-height: 1.7; white-space: nowrap; }
-    .footer-nav, .footer-social { display: flex; flex-wrap: wrap; justify-content: center; margin: 0; padding: 0; list-style: none; }
-    .footer-nav { gap: 18px 24px; margin-top: 48px; }
-    .footer-nav a { color: rgba(232,240,245,.72); font-size: 15px; transition: color .2s ease; }
-    .footer-nav a::after { display: none; }
-    .footer-nav a:hover, .footer-nav a:focus-visible { color: #fff; }
-    .footer-social { position: relative; gap: 16px; margin-top: 32px; padding-top: 0; }
+    .footer-tagline { grid-area: tagline; max-width: 28rem; margin: 24px 0 0; color: rgba(232,240,245,.68); font-size: 15px; line-height: 1.7; white-space: nowrap; }
+    .footer-social { display: flex; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+    .footer-social { position: relative; grid-area: social; align-self: center; justify-content: flex-end; gap: 16px; margin-top: 0; padding-top: 0; }
     .footer-social::before { display: none; }
     .footer-social a { position: relative; z-index: 0; display: inline-flex; width: 50px; height: 50px; align-items: center; justify-content: center; border: 0; border-radius: 50px; background: var(--social-surface, var(--accent-gradient)); color: #fff; box-shadow: none; cursor: pointer; transition: .1s; }
     .footer-social a::before { position: absolute; z-index: -1; width: 55px; height: 55px; border: 0 solid rgba(255,255,255,.411); border-radius: 50px; background-color: #212121; content: ''; pointer-events: none; transition: .4s; }
@@ -858,17 +858,35 @@
     .footer-social li:nth-child(4) a { --social-surface: #181717; }
     .footer-social li:nth-child(5) a { --social-surface: #ff2442; }
     .footer-social li:nth-child(6) a { --social-surface: #090909; }
-    .footer-bottom { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 20px; margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,.11); color: rgba(232,240,245,.58); font: 500 14px/1.5 var(--sans); }
+    .footer-bottom { display: flex; grid-area: bottom; width: 100%; align-items: center; justify-content: space-between; gap: 20px; margin-top: 36px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,.11); color: rgba(232,240,245,.58); font: 500 14px/1.5 var(--sans); }
     .footer-bottom-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 26px; }
     .footer-bottom a { color: inherit; text-decoration: none; transition: color .2s ease; }
     .footer-bottom a:hover, .footer-bottom a:focus-visible { color: #f2f2f2; outline: none; }
+
+    /* 页脚沿用章节结构：英文是定位标签，中文主标题负责收束页面。 */
+    .footer-title { margin-top: var(--section-title-gap); }
+    .footer-title::after { width: 32px; height: 2px; margin-top: 20px; background: var(--accent-blue); }
+    .footer-tagline { margin-top: 18px; }
+    .footer-social a { border: 1px solid rgba(232,240,245,.22); background: rgba(5,13,23,.22); color: rgba(232,240,245,.82); }
+    .footer-social a::before { display: none; }
+    .footer-social a:hover, .footer-social a:focus-visible { border-color: var(--accent-blue-focus); background: rgba(41,151,255,.12); color: #fff; }
+    .footer-social li:nth-child(n) a { --social-surface: transparent; }
+    .footer-contact-panel { grid-area: social; align-self: stretch; padding: 30px; border: 1px solid rgba(180,200,215,.2); border-radius: 24px; background: linear-gradient(135deg, rgba(25,42,57,.66), rgba(3,13,23,.55)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 60px rgba(0,0,0,.12); backdrop-filter: blur(16px) saturate(1.08); }
+    .footer-contact-panel h3 { margin: 0; color: var(--signal); font: 500 11px/1.5 var(--tech); letter-spacing: .1em; }
+    .footer-contact-panel .footer-social { position: static; grid-area: auto; align-self: auto; justify-content: flex-start; margin-top: 26px; }
+
     @media (max-width: 560px) {
+      footer { text-align: center; }
+      .footer-stack { grid-template-columns: 1fr; grid-template-areas: 'eyebrow' 'brand' 'tagline' 'social' 'bottom'; justify-items: center; }
+      .footer-eyebrow { text-align: center; }
+      .footer-brand { justify-self: center; }
+      .footer-tagline { margin-inline: auto; }
+      .footer-contact-panel { width: 100%; padding: 22px; border-radius: 18px; text-align: left; }
+      .footer-social { justify-self: center; justify-content: center; margin-top: 28px; }
+      .footer-contact-panel .footer-social { justify-content: flex-start; margin-top: 26px; }
       footer { padding: 48px 0 28px; }
-      .footer-avatar { width: 48px; height: 48px; border-radius: 16px; }
-      .footer-avatar img { border-radius: 14px; }
-      .footer-brand-copy strong { font-size: 24px; }
+      .footer-title { text-align: center; }
       .footer-tagline { max-width: 34ch; white-space: normal; }
-      .footer-nav { gap: 14px 22px; margin-top: 46px; }
       .footer-social { gap: 10px; margin-top: 28px; }
       .footer-social a { width: 44px; height: 44px; }
       .footer-social .social-icon { width: 24px; height: 24px; }
@@ -877,7 +895,6 @@
 
     /* 顶部导航：顶部保持轻盈，向下滚动后收拢成磨砂玻璃胶囊。 */
     header { position: fixed; inset: 16px auto auto 50%; width: 100%; z-index: 40; overflow: hidden; border: 1px solid transparent; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: blur(0); transform: translateX(-50%); transition: width .72s linear, border-color .42s linear, border-radius .72s linear, background .42s linear, box-shadow .42s linear, backdrop-filter .42s linear; }
-    body.has-badge-open header { z-index: 2147483001; }
     header::before { position: absolute; inset: 1px; border-radius: inherit; background: linear-gradient(105deg, rgba(255,255,255,.1), transparent 28%, transparent 68%, rgba(140,181,255,.09)); content: ''; opacity: 0; pointer-events: none; transition: opacity .38s ease; }
     header.is-condensed { top: 16px; width: min(calc(100% - 32px), 896px); border-color: rgba(232,240,245,.28); border-radius: 999px; background: linear-gradient(100deg, rgba(22,28,38,.42), rgba(10,15,23,.22) 52%, rgba(27,36,48,.34)); box-shadow: 0 10px 26px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.14); backdrop-filter: blur(12px) saturate(1.15); }
     header.is-condensed::before { opacity: .72; }
@@ -886,24 +903,22 @@
     header.is-condensed .nav-inner.shell { padding: 0 8px; }
     .brand { display: grid; width: 36px; height: 36px; overflow: hidden; border: 1px solid rgba(232,240,245,.28); border-radius: 50%; background: #000; box-shadow: 0 0 0 3px rgba(184,215,236,.05); place-items: center; transition: border-color .2s ease, transform .2s ease; }
     .brand::before { display: none; }
-    .brand:hover, .brand:focus-visible { border-color: var(--amber); transform: scale(1.08); }
+    .brand:hover, .brand:focus-visible { border-color: var(--accent-blue-focus); transform: scale(1.08); }
     .brand img { width: 100%; height: 100%; object-fit: cover; }
     .nav-inner > nav { position: absolute; left: 50%; margin-left: 0; transform: translateX(-50%); }
     .nav-list { display: flex; align-items: center; gap: 2px; margin: 0; padding: 0; list-style: none; }
     .nav-list a { position: relative; display: inline-flex; min-height: 36px; align-items: center; padding: 0 14px 0 20px; border-radius: 999px; color: rgba(231,236,244,.74); font: 500 12px/1 var(--sans); letter-spacing: .01em; text-shadow: none; transition: background .2s ease, color .2s ease; }
     .nav-list a:not(.nav-contact) { display: inline-flex; }
     .nav-list a::after { display: none; }
-    .nav-list a::before { position: absolute; top: 50%; left: 7px; width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px rgba(255,255,255,.72); content: ''; opacity: 0; transform: translateY(-50%) scale(.45); transition: opacity .2s ease, transform .2s ease; }
+    .nav-list a::before { display: none !important; }
     .nav-list a:hover, .nav-list a:focus-visible { background: transparent; color: rgba(255,255,255,.96); }
     .nav-list a.is-active { background: transparent; color: rgba(255,255,255,.94); }
-    .nav-list a.is-active::before { opacity: 1; transform: translateY(-50%) scale(1); }
-    .nav-badge { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; margin-left: auto; padding: 0 17px; border: 1px solid rgba(126,171,255,.22); border-radius: 999px; background: var(--accent-gradient); box-shadow: 0 5px 14px rgba(31,98,242,.22); color: #fff; font: 600 12px/1 var(--sans); letter-spacing: .01em; transition: box-shadow .2s ease, transform .2s ease; }
-    .nav-badge:hover, .nav-badge:focus-visible { box-shadow: 0 8px 20px rgba(31,98,242,.36); color: #fff; transform: translateY(-1px); }
+    .nav-list a.is-active::before { display: none !important; }
     .nav-toggle { display: none; width: 40px; height: 40px; padding: 0; border: 1px solid rgba(184,215,236,.24); background: rgba(8,18,28,.48); color: var(--mist); place-items: center; }
     .nav-toggle svg { width: 18px; height: 18px; }
-    .nav-toggle:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
+    .nav-toggle:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
 
-    /* 统一强调色：用参考图的左浅右深蓝替换旧的琥珀提示色。 */
+    /* 统一强调色：所有交互与状态提示都使用同一套蓝色。 */
     .loading-line, .section-title::after, .manifesto-line::before, .scroll-rail span { background: var(--accent-gradient); }
     .nav-list a.is-active { background: transparent; box-shadow: none; }
     .hero-actions .hero-primary { min-height: 64px; padding: 0 34px; border-color: transparent; border-radius: 999px; background: var(--accent-gradient); color: #f8fbff; font-size: 16px; font-weight: 700; letter-spacing: -.01em; box-shadow: 0 10px 26px rgba(31,98,242,.28); }
@@ -960,7 +975,6 @@
       .nav-inner.shell { min-height: 54px; }
       header .nav-inner.shell, header.is-condensed .nav-inner.shell { padding: 0 8px; }
       .brand { width: 34px; height: 34px; }
-      .nav-badge { display: none; }
       .nav-toggle { display: grid; margin-left: auto; }
       .nav-inner > nav { position: static; display: none; margin-left: 0; transform: none; }
       .nav-inner > nav.is-open { position: absolute; top: calc(100% + 8px); right: 0; left: 0; display: block; padding: 8px; border: 1px solid rgba(232,240,245,.18); border-radius: 20px; background: rgba(8,13,20,.94); box-shadow: 0 16px 36px rgba(0,0,0,.28); backdrop-filter: blur(20px); }
@@ -975,7 +989,6 @@
     .footer-avatar img,
     .footer-social a,
     .footer-social a::before,
-    .nav-badge,
     .nav-toggle,
     .hero-actions a,
     .hero-actions .hero-primary,
@@ -985,15 +998,14 @@
     /* 页脚比例：图标退后一步，让品牌与导航成为主要阅读层级。 */
     .footer-avatar { width: 44px; height: 44px; }
     .footer-avatar img { border-radius: 18px; }
-    .footer-brand { justify-self: center; gap: 10px; }
+    .footer-brand { justify-self: start; gap: 10px; }
     .footer-brand-copy strong { font-size: 22px; }
     .footer-brand-copy span { font-size: 9px; letter-spacing: .12em; }
-    .footer-tagline { margin-top: 20px; font-size: 14px; }
-    .footer-social { gap: 12px; margin-top: 26px; }
+    .footer-tagline { margin-top: 16px; font-size: 14px; }
+    .footer-social { gap: 12px; margin-top: 0; }
     .footer-social a { width: 44px; height: 44px; }
     .footer-social a::before { width: 44px; height: 44px; }
     .footer-social .social-icon { width: 20px; height: 20px; }
-    .footer-nav { gap: 16px 22px; margin-top: 38px; }
 
     /* 社交入口也使用统一玻璃底，不再叠加各平台的纯色圆底。 */
     .footer-social li:nth-child(n) a {
@@ -1006,12 +1018,48 @@
     }
     .footer-social a::before { display: none; }
 
-    /* 统一磨砂玻璃材质：组件形状可以不同，底材参数保持一致。 */
+    /* 全局设计变量：参考 DESIGN-apple.md，单一蓝色交互层 + 统一玻璃材质。 */
     :root {
+      --accent-blue: #0066cc;
+      --accent-blue-focus: #0071e3;
+      --accent-blue-on-dark: #2997ff;
+      --accent-blue-light: var(--accent-blue-on-dark);
+      --accent-blue-deep: var(--accent-blue);
+      --ink: #1d1d1f;
+      --body-on-dark: #ffffff;
+      --body-muted: #cccccc;
+      --body-text: #d2dce2;
+      --subtle-text: #9fb3bf;
+      --quiet-text: #718392;
+      --hairline: rgba(224, 224, 224, .16);
+      --line: rgba(224, 224, 224, .22);
+      --radius-xs: 5px;
+      --radius-sm: 8px;
+      --radius-md: 11px;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --space-xxs: 4px;
+      --space-xs: 8px;
+      --space-sm: 12px;
+      --space-md: 17px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-xxl: 48px;
+      --space-section: 80px;
+      --font-display: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      --font-body: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      --font-mono: 'DM Mono', 'SFMono-Regular', monospace;
       --glass-surface: rgba(8, 18, 28, .72);
-      --glass-border: rgba(184, 215, 236, .22);
+      --glass-surface-raised: rgba(13, 27, 40, .82);
+      --glass-border: rgba(224, 224, 224, .18);
+      --glass-border-strong: rgba(255, 255, 255, .28);
       --glass-shadow: 0 16px 36px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .08);
+      --glass-shadow-image: 0 3px 30px rgba(0, 0, 0, .22);
       --glass-blur: blur(14px) saturate(1.08);
+      --sans: var(--font-body);
+      --display: var(--font-display);
+      --mono: var(--font-mono);
+      --tech: var(--font-mono);
     }
     #profile .timeline-item,
     #experiments .experiment-rail,
@@ -1031,14 +1079,150 @@
     #experiments .experiment-rail:hover,
     #experiments .experiment-rail:focus-within,
     #experiments .experiment-rail:active {
-      border-color: var(--hairline);
-      background: rgba(11, 24, 37, .74);
-      box-shadow: 0 18px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255,255,255,.08);
+      border-color: var(--glass-border);
+      background: var(--glass-surface);
+      box-shadow: var(--glass-shadow);
       filter: none;
       transform: none;
     }
     header.is-condensed {
       background: var(--glass-surface);
+    }
+
+    /* 组件语法：卡片是面，控件是件，胶囊只留给状态标签。 */
+    :root {
+      --radius-card: 18px;
+      --radius-control: 10px;
+      --radius-icon: 50%;
+      --section-title-gap: 20px;
+      --type-hero: clamp(3.4rem, 6.4vw, 6.2rem);
+      --type-section: clamp(2.25rem, 4vw, 3.35rem);
+      --type-card: clamp(1rem, 1.45vw, 1.2rem);
+      --type-body: 14px;
+    }
+    body { font-family: var(--font-body); }
+    h1, h2, h3, p { text-wrap: balance; }
+    .eyebrow {
+      display: block;
+      margin: 0;
+      color: var(--accent-blue-on-dark);
+      font: 500 11px/1.4 var(--font-mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .section-title {
+      margin-top: var(--section-title-gap);
+      color: var(--body-on-dark);
+      font: 600 var(--type-section)/1.12 var(--font-display);
+      letter-spacing: -.03em;
+      text-shadow: none;
+    }
+    .section-title::after { width: 32px; height: 2px; margin-top: 20px; background: var(--accent-blue); }
+    .hero-title {
+      font-size: var(--type-hero);
+      line-height: 1.02;
+      letter-spacing: -.035em;
+    }
+    .hero-title span { letter-spacing: inherit; }
+    .hero-actions a,
+    .hero-actions .hero-primary {
+      min-height: 46px;
+      border-radius: var(--radius-control);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    .hero-actions .hero-primary { min-height: 46px; padding-inline: 24px; }
+    .hero-actions a:not(.hero-primary) { background: rgba(8,18,28,.44); }
+    .brand, .footer-avatar { border-radius: var(--radius-icon); }
+    .nav-toggle, .archive-nav, .footer-social a { border-radius: var(--radius-icon); }
+    .hero-proof-card,
+    #profile .timeline-item,
+    .comet-archive__glass,
+    .experiment-console,
+    .impact-glass { border-radius: var(--radius-card); }
+    .hero-proof-card { min-height: 122px; padding: 18px; }
+    .hero-proof-card .card-kicker {
+      display: block;
+      margin: 0 0 14px;
+      color: var(--accent-blue-on-dark);
+      font: 500 10px/1.35 var(--font-mono);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .hero-proof-card strong { font: 600 19px/1.2 var(--font-display); letter-spacing: -.02em; }
+    .hero-proof-card > span:last-child { margin-top: 8px; color: var(--body-muted); font: 400 12px/1.55 var(--font-body); }
+    .timeline-date { color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-mono); letter-spacing: .05em; }
+    .timeline-item h3 { font: 600 var(--type-card)/1.3 var(--font-display); letter-spacing: -.025em; }
+    .timeline-item h3 span { font: 400 12px/1.6 var(--font-body); letter-spacing: 0; }
+    .timeline-item p, .experiment-rail p { font: 400 var(--type-body)/1.75 var(--font-body); letter-spacing: 0; }
+    .rail-label { display: block; margin: -8px 0 12px; color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+    .experiment-console { border-radius: var(--radius-card); }
+    .comet-archive__card { border-radius: var(--radius-card); }
+    .comet-archive__award { color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; }
+    .comet-archive__meta { color: var(--subtle-text); font: 500 10px/1.4 var(--font-mono); letter-spacing: .05em; }
+    .comet-archive__details { display: grid; gap: 5px; min-width: 0; justify-items: end; }
+    .comet-archive__copy strong { max-width: 210px; color: var(--body-on-dark); font: 600 17px/1.2 var(--font-display); letter-spacing: -.025em; }
+    .comet-archive__copy small { display: block; color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-body); letter-spacing: 0; }
+    .footer-eyebrow { margin-bottom: 0; }
+
+    /* 统一中英文结构：英文是系统标签，中文是内容标题。 */
+    .eyebrow {
+      color: var(--accent-blue-on-dark);
+      font-family: var(--font-mono);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .section-title::after,
+    .manifesto-line::before,
+    .loading-line,
+    .scroll-rail span { background: var(--accent-blue); }
+    .hero-title span:last-child { color: var(--accent-blue-on-dark); }
+    .nav-list a.is-active::before { background: var(--accent-blue-on-dark); box-shadow: 0 0 10px rgba(41,151,255,.72); }
+    .hero-actions .hero-primary { background: var(--accent-blue); }
+    .hero-actions .hero-primary:hover,
+    .hero-actions .hero-primary:focus-visible { background: var(--accent-blue-focus); }
+    .nav-contact,
+    .archive-nav:hover,
+    .archive-nav:focus-visible,
+    a:focus-visible,
+    button:focus-visible { border-color: var(--accent-blue-focus); }
+    a:focus-visible,
+    button:focus-visible { outline-color: var(--accent-blue-focus); }
+    #profile .timeline-item,
+    #experiments .experiment-rail,
+    .hero-proof-card,
+    .impact-glass { border-radius: var(--radius-lg); }
+    .hero-actions a { border-radius: var(--radius-control) !important; }
+    #profile .section-intro .eyebrow,
+    #projects .section-intro .eyebrow,
+    #experiments .section-intro .eyebrow,
+    footer .footer-eyebrow { display: block !important; }
+
+    /* 卡片内部使用灰白信息层级，蓝色只保留给页面级导航、标题和 CTA。 */
+    .hero-proof-card .card-kicker,
+    #profile .timeline-date,
+    #experiments .rail-label,
+    .comet-archive__award,
+    .comet-archive__copy small,
+    .impact-reach-profile-caption span { color: var(--subtle-text) !important; }
+    #profile .timeline-item.is-primary .timeline-node {
+      border-color: var(--signal);
+      background: rgba(3, 8, 14, .82);
+      box-shadow: 0 0 0 5px rgba(184, 200, 215, .08);
+    }
+    .magnetic-archive__card:hover,
+    .magnetic-archive__card:focus-visible,
+    .magnetic-archive__card.is-active {
+      border-color: rgba(190, 215, 238, .46);
+      box-shadow: 0 0 0 1px rgba(190, 215, 238, .16), 0 16px 34px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(255, 255, 255, .12);
+    }
+    .magnetic-archive__card.is-placeholder .magnetic-archive__image {
+      background: linear-gradient(145deg, rgba(94, 110, 123, .68), rgba(26, 39, 51, .92) 42%, #060b12 100%) !important;
+    }
+    .magnetic-archive__card.is-placeholder .magnetic-archive__image::after {
+      border-color: rgba(196, 220, 245, .42);
+      box-shadow: 0 0 38px rgba(196, 220, 245, .12);
     }
 
   </style>
@@ -1051,13 +1235,12 @@
   <header>
     <div class="nav-inner shell">
       <a class="brand" href="#top" aria-label="Ai路人，返回顶部"><img src="assets/images/ai-luren-avatar.png" alt="" /></a>
-      <button class="nav-badge" type="button" aria-haspopup="dialog" aria-controls="badge-dialog">我的工牌</button>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="展开主导航">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
       </button>
       <nav id="primary-nav" aria-label="主导航">
         <ul class="nav-list">
-          <li><a href="#profile">工作经历</a></li><li><a href="#projects">代表项目</a></li><li><a href="#recognition">AI影响力</a></li><li><a href="#experiments">AI实验室</a></li>
+          <li><a href="#profile">工作经历</a></li><li><a href="#projects">精选创作</a></li><li><a href="#recognition">AI影响力</a></li><li><a href="#experiments">AI实验室</a></li>
         </ul>
       </nav>
     </div>
@@ -1067,9 +1250,9 @@
     <section id="top" aria-labelledby="hero-title">
       <div class="hero-shell shell">
         <div class="hero-copy">
-          <p class="eyebrow reveal">进入创作舱</p>
+          <p class="eyebrow reveal">01 / HERO</p>
           <h1 id="hero-title" class="hero-title reveal"><span>AI创意</span><span>效果设计</span></h1>
-          <p class="hero-subtitle reveal">动态设计，负责 AI 图像与视频效果的定义、验证与落地，也用 Vibe Coding 做些小工具</p>
+          <p class="hero-subtitle reveal">动态设计师，主要做 AI 图像和视频效果，也用 Vibe Coding 做一些小工具。</p>
           <div class="hero-actions reveal">
             <a class="hero-primary" href="#projects">查看创作档案</a>
             <a href="#profile">浏览工作经历</a>
@@ -1077,74 +1260,88 @@
           <a class="scroll-cue reveal" href="#manifesto" aria-label="继续阅读"><span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-proof reveal" aria-label="创作能力方向">
-          <div class="hero-proof-card"><strong>AI 图像</strong><span>创意效果定义与验证</span></div>
-          <div class="hero-proof-card"><strong>Vibe Coding</strong><span>把创作方法做成网页工具</span></div>
+          <div class="hero-proof-card"><span class="card-kicker">IMAGE / AI 图像</span><strong>创意效果</strong><span>从想法做到能用</span></div>
+          <div class="hero-proof-card"><span class="card-kicker">METHOD / Vibe Coding</span><strong>网页工具</strong><span>把常用流程做成工具</span></div>
         </div>
       </div>
     </section>
 
     <section id="profile" class="section" aria-labelledby="profile-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">航行记录</p><h2 id="profile-title" class="section-title">工作经历</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / WORK HISTORY</p><h2 id="profile-title" class="section-title">工作经历</h2></div></div>
         <div class="timeline"><div class="timeline-track" aria-hidden="true"></div><div class="timeline-grid">
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">2017—2018</div><h3>英合创意文化传播<span>视频设计师</span></h3><p>网综片头、栏目包装与动态海报。</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">2018—2019</div><h3>壹迦公关策划<span>三维设计组长</span></h3><p>小米生态链产品渲染与品牌视觉。</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">2019—2024</div><h3>快手<span>特效设计师 · AI 效果与动态设计</span></h3><p>快影 AI 玩法、视频模板、特效与品牌动态。</p><p class="timeline-honor">洛子峰奖 · 千万 DAU 产品</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">2024—2026</div><h3>小米<span>高级动效原型设计师 · AI 效果设计</span></h3><p>相册 AI 图片 / 视频效果定义、验证与落地。</p><p class="timeline-honor">Agent 挑战冠亚军 · 效率先锋官</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">现在</div><h3>持续探索<span>AI 创意效果</span></h3><p>把新工具、新效果和真实可用性接在一起。</p></article>
+          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 01 · 2017—2018</div><h3>英合创意文化传播<span>视频设计师</span></h3><p>网综片头、栏目包装与动态海报。</p></article>
+          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 02 · 2018—2019</div><h3>壹迦公关策划<span>三维设计组长</span></h3><p>小米生态链产品渲染与品牌视觉。</p></article>
+          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 03 · 2019—2024</div><h3>快手<span>特效设计师 · AI 效果与动态设计</span></h3><p>快影 AI 玩法、视频模板、特效与品牌动态。</p><p class="timeline-honor">洛子峰奖 · 千万 DAU 产品</p></article>
+          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 04 · 2024—2026</div><h3>小米<span>高级动效原型设计师 · AI 效果设计</span></h3><p>参与相册 AI 图片和视频效果，从想法做到上线。</p><p class="timeline-honor">Agent 挑战冠亚军 · 效率先锋官</p></article>
+          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 05 · NOW</div><h3>现在<span>AI 创意效果</span></h3><p>继续试新工具，看看哪些效果真的有人用。</p></article>
         </div></div>
       </div>
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">AI 视频创作档案</p><h2 id="projects-title" class="section-title">精选创作档案</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03 / SELECTED WORK</p><h2 id="projects-title" class="section-title">精选创作档案</h2></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
 
     <section id="recognition" class="section" aria-labelledby="recognition-title">
-      <div class="shell"><div class="section-intro reveal"><div><h2 id="recognition-title" class="section-title">AI影响力</h2></div></div>
-        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI影响力证据"></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">04 / IMPACT PROOF</p><h2 id="recognition-title" class="section-title">AI 影响力</h2></div></div>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI 影响力"></div>
       </div>
     </section>
 
     <section id="experiments" class="section" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">AI实验室</p><h2 id="experiments-title" class="section-title">AI实验室</h2></div></div>
-        <div class="experiment-console reveal"><div class="frame-corners" aria-hidden="true"></div><div class="console-header"><span>任务日志 / PROJECTS</span><span>GITHUB / OPEN</span></div><div class="experiment-track">
-          <article class="experiment-rail"><span class="rail-index">01</span><h3>AI 新闻追踪</h3><p>聚合橘鸦、AI HOT 与 follow-builders 的 AI 资讯，解析成飞书卡片，定时推送到群组并自动去重。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ainews-to-Feishu" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">02</span><h3>AI文章配图</h3><p>把中文文章里的判断、流程、状态和隐喻，转成白底手绘 AI路人形象配图。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-illustrations" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">03</span><h3>AI网页作品集</h3><p>使用 Codex 搭配 Skill 来 Vibe Coding 制作网页作品集。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-portfolio" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title">AI实验室</h2></div></div>
+        <div class="experiment-console reveal"><div class="frame-corners" aria-hidden="true"></div><div class="experiment-track">
+          <article class="experiment-rail"><span class="rail-index">01</span><span class="rail-label">NEWS / AI 资讯</span><h3>AI 新闻追踪</h3><p>把橘鸦、AI HOT 和 follow-builders 的资讯收集到一起，整理成飞书卡片，定时发到群里，顺手去重。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ainews-to-Feishu" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
+          <article class="experiment-rail"><span class="rail-index">02</span><span class="rail-label">IMAGE / 文章配图</span><h3>AI 文章配图</h3><p>把文章里的重点画成白底的 AI路人配图，方便在公众号和工作流里直接使用。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-illustrations" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
+          <article class="experiment-rail"><span class="rail-index">03</span><span class="rail-label">SITE / AI 网页</span><h3>AI 网页作品集</h3><p>用 Codex 和 Skill 边做边改，做出这套网页作品集。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-portfolio" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
         </div></div>
       </div>
     </section>
   </main>
 
-  <footer id="contact">
+  <footer id="contact" aria-labelledby="contact-title">
     <div class="shell footer-stack">
+      <p class="eyebrow footer-eyebrow">06 / CONTACT</p>
       <div class="footer-brand">
-        <a class="footer-avatar" href="#top" aria-label="返回顶部"><img src="assets/images/ai-luren-avatar.png" alt="Ai路人" /></a>
-        <div class="footer-brand-copy"><strong>Ai路人</strong></div>
+        <h2 id="contact-title" class="section-title footer-title">保持联系</h2>
       </div>
-      <p class="footer-tagline">把重复的事，沉淀成可复用的工具与作品。</p>
-      <ul class="footer-social" aria-label="联系方式与社交链接">
-        <li><a href="mailto:1746850550@qq.com" aria-label="发送邮件" data-tooltip="邮箱"><span class="social-icon social-icon--mail" aria-hidden="true"></span></a></li>
-        <li><a class="copy-link" href="#" data-copy="15580714085" aria-label="电话，点击复制" data-tooltip="电话"><span class="social-icon social-icon--phone" aria-hidden="true"></span></a></li>
-        <li><a class="copy-link" href="#" data-copy="15580714085" aria-label="微信，点击复制" data-tooltip="微信号"><span class="social-icon social-icon--wechat" aria-hidden="true"></span></a></li>
-        <li><a href="https://github.com/Ai-luren" target="_blank" rel="noopener noreferrer" aria-label="GitHub" data-tooltip="Github主页"><span class="social-icon social-icon--github" aria-hidden="true"></span></a></li>
-        <li><a href="https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470" target="_blank" rel="noopener noreferrer" aria-label="小红书" data-tooltip="小红书主页"><span class="social-icon social-icon--xiaohongshu" aria-hidden="true"></span></a></li>
-        <li><a href="https://v.douyin.com/idVkRoxL/" target="_blank" rel="noopener noreferrer" aria-label="抖音" data-tooltip="抖音主页"><span class="social-icon social-icon--douyin" aria-hidden="true"></span></a></li>
-      </ul>
-      <nav aria-label="页脚导航"><ul class="footer-nav">
-        <li><a href="#profile">工作经历</a></li><li><a href="#projects">代表项目</a></li><li><a href="#recognition">AI影响力</a></li><li><a href="#experiments">AI实验室</a></li>
-      </ul></nav>
-      <div class="footer-bottom"><span>© 2026 Ai路人. All rights reserved.</span><span class="footer-bottom-links"><a href="https://github.com/Ai-luren" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470" target="_blank" rel="noopener noreferrer">小红书</a><a href="https://v.douyin.com/idVkRoxL/" target="_blank" rel="noopener noreferrer">抖音</a></span></div>
+      <p class="footer-tagline">持续探索好玩有意思的事</p>
+      <div class="footer-contact-panel">
+        <h3>联系方式 / CONTACT CHANNELS</h3>
+        <ul class="footer-social" aria-label="联系方式与社交链接">
+          <li><a class="copy-link" href="#" data-copy="1746850550@qq.com" aria-label="复制邮箱" data-tooltip="复制邮箱"><span class="social-icon social-icon--mail" aria-hidden="true"></span></a></li>
+          <li><a class="copy-link" href="#" data-copy="15580714085" aria-label="电话，点击复制" data-tooltip="电话"><span class="social-icon social-icon--phone" aria-hidden="true"></span></a></li>
+          <li><a class="copy-link" href="#" data-copy="15580714085" aria-label="微信，点击复制" data-tooltip="微信号"><span class="social-icon social-icon--wechat" aria-hidden="true"></span></a></li>
+          <li><a href="https://github.com/Ai-luren" target="_blank" rel="noopener noreferrer" aria-label="GitHub" data-tooltip="Github主页"><span class="social-icon social-icon--github" aria-hidden="true"></span></a></li>
+          <li><a href="https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470" target="_blank" rel="noopener noreferrer" aria-label="小红书" data-tooltip="小红书主页"><span class="social-icon social-icon--xiaohongshu" aria-hidden="true"></span></a></li>
+          <li><a href="https://v.douyin.com/idVkRoxL/" target="_blank" rel="noopener noreferrer" aria-label="抖音" data-tooltip="抖音主页"><span class="social-icon social-icon--douyin" aria-hidden="true"></span></a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Ai路人. 版权所有。</span><span class="footer-bottom-links"><a href="https://github.com/Ai-luren" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470" target="_blank" rel="noopener noreferrer">小红书</a><a href="https://v.douyin.com/idVkRoxL/" target="_blank" rel="noopener noreferrer">抖音</a></span></div>
     </div>
   </footer>
   <div class="copy-status" role="status" aria-live="polite"></div>
 
-  <script src="vendor/gsap.min.js"></script>
-  <script src="vendor/ScrollTrigger.min.js"></script>
   <script>
-    (function () {
+    (async function () {
+      function loadClassicScript(src) {
+        return fetch(src).then(function (response) {
+          if (!response.ok) throw new Error('Failed to load ' + src);
+          return response.text();
+        }).then(function (source) {
+          // 这两个 vendor 文件是 UMD 版；在当前浏览器里直接插入 script 会触发
+          // 对只读 window.window 的赋值。给 UMD 一个可写的执行宿主，导出仍指向真实 window。
+          var scope = { window: window, self: window };
+          Function(source).call(scope);
+        });
+      }
+
+      await loadClassicScript('vendor/gsap.min.js');
+      await loadClassicScript('vendor/ScrollTrigger.min.js');
+
+      (function () {
       'use strict';
       var body = document.body;
       var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1282,12 +1479,12 @@
         entrance('#projects .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#projects', { duration: .5 });
         entrance('#projects .motion-stage', { autoAlpha: 0, scale: .985 }, { scale: 1 }, '#projects .motion-stage', { duration: .7, start: 'top 78%' });
         entrance('#recognition .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#recognition', { duration: .5 });
-        entrance('#recognition .motion-stage', { autoAlpha: 0, scale: .98 }, { scale: 1 }, '#recognition .motion-stage', { duration: .7, start: 'top 78%' });
+        entrance('#recognition .recognition-react-root', { autoAlpha: 0, scale: .98 }, { scale: 1 }, '#recognition .recognition-react-root', { duration: .7, start: 'top 78%' });
         entrance('#experiments .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#experiments', { duration: .5 });
         entrance('#experiments .experiment-console', { autoAlpha: 0, y: 22 }, { y: 0 }, '#experiments .experiment-console', { duration: .6, start: 'top 80%' });
         entrance('#experiments .experiment-rail', { autoAlpha: 0, y: 18 }, { y: 0 }, '#experiments .experiment-console', { duration: .44, stagger: .08, start: 'top 78%' });
-        entrance('#contact .contact-visual', { autoAlpha: 0, x: -20 }, { x: 0 }, '#contact', { duration: .55 });
-        entrance('#contact .contact-links', { autoAlpha: 0, x: 20 }, { x: 0 }, '#contact', { duration: .55, delay: .08 });
+        entrance('#contact .footer-brand', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55 });
+        entrance('#contact .footer-social', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55, delay: .08 });
         gsap.fromTo('.timeline-track', { scaleX: 0 }, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '#profile', start: 'top 70%', end: 'bottom 65%', scrub: .7 } });
       } else if (floatingHeader) {
         window.addEventListener('scroll', function () { updateHeaderMode(window.scrollY || window.pageYOffset || 0); }, { passive: true });
@@ -1393,6 +1590,7 @@
 
       setVideoTarget();
       window.requestAnimationFrame(seekLoop);
+      }());
     }());
   </script>
   <div id="react-root"></div>

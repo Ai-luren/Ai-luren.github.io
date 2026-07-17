@@ -3,10 +3,7 @@ node_modules/
 宁磊个人简历- AI 创意效果.md
 
 # Private project notes and non-runtime source material
-AGENTS.md
-设计规范.md
 滚动驱动视频提示词.pdf
-docs/
 src/assets/badge/README.md
 
 # Local development cache and logs
@@ -25,5 +22,3 @@ pnpm-debug.log*
 .audit/
 .impeccable/
 .uploads/
-work-experience-options.html
-design-system.html

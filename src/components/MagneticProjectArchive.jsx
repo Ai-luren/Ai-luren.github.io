@@ -33,10 +33,10 @@ export default function MagneticProjectArchive() {
           >
             <span className="comet-archive__glass" aria-hidden="true" />
             <span className="comet-archive__image" aria-hidden="true" />
-            <span className="comet-archive__award">{archive.category}</span>
+            <span className="comet-archive__award">WORK / {archive.category}</span>
             <span className="comet-archive__copy">
-              <span className="comet-archive__meta">{archive.id} / 获奖作品</span>
-              <strong>{archive.award}</strong>
+              <span className="comet-archive__meta">{archive.id} / AWARD</span>
+              <span className="comet-archive__details"><strong>{archive.award}</strong></span>
             </span>
           </button>
         </CometCard>
