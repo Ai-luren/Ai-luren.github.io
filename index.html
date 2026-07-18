@@ -100,7 +100,7 @@
     .frame-corners::before, .frame-corners::after { position: absolute; width: 42px; height: 42px; border-color: rgba(184,215,236,.34); border-style: solid; content: ''; }
     .frame-corners::before { top: 0; left: 0; border-width: 1px 0 0 1px; }
     .frame-corners::after { right: 0; bottom: 0; border-width: 0 1px 1px 0; }
-    .manifesto-shell > .frame-corners, .archive-stage > .frame-corners, .recognition-stage > .frame-corners, .experiment-console > .frame-corners, .contact-window > .frame-corners { display: none; }
+    .archive-stage > .frame-corners, .recognition-stage > .frame-corners, .experiment-console > .frame-corners, .contact-window > .frame-corners { display: none; }
 
     #top { min-height: 100svh; padding: 108px 0 64px; }
     .hero-shell { position: relative; display: flex; align-items: center; min-height: calc(100svh - 200px); }
@@ -114,12 +114,6 @@
     .hero-readout strong { color: var(--signal); font-weight: 400; }
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(184,215,236,.25); transform: translateY(-50%); pointer-events: none; }
     .scroll-rail span { display: block; width: 3px; height: 100%; margin-left: -1px; background: var(--accent-blue-on-dark); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(0); transform-origin: top; }
-
-    #manifesto { padding-top: 144px; padding-bottom: 144px; text-align: center; }
-    .manifesto-shell { position: relative; display: grid; justify-items: center; align-content: center; min-height: 46svh; padding: 44px 42px; border: 0; background: radial-gradient(ellipse at 50% 50%, rgba(13,27,40,.34), transparent 68%); text-align: center; }
-    .manifesto-heading { max-width: 100%; margin: 0; color: var(--mist); font: 700 clamp(2rem, 3.2vw, 3rem)/1.12 var(--display); letter-spacing: -.025em; text-shadow: 0 2px 12px rgba(3,5,8,.55); }
-    .manifesto-line { max-width: 700px; margin: 28px 0 0; padding: 0 22px; color: rgba(232,240,245,.9); font: 500 clamp(1.35rem, 2.1vw, 2.1rem)/1.42 var(--display); letter-spacing: -.015em; text-shadow: 0 2px 10px rgba(3,5,8,.55); text-wrap: balance; }
-    .manifesto-line span { display: inline; margin: 0; color: var(--accent-blue); text-shadow: none; }
 
     #profile { padding-top: 96px; padding-bottom: 120px; }
     .timeline { position: relative; padding: 20px 0 0; border-top: 1px solid var(--hairline); border-bottom: 0; background: transparent; }
@@ -135,6 +129,61 @@
     .timeline-item h3 span { display: block; margin-top: 5px; color: rgba(237,244,249,.78); font: 400 12px/1.65 var(--sans); }
     .timeline-item p { margin: 0; color: rgba(242,247,250,.94); font-size: 13px; line-height: 1.75; text-shadow: 0 2px 9px rgba(1,8,17,.78); }
     .timeline-honor { margin-top: 12px !important; color: #fff !important; text-shadow: none; }
+
+    /* 工作经历：左侧时间轴导航，右侧窄详情卡，把中间空间还给背景视频。 */
+    .experience-scroll { position: relative; min-height: 100svh; margin-top: 0; }
+    .experience-pin { position: relative; display: grid; grid-template-columns: 220px minmax(0, 420px); column-gap: 0; justify-content: space-between; min-height: 100svh; align-items: center; padding: 40px 0; }
+    .experience-index { position: relative; grid-column: 1; grid-row: 1; width: min(100%, 220px); min-width: 0; }
+    .experience-kicker { margin: 0 0 0 24px; color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .08em; }
+    .experience-list { display: grid; gap: 6px; margin: 24px 0 0 24px; }
+    .experience-step { position: relative; display: grid; gap: 4px; width: 100%; padding: 14px 12px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--body-text); cursor: pointer; text-align: left; transition: border-color .22s ease, background .22s ease, color .22s ease; }
+    .experience-step::before { position: absolute; top: 50%; left: -21px; z-index: 2; width: 7px; height: 7px; border: 1px solid rgba(180,200,215,.45); border-radius: 50%; background: var(--space-black); content: ''; transform: translateY(-50%); transition: border-color .22s ease, background .22s ease, box-shadow .22s ease; }
+    .experience-step:hover, .experience-step:focus-visible { border-color: var(--glass-border); background: rgba(13,27,40,.52); outline: none; }
+    .experience-step.is-active { border-color: rgba(41,151,255,.55); background: rgba(13,27,40,.72); color: #fff; }
+    .experience-step.is-active::before { border-color: var(--accent-blue-on-dark); background: var(--accent-blue-on-dark); box-shadow: 0 0 12px rgba(41,151,255,.55); }
+    .experience-step small { color: var(--subtle-text); font: 500 10px/1.4 var(--tech); letter-spacing: .05em; }
+    .experience-step strong { color: inherit; font: 600 16px/1.3 var(--display); letter-spacing: -.025em; }
+    .experience-step span { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .experience-progress { position: absolute; top: calc(50% - 100px); left: 6px; z-index: 0; grid-column: 1; grid-row: 1; width: 2px; height: 200px; justify-self: start; background: rgba(180,200,215,.18); }
+    .experience-progress::before { display: none; }
+    .experience-progress-fill { display: block; width: 100%; height: 100%; background: linear-gradient(180deg, var(--accent-blue-on-dark), var(--accent-blue)); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(var(--experience-progress, 0)); transform-origin: top; }
+    .experience-details { position: relative; grid-column: 2; grid-row: 1; width: min(100%, 420px); min-width: 0; min-height: 390px; justify-self: end; }
+    .experience-detail { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; min-height: 390px; overflow: hidden; padding: clamp(28px, 5vw, 64px); border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, rgba(13,27,40,.78), rgba(5,13,23,.52)); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); opacity: 0; visibility: hidden; }
+    .experience-detail::after { position: absolute; right: -16px; bottom: -48px; z-index: 0; color: rgba(41,151,255,.1); content: attr(data-experience-mark); font: 500 clamp(10rem, 20vw, 18rem)/.8 var(--tech); letter-spacing: -.12em; pointer-events: none; }
+    .experience-detail.is-active { position: relative; opacity: 1; visibility: visible; }
+    .experience-detail > * { position: relative; z-index: 1; }
+    .experience-detail small { color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .08em; }
+    .experience-detail h3 { max-width: 12ch; margin: 16px 0 6px; color: var(--body-on-dark); font: 600 clamp(2rem, 4vw, 4rem)/1.05 var(--display); letter-spacing: -.06em; }
+    .experience-detail .experience-role { margin: 0; color: var(--signal); font-size: 15px; line-height: 1.6; }
+    .experience-detail .experience-description { max-width: 34ch; margin: 28px 0 0; color: var(--body-text); font-size: 15px; line-height: 1.8; }
+    .experience-detail .experience-honor { margin: auto 0 0; padding-top: 28px; color: var(--signal); font: 500 11px/1.5 var(--tech); letter-spacing: .04em; }
+    .experience-detail .experience-honor::before { display: inline-block; width: 24px; height: 1px; margin: 0 10px 3px 0; background: var(--accent-blue); content: ''; }
+    .experience-scroll.is-static { min-height: 0; }
+    .experience-scroll.is-static .experience-pin { min-height: 0; }
+    .experience-scroll.is-static .experience-detail { position: relative; opacity: 1; visibility: visible; }
+    .experience-scroll.is-static .experience-details { display: grid; gap: 16px; }
+
+    @media (max-width: 720px) {
+      .experience-scroll { min-height: calc(100svh - 128px); }
+      .experience-pin { grid-template-columns: 1fr; grid-template-rows: auto 2px minmax(340px, 1fr); gap: 22px; align-content: center; padding: 32px 0; }
+      .experience-index { grid-column: auto; grid-row: auto; width: 100%; }
+      .experience-kicker { margin-left: 0; }
+      .experience-list { display: flex; gap: 8px; margin: 18px -8vw 0; padding: 0 8vw 6px; overflow-x: auto; scrollbar-width: none; }
+      .experience-list::-webkit-scrollbar { display: none; }
+      .experience-step { flex: 0 0 150px; padding: 12px; }
+      .experience-step::before { display: none; }
+      .experience-progress { position: relative; top: auto; left: auto; grid-column: auto; grid-row: auto; width: 100%; height: 2px; }
+      .experience-progress::before { top: -4px; left: 0; transform: translateX(-50%); }
+      .experience-progress-fill { width: 100%; height: 100%; transform: scaleX(var(--experience-progress, 0)); transform-origin: left; }
+      .experience-detail, .experience-details { grid-column: auto; grid-row: auto; width: 100%; min-height: 340px; }
+      .experience-detail { padding: 26px; }
+      .experience-detail h3 { font-size: clamp(2rem, 12vw, 3.4rem); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .experience-step, .experience-detail { transition: none; }
+      .experience-progress-fill { transform: none; }
+    }
 
     #projects { padding-top: 112px; padding-bottom: 120px; }
     #projects .section-intro, #experiments .section-intro { display: block; max-width: 640px; }
@@ -412,7 +461,7 @@
       nav { gap: 12px; }
       nav a:not(.nav-contact) { display: none; }
       .section { min-height: auto; padding: 112px 0 90px; }
-      #manifesto, #projects, #experiments { padding-top: 112px; padding-bottom: 90px; }
+      #projects, #experiments { padding-top: 112px; padding-bottom: 90px; }
       .section-intro { display: block; margin-bottom: 30px; }
       .section-note { margin-top: 14px; }
       .hero-shell { min-height: calc(100svh - 200px); }
@@ -447,8 +496,6 @@
       .nav-contact { padding: 6px 9px; }
       .hero-copy { max-width: 100%; margin-top: -3vh; padding: 30px 18px 30px 0; background: transparent; }
       .hero-title { font-size: clamp(3.2rem, 15vw, 4.8rem); }
-      .manifesto-heading { font-size: clamp(2rem, 10vw, 3rem); }
-      .manifesto-line { max-width: 92%; font-size: clamp(1.7rem, 8vw, 2.4rem); }
       .hero-readout { position: static; margin-top: 40px; text-align: left; }
       .timeline-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
       .timeline-item { min-height: 0; }
@@ -513,9 +560,6 @@
     .hero-shell { min-height: calc(100svh - 172px); }
     .hero-copy { max-width: 740px; }
 
-    #manifesto { padding: var(--space-11) 0; }
-    .manifesto-shell { min-height: 42svh; padding: var(--space-7) var(--space-8); }
-
     #profile { padding: var(--space-7) 0 var(--space-10); }
     .timeline { padding-top: var(--space-5); }
     .timeline-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); }
@@ -545,7 +589,6 @@
       .section-intro .section-note, #projects .section-note, #experiments .section-note { max-width: 36ch; margin-top: var(--space-4); }
       #top { padding: var(--space-7) 0 var(--space-5); }
       .hero-shell { min-height: calc(100svh - 164px); }
-      #manifesto { padding: var(--space-10) 0; }
       #profile { padding: var(--space-7) 0 var(--space-9); }
       .timeline-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6) var(--space-5); }
       .timeline-item { min-height: 208px; padding: 0 var(--space-4) var(--space-5); }
@@ -566,8 +609,6 @@
       .section-intro .section-note, #projects .section-note, #experiments .section-note { max-width: 30ch; margin-top: var(--space-3); }
       #top { padding: var(--space-6) 0 var(--space-4); }
       .hero-shell { min-height: calc(100svh - 148px); }
-      #manifesto { padding: var(--space-9) 0; }
-      .manifesto-shell { min-height: 38svh; padding: var(--space-6) var(--space-4); }
       #profile { padding: var(--space-6) 0 var(--space-8); }
       .timeline-grid { grid-template-columns: 1fr; gap: 0; }
       .timeline-item { min-height: 0; padding: var(--space-5) 0 var(--space-6); }
@@ -602,7 +643,7 @@
     .section::before { background: linear-gradient(180deg, rgba(5,10,16,.008), rgba(5,10,16,.02)); }
     .section::after { border-bottom-color: var(--hairline); }
 
-    .hero-title, .section-title, .manifesto-heading, .manifesto-line,
+    .hero-title, .section-title,
     .timeline-item p, .experiment-rail h3, .experiment-rail p,
     .contact-visual h2, .contact-visual p, .contact-links a { text-shadow: none; }
     .hero-subtitle, .timeline-item p, .experiment-rail p, .contact-visual p, .contact-links a { color: var(--body-text); }
@@ -670,8 +711,6 @@
     }
     #video-vignette { box-shadow: inset 0 0 12vw rgba(3,8,14,.1); }
     .section-title,
-    .manifesto-heading,
-    .manifesto-line,
     .hero-title,
     .hero-subtitle,
     .section-note,
@@ -687,8 +726,8 @@
     .contact-links a {
       text-shadow: 0 2px 10px rgba(3,8,14,.92), 0 0 2px rgba(3,8,14,.82);
     }
-    .section-title, .manifesto-heading, .hero-title, .contact-visual h2 { color: #f0f4f6; }
-    .hero-subtitle, .section-note, .manifesto-line, .timeline-item p, .experiment-rail p, .contact-visual p, .contact-links a { color: #d2dce2; }
+    .section-title, .hero-title, .contact-visual h2 { color: #f0f4f6; }
+    .hero-subtitle, .section-note, .timeline-item p, .experiment-rail p, .contact-visual p, .contact-links a { color: #d2dce2; }
     .timeline-item h3 span, .archive-card p { color: #b8c7d0; }
 
     /* 时间轴：圆点与年份分开，重点经历使用唯一蓝色。 */
@@ -755,19 +794,12 @@
     .hero-title { display: grid; justify-items: start; gap: 0; white-space: nowrap; line-height: .98; }
     .hero-title span:first-child { width: 100%; margin-left: 0; padding-left: 0; color: #f0f4f6; font: 700 clamp(3.2rem, 5.8vw, 5.2rem)/.98 var(--display); letter-spacing: -.05em; text-align: left; }
     .hero-title span:last-child { width: 100%; margin: .04em 0 0; padding-left: 0; color: #f0f4f6; font: 700 clamp(3.2rem, 5.8vw, 5.2rem)/.98 var(--display); letter-spacing: -.05em; text-align: left; }
-    .manifesto-shell { justify-items: center; text-align: center; }
-    .manifesto-heading { max-width: 820px; color: #d2dce2; font: 500 clamp(1.25rem, 2vw, 1.7rem)/1.32 var(--display); letter-spacing: -.025em; text-align: center; }
-    .manifesto-line { max-width: 760px; margin-top: 18px; padding: 0; color: #f0f4f6; font: 600 clamp(1.35rem, 2.35vw, 2.25rem)/1.4 var(--display); letter-spacing: -.035em; text-align: center; }
-    .manifesto-line span { color: inherit; font-weight: inherit; }
     .hero-copy { max-width: 720px; padding-right: 32px; background: transparent; }
     .hero-title { gap: .02em; letter-spacing: -.05em; }
     .hero-subtitle { max-width: 470px; margin-top: 24px; color: #d2dce2; font-size: 14px; line-height: 1.85; }
-    .manifesto-line::before { display: block; width: 42px; height: 1px; margin: 0 auto 22px; background: var(--accent-blue); content: ''; }
     @media (max-width: 560px) {
       .hero-title { white-space: normal; }
       .hero-title span:first-child, .hero-title span:last-child { font-size: clamp(2.5rem, 10.5vw, 3.6rem); }
-      .manifesto-shell { justify-items: center; text-align: center; }
-      .manifesto-heading, .manifesto-line { text-align: center; }
     }
 
     /* 项目任务标识：增加游戏式状态感，同时保持信息用途明确。 */
@@ -919,7 +951,7 @@
     .nav-toggle:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
 
     /* 统一强调色：所有交互与状态提示都使用同一套蓝色。 */
-    .loading-line, .section-title::after, .manifesto-line::before, .scroll-rail span { background: var(--accent-gradient); }
+    .loading-line, .section-title::after, .scroll-rail span { background: var(--accent-gradient); }
     .nav-list a.is-active { background: transparent; box-shadow: none; }
     .hero-actions .hero-primary { min-height: 64px; padding: 0 34px; border-color: transparent; border-radius: 999px; background: var(--accent-gradient); color: #f8fbff; font-size: 16px; font-weight: 700; letter-spacing: -.01em; box-shadow: 0 10px 26px rgba(31,98,242,.28); }
     .hero-actions .hero-primary:hover, .hero-actions .hero-primary:focus-visible { border-color: transparent; background: linear-gradient(105deg, #398cf8 0%, #2a7cf7 56%, #2268f3 100%); color: #fff; }
@@ -1174,7 +1206,6 @@
       text-transform: uppercase;
     }
     .section-title::after,
-    .manifesto-line::before,
     .loading-line,
     .scroll-rail span { background: var(--accent-blue); }
     .hero-title span:last-child { color: var(--accent-blue-on-dark); }
@@ -1257,7 +1288,7 @@
             <a class="hero-primary" href="#projects">查看创作档案</a>
             <a href="#profile">浏览工作经历</a>
           </div>
-          <a class="scroll-cue reveal" href="#manifesto" aria-label="继续阅读"><span aria-hidden="true">↓</span></a>
+          <a class="scroll-cue reveal" href="#profile" aria-label="继续阅读"><span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-proof reveal" aria-label="创作能力方向">
           <div class="hero-proof-card"><span class="card-kicker">IMAGE / AI 图像</span><strong>创意效果</strong><span>从想法做到能用</span></div>
@@ -1268,13 +1299,28 @@
 
     <section id="profile" class="section" aria-labelledby="profile-title">
       <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / WORK HISTORY</p><h2 id="profile-title" class="section-title">工作经历</h2></div></div>
-        <div class="timeline"><div class="timeline-track" aria-hidden="true"></div><div class="timeline-grid">
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 01 · 2017—2018</div><h3>英合创意文化传播<span>视频设计师</span></h3><p>网综片头、栏目包装与动态海报。</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 02 · 2018—2019</div><h3>壹迦公关策划<span>三维设计组长</span></h3><p>小米生态链产品渲染与品牌视觉。</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 03 · 2019—2024</div><h3>快手<span>特效设计师 · AI 效果与动态设计</span></h3><p>快影 AI 玩法、视频模板、特效与品牌动态。</p><p class="timeline-honor">洛子峰奖 · 千万 DAU 产品</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 04 · 2024—2026</div><h3>小米<span>高级动效原型设计师 · AI 效果设计</span></h3><p>参与相册 AI 图片和视频效果，从想法做到上线。</p><p class="timeline-honor">Agent 挑战冠亚军 · 效率先锋官</p></article>
-          <article class="timeline-item reveal"><span class="timeline-node" aria-hidden="true"></span><div class="timeline-date">EXPERIENCE / 05 · NOW</div><h3>现在<span>AI 创意效果</span></h3><p>继续试新工具，看看哪些效果真的有人用。</p></article>
-        </div></div>
+        <div class="experience-scroll">
+          <div class="experience-pin">
+            <div class="experience-index">
+              <p class="experience-kicker">SCROLL TO EXPLORE / 滚动查看</p>
+              <div class="experience-list" role="list" aria-label="工作经历阶段">
+                <button class="experience-step is-active" type="button" data-experience-index="0"><small>01 / 2017—2018</small></button>
+                <button class="experience-step" type="button" data-experience-index="1"><small>02 / 2018—2019</small></button>
+                <button class="experience-step" type="button" data-experience-index="2"><small>03 / 2019—2024</small></button>
+                <button class="experience-step" type="button" data-experience-index="3"><small>04 / 2024—2026</small></button>
+                <button class="experience-step" type="button" data-experience-index="4"><small>05 / NOW</small></button>
+              </div>
+            </div>
+            <div class="experience-progress" aria-hidden="true"><span class="experience-progress-fill"></span></div>
+            <div class="experience-details" aria-live="polite">
+              <article class="experience-detail is-active" data-experience-panel="0" data-experience-mark="01"><small>EXPERIENCE / 01 · 2017—2018</small><h3>英合创意文化传播</h3><p class="experience-role">视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报。</p></article>
+              <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><small>EXPERIENCE / 02 · 2018—2019</small><h3>壹迦公关策划</h3><p class="experience-role">三维设计组长</p><p class="experience-description">小米生态链产品渲染与品牌视觉。</p></article>
+              <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><small>EXPERIENCE / 03 · 2019—2024</small><h3>快手</h3><p class="experience-role">特效设计师 · AI 效果与动态设计</p><p class="experience-description">快影 AI 玩法、视频模板、特效与品牌动态。</p><p class="experience-honor">洛子峰奖 · 千万 DAU 产品</p></article>
+              <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><small>EXPERIENCE / 04 · 2024—2026</small><h3>小米</h3><p class="experience-role">高级动效原型设计师 · AI 效果设计</p><p class="experience-description">参与相册 AI 图片和视频效果，从想法做到上线。</p><p class="experience-honor">Agent 挑战冠亚军 · 效率先锋官</p></article>
+              <article class="experience-detail" data-experience-panel="4" data-experience-mark="05"><small>EXPERIENCE / 05 · NOW</small><h3>现在</h3><p class="experience-role">AI 创意效果</p><p class="experience-description">探索AI 无限可能</p></article>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1422,6 +1468,19 @@
       }
       showReveals();
 
+      var experienceRoot = document.querySelector('.experience-scroll');
+      var experienceSteps = experienceRoot ? Array.prototype.slice.call(experienceRoot.querySelectorAll('[data-experience-index]')) : [];
+      var experiencePanels = experienceRoot ? Array.prototype.slice.call(experienceRoot.querySelectorAll('[data-experience-panel]')) : [];
+      var experienceProgress = experienceRoot ? experienceRoot.querySelector('.experience-progress-fill') : null;
+      function setExperienceActive(index) {
+        experienceSteps.forEach(function (step, stepIndex) {
+          var active = stepIndex === index;
+          step.classList.toggle('is-active', active);
+          step.setAttribute('aria-current', active ? 'step' : 'false');
+        });
+      }
+      if (experienceRoot && reduced) experienceRoot.classList.add('is-static');
+
       var floatingHeader = document.querySelector('header');
       function updateHeaderMode(scrollY) {
         if (floatingHeader) floatingHeader.classList.toggle('is-condensed', scrollY > 0);
@@ -1475,7 +1534,6 @@
         }
         entrance('#top .hero-copy .reveal', { autoAlpha: 0, y: 18 }, { y: 0 }, '#top', { duration: .65, stagger: .08 });
         entrance('#profile .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#profile', { duration: .5 });
-        entrance('#profile .timeline-item', { autoAlpha: 0, y: 22 }, { y: 0 }, '#profile .timeline', { duration: .46, stagger: .08 });
         entrance('#projects .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#projects', { duration: .5 });
         entrance('#projects .motion-stage', { autoAlpha: 0, scale: .985 }, { scale: 1 }, '#projects .motion-stage', { duration: .7, start: 'top 78%' });
         entrance('#recognition .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#recognition', { duration: .5 });
@@ -1485,7 +1543,41 @@
         entrance('#experiments .experiment-rail', { autoAlpha: 0, y: 18 }, { y: 0 }, '#experiments .experiment-console', { duration: .44, stagger: .08, start: 'top 78%' });
         entrance('#contact .footer-brand', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55 });
         entrance('#contact .footer-social', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55, delay: .08 });
-        gsap.fromTo('.timeline-track', { scaleX: 0 }, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '#profile', start: 'top 70%', end: 'bottom 65%', scrub: .7 } });
+        if (experienceRoot && experienceSteps.length > 1 && experiencePanels.length === experienceSteps.length) {
+          gsap.set(experiencePanels, { autoAlpha: 0, y: 18 });
+          gsap.set(experiencePanels[0], { autoAlpha: 1, y: 0 });
+          var experienceTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: experienceRoot,
+              start: 'top top',
+              end: function () { return '+=' + ((experienceSteps.length - 1) * Math.max(520, window.innerHeight * .82)); },
+              pin: experienceRoot,
+              scrub: .65,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              onUpdate: function (self) {
+                var index = Math.min(experienceSteps.length - 1, Math.round(self.progress * (experienceSteps.length - 1)));
+                setExperienceActive(index);
+                if (experienceProgress) experienceProgress.style.setProperty('--experience-progress', self.progress.toFixed(4));
+              },
+              onRefresh: function (self) {
+                if (experienceProgress) experienceProgress.style.setProperty('--experience-progress', self.progress.toFixed(4));
+              }
+            }
+          });
+          for (var experienceIndex = 1; experienceIndex < experiencePanels.length; experienceIndex += 1) {
+            experienceTimeline.to(experiencePanels[experienceIndex - 1], { autoAlpha: 0, y: -18, duration: .45 })
+              .to(experiencePanels[experienceIndex], { autoAlpha: 1, y: 0, duration: .45 }, '<');
+          }
+          experienceSteps.forEach(function (step, stepIndex) {
+            step.addEventListener('click', function () {
+              var trigger = experienceTimeline.scrollTrigger;
+              if (!trigger || experienceSteps.length < 2) return;
+              var target = trigger.start + ((trigger.end - trigger.start) * stepIndex / (experienceSteps.length - 1));
+              window.scrollTo({ top: target, behavior: 'smooth' });
+            });
+          });
+        }
       } else if (floatingHeader) {
         window.addEventListener('scroll', function () { updateHeaderMode(window.scrollY || window.pageYOffset || 0); }, { passive: true });
       }
