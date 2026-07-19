@@ -40,6 +40,7 @@
       --hairline: rgba(180, 200, 215, .14);
       --glass: rgba(13, 27, 40, .3);
       --glass-strong: rgba(13, 27, 40, .72);
+      --glass-card-surface: rgba(5, 12, 20, .68);
       --surface: #08121c;
       --surface-raised: #0d1b28;
       --shell: min(1220px, calc(100% - 64px));
@@ -135,29 +136,32 @@
     .experience-scroll { position: relative; min-height: 100svh; margin-top: 0; }
     .experience-pin { position: relative; display: grid; grid-template-columns: 220px minmax(0, 420px); column-gap: 0; justify-content: space-between; min-height: 100svh; align-items: center; padding: 40px 0; }
     .experience-index { position: relative; grid-column: 1; grid-row: 1; width: min(100%, 220px); min-width: 0; }
-    .experience-kicker { margin: 0 0 0 24px; color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .08em; }
     .experience-list { display: grid; gap: 6px; margin: 24px 0 0 24px; }
     .experience-step { position: relative; display: grid; gap: 4px; width: 100%; padding: 14px 12px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--body-text); cursor: pointer; text-align: left; transition: border-color .22s ease, background .22s ease, color .22s ease; }
     .experience-step::before { position: absolute; top: 50%; left: -21px; z-index: 2; width: 7px; height: 7px; border: 1px solid rgba(180,200,215,.45); border-radius: 50%; background: var(--space-black); content: ''; transform: translateY(-50%); transition: border-color .22s ease, background .22s ease, box-shadow .22s ease; }
     .experience-step:hover, .experience-step:focus-visible { border-color: var(--glass-border); background: rgba(13,27,40,.52); outline: none; }
     .experience-step.is-active { border-color: rgba(41,151,255,.55); background: rgba(13,27,40,.72); color: #fff; }
     .experience-step.is-active::before { border-color: var(--accent-blue-on-dark); background: var(--accent-blue-on-dark); box-shadow: 0 0 12px rgba(41,151,255,.55); }
-    .experience-step small { color: var(--subtle-text); font: 500 10px/1.4 var(--tech); letter-spacing: .05em; }
+    .experience-step small { color: var(--subtle-text); font: 500 15px/1.25 var(--tech); letter-spacing: .02em; white-space: nowrap; }
     .experience-step strong { color: inherit; font: 600 16px/1.3 var(--display); letter-spacing: -.025em; }
     .experience-step span { color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .experience-progress { position: absolute; top: calc(50% - 100px); left: 6px; z-index: 0; grid-column: 1; grid-row: 1; width: 2px; height: 200px; justify-self: start; background: rgba(180,200,215,.18); }
+    .experience-progress { display: none; position: absolute; top: calc(50% - 100px); left: 75px; z-index: 0; grid-column: 1; grid-row: 1; width: 2px; height: 200px; justify-self: start; background: rgba(180,200,215,.18); }
     .experience-progress::before { display: none; }
-    .experience-progress-fill { display: block; width: 100%; height: 100%; background: linear-gradient(180deg, var(--accent-blue-on-dark), var(--accent-blue)); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(var(--experience-progress, 0)); transform-origin: top; }
-    .experience-details { position: relative; grid-column: 2; grid-row: 1; width: min(100%, 420px); min-width: 0; min-height: 390px; justify-self: end; }
-    .experience-detail { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; min-height: 390px; overflow: hidden; padding: clamp(28px, 5vw, 64px); border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, rgba(13,27,40,.78), rgba(5,13,23,.52)); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); opacity: 0; visibility: hidden; }
+    .experience-progress-fill { display: block; width: 100%; height: 100%; background: transparent; box-shadow: none; transform: scaleY(var(--experience-progress, 0)); transform-origin: top; }
+    .experience-details { position: relative; grid-column: 2; grid-row: 1; width: min(100%, 420px); min-width: 0; min-height: 520px; justify-self: end; }
+    .experience-detail { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; min-height: 520px; overflow: hidden; padding: 24px; border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, rgba(13,27,40,.78), rgba(5,13,23,.52)); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); opacity: 0; visibility: hidden; }
+    .experience-illustration { position: relative; width: 100%; aspect-ratio: 16 / 9; flex: 0 0 auto; margin-bottom: 22px; overflow: hidden; border: 1px solid rgba(184,215,236,.16); border-radius: 12px; background: linear-gradient(135deg, rgba(41,151,255,.12), rgba(5,12,20,.2) 55%, rgba(255,255,255,.05)); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+    .experience-illustration::after { position: absolute; right: 12px; bottom: 10px; color: rgba(207,221,231,.46); content: 'ILLUSTRATION / 16:9'; font: 500 9px var(--tech); letter-spacing: .08em; }
+    .experience-illustration:has(img)::after { display: none; }
+    .experience-illustration img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .experience-detail::after { position: absolute; right: -16px; bottom: -48px; z-index: 0; color: rgba(41,151,255,.1); content: attr(data-experience-mark); font: 500 clamp(10rem, 20vw, 18rem)/.8 var(--tech); letter-spacing: -.12em; pointer-events: none; }
     .experience-detail.is-active { position: relative; opacity: 1; visibility: visible; }
     .experience-detail > * { position: relative; z-index: 1; }
     .experience-detail small { color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .08em; }
-    .experience-detail h3 { max-width: 12ch; margin: 16px 0 6px; color: var(--body-on-dark); font: 600 clamp(2rem, 4vw, 4rem)/1.05 var(--display); letter-spacing: -.06em; }
+    .experience-detail h3 { max-width: 12ch; margin: 10px 0 6px; color: var(--body-on-dark); font: 600 clamp(2rem, 3.2vw, 3rem)/1.05 var(--display); letter-spacing: -.05em; }
     .experience-detail .experience-role { margin: 0; color: var(--signal); font-size: 15px; line-height: 1.6; }
     .experience-detail .experience-description { max-width: 34ch; margin: 28px 0 0; color: var(--body-text); font-size: 15px; line-height: 1.8; }
-    .experience-detail .experience-honor { margin: auto 0 0; padding-top: 28px; color: var(--signal); font: 500 11px/1.5 var(--tech); letter-spacing: .04em; }
+    .experience-detail .experience-honor { margin: auto 0 0; padding-top: 22px; color: var(--signal); font: 500 11px/1.5 var(--tech); letter-spacing: .04em; }
     .experience-detail .experience-honor::before { display: inline-block; width: 24px; height: 1px; margin: 0 10px 3px 0; background: var(--accent-blue); content: ''; }
     .experience-scroll.is-static { min-height: 0; }
     .experience-scroll.is-static .experience-pin { min-height: 0; }
@@ -168,17 +172,17 @@
       .experience-scroll { min-height: calc(100svh - 128px); }
       .experience-pin { grid-template-columns: 1fr; grid-template-rows: auto 2px minmax(340px, 1fr); gap: 22px; align-content: center; padding: 32px 0; }
       .experience-index { grid-column: auto; grid-row: auto; width: 100%; }
-      .experience-kicker { margin-left: 0; }
       .experience-list { display: flex; gap: 8px; margin: 18px -8vw 0; padding: 0 8vw 6px; overflow-x: auto; scrollbar-width: none; }
       .experience-list::-webkit-scrollbar { display: none; }
       .experience-step { flex: 0 0 150px; padding: 12px; }
+      .experience-step small { font-size: 16px; }
       .experience-step::before { display: none; }
       .experience-progress { position: relative; top: auto; left: auto; grid-column: auto; grid-row: auto; width: 100%; height: 2px; }
       .experience-progress::before { top: -4px; left: 0; transform: translateX(-50%); }
       .experience-progress-fill { width: 100%; height: 100%; transform: scaleX(var(--experience-progress, 0)); transform-origin: left; }
-      .experience-detail, .experience-details { grid-column: auto; grid-row: auto; width: 100%; min-height: 340px; }
+      .experience-detail, .experience-details { grid-column: auto; grid-row: auto; width: 100%; min-height: 470px; }
       .experience-detail { padding: 26px; }
-      .experience-detail h3 { font-size: clamp(2rem, 12vw, 3.4rem); }
+      .experience-detail h3 { font-size: clamp(2rem, 10vw, 3rem); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -1294,11 +1298,125 @@
       box-shadow: 0 0 38px rgba(196, 220, 245, .12);
     }
 
+    /* 叙事优化：视频负责建立世界，内容负责推进故事。 */
+    #video-overlay {
+      display: block !important;
+      z-index: 2;
+      background:
+        linear-gradient(90deg, rgba(3, 8, 14, .78) 0%, rgba(3, 8, 14, .46) 38%, rgba(3, 8, 14, .16) 72%, rgba(3, 8, 14, .34) 100%),
+        linear-gradient(180deg, rgba(3, 8, 14, .32), transparent 30%, transparent 66%, rgba(3, 8, 14, .56));
+      opacity: .86;
+    }
+    #video-vignette {
+      display: block !important;
+      z-index: 3;
+      box-shadow: inset 0 0 12vw rgba(2, 6, 12, .42);
+    }
+    body.is-on-hero #video-overlay {
+      background: linear-gradient(90deg, rgba(3, 8, 14, .9) 0%, rgba(3, 8, 14, .72) 38%, rgba(3, 8, 14, .24) 68%, transparent 86%);
+      opacity: 1;
+    }
+    body.is-on-profile #video-overlay,
+    body.is-on-projects #video-overlay,
+    body.is-on-recognition #video-overlay,
+    body.is-on-experiments #video-overlay,
+    body.is-on-contact #video-overlay { opacity: .9; }
+    body.is-on-recognition #video-overlay { opacity: .96; }
+    body.is-on-profile #video-overlay {
+      background:
+        linear-gradient(90deg, rgba(3, 8, 14, .92) 0%, rgba(3, 8, 14, .72) 42%, rgba(3, 8, 14, .48) 100%),
+        rgba(3, 8, 14, .26);
+    }
+    body.is-on-projects #video-overlay,
+    body.is-on-recognition #video-overlay {
+      background:
+        linear-gradient(180deg, rgba(3, 8, 14, .68), rgba(3, 8, 14, .58)),
+        rgba(3, 8, 14, .38);
+    }
+    body.is-on-recognition #video-overlay { opacity: 1; }
+
+    /* 不再让每个模块都像一块玻璃，卡片只承担阅读边界。 */
+    header,
+    header.is-condensed,
+    #profile .timeline-item,
+    .experience-detail,
+    .hero-proof-card,
+    #experiments .experiment-rail,
+    .contact-links,
+    .comet-archive__glass {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    header { background: rgba(3, 8, 14, .58); }
+    header.is-condensed { background: rgba(3, 8, 14, .82); }
+    .hero-proof-card,
+    #profile .timeline-item,
+    #experiments .experiment-rail,
+    .contact-links {
+      border-color: rgba(184, 215, 236, .18);
+      background: rgba(5, 12, 20, .68);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
+    }
+    .experience-detail {
+      border-color: rgba(184, 215, 236, .22);
+      border-radius: 12px;
+      background: rgba(5, 12, 20, .84);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, .24);
+    }
+    .experience-index {
+      padding: 24px 18px 24px 24px;
+      background: transparent;
+    }
+    .experience-list { margin-top: 18px; }
+    .comet-archive__glass {
+      border-color: rgba(184, 215, 236, .2);
+      border-radius: 12px;
+      background: rgba(5, 12, 20, .62);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+    }
+    .comet-archive__image { box-shadow: 0 14px 24px rgba(0, 0, 0, .3); }
+
+    /* 一个章节只保留一个语义标签，避免 01 / 02 / 03 变成装饰噪音。 */
+    .section-intro .eyebrow,
+    footer .footer-eyebrow { display: none !important; }
+    .section-intro { margin-bottom: 38px; }
+    .section-title { margin-top: 0; }
+    .section-title::after { margin-top: 14px; }
+
+    @media (max-width: 720px) {
+      #video-overlay { opacity: .92; }
+      body.is-on-hero #video-overlay {
+        background: linear-gradient(90deg, rgba(3, 8, 14, .92) 0%, rgba(3, 8, 14, .72) 58%, rgba(3, 8, 14, .28) 100%);
+        opacity: 1;
+      }
+      .section-intro { margin-bottom: 28px; }
+      .experience-detail { background: rgba(5, 12, 20, .9); }
+    }
+
+    /* 玻璃卡片统一使用同一层底色，避免纯黑背景下出现多套表面。 */
+    .hero-proof-card,
+    .experience-detail,
+    #experiments .experiment-rail,
+    .magnetic-archive__card,
+    .magnetic-archive__detail,
+    .archive-card,
+    .archive-detail,
+    .comet-archive__glass,
+    .contact-links,
+    .footer-contact-panel {
+      background: var(--glass-card-surface) !important;
+    }
+
+    #experiments .experiment-rail:hover,
+    #experiments .experiment-rail:focus-within {
+      background: var(--glass-card-surface) !important;
+    }
+
   </style>
 </head>
 <body class="is-loading is-on-hero">
   <div id="loading" aria-live="polite"><span class="loading-copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="auto"><source src="hero.mp4" type="video/mp4" /></video></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="auto"><source src="hero.mp4" type="video/mp4" /></video><div id="video-overlay"></div><div id="video-vignette"></div></div>
   <div class="video-tuner" id="video-tuner">
     <button class="video-tuner__toggle" type="button" aria-expanded="false" aria-controls="video-tuner-panel">编辑背景</button>
     <div class="video-tuner__panel" id="video-tuner-panel" hidden>
@@ -1365,22 +1483,21 @@
         <div class="experience-scroll">
           <div class="experience-pin">
             <div class="experience-index">
-              <p class="experience-kicker">SCROLL TO EXPLORE / 滚动查看</p>
-              <div class="experience-list" role="list" aria-label="工作经历阶段">
-                <button class="experience-step is-active" type="button" data-experience-index="0"><small>01 / 2017—2018</small></button>
-                <button class="experience-step" type="button" data-experience-index="1"><small>02 / 2018—2019</small></button>
-                <button class="experience-step" type="button" data-experience-index="2"><small>03 / 2019—2024</small></button>
-                <button class="experience-step" type="button" data-experience-index="3"><small>04 / 2024—2026</small></button>
-                <button class="experience-step" type="button" data-experience-index="4"><small>05 / NOW</small></button>
+              <div class="experience-list" role="list" aria-label="能力成长阶段">
+                <button class="experience-step is-active" type="button" data-experience-index="0"><small>01 / 动态设计</small><span>视频 · 动态海报</span></button>
+                <button class="experience-step" type="button" data-experience-index="1"><small>02 / 三维与品牌</small><span>产品渲染 · 品牌动态</span></button>
+                <button class="experience-step" type="button" data-experience-index="2"><small>03 / 特效玩法</small><span>AI 玩法 · 动态设计</span></button>
+                <button class="experience-step" type="button" data-experience-index="3"><small>04 / AI 效果阶段</small><span>AI 图片与视频效果</span></button>
+                <button class="experience-step" type="button" data-experience-index="4"><small>05 / NOW</small><span>AI 创意效果</span></button>
               </div>
             </div>
             <div class="experience-progress" aria-hidden="true"><span class="experience-progress-fill"></span></div>
             <div class="experience-details" aria-live="polite">
-              <article class="experience-detail is-active" data-experience-panel="0" data-experience-mark="01"><small>EXPERIENCE / 01 · 2017—2018</small><h3>英合创意文化传播</h3><p class="experience-role">视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报。</p></article>
-              <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><small>EXPERIENCE / 02 · 2018—2019</small><h3>壹迦公关策划</h3><p class="experience-role">三维设计组长</p><p class="experience-description">小米生态链产品渲染与品牌视觉。</p></article>
-              <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><small>EXPERIENCE / 03 · 2019—2024</small><h3>快手</h3><p class="experience-role">特效设计师 · AI 效果与动态设计</p><p class="experience-description">快影 AI 玩法、视频模板、特效与品牌动态。</p><p class="experience-honor">洛子峰奖 · 千万 DAU 产品</p></article>
-              <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><small>EXPERIENCE / 04 · 2024—2026</small><h3>小米</h3><p class="experience-role">高级动效原型设计师 · AI 效果设计</p><p class="experience-description">参与相册 AI 图片和视频效果，从想法做到上线。</p><p class="experience-honor">Agent 挑战冠亚军 · 效率先锋官</p></article>
-              <article class="experience-detail" data-experience-panel="4" data-experience-mark="05"><small>EXPERIENCE / 05 · NOW</small><h3>现在</h3><p class="experience-role">AI 创意效果</p><p class="experience-description">探索AI 无限可能</p></article>
+              <article class="experience-detail is-active" data-experience-panel="0" data-experience-mark="01"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/01-motion-design.png" alt="宇航员在深空工作室控制电影胶片，表达动态设计与镜头节奏" loading="eager"></div><small>CAPABILITY / 01 · 2017—2018</small><h3>从镜头节奏开始</h3><p class="experience-role">英合创意文化传播 · 视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报</p></article>
+              <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/02-product-brand.png" alt="宇航员在深空产品渲染舱调整产品与光影" loading="lazy"></div><small>CAPABILITY / 02 · 2018—2019</small><h3>把产品变成场景</h3><p class="experience-role">壹迦公关策划 · 三维设计组长</p><p class="experience-description">小米生态链产品渲染与品牌动态</p></article>
+              <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/03-effect-play.png" alt="宇航员把特效创意送入循环装置，表达从实验到规模化产品" loading="lazy"></div><small>CAPABILITY / 03 · 2019—2024</small><h3>让创意进入产品</h3><p class="experience-role">快手 · 特效设计师 / AI 效果与动态设计</p><p class="experience-description">快影 AI 玩法、视频模板、特效与动态</p><p class="experience-honor">洛子峰奖 · 千万 DAU 产品</p></article>
+              <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/04-ai-effect-delivery.png" alt="宇航员把 AI 图片效果通过验证门交付上线" loading="lazy"></div><small>CAPABILITY / 04 · 2024—2026</small><h3>从想法做到上线</h3><p class="experience-role">小米 · 高级动效原型设计师 / AI 效果设计</p><p class="experience-description">相册 AI 图片和视频效果，从想法做到上线</p><p class="experience-honor">Agent 挑战冠亚军 · AI 效率先锋官</p></article>
+              <article class="experience-detail" data-experience-panel="4" data-experience-mark="05"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/05-ai-workflow.png" alt="宇航员整理可复用的 AI 工作流模块" loading="lazy"></div><small>CAPABILITY / 05 · NOW</small><h3>挖掘AI 无限可能</h3><p class="experience-role">AI 创意效果</p><p class="experience-description">继续探索 AI 的各种形态</p></article>
             </div>
           </div>
         </div>
@@ -1630,7 +1747,8 @@
           });
           for (var experienceIndex = 1; experienceIndex < experiencePanels.length; experienceIndex += 1) {
             experienceTimeline.to(experiencePanels[experienceIndex - 1], { autoAlpha: 0, y: -18, duration: .45 })
-              .to(experiencePanels[experienceIndex], { autoAlpha: 1, y: 0, duration: .45 }, '<');
+              .set(experiencePanels[experienceIndex], { autoAlpha: 1, y: 18 })
+              .to(experiencePanels[experienceIndex], { y: 0, duration: .45 });
           }
           experienceSteps.forEach(function (step, stepIndex) {
             step.addEventListener('click', function () {
@@ -1740,9 +1858,9 @@
       var videoTunerToggle = videoTuner ? videoTuner.querySelector('.video-tuner__toggle') : null;
       var videoTunerPanel = document.getElementById('video-tuner-panel');
       var videoTunerMore = document.getElementById('video-tuner-more');
-      var videoTuneDefaults = { brightness: 100, mask: 10, saturation: 100, contrast: 108, blur: 0, vignette: 30, noise: 2, pixel: 64, colorDepth: 14, dither: 20, edge: 3, crt: 10, glow: 5, chroma: 0, pixelMaster: 72, crtMaster: 16 };
+      var videoTuneDefaults = { brightness: 88, mask: 22, saturation: 76, contrast: 96, blur: 0, vignette: 48, noise: 0, pixel: 10, colorDepth: 28, dither: 3, edge: 0, crt: 0, glow: 0, chroma: 0, pixelMaster: 12, crtMaster: 0 };
       var videoTuneZero = { brightness: 100, mask: 0, saturation: 100, contrast: 100, blur: 0, vignette: 0, noise: 0, pixel: 0, colorDepth: 64, dither: 0, edge: 0, crt: 0, glow: 0, chroma: 0, pixelMaster: 0, crtMaster: 0 };
-      var videoTuneStorageKey = 'ailuren-video-tuning-v13';
+      var videoTuneStorageKey = 'ailuren-video-tuning-v14';
       var videoTuneFields = [
         { key: 'brightness', input: 'video-brightness-range', output: 'video-brightness-value' },
         { key: 'mask', input: 'video-mask-range', output: 'video-mask-value' },
@@ -1861,7 +1979,7 @@
       var links = document.querySelectorAll('#primary-nav a[href^="#"]');
       var sections = document.querySelectorAll('main section, footer');
       if ('IntersectionObserver' in window) {
-        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) links.forEach(function (link) { link.classList.toggle('is-active', link.getAttribute('href') === '#' + entry.target.id); }); }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+      var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { links.forEach(function (link) { link.classList.toggle('is-active', link.getAttribute('href') === '#' + entry.target.id); }); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + entry.target.id); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
         sections.forEach(function (section) { navObserver.observe(section); });
       }
 

@@ -1,0 +1,40 @@
+/*
+ * The page is a hybrid shell: static sections live in index.html while
+ * selected work and impact evidence are React portals. Keep one surface
+ * contract in the React bundle so both sides render the same card material.
+ */
+:root {
+  --portfolio-card-surface: rgba(5, 12, 20, .68);
+  --portfolio-card-border: rgba(184, 215, 236, .18);
+  --portfolio-card-blur: blur(14px) saturate(1.08);
+  --portfolio-card-shadow: 0 10px 24px rgba(0, 0, 0, .18);
+  --portfolio-card-radius: 16px;
+}
+
+.experience-detail,
+.comet-archive__glass,
+.impact-glass,
+#experiments .experiment-rail,
+.contact-links,
+.footer-contact-panel {
+  border: 1px solid var(--portfolio-card-border) !important;
+  border-radius: var(--portfolio-card-radius) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+}
+
+.hero-proof-card,
+.experience-detail,
+.comet-archive__card,
+.comet-archive__glass,
+.impact-glass,
+#experiments .experiment-rail,
+.footer-contact-panel {
+  border-radius: var(--portfolio-card-radius) !important;
+}
+
+.experience-detail::after {
+  content: none !important;
+}

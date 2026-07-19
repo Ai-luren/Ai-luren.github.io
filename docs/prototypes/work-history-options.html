@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>工作经历方案原型 · Ai路人</title>
+  <style>
+    :root { color-scheme: dark; --ink:#f2f6f8; --muted:#a7b8c4; --blue:#2997ff; --line:rgba(184,215,236,.2); --surface:rgba(7,16,27,.82); --soft:rgba(5,12,20,.58); --radius:16px; --sans:Arial,"Noto Sans SC",sans-serif; --mono:"DM Mono",ui-monospace,monospace; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; background:#050a10; color:var(--ink); font-family:var(--sans); }
+    body { overflow-x:hidden; }
+    button { color:inherit; font:inherit; }
+    .backdrop { position:fixed; inset:0; z-index:-2; overflow:hidden; background:#050a10; }
+    .backdrop video { width:100%; height:100%; object-fit:cover; filter:grayscale(1) contrast(1.05) brightness(.44); }
+    .backdrop::after { position:absolute; inset:0; content:""; background:linear-gradient(90deg,rgba(3,8,14,.82),rgba(3,8,14,.3) 55%,rgba(3,8,14,.72)); }
+    .shell { width:min(1220px,calc(100% - 48px)); margin:0 auto; }
+    .prototype-note { position:fixed; top:18px; left:22px; z-index:20; color:rgba(232,240,245,.58); font:10px var(--mono); letter-spacing:.08em; }
+    .intro { display:flex; min-height:100svh; align-items:end; padding:110px 0 80px; }
+    .intro h1 { max-width:760px; margin:16px 0 0; font-size:clamp(3rem,8vw,7.5rem); line-height:.9; letter-spacing:-.07em; }
+    .intro h1 span { display:block; color:var(--blue); }
+    .intro p { max-width:520px; margin:26px 0 0; color:var(--muted); font-size:15px; line-height:1.8; }
+    .eyebrow { color:var(--blue); font:11px var(--mono); letter-spacing:.08em; text-transform:uppercase; }
+    .variant { min-height:100svh; padding:110px 0 150px; }
+    .variant-header { display:flex; align-items:end; justify-content:space-between; gap:30px; margin-bottom:44px; }
+    .variant-header h2 { margin:10px 0 0; font-size:clamp(2rem,4vw,4rem); line-height:.98; letter-spacing:-.055em; }
+    .variant-header p { max-width:380px; margin:0; color:var(--muted); line-height:1.7; }
+    .surface { border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); box-shadow:0 10px 24px rgba(0,0,0,.18); backdrop-filter:blur(14px); }
+    .art { position:relative; min-height:220px; overflow:hidden; border:1px solid rgba(184,215,236,.18); border-radius:12px; background:radial-gradient(circle at 68% 42%,rgba(41,151,255,.52),transparent 18%),radial-gradient(circle at 30% 60%,rgba(110,205,255,.18),transparent 24%),linear-gradient(135deg,#101e30,#050a10 62%); }
+    .art::before { position:absolute; top:18%; left:24%; width:28%; aspect-ratio:1; border:1px solid rgba(237,244,249,.72); border-radius:50%; box-shadow:0 0 0 24px rgba(41,151,255,.08),0 0 50px rgba(41,151,255,.34); content:""; }
+    .art::after { position:absolute; right:12%; bottom:18%; width:38%; height:1px; background:linear-gradient(90deg,transparent,var(--blue),transparent); box-shadow:0 -30px 0 rgba(184,215,236,.28),0 30px 0 rgba(184,215,236,.18); content:""; transform:rotate(-18deg); }
+    .art-label { position:absolute; right:14px; bottom:12px; color:rgba(232,240,245,.48); font:10px var(--mono); letter-spacing:.08em; }
+    .meta { color:var(--blue); font:10px var(--mono); letter-spacing:.08em; }
+    .role { color:var(--blue); font-size:14px; line-height:1.5; }
+    .desc { color:var(--muted); font-size:14px; line-height:1.75; }
+    .years { display:grid; gap:8px; }
+    .year { border:1px solid transparent; border-radius:12px; background:transparent; padding:14px; color:var(--muted); cursor:pointer; text-align:left; }
+    .year:hover,.year.is-active { border-color:rgba(41,151,255,.58); background:rgba(41,151,255,.1); color:var(--ink); }
+    .year small { display:block; font:12px var(--mono); }
+    .year strong { display:block; margin-top:5px; font-size:14px; }
+
+    /* A: sticky visual + compact timeline */
+    .a-layout { display:grid; grid-template-columns:220px minmax(0,1fr); gap:38px; align-items:start; }
+    .a-years { position:sticky; top:90px; }
+    .a-panel { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(240px,.8fr); gap:24px; padding:24px; }
+    .a-panel .art { min-height:430px; }
+    .a-copy { display:flex; flex-direction:column; justify-content:end; padding:10px 6px 6px; }
+    .a-copy h3 { margin:14px 0 6px; font-size:clamp(2rem,4vw,4.4rem); line-height:.98; letter-spacing:-.065em; }
+    .a-copy .desc { margin-top:25px; }
+    .a-copy .result { margin-top:auto; padding-top:28px; color:var(--ink); font:11px var(--mono); }
+
+    /* B: sticky stacked records */
+    .b-stack { display:grid; gap:24px; max-width:880px; margin:0 auto; }
+    .b-card { position:sticky; top:94px; display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,.72fr); gap:24px; min-height:330px; padding:22px; transform:translateY(calc(var(--i) * 18px)); }
+    .b-card:nth-child(2){top:112px}.b-card:nth-child(3){top:130px}.b-card:nth-child(4){top:148px}.b-card:nth-child(5){top:166px}
+    .b-card .art { min-height:280px; }
+    .b-copy { display:flex; flex-direction:column; justify-content:center; }
+    .b-copy h3 { margin:12px 0 7px; font-size:clamp(1.8rem,3vw,3.4rem); line-height:1; letter-spacing:-.06em; }
+    .b-copy .result { margin-top:22px; color:var(--blue); font:11px var(--mono); }
+
+    /* C: horizontal mission pods */
+    .c-track { display:flex; gap:18px; overflow-x:auto; padding:10px 0 26px; scroll-snap-type:x mandatory; scrollbar-width:thin; }
+    .c-card { flex:0 0 min(72vw,650px); display:grid; grid-template-columns:1.05fr .8fr; gap:20px; min-height:380px; padding:22px; scroll-snap-align:start; }
+    .c-card .art { min-height:330px; }
+    .c-copy { display:flex; flex-direction:column; justify-content:end; padding-bottom:5px; }
+    .c-copy h3 { margin:12px 0 7px; font-size:clamp(1.8rem,3vw,3.5rem); line-height:.98; letter-spacing:-.06em; }
+    .c-copy .result { margin-top:26px; color:var(--ink); font:11px var(--mono); }
+
+    /* D: one continuous mission scene */
+    .d-scene { position:relative; min-height:670px; overflow:hidden; border:1px solid var(--line); border-radius:var(--radius); background:radial-gradient(circle at 72% 38%,rgba(41,151,255,.24),transparent 22%),linear-gradient(135deg,rgba(9,24,39,.9),rgba(3,7,13,.78)); }
+    .d-orbit { position:absolute; top:18%; right:8%; width:min(48vw,560px); aspect-ratio:1; border:1px solid rgba(184,215,236,.34); border-radius:50%; box-shadow:0 0 0 54px rgba(41,151,255,.04),0 0 100px rgba(41,151,255,.12); }
+    .d-orbit::before,.d-orbit::after { position:absolute; inset:14%; border:1px solid rgba(184,215,236,.2); border-radius:50%; content:""; transform:rotate(58deg) scaleX(.55); }
+    .d-orbit::after { inset:27%; transform:rotate(-28deg) scaleX(.6); }
+    .d-copy { position:absolute; left:7%; bottom:10%; max-width:480px; }
+    .d-copy h3 { margin:14px 0 8px; font-size:clamp(2.4rem,6vw,6rem); line-height:.9; letter-spacing:-.07em; }
+    .d-copy .desc { max-width:370px; }
+    .d-years { position:absolute; right:7%; bottom:8%; display:flex; flex-wrap:wrap; justify-content:end; gap:8px; max-width:360px; }
+    .d-years .year { width:auto; min-width:96px; }
+
+    .switcher { position:fixed; right:50%; bottom:20px; z-index:30; display:flex; align-items:center; gap:10px; padding:8px 10px; border:1px solid rgba(232,240,245,.22); border-radius:999px; background:rgba(3,8,14,.9); box-shadow:0 10px 28px rgba(0,0,0,.32); transform:translateX(50%); backdrop-filter:blur(12px); }
+    .switcher button { border:0; background:transparent; color:var(--muted); cursor:pointer; }
+    .switcher button:hover { color:#fff; }
+    .switcher .current { min-width:190px; color:#fff; font-size:12px; text-align:center; }
+    .switcher .current small { display:block; margin-top:2px; color:var(--blue); font:9px var(--mono); letter-spacing:.08em; }
+    @media (max-width:760px) {
+      .shell { width:min(100% - 28px,520px); }
+      .intro { min-height:82svh; padding-bottom:56px; }
+      .variant { padding-top:74px; }
+      .variant-header { display:block; margin-bottom:26px; }
+      .variant-header p { margin-top:18px; }
+      .a-layout { grid-template-columns:1fr; gap:18px; }
+      .a-years { position:static; display:flex; overflow-x:auto; }
+      .a-years .year { flex:0 0 142px; }
+      .a-panel,.b-card,.c-card { grid-template-columns:1fr; }
+      .a-panel .art { min-height:220px; }
+      .b-card { position:relative; top:auto !important; min-height:0; transform:none; }
+      .b-card .art,.c-card .art { min-height:220px; }
+      .d-scene { min-height:620px; }
+      .d-orbit { top:15%; right:-18%; width:90vw; }
+      .d-copy { left:7%; right:7%; bottom:28%; }
+      .d-years { right:7%; bottom:7%; left:7%; max-width:none; justify-content:start; }
+      .switcher { right:14px; left:14px; transform:none; justify-content:space-between; }
+      .switcher .current { min-width:0; flex:1; }
+    }
+  </style>
+</head>
+<body>
+  <!-- PROTOTYPE: four work-history layouts, switch with ?variant=a|b|c|d. Delete after a direction is chosen. -->
+  <div class="backdrop" aria-hidden="true"><video autoplay muted loop playsinline src="../../hero.mp4"></video></div>
+  <div class="prototype-note">PROTOTYPE / WORK HISTORY OPTIONS</div>
+  <main>
+    <section class="intro shell">
+      <div>
+        <div class="eyebrow">DESIGN QUESTION / 01</div>
+        <h1>工作经历<br><span>怎么不空</span></h1>
+        <p>同一组真实经历，尝试四种不同的滚动叙事结构。这里的画面只是比例占位，最终可以替换成 Ai路人 3D 插画。</p>
+      </div>
+    </section>
+    <section class="variant shell" data-variant="a">
+      <header class="variant-header"><div><div class="eyebrow">OPTION A / STICKY VISUAL</div><h2>固定视觉<br>经历切换</h2></div><p>左侧年份固定，右侧画面和文字切换。最接近当前页面，留白由 16:9 插画承担。</p></header>
+      <div class="a-layout">
+        <nav class="years a-years" aria-label="方案 A 经历导航"></nav>
+        <article class="surface a-panel"><div class="art"><span class="art-label">ART SLOT / 16:9</span></div><div class="a-copy"><div class="meta"></div><h3></h3><div class="role"></div><div class="desc"></div><div class="result"></div></div></article>
+      </div>
+    </section>
+    <section class="variant shell" data-variant="b">
+      <header class="variant-header"><div><div class="eyebrow">OPTION B / STACKED RECORDS</div><h2>履历档案<br>逐张叠起</h2></div><p>每段经历是一张记录卡，滚动时下一张覆盖上来。空间被卡片本身占满，叙事节奏清楚。</p></header>
+      <div class="b-stack"></div>
+    </section>
+    <section class="variant shell" data-variant="c">
+      <header class="variant-header"><div><div class="eyebrow">OPTION C / MISSION PODS</div><h2>横向履历<br>任务舱</h2></div><p>把职业经历做成横向移动的 5 个任务舱，画面更像一段旅程，但移动端需要横向滑动。</p></header>
+      <div class="c-track"></div>
+    </section>
+    <section class="variant shell" data-variant="d">
+      <header class="variant-header"><div><div class="eyebrow">OPTION D / CONTINUOUS SCENE</div><h2>连续场景<br>穿过职业轨道</h2></div><p>不再使用传统卡片，用一个连续空间承载所有经历。个性最强，也最依赖最终插画和动效素材。</p></header>
+      <article class="d-scene"><div class="d-orbit" aria-hidden="true"></div><div class="d-copy"><div class="meta"></div><h3></h3><div class="role"></div><div class="desc"></div></div><nav class="years d-years" aria-label="方案 D 经历导航"></nav></article>
+    </section>
+  </main>
+  <div class="switcher" aria-label="原型方案切换"><button type="button" data-direction="prev" aria-label="上一个方案">←</button><div class="current"></div><button type="button" data-direction="next" aria-label="下一个方案">→</button></div>
+  <script>
+    const experiences = [
+      { year:'2017—2018', company:'英合创意文化传播', role:'视频设计师', desc:'网综片头、栏目包装与动态海报。', result:'从镜头节奏开始做视觉。' },
+      { year:'2018—2019', company:'壹迦公关策划', role:'三维设计组长', desc:'小米生态链产品渲染与品牌视觉。', result:'把产品变成可以被看见的场景。' },
+      { year:'2019—2024', company:'快手', role:'特效设计师 · AI 效果与动态设计', desc:'快影 AI 玩法、视频模板、特效与品牌动态。', result:'让创意进入千万 DAU 的产品。' },
+      { year:'2024—2026', company:'小米', role:'高级动效原型设计师 · AI 效果设计', desc:'参与相册 AI 图片和视频效果，从想法做到上线。', result:'从想法走到真正可用。' },
+      { year:'NOW', company:'现在', role:'AI 创意效果', desc:'探索 AI 无限可能。', result:'把重复三遍的事 AI 化。' }
+    ];
+    const names = { a:'固定视觉 · 经历切换', b:'履历档案 · 逐张叠起', c:'横向履历 · 任务舱', d:'连续场景 · 职业轨道' };
+    const variants = ['a','b','c','d'];
+    const query = new URLSearchParams(location.search);
+    let variant = (query.get('variant') || 'a').toLowerCase();
+    if (!variants.includes(variant)) variant = 'a';
+    let active = 0;
+    const setText = (root, item) => {
+      root.querySelector('.meta').textContent = `EXPERIENCE / ${String(active + 1).padStart(2,'0')} · ${item.year}`;
+      root.querySelector('h3').textContent = item.company;
+      root.querySelector('.role').textContent = item.role;
+      root.querySelector('.desc').textContent = item.desc;
+      const result = root.querySelector('.result'); if (result) result.textContent = item.result;
+    };
+    const makeYear = (index, target) => {
+      const button = document.createElement('button'); button.className = `year${index === active ? ' is-active' : ''}`; button.type='button';
+      button.innerHTML = `<small>${String(index + 1).padStart(2,'0')} / ${experiences[index].year}</small><strong>${experiences[index].company}</strong>`;
+      button.addEventListener('click', () => { active = index; render(); }); target.append(button);
+    };
+    function render() {
+      document.querySelectorAll('[data-variant]').forEach(section => section.hidden = section.dataset.variant !== variant);
+      const aYears = document.querySelector('.a-years'); aYears.innerHTML=''; experiences.forEach((_,i) => makeYear(i,aYears)); setText(document.querySelector('.a-panel'),experiences[active]);
+      const bStack = document.querySelector('.b-stack'); bStack.innerHTML=''; experiences.forEach((item,i) => { const card=document.createElement('article'); card.className='surface b-card'; card.style.setProperty('--i',i); card.innerHTML=`<div class="art"><span class="art-label">ART SLOT / 16:9</span></div><div class="b-copy"><div class="meta">EXPERIENCE / ${String(i+1).padStart(2,'0')} · ${item.year}</div><h3>${item.company}</h3><div class="role">${item.role}</div><div class="desc">${item.desc}</div><div class="result">${item.result}</div></div>`; bStack.append(card); });
+      const cTrack = document.querySelector('.c-track'); cTrack.innerHTML=''; experiences.forEach((item,i) => { const card=document.createElement('article'); card.className='surface c-card'; card.innerHTML=`<div class="art"><span class="art-label">ART SLOT / 16:9</span></div><div class="c-copy"><div class="meta">${String(i+1).padStart(2,'0')} / ${item.year}</div><h3>${item.company}</h3><div class="role">${item.role}</div><div class="desc">${item.desc}</div><div class="result">${item.result}</div></div>`; cTrack.append(card); });
+      const dYears = document.querySelector('.d-years'); dYears.innerHTML=''; experiences.forEach((_,i) => makeYear(i,dYears)); setText(document.querySelector('.d-scene'),experiences[active]);
+      document.querySelector('.current').innerHTML = `<small>ACTIVE VARIANT / ${variant.toUpperCase()}</small>${names[variant]}`;
+      query.set('variant',variant); history.replaceState(null,'',`${location.pathname}?${query.toString()}`);
+      window.scrollTo({ top: document.querySelector(`[data-variant="${variant}"]`).offsetTop - 24, behavior:'smooth' });
+    }
+    document.querySelectorAll('[data-direction]').forEach(button => button.addEventListener('click', () => { const delta=button.dataset.direction==='next'?1:-1; variant=variants[(variants.indexOf(variant)+delta+variants.length)%variants.length]; render(); }));
+    window.addEventListener('keydown', event => { if (['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return; if (event.key==='ArrowRight') document.querySelector('[data-direction="next"]').click(); if (event.key==='ArrowLeft') document.querySelector('[data-direction="prev"]').click(); });
+    render();
+  </script>
+</body>
+</html>

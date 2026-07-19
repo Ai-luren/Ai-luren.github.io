@@ -1,6 +1,8 @@
 .impact-evidence {
   --impact-radius: var(--radius-lg, 18px);
-  --impact-glass: var(--glass-surface, rgba(8, 18, 28, .72));
+  --impact-glass: var(--glass-card-surface, rgba(5, 12, 20, .68));
+  --impact-card-blur: blur(14px) saturate(1.08);
+  --impact-card-shadow: 0 10px 24px rgba(0, 0, 0, .18);
   --impact-glass-strong: var(--glass-surface-raised, rgba(13, 27, 40, .82));
   --impact-border: var(--glass-border, rgba(224, 224, 224, .18));
   --impact-hairline: var(--hairline, rgba(224, 224, 224, .16));
@@ -22,7 +24,7 @@
 .impact-evidence-row > div:last-child { min-width: 0; }
 .impact-evidence-note, .impact-logo-head, .impact-award-foot { display: flex; justify-content: space-between; gap: 20px; color: var(--impact-muted); font: 500 9px/1.6 var(--tech, var(--mono, monospace)); letter-spacing: .05em; }
 .impact-evidence-note { margin-bottom: 14px; }
-.impact-glass { overflow: hidden; border: 1px solid var(--impact-border); border-radius: var(--impact-radius); background: linear-gradient(135deg, rgba(13, 27, 40, .72), rgba(7, 17, 27, .44)); box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 18px 50px rgba(0,0,0,.1); backdrop-filter: blur(18px) saturate(1.1); }
+.impact-glass { overflow: hidden; border: 1px solid var(--impact-border); border-radius: var(--impact-radius); background: var(--impact-glass); box-shadow: var(--impact-card-shadow); backdrop-filter: var(--impact-card-blur); -webkit-backdrop-filter: var(--impact-card-blur); }
 
 /* Circular Gallery: React Bits OGL renderer, tuned to the site's glass shell. */
 .impact-award-shell { position: relative; min-height: 0; padding: 26px 0 0; }
