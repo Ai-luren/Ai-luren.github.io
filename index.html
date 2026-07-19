@@ -68,7 +68,8 @@
     @keyframes loading-line { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
     #video-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #071321; }
-    #hero-video { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: brightness(.94) saturate(.9) contrast(1.03); image-rendering: auto; }
+    #hero-video { width: 100%; height: 100%; object-fit: cover; object-position: center; filter: none; image-rendering: auto; }
+    #video-webgl { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; display: block; }
     /* P0：压住视频高光，文字识别交给左侧曝光走廊，不使用整页黑幕。 */
     #video-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,10,16,.58), rgba(5,10,16,.2) 42%, transparent 76%), linear-gradient(180deg, rgba(5,10,16,.22), transparent 30%, transparent 78%, rgba(5,10,16,.18)); }
     #video-vignette { position: absolute; inset: 0; box-shadow: inset 0 0 10vw rgba(3,8,14,.12); }
@@ -963,9 +964,46 @@
     /* 文字统一使用单色蓝；页脚社交图标始终保持白色，品牌色只用于悬浮时的圆底。 */
     .footer-social a:hover .social-icon, .footer-social a:focus-visible .social-icon { background: #fff; }
 
-    /* 不再用黑色蒙版压视频；文字依靠字号、阴影与位置保持识别。 */
+    /* 最终视觉层由 WebGL 后处理接管；旧的局部遮罩默认关闭。 */
     #video-overlay, #video-vignette, .hero-shell::before, .section-intro::before,
     .timeline-item::before, .experiment-rail::before, .recognition-stage::before { display: none !important; }
+
+    /* 背景视频层级：WebGL 统一处理像素、调色板、CRT 和全局蒙版。 */
+    #video-bg { isolation: isolate; }
+    #hero-video { transition: opacity .3s ease; }
+    #video-overlay, #video-vignette { display: none !important; }
+    #video-bg.is-webgl-ready #hero-video { opacity: 0; }
+    #video-bg.is-webgl-ready #video-overlay, #video-bg.is-webgl-ready #video-vignette { display: none !important; }
+    @media (prefers-reduced-motion: reduce) {
+      #hero-video { transition: none; }
+    }
+
+    /* 背景编辑器：开放影响质感的参数，不介入章节排版和内容状态。 */
+    .video-tuner { position: fixed; right: 22px; bottom: 22px; z-index: 60; color: var(--mist); font-family: var(--sans); }
+    .video-tuner__toggle { min-height: 40px; padding: 0 14px; border: 1px solid rgba(184,215,236,.3); border-radius: 999px; background: rgba(5,12,20,.62); color: rgba(237,244,249,.82); cursor: pointer; font-size: 11px; letter-spacing: .04em; backdrop-filter: blur(12px) saturate(1.1); transition: border-color .2s ease, background .2s ease, color .2s ease; }
+    .video-tuner__toggle:hover, .video-tuner__toggle:focus-visible, .video-tuner.is-open .video-tuner__toggle { border-color: rgba(41,151,255,.72); background: rgba(7,20,34,.82); color: #fff; }
+    .video-tuner__toggle:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
+    .video-tuner__panel { width: min(292px, calc(100vw - 32px)); margin-top: 10px; padding: 16px; border: 1px solid rgba(184,215,236,.24); border-radius: 14px; background: rgba(5,12,20,.84); box-shadow: 0 12px 28px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.08); backdrop-filter: blur(18px) saturate(1.12); }
+    .video-tuner__intro { margin: 0 0 14px; color: rgba(207,221,231,.62); font-size: 10px; line-height: 1.55; }
+    .video-tuner__group + .video-tuner__group { margin-top: 13px; }
+    .video-tuner__label { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; color: rgba(237,244,249,.9); font-size: 12px; }
+    .video-tuner__value { color: var(--accent-blue-on-dark); font: 500 11px var(--tech); }
+    .video-tuner__range { display: block; width: 100%; margin: 8px 0 0; accent-color: var(--accent-blue); cursor: pointer; }
+    .video-tuner__advanced-field { display: none; }
+    .video-tuner.is-advanced .video-tuner__advanced-field { display: block; }
+    .video-tuner__more { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 0; border: 0; background: transparent; color: rgba(207,221,231,.64); cursor: pointer; font: 500 10px var(--tech); letter-spacing: .04em; }
+    .video-tuner__more::after { content: '＋'; color: var(--accent-blue-on-dark); font-size: 13px; }
+    .video-tuner.is-advanced .video-tuner__more::after { content: '−'; }
+    .video-tuner__more:hover, .video-tuner__more:focus-visible { color: var(--accent-blue-on-dark); }
+    .video-tuner__more:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
+    .video-tuner__reset { margin-top: 12px; padding: 0; border: 0; background: transparent; color: rgba(207,221,231,.72); cursor: pointer; font: 500 10px var(--tech); letter-spacing: .04em; }
+    .video-tuner__reset + .video-tuner__reset { margin-left: 14px; color: rgba(207,221,231,.5); }
+    .video-tuner__reset:hover, .video-tuner__reset:focus-visible { color: var(--accent-blue-on-dark); }
+    .video-tuner__reset:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
+    @media (max-width: 560px) {
+      .video-tuner { right: 16px; bottom: 16px; }
+      .video-tuner__panel { padding: 14px; }
+    }
 
     /* Hero：沿用参考的底部左对齐叙事与右下信息卡，但保持深空视频和现有蓝色体系。 */
     #top { display: grid; min-height: 100svh; padding: 112px 0 72px; }
@@ -986,7 +1024,7 @@
     .hero-proof-card { min-height: 104px; padding: 16px; border: 1px solid rgba(232,240,245,.2); border-radius: 16px; background: rgba(8,13,20,.48); box-shadow: inset 0 1px 0 rgba(255,255,255,.05); backdrop-filter: blur(16px); }
     .hero-proof-card strong { display: block; color: #f0f4f6; font: 700 18px/1.1 var(--sans); letter-spacing: -.03em; }
     .hero-proof-card span { display: block; margin-top: 10px; color: rgba(232,240,245,.68); font-size: 12px; line-height: 1.55; }
-    body.is-on-hero #video-overlay, body.is-on-hero .hero-shell::before { opacity: 0; }
+    body.is-on-hero .hero-shell::before { opacity: 0; }
 
     @media (max-width: 560px) {
       #top { padding: 92px 0 48px; }
@@ -1260,7 +1298,32 @@
 </head>
 <body class="is-loading is-on-hero">
   <div id="loading" aria-live="polite"><span class="loading-copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="auto"><source src="hero.mp4" type="video/mp4" /></video><div id="video-overlay"></div><div id="video-vignette"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="auto"><source src="hero.mp4" type="video/mp4" /></video></div>
+  <div class="video-tuner" id="video-tuner">
+    <button class="video-tuner__toggle" type="button" aria-expanded="false" aria-controls="video-tuner-panel">编辑背景</button>
+    <div class="video-tuner__panel" id="video-tuner-panel" hidden>
+      <p class="video-tuner__intro">WebGL 复古视频管线：像素、调色板、抖动和 CRT 参数全局生效，Hero 与后续章节保持同一套质感。</p>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-brightness-range"><span>视频亮度</span><output class="video-tuner__value" id="video-brightness-value" for="video-brightness-range">100%</output></label><input class="video-tuner__range" id="video-brightness-range" type="range" min="0" max="100" step="1" value="100" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-mask-range"><span>蒙版强度</span><output class="video-tuner__value" id="video-mask-value" for="video-mask-range">20%</output></label><input class="video-tuner__range" id="video-mask-range" type="range" min="0" max="100" step="1" value="20" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-saturation-range"><span>色彩饱和度</span><output class="video-tuner__value" id="video-saturation-value" for="video-saturation-range">78%</output></label><input class="video-tuner__range" id="video-saturation-range" type="range" min="0" max="100" step="1" value="78" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-contrast-range"><span>对比度</span><output class="video-tuner__value" id="video-contrast-value" for="video-contrast-range">112%</output></label><input class="video-tuner__range" id="video-contrast-range" type="range" min="75" max="150" step="1" value="112" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-blur-range"><span>模糊</span><output class="video-tuner__value" id="video-blur-value" for="video-blur-range">0%</output></label><input class="video-tuner__range" id="video-blur-range" type="range" min="0" max="100" step="1" value="0" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-vignette-range"><span>边缘暗角</span><output class="video-tuner__value" id="video-vignette-value" for="video-vignette-range">52%</output></label><input class="video-tuner__range" id="video-vignette-range" type="range" min="0" max="100" step="1" value="52" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-noise-range"><span>噪点与色差</span><output class="video-tuner__value" id="video-noise-value" for="video-noise-range">7%</output></label><input class="video-tuner__range" id="video-noise-range" type="range" min="0" max="100" step="1" value="7" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-pixel-master-range"><span>像素画强度</span><output class="video-tuner__value" id="video-pixel-master-value" for="video-pixel-master-range">72%</output></label><input class="video-tuner__range" id="video-pixel-master-range" type="range" min="0" max="100" step="1" value="72" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-crt-master-range"><span>CRT强度</span><output class="video-tuner__value" id="video-crt-master-value" for="video-crt-master-range">16%</output></label><input class="video-tuner__range" id="video-crt-master-range" type="range" min="0" max="100" step="1" value="16" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-pixel-range"><span>像素采样</span><output class="video-tuner__value" id="video-pixel-value" for="video-pixel-range">32%</output></label><input class="video-tuner__range" id="video-pixel-range" type="range" min="0" max="100" step="1" value="32" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-color-depth-range"><span>色彩深度</span><output class="video-tuner__value" id="video-color-depth-value" for="video-color-depth-range">28</output></label><input class="video-tuner__range" id="video-color-depth-range" type="range" min="4" max="64" step="1" value="28" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-dither-range"><span>抖动强度</span><output class="video-tuner__value" id="video-dither-value" for="video-dither-range">10%</output></label><input class="video-tuner__range" id="video-dither-range" type="range" min="0" max="100" step="1" value="10" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-edge-range"><span>边缘增强</span><output class="video-tuner__value" id="video-edge-value" for="video-edge-range">5%</output></label><input class="video-tuner__range" id="video-edge-range" type="range" min="0" max="100" step="1" value="5" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-crt-range"><span>CRT扫描</span><output class="video-tuner__value" id="video-crt-value" for="video-crt-range">18%</output></label><input class="video-tuner__range" id="video-crt-range" type="range" min="0" max="100" step="1" value="18" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-glow-range"><span>荧光辉光</span><output class="video-tuner__value" id="video-glow-value" for="video-glow-range">12%</output></label><input class="video-tuner__range" id="video-glow-range" type="range" min="0" max="100" step="1" value="12" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-chroma-range"><span>色差</span><output class="video-tuner__value" id="video-chroma-value" for="video-chroma-range">3%</output></label><input class="video-tuner__range" id="video-chroma-range" type="range" min="0" max="100" step="1" value="3" /></div>
+      <button class="video-tuner__more" type="button" id="video-tuner-more" aria-expanded="false">更多质感参数</button>
+      <button class="video-tuner__reset" type="button" id="video-mask-reset">恢复 16-bit 默认</button>
+      <button class="video-tuner__reset" type="button" id="video-effects-zero">恢复 0 效果</button>
+    </div>
+  </div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
 
   <header>
@@ -1672,6 +1735,128 @@
         }, { threshold: [0, .24, .6] });
         heroOverlayObserver.observe(heroSection);
       }
+
+      var videoTuner = document.getElementById('video-tuner');
+      var videoTunerToggle = videoTuner ? videoTuner.querySelector('.video-tuner__toggle') : null;
+      var videoTunerPanel = document.getElementById('video-tuner-panel');
+      var videoTunerMore = document.getElementById('video-tuner-more');
+      var videoTuneDefaults = { brightness: 100, mask: 10, saturation: 100, contrast: 108, blur: 0, vignette: 30, noise: 2, pixel: 64, colorDepth: 14, dither: 20, edge: 3, crt: 10, glow: 5, chroma: 0, pixelMaster: 72, crtMaster: 16 };
+      var videoTuneZero = { brightness: 100, mask: 0, saturation: 100, contrast: 100, blur: 0, vignette: 0, noise: 0, pixel: 0, colorDepth: 64, dither: 0, edge: 0, crt: 0, glow: 0, chroma: 0, pixelMaster: 0, crtMaster: 0 };
+      var videoTuneStorageKey = 'ailuren-video-tuning-v13';
+      var videoTuneFields = [
+        { key: 'brightness', input: 'video-brightness-range', output: 'video-brightness-value' },
+        { key: 'mask', input: 'video-mask-range', output: 'video-mask-value' },
+        { key: 'saturation', input: 'video-saturation-range', output: 'video-saturation-value' },
+        { key: 'contrast', input: 'video-contrast-range', output: 'video-contrast-value' },
+        { key: 'blur', input: 'video-blur-range', output: 'video-blur-value' },
+        { key: 'vignette', input: 'video-vignette-range', output: 'video-vignette-value' },
+        { key: 'noise', input: 'video-noise-range', output: 'video-noise-value' },
+        { key: 'pixel', input: 'video-pixel-range', output: 'video-pixel-value' },
+        { key: 'colorDepth', input: 'video-color-depth-range', output: 'video-color-depth-value' },
+        { key: 'dither', input: 'video-dither-range', output: 'video-dither-value' },
+        { key: 'edge', input: 'video-edge-range', output: 'video-edge-value' },
+        { key: 'crt', input: 'video-crt-range', output: 'video-crt-value' },
+        { key: 'glow', input: 'video-glow-range', output: 'video-glow-value' },
+        { key: 'chroma', input: 'video-chroma-range', output: 'video-chroma-value' },
+        { key: 'pixelMaster', input: 'video-pixel-master-range', output: 'video-pixel-master-value' },
+        { key: 'crtMaster', input: 'video-crt-master-range', output: 'video-crt-master-value' }
+      ];
+      var videoMaskReset = document.getElementById('video-mask-reset');
+      var videoEffectsZero = document.getElementById('video-effects-zero');
+      function readVideoTuneValue(settings, key, fallback, min, max) {
+        var value = Number(settings[key]);
+        if (!Number.isFinite(value)) value = fallback;
+        return Math.min(max, Math.max(min, value));
+      }
+      function getVideoTuneBounds(key) {
+        if (key === 'brightness') return { min: 0, max: 100 };
+        if (key === 'contrast') return { min: 75, max: 150 };
+        if (key === 'colorDepth') return { min: 4, max: 64 };
+        return { min: 0, max: 100 };
+      }
+      function applyVideoMasterSettings(settings) {
+        var pixelMaster = readVideoTuneValue(settings, 'pixelMaster', videoTuneDefaults.pixelMaster, 0, 100);
+        var crtMaster = readVideoTuneValue(settings, 'crtMaster', videoTuneDefaults.crtMaster, 0, 100);
+        settings.pixel = Math.round(pixelMaster * .89);
+        settings.colorDepth = Math.round(64 - pixelMaster * .7);
+        settings.dither = Math.round(pixelMaster * .28);
+        settings.edge = Math.round(pixelMaster * .035);
+        settings.crt = Math.round(crtMaster * .625);
+        settings.noise = Math.round(crtMaster * .125);
+        settings.glow = Math.round(crtMaster * .31);
+        settings.chroma = Math.round(crtMaster * .02);
+        return settings;
+      }
+      function applyVideoTuning(settings, persist, applyMasters) {
+        settings = applyMasters === false ? Object.assign({}, settings) : applyVideoMasterSettings(Object.assign({}, settings));
+        var brightness = readVideoTuneValue(settings, 'brightness', videoTuneDefaults.brightness, 0, 100);
+        var mask = readVideoTuneValue(settings, 'mask', 0, 0, 100);
+        var saturation = readVideoTuneValue(settings, 'saturation', videoTuneDefaults.saturation, 0, 100);
+        var contrast = readVideoTuneValue(settings, 'contrast', videoTuneDefaults.contrast, 75, 150);
+        var blur = readVideoTuneValue(settings, 'blur', 0, 0, 100);
+        var vignette = readVideoTuneValue(settings, 'vignette', 0, 0, 100);
+        var noise = readVideoTuneValue(settings, 'noise', videoTuneDefaults.noise, 0, 100);
+        document.documentElement.style.setProperty('--video-brightness', (brightness / 100).toFixed(2));
+        document.documentElement.style.setProperty('--video-mask-opacity', (mask / 100).toFixed(2));
+        document.documentElement.style.setProperty('--video-saturation', (saturation / 100).toFixed(2));
+        document.documentElement.style.setProperty('--video-contrast', (contrast / 100).toFixed(2));
+        document.documentElement.style.setProperty('--video-blur', ((blur / 100) * 3).toFixed(2) + 'px');
+        document.documentElement.style.setProperty('--video-vignette-opacity', (vignette / 100).toFixed(2));
+        document.documentElement.style.setProperty('--video-noise-opacity', (noise / 100).toFixed(2));
+        videoTuneFields.forEach(function (field) {
+          var input = document.getElementById(field.input);
+          var output = document.getElementById(field.output);
+          var bounds = getVideoTuneBounds(field.key);
+          var value = readVideoTuneValue(settings, field.key, videoTuneDefaults[field.key], bounds.min, bounds.max);
+          if (input) input.value = String(value);
+          var suffix = field.key === 'colorDepth' ? '' : '%';
+          if (output) { output.value = value + suffix; output.textContent = value + suffix; }
+        });
+        window.__videoTuning = Object.assign({}, videoTuneDefaults, settings);
+        window.dispatchEvent(new CustomEvent('video-tuning-change', { detail: window.__videoTuning }));
+        if (persist) {
+          try { window.localStorage.setItem(videoTuneStorageKey, JSON.stringify(settings)); } catch (error) {}
+        }
+      }
+      var storedVideoTuning = Object.assign({}, videoTuneDefaults);
+      try {
+        var parsedVideoTuning = JSON.parse(window.localStorage.getItem(videoTuneStorageKey) || '{}');
+        storedVideoTuning = Object.assign(storedVideoTuning, parsedVideoTuning);
+      } catch (error) {}
+      applyVideoTuning(storedVideoTuning, false);
+      videoTuneFields.forEach(function (field) {
+        var input = document.getElementById(field.input);
+        if (!input) return;
+        input.addEventListener('input', function () {
+          var nextSettings = {};
+          videoTuneFields.forEach(function (item) {
+            var currentInput = document.getElementById(item.input);
+            nextSettings[item.key] = currentInput ? Number(currentInput.value) : videoTuneDefaults[item.key];
+          });
+          applyVideoTuning(nextSettings, true, field.key === 'pixelMaster' || field.key === 'crtMaster');
+        });
+      });
+      if (videoTunerToggle && videoTunerPanel) {
+        videoTunerToggle.addEventListener('click', function () {
+          var isOpen = videoTuner.classList.toggle('is-open');
+          videoTunerPanel.hidden = !isOpen;
+          videoTunerToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+      }
+      if (videoTunerMore && videoTuner) {
+        videoTunerMore.addEventListener('click', function () {
+          var isAdvanced = videoTuner.classList.toggle('is-advanced');
+          videoTunerMore.setAttribute('aria-expanded', String(isAdvanced));
+        });
+      }
+      if (videoMaskReset) videoMaskReset.addEventListener('click', function () {
+        try { window.localStorage.removeItem(videoTuneStorageKey); } catch (error) {}
+        applyVideoTuning(Object.assign({}, videoTuneDefaults), true, true);
+      });
+      if (videoEffectsZero) videoEffectsZero.addEventListener('click', function () {
+        try { window.localStorage.removeItem(videoTuneStorageKey); } catch (error) {}
+        applyVideoTuning(Object.assign({}, videoTuneZero), true, true);
+      });
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"]');
       var sections = document.querySelectorAll('main section, footer');
