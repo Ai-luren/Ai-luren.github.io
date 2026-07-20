@@ -194,6 +194,8 @@ export default function VideoPostProcess() {
     const canvas = gl.canvas;
     canvas.id = 'video-webgl';
     canvas.setAttribute('aria-hidden', 'true');
+    canvas.style.opacity = '0';
+    canvas.style.transition = 'opacity .3s ease';
     container.appendChild(canvas);
 
     const texture = new Texture(gl, { image: video, generateMipmaps: false, minFilter: gl.LINEAR, magFilter: gl.LINEAR });
@@ -258,6 +260,11 @@ export default function VideoPostProcess() {
       program.uniforms.uVideoResolution.value = [video.videoWidth || 16, video.videoHeight || 9];
       onResize();
     };
+    const revealWebgl = () => {
+      if (video.readyState < 2) return;
+      canvas.style.opacity = '1';
+      container.classList.add('is-webgl-ready');
+    };
     let frame = 0;
     let lastRenderAt = 0;
     const renderInterval = window.innerWidth <= 760 ? 1000 / 30 : 1000 / 60;
@@ -279,18 +286,22 @@ export default function VideoPostProcess() {
 
     applySettings(settings);
     onResize();
-    container.classList.add('is-webgl-ready');
     window.addEventListener('video-tuning-change', onTuningChange);
     video.addEventListener('loadedmetadata', onVideoMetadata);
+    video.addEventListener('loadeddata', revealWebgl, { once: true });
+    video.addEventListener('canplay', revealWebgl, { once: true });
     window.addEventListener('resize', onResize, { passive: true });
     document.addEventListener('visibilitychange', onVisibilityChange);
     frame = requestAnimationFrame(render);
+    revealWebgl();
 
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('video-tuning-change', onTuningChange);
       video.removeEventListener('loadedmetadata', onVideoMetadata);
       window.removeEventListener('resize', onResize);
+      video.removeEventListener('loadeddata', revealWebgl);
+      video.removeEventListener('canplay', revealWebgl);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       container.classList.remove('is-webgl-ready');
       canvas.remove();
