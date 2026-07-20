@@ -9,7 +9,7 @@ import wechatIcon from '../../assets/images/wechat.svg';
 import githubIcon from '../../assets/images/github.svg';
 import xiaohongshuIcon from '../../assets/images/xiaohongshu-solid.svg';
 import douyinIcon from '../../assets/images/douyin.svg';
-import feishuIcon from '../../assets/images/feishu.png';
+import feishuIcon from '../../assets/images/feishu.webp';
 
 const iconPaths = {
   mail: mailIcon,
