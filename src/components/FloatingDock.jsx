@@ -21,8 +21,8 @@ const iconPaths = {
   feishu: feishuIcon
 };
 
-function MaskIcon({ name }) {
-  return <span className="floating-dock-mask-icon" style={{ WebkitMaskImage: `url('${iconPaths[name]}')`, maskImage: `url('${iconPaths[name]}')` }} aria-hidden="true" />;
+function DockIcon({ name }) {
+  return <img src={iconPaths[name]} alt="" aria-hidden="true" />;
 }
 
 function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring }) {
@@ -96,13 +96,13 @@ export default function FloatingDock() {
   };
 
   const items = [
-    { label: '复制邮箱', onClick: () => copy('1746850550@qq.com', '邮箱'), icon: <MaskIcon name="mail" /> },
-    { label: '复制电话', onClick: () => copy('15580714085', '电话'), icon: <MaskIcon name="phone" /> },
-    { label: '复制微信号', onClick: () => copy('15580714085', '微信号'), icon: <MaskIcon name="wechat" /> },
-    { label: 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <MaskIcon name="github" /> },
-    { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <MaskIcon name="xiaohongshu" /> },
-    { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <MaskIcon name="douyin" /> },
-    { label: '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <MaskIcon name="feishu" /> }
+    { label: '复制邮箱', onClick: () => copy('1746850550@qq.com', '邮箱'), icon: <DockIcon name="mail" /> },
+    { label: '复制电话', onClick: () => copy('15580714085', '电话'), icon: <DockIcon name="phone" /> },
+    { label: '复制微信号', onClick: () => copy('15580714085', '微信号'), icon: <DockIcon name="wechat" /> },
+    { label: 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
+    { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
+    { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
+    { label: '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
   ];
 
   return (

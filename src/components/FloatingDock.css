@@ -59,19 +59,7 @@
 .floating-dock-icon { opacity: .68; transition: opacity .2s ease; }
 .floating-dock-item:hover .floating-dock-icon,
 .floating-dock-item:focus-visible .floating-dock-icon { opacity: 1; }
-
-.floating-dock-mask-icon {
-  display: block;
-  width: 23px;
-  height: 23px;
-  background: currentColor;
-  -webkit-mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
-}
+.floating-dock-icon img { filter: brightness(0) invert(1); }
 
 .floating-dock-label {
   position: absolute;
@@ -108,6 +96,5 @@
 
   .floating-dock-item { border-radius: 12px; }
   .floating-dock-icon,
-  .floating-dock-icon img,
-  .floating-dock-mask-icon { width: 18px; height: 18px; }
+  .floating-dock-icon img { width: 18px; height: 18px; }
 }
