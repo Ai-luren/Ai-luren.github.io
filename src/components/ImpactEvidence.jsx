@@ -135,6 +135,7 @@ function CircularAwardGallery() {
           showTitles={false}
           enableWheel={false}
           enableKeyboard={false}
+          disableOnMobile
           verticalOffset={-0.25}
           onImageLoad={setLoadedCount}
           mobileFallback={(

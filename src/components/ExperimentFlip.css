@@ -290,13 +290,13 @@
   }
   .flip-experiment__glare.slot-feature,
   .flip-experiment__card.is-feature {
-    min-height: 320px;
+    min-height: 280px;
   }
   .flip-experiment__glare,
   .flip-experiment__card {
-    flex: 0 0 320px;
-    height: 320px;
-    min-height: 320px;
+    flex: 0 0 280px;
+    height: 280px;
+    min-height: 280px;
   }
   /* 移动端不依赖 ScrollTrigger 入场，避免脚本延迟时卡片文字保持隐藏。 */
   .flip-experiment__card,

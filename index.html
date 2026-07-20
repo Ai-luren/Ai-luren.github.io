@@ -377,7 +377,15 @@
     }
     @media (max-width: 720px) {
       .comet-archive { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 18px 0 26px; overflow: visible; }
-      .comet-archive__item { min-width: 0; aspect-ratio: 3 / 4.5; }
+      .comet-archive__item { min-width: 0; aspect-ratio: 3 / 5; }
+      .comet-archive__card { grid-template-rows: auto minmax(0, 1fr) auto; padding-top: 10px; padding-bottom: 24px; }
+      .comet-archive__image { top: 12px; }
+      .comet-archive__copy { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: 6px; }
+      .comet-archive__meta { white-space: nowrap; }
+      .comet-archive__details { display: block; width: 100%; min-width: 0; }
+      .comet-archive__copy strong { max-width: 100%; overflow: hidden; font-size: clamp(14px, 4.2vw, 16px); white-space: nowrap; line-height: 1.1; text-overflow: ellipsis; }
+      .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { transform: none; }
+      .comet-card:hover .comet-archive__copy, .comet-card:focus-within .comet-archive__copy { transform: none; }
       .comet-archive__scroll-hint { display: none !important; }
     }
     .comet-archive__scroll-hint { display: none; }
@@ -1632,32 +1640,13 @@
   </footer>
   <div class="copy-status" role="status" aria-live="polite"></div>
 
+  <script src="./vendor/gsap.min.js"></script>
+  <script src="./vendor/ScrollTrigger.min.js"></script>
   <script>
     window.__gsapReady = (async function () {
-      function loadClassicScript(src) {
-        // file:// 页面无法 fetch 相对路径脚本，改用原生 script 标签兜底，保证本地直接预览时交互也能初始化。
-        if (window.location.protocol === 'file:') {
-          return new Promise(function (resolve, reject) {
-            var script = document.createElement('script');
-            script.src = src;
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-        }
-        return fetch(src).then(function (response) {
-          if (!response.ok) throw new Error('Failed to load ' + src);
-          return response.text();
-        }).then(function (source) {
-          // 这两个 vendor 文件是 UMD 版；在当前浏览器里直接插入 script 会触发
-          // 对只读 window.window 的赋值。给 UMD 一个可写的执行宿主，导出仍指向真实 window。
-          var scope = { window: window, self: window };
-          Function(source).call(scope);
-        });
+      if (!window.gsap || !window.ScrollTrigger) {
+        console.error('[portfolio] GSAP or ScrollTrigger failed to load; native fallbacks remain enabled.');
       }
-
-      await loadClassicScript('vendor/gsap.min.js');
-      await loadClassicScript('vendor/ScrollTrigger.min.js');
 
       (function () {
       'use strict';
