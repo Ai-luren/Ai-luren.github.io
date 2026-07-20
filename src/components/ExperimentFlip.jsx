@@ -1,10 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
 import Flip from 'gsap/Flip';
 import GlareHover from './GlareHover.jsx';
+import { getGsap } from '../gsap-runtime.js';
 import './ExperimentFlip.css';
-
-gsap.registerPlugin(Flip);
 
 const experiments = [
   {
@@ -142,6 +140,9 @@ export default function ExperimentFlip() {
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return undefined;
+    const gsap = getGsap();
+    if (!gsap) return undefined;
+    gsap.registerPlugin(Flip);
     return () => {
       gsap.killTweensOf(root.querySelectorAll('.flip-experiment__card'));
     };
@@ -150,6 +151,8 @@ export default function ExperimentFlip() {
   useLayoutEffect(() => {
     const state = pendingFlipState.current;
     if (!state) return;
+    const gsap = getGsap();
+    if (!gsap) return;
     pendingFlipState.current = null;
     Flip.from(state, {
       duration: 0.48,
@@ -163,9 +166,19 @@ export default function ExperimentFlip() {
 
   const selectExperiment = (id) => {
     if (id === activeId) return;
+    const gsap = getGsap();
+    if (!gsap) {
+      setActiveId(id);
+      return;
+    }
+    gsap.registerPlugin(Flip);
     const cards = Array.from(rootRef.current?.querySelectorAll('.flip-experiment__card') || []);
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const state = prefersReducedMotion ? null : Flip.getState(cards, { props: 'borderRadius,boxShadow' });
+    const isMobile = window.matchMedia('(max-width: 720px)').matches;
+    // 移动端保持三张卡片静态展示，不因点击重排卡片或播放切换动画。
+    if (isMobile) return;
+    // 桌面端使用 Flip 保持卡片切换的空间连续性。
+    const state = prefersReducedMotion || isMobile ? null : Flip.getState(cards, { props: 'borderRadius,boxShadow' });
     pendingFlipState.current = state;
     setActiveId(id);
   };

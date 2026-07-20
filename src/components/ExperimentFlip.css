@@ -19,6 +19,9 @@
 .flip-experiment__card {
   min-width: 0;
   min-height: 0;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
 }
 
 .flip-experiment__glare { min-width: 0; min-height: 0; }
@@ -289,6 +292,21 @@
   .flip-experiment__card.is-feature {
     min-height: 320px;
   }
+  .flip-experiment__glare,
+  .flip-experiment__card {
+    flex: 0 0 320px;
+    height: 320px;
+    min-height: 320px;
+  }
+  /* 移动端不依赖 ScrollTrigger 入场，避免脚本延迟时卡片文字保持隐藏。 */
+  .flip-experiment__card,
+  .flip-experiment__card[data-slot="feature"],
+  .flip-experiment__card[data-slot="secondary"],
+  .flip-experiment__card[data-slot="tertiary"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
   .flip-experiment__card.is-feature .flip-experiment__body {
     display: block;
     min-height: 0;
@@ -298,10 +316,7 @@
     display: none;
   }
   .flip-experiment__hint {
-    position: static;
-    display: block;
-    width: fit-content;
-    margin: 10px 14px 14px auto;
+    display: none;
   }
   .flip-experiment__workflow {
     margin-top: 22px;

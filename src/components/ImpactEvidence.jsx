@@ -12,14 +12,14 @@ import polloLogo from '../../创作者LOGO/Pollo.webp';
 import qwenLogo from '../../创作者LOGO/qwen-color.webp';
 import viduLogo from '../../创作者LOGO/vidu-color.webp';
 
-import award1 from '../../获奖截图/画板 1.jpg';
-import award2 from '../../获奖截图/画板 2.jpg';
-import award3 from '../../获奖截图/画板 3.jpg';
-import award4 from '../../获奖截图/画板 4.jpg';
-import award5 from '../../获奖截图/画板 5.jpg';
-import award7 from '../../获奖截图/画板 7.jpg';
-import award8 from '../../获奖截图/画板 8.jpg';
-import award9 from '../../获奖截图/画板 9.jpg';
+import award1 from '../../获奖截图/optimized/画板 1.webp';
+import award2 from '../../获奖截图/optimized/画板 2.webp';
+import award3 from '../../获奖截图/optimized/画板 3.webp';
+import award4 from '../../获奖截图/optimized/画板 4.webp';
+import award5 from '../../获奖截图/optimized/画板 5.webp';
+import award7 from '../../获奖截图/optimized/画板 7.webp';
+import award8 from '../../获奖截图/optimized/画板 8.webp';
+import award9 from '../../获奖截图/optimized/画板 9.webp';
 import douyinScreenshot from '../../社交媒体主页/抖音主页.webp';
 import xiaohongshuScreenshot from '../../社交媒体主页/小红书主页.webp';
 import kuaishouScreenshot from '../../社交媒体主页/快手主页.webp';
@@ -137,7 +137,6 @@ function CircularAwardGallery() {
           enableKeyboard={false}
           verticalOffset={-0.25}
           onImageLoad={setLoadedCount}
-          disableOnMobile
           mobileFallback={(
             <div className="impact-award-mobile-grid" role="list" aria-label="获奖作品图片">
               {galleryItems.map((item) => (

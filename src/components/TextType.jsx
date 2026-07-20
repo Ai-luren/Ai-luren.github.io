@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { gsap } from 'gsap';
+import { getGsap } from '../gsap-runtime.js';
 import './TextType.css';
 
 export default function TextType({
@@ -37,6 +37,8 @@ export default function TextType({
   useEffect(() => {
     if (!showCursor || !cursorRef.current) return undefined;
     const cursor = cursorRef.current;
+    const gsap = getGsap();
+    if (!gsap) return undefined;
     gsap.killTweensOf(cursor);
     const context = gsap.context(() => {
       gsap.set(cursor, { opacity: 1 });

@@ -78,12 +78,12 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
 
 export default function FloatingDock() {
   const mouseX = useMotionValue(Infinity);
-  const [isCompact, setIsCompact] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 380);
+  const [isCompact, setIsCompact] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 430);
   const [status, setStatus] = useState('');
   const spring = { mass: 0.1, stiffness: 150, damping: 12 };
 
   useEffect(() => {
-    const updateCompactMode = () => setIsCompact(window.innerWidth <= 380);
+    const updateCompactMode = () => setIsCompact(window.innerWidth <= 430);
     window.addEventListener('resize', updateCompactMode, { passive: true });
     return () => window.removeEventListener('resize', updateCompactMode);
   }, []);

@@ -1,5 +1,5 @@
-import gsap from 'gsap';
 import { useEffect, useRef } from 'react';
+import { getGsap } from '../gsap-runtime.js';
 
 export default function CometCard({ children, className = '', ...props }) {
   const cardRef = useRef(null);
@@ -7,6 +7,8 @@ export default function CometCard({ children, className = '', ...props }) {
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return undefined;
+    const gsap = getGsap();
+    if (!gsap) return undefined;
     const context = gsap.context(() => {
       const rotateXTo = gsap.quickTo(card, '--comet-rotate-x', { duration: .22, ease: 'power2.out' });
       const rotateYTo = gsap.quickTo(card, '--comet-rotate-y', { duration: .22, ease: 'power2.out' });

@@ -1,13 +1,13 @@
 import CometCard from './CometCard.jsx';
 import { useEffect, useRef, useState } from 'react';
-import watsonsCover from '../../AI作品集封面/AI 创意广告-屈臣氏（优秀奖）.jpg';
-import lenovoCover from '../../AI作品集封面/AI 创意广告-联想（联想特别鸣谢奖_官号转发）.jpg';
-import tongyiCover from '../../AI作品集封面/AI 创意广告-通义万相先导片（官号首发）.jpg';
-import chageeCover from '../../AI作品集封面/AI 创意广告-霸王茶姬（中国联通三等奖）.jpg';
-import catsCover from '../../AI作品集封面/AI 创意短片-猫咪的一天（中国联通三等奖）.jpg';
-import yueyangCover from '../../AI作品集封面/AI 文旅宣传-岳阳楼（优秀奖_超棒奖）.jpg';
-import riverCityCover from '../../AI作品集封面/AI 概念短片-人河流城市（MJ 官方优秀作品）.jpg';
-import lightCover from '../../AI作品集封面/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.jpg';
+import watsonsCover from '../../AI作品集封面/optimized/AI 创意广告-屈臣氏（优秀奖）.webp';
+import lenovoCover from '../../AI作品集封面/optimized/AI 创意广告-联想（联想特别鸣谢奖_官号转发）.webp';
+import tongyiCover from '../../AI作品集封面/optimized/AI 创意广告-通义万相先导片（官号首发）.webp';
+import chageeCover from '../../AI作品集封面/optimized/AI 创意广告-霸王茶姬（中国联通三等奖）.webp';
+import catsCover from '../../AI作品集封面/optimized/AI 创意短片-猫咪的一天（中国联通三等奖）.webp';
+import yueyangCover from '../../AI作品集封面/optimized/AI 文旅宣传-岳阳楼（优秀奖_超棒奖）.webp';
+import riverCityCover from '../../AI作品集封面/optimized/AI 概念短片-人河流城市（MJ 官方优秀作品）.webp';
+import lightCover from '../../AI作品集封面/optimized/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.webp';
 import './CometCard.css';
 
 const ARCHIVES = [
@@ -23,7 +23,42 @@ const ARCHIVES = [
 
 export default function MagneticProjectArchive() {
   const archiveRef = useRef(null);
+  const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
   const [canScroll, setCanScroll] = useState(false);
+
+  const handlePointerDown = (event) => {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+    const archive = archiveRef.current;
+    if (!archive) return;
+    dragState.current = { active: true, startX: event.clientX, startScrollLeft: archive.scrollLeft, moved: false };
+    archive.classList.add('is-dragging');
+    archive.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    const archive = archiveRef.current;
+    const state = dragState.current;
+    if (!archive || !state.active) return;
+    const distance = event.clientX - state.startX;
+    if (Math.abs(distance) > 6) state.moved = true;
+    archive.scrollLeft = state.startScrollLeft - distance;
+  };
+
+  const stopDragging = (event) => {
+    const archive = archiveRef.current;
+    if (!archive) return;
+    dragState.current.active = false;
+    archive.classList.remove('is-dragging');
+    if (event?.pointerId != null) archive.releasePointerCapture?.(event.pointerId);
+  };
+
+  const handleClickCapture = (event) => {
+    if (dragState.current.moved) {
+      event.preventDefault();
+      event.stopPropagation();
+      dragState.current.moved = false;
+    }
+  };
 
   useEffect(() => {
     const archive = archiveRef.current;
@@ -42,7 +77,7 @@ export default function MagneticProjectArchive() {
 
   return (
     <>
-      <div ref={archiveRef} className="comet-archive" role="list" aria-label="AI 视频创作档案">
+      <div ref={archiveRef} className="comet-archive" role="list" aria-label="AI 视频创作档案" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging} onClickCapture={handleClickCapture}>
       {ARCHIVES.map(archive => (
         <CometCard key={archive.id} className="comet-archive__item">
           <button

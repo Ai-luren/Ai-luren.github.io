@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
 import TextType from './TextType.jsx';
+import { getGsap } from '../gsap-runtime.js';
 import './HeroTitle.css';
 
 export default function HeroTitle() {
@@ -9,6 +9,8 @@ export default function HeroTitle() {
   useEffect(() => {
     const title = titleRef.current;
     if (!title) return undefined;
+    const gsap = getGsap();
+    if (!gsap) return undefined;
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const context = gsap.context(() => {
