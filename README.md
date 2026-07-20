@@ -2,7 +2,10 @@
 
 Ai路人的网页作品集，展示AI 图像与视频创作，以及围绕 AI 内容搭建的小工具。
 
-线上地址：<https://ai-luren.github.io/>
+线上地址：
+
+- Netlify：<https://ailuren.netlify.app/>
+- GitHub Pages：<https://ai-luren.github.io/>
 
 ## 本地运行
 
