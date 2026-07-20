@@ -35,6 +35,6 @@
   -webkit-backdrop-filter: var(--card-blur);
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) and (pointer: coarse) {
   .comet-card > .comet-archive__card { transform: none !important; transition: none; }
 }
