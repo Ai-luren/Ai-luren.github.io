@@ -1,119 +1,49 @@
-import { useEffect, useRef } from 'react';
-import { getGsap } from '../gsap-runtime.js';
+import { useRef } from 'react';
 
 export default function CometCard({ children, className = '', ...props }) {
   const cardRef = useRef(null);
 
-  useEffect(() => {
+  const setCardState = (card, rotateX = '0deg', rotateY = '0deg', lift = '0px', scale = 1) => {
+    card.style.setProperty('--comet-rotate-x', rotateX);
+    card.style.setProperty('--comet-rotate-y', rotateY);
+    card.style.setProperty('--comet-lift', lift);
+    card.style.setProperty('--comet-press-scale', String(scale));
+  };
+
+  const handleMouseMove = event => {
     const card = cardRef.current;
-    if (!card) return undefined;
-    if (window.matchMedia('(pointer: coarse)').matches) return undefined;
-    let disposed = false;
-    let nativeCleanup = null;
-    let gsapCleanup = () => {};
+    if (!card) return;
 
-    const setupNativeInteraction = () => {
-      const setCardState = (rotateX, rotateY, lift) => {
-        card.style.setProperty('--comet-rotate-x', rotateX);
-        card.style.setProperty('--comet-rotate-y', rotateY);
-        card.style.setProperty('--comet-lift', lift);
-      };
-      const reset = () => setCardState('0deg', '0deg', '0px');
-      const handlePointerMove = event => {
-        if (event.pointerType === 'touch') return;
-        const rect = card.getBoundingClientRect();
-        if (!rect.width || !rect.height || !Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)) return;
-        const x = (event.clientX - rect.left) / rect.width;
-        const y = (event.clientY - rect.top) / rect.height;
-        setCardState(`${(0.5 - y) * 12}deg`, `${(x - 0.5) * 12}deg`, '-4px');
-      };
+    const rect = card.getBoundingClientRect();
+    const left = Number.isFinite(rect.left) ? rect.left : rect.x;
+    const top = Number.isFinite(rect.top) ? rect.top : rect.y;
+    if (!rect.width || !rect.height || !Number.isFinite(left) || !Number.isFinite(top)) return;
 
-      card.addEventListener('pointermove', handlePointerMove);
-      card.addEventListener('mousemove', handlePointerMove);
-      card.addEventListener('pointerleave', reset);
-      card.addEventListener('mouseleave', reset);
-      return () => {
-        card.removeEventListener('pointermove', handlePointerMove);
-        card.removeEventListener('mousemove', handlePointerMove);
-        card.removeEventListener('pointerleave', reset);
-        card.removeEventListener('mouseleave', reset);
-        reset();
-      };
-    };
+    const rotateY = ((event.clientX - left - rect.width / 2) / 25).toFixed(2);
+    const rotateX = ((event.clientY - top - rect.height / 2) / -25).toFixed(2);
+    setCardState(card, `${rotateX}deg`, `${rotateY}deg`, '-4px');
+  };
 
-    const setupInteraction = () => {
-      if (disposed) return;
-      const gsap = getGsap();
-      if (!gsap) return;
-      nativeCleanup?.();
-      nativeCleanup = null;
-      const context = gsap.context(() => {
-        const rotateXTo = gsap.quickTo(card, '--comet-rotate-x', { duration: .22, ease: 'power2.out' });
-        const rotateYTo = gsap.quickTo(card, '--comet-rotate-y', { duration: .22, ease: 'power2.out' });
-        const liftTo = gsap.quickTo(card, '--comet-lift', { duration: .22, ease: 'power2.out' });
-        const reset = () => {
-          rotateXTo('0deg');
-          rotateYTo('0deg');
-          liftTo('0px');
-        };
-        const handlePointerMove = event => {
-          if (event.pointerType === 'touch') return;
-          const rect = card.getBoundingClientRect();
-          if (!rect.width || !rect.height || !Number.isFinite(event.clientX) || !Number.isFinite(event.clientY)) return;
-          const x = (event.clientX - rect.left) / rect.width;
-          const y = (event.clientY - rect.top) / rect.height;
-          rotateYTo(`${(x - 0.5) * 12}deg`);
-          rotateXTo(`${(0.5 - y) * 12}deg`);
-          liftTo('-4px');
-        };
-        const handlePointerDown = () => {
-          gsap.to(card, { '--comet-press-scale': .985, duration: .1, ease: 'power2.out', overwrite: 'auto' });
-        };
-        const handlePointerUp = () => {
-          gsap.to(card, { '--comet-press-scale': 1, duration: .24, ease: 'back.out(2)', overwrite: 'auto' });
-        };
+  const resetCard = () => {
+    if (cardRef.current) setCardState(cardRef.current);
+  };
 
-        card.addEventListener('pointermove', handlePointerMove);
-        card.addEventListener('mousemove', handlePointerMove);
-        card.addEventListener('pointerleave', reset);
-        card.addEventListener('mouseleave', reset);
-        card.addEventListener('pointerdown', handlePointerDown);
-        card.addEventListener('pointerup', handlePointerUp);
-        card.addEventListener('pointercancel', handlePointerUp);
+  const handleMouseDown = () => {
+    if (cardRef.current) cardRef.current.style.setProperty('--comet-press-scale', '.985');
+  };
 
-        return () => {
-          card.removeEventListener('pointermove', handlePointerMove);
-          card.removeEventListener('mousemove', handlePointerMove);
-          card.removeEventListener('pointerleave', reset);
-          card.removeEventListener('mouseleave', reset);
-          card.removeEventListener('pointerdown', handlePointerDown);
-          card.removeEventListener('pointerup', handlePointerUp);
-          card.removeEventListener('pointercancel', handlePointerUp);
-        };
-      }, card);
-      gsapCleanup = () => context.revert();
-    };
-
-    nativeCleanup = setupNativeInteraction();
-
-    const gsapReady = window.__gsapReady;
-    if (gsapReady && typeof gsapReady.then === 'function') {
-      gsapReady.then(setupInteraction).catch(setupInteraction);
-    } else {
-      setupInteraction();
-    }
-
-    return () => {
-      disposed = true;
-      nativeCleanup?.();
-      gsapCleanup();
-    };
-  }, []);
+  const handleMouseUp = () => {
+    if (cardRef.current) cardRef.current.style.setProperty('--comet-press-scale', '1');
+  };
 
   return (
     <div
       ref={cardRef}
       className={`comet-card ${className}`.trim()}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={resetCard}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
       {...props}
     >
       {children}
