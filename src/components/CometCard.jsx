@@ -7,13 +7,41 @@ export default function CometCard({ children, className = '', ...props }) {
   useEffect(() => {
     const card = cardRef.current;
     if (!card) return undefined;
+    if (window.matchMedia('(pointer: coarse)').matches) return undefined;
     let disposed = false;
     let revertContext = () => {};
+
+    const setupNativeInteraction = () => {
+      const setCardState = (rotateX, rotateY, lift) => {
+        card.style.setProperty('--comet-rotate-x', rotateX);
+        card.style.setProperty('--comet-rotate-y', rotateY);
+        card.style.setProperty('--comet-lift', lift);
+      };
+      const reset = () => setCardState('0deg', '0deg', '0px');
+      const handlePointerMove = event => {
+        if (event.pointerType === 'touch') return;
+        const rect = card.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width;
+        const y = (event.clientY - rect.top) / rect.height;
+        setCardState(`${(0.5 - y) * 12}deg`, `${(x - 0.5) * 12}deg`, '-4px');
+      };
+
+      card.addEventListener('pointermove', handlePointerMove);
+      card.addEventListener('pointerleave', reset);
+      return () => {
+        card.removeEventListener('pointermove', handlePointerMove);
+        card.removeEventListener('pointerleave', reset);
+        reset();
+      };
+    };
 
     const setupInteraction = () => {
       if (disposed) return;
       const gsap = getGsap();
-      if (!gsap) return;
+      if (!gsap) {
+        revertContext = setupNativeInteraction();
+        return;
+      }
       const context = gsap.context(() => {
         const rotateXTo = gsap.quickTo(card, '--comet-rotate-x', { duration: .22, ease: 'power2.out' });
         const rotateYTo = gsap.quickTo(card, '--comet-rotate-y', { duration: .22, ease: 'power2.out' });
