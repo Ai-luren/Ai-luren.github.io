@@ -22,7 +22,6 @@
   transform: scale(var(--comet-press-scale)) translate3d(0, var(--comet-lift), 0) rotateX(var(--comet-rotate-x)) rotateY(var(--comet-rotate-y));
   transform-style: preserve-3d;
   transition: none;
-  will-change: transform;
 }
 
 .comet-card:hover,

@@ -52,7 +52,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; }
-    html { background: var(--space-black); scroll-behavior: auto; }
+    html { background: var(--space-black); scroll-behavior: auto; scroll-padding-top: 88px; }
     body { margin: 0; overflow-x: hidden; color: var(--mist); background: var(--space-black); font-family: var(--sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
     body.is-loading { overflow: hidden; }
     a { color: inherit; text-decoration: none; }
@@ -172,17 +172,19 @@
 
     @media (max-width: 720px) {
       .experience-scroll { min-height: calc(100svh - 128px); }
-      .experience-pin { grid-template-columns: 1fr; grid-template-rows: auto 2px minmax(340px, 1fr); gap: 22px; align-content: center; padding: 32px 0; }
+      .experience-pin { grid-template-columns: 1fr; grid-template-rows: auto 2px minmax(340px, 1fr); gap: 12px; align-content: center; padding: 24px 0; }
       .experience-index { grid-column: auto; grid-row: auto; width: 100%; }
       .experience-list { display: flex; gap: 8px; margin: 18px -8vw 0; padding: 0 8vw 6px; overflow-x: auto; scrollbar-width: none; }
       .experience-list::-webkit-scrollbar { display: none; }
       .experience-step { flex: 0 0 150px; padding: 12px; }
       .experience-step small { font-size: 16px; }
       .experience-step::before { display: none; }
-      .experience-progress { position: relative; top: auto; left: auto; grid-column: auto; grid-row: auto; width: 100%; height: 2px; }
+      .experience-index { grid-row: 1; }
+      .experience-progress { position: relative; top: auto; left: auto; grid-column: auto; grid-row: 2; width: 100%; height: 2px; }
       .experience-progress::before { top: -4px; left: 0; transform: translateX(-50%); }
       .experience-progress-fill { width: 100%; height: 100%; transform: scaleX(var(--experience-progress, 0)); transform-origin: left; }
-      .experience-detail, .experience-details { grid-column: auto; grid-row: auto; width: 100%; min-height: 440px; }
+      .experience-detail, .experience-details { grid-column: auto; grid-row: 3; width: 100%; min-height: 400px; }
+      .experience-details { align-self: start; }
       .experience-detail { padding: 20px; }
       .experience-detail h3 { font-size: clamp(2rem, 10vw, 3rem); }
     }
@@ -353,10 +355,10 @@
     /* 精选创作档案：3:5 外层档案卡内嵌 3:4 封面，内容按上下流排列，避免文字与图片重叠。 */
     .comet-archive { display: grid; width: 100%; margin: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: stretch; gap: clamp(16px, 1.6vw, 26px); padding: 18px 0 34px; }
     .comet-archive__item { min-width: 0; aspect-ratio: 3 / 4.5; }
-    .comet-archive__card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; width: 100%; height: 100%; padding: 16px 20px 18px; overflow: visible; border: 0; border-radius: 18px; background: transparent; box-shadow: none; color: #fff; cursor: pointer; text-align: left; transform-style: preserve-3d; will-change: transform; }
+    .comet-archive__card { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; align-content: space-between; width: 100%; height: 100%; padding: 16px 20px 18px; overflow: visible; border: 0; border-radius: 18px; background: transparent; box-shadow: none; color: #fff; cursor: pointer; text-align: left; transform-style: preserve-3d; }
     .comet-archive__card:focus-visible { outline: 2px solid rgba(255,255,255,.88); outline-offset: 4px; }
     .comet-archive__glass { position: absolute; z-index: 0; inset: 0; border: 1px solid var(--glass-border); border-radius: 18px; background: var(--glass-surface); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); pointer-events: none; }
-    .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 0; border-radius: 14px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 24px 32px rgba(0,0,0,.34); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: none; transform-origin: center 42%; transition: transform .42s cubic-bezier(.2,.75,.25,1), filter 1s cubic-bezier(.22,.8,.24,1); will-change: transform, filter; }
+    .comet-archive__image { position: relative; z-index: 1; grid-column: 1; grid-row: 2; align-self: start; width: 100%; min-height: 0; aspect-ratio: 3 / 4; border: 0; border-radius: 14px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 24px 32px rgba(0,0,0,.34); filter: grayscale(1) saturate(0) contrast(.94); pointer-events: none; transform: none; transform-origin: center 42%; transition: transform .42s cubic-bezier(.2,.75,.25,1), filter .42s cubic-bezier(.2,.75,.25,1); }
     .comet-archive__award { position: relative; z-index: 3; grid-column: 1; grid-row: 1; justify-self: start; align-self: start; max-width: 100%; padding: 0; border: 0; border-radius: 0; background: transparent; color: rgba(232,240,245,.88); font: 600 11px/1 var(--sans); letter-spacing: .02em; text-align: left; transform: none; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
     .comet-archive__copy { position: relative; right: auto; bottom: auto; left: auto; z-index: 3; grid-column: 1; grid-row: 3; align-self: end; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; transform: none; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
     .comet-archive__meta { display: inline-block; flex: 0 1 auto; color: rgba(232,240,245,.58); font: 500 10px/1 var(--tech); letter-spacing: .08em; transform: none; transform-style: preserve-3d; transition: transform .28s cubic-bezier(.2,.75,.25,1); }
@@ -376,7 +378,10 @@
       .comet-archive { display: flex; gap: 14px; margin-right: -8vw; padding: 18px 8vw 30px 0; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; }
       .comet-archive::-webkit-scrollbar { display: none; }
       .comet-archive__item { flex: 0 0 min(74vw, 300px); scroll-snap-align: start; }
+      .comet-archive__scroll-hint { display: flex !important; align-items: center; justify-content: flex-end; gap: 8px; margin: -10px 0 0; color: var(--subtle-text); font: 500 10px/1.4 var(--font-mono); letter-spacing: .04em; }
+      .comet-archive__scroll-hint span { color: var(--accent-blue-on-dark); font-size: 15px; line-height: 1; }
     }
+    .comet-archive__scroll-hint { display: none; }
     @media (prefers-reduced-motion: reduce) {
       .comet-archive__image, .comet-archive__award, .comet-archive__copy, .comet-archive__meta, .comet-archive__copy strong { transform: none !important; transition: none; }
     }
@@ -552,10 +557,23 @@
       --space-9: 96px;
       --space-10: 128px;
       --space-11: 144px;
-      --shell: min(var(--content-max), calc(100% - (var(--content-gutter) * 2)));
+      --shell: min(var(--content-max), calc(100% - var(--content-gutter) - var(--content-gutter)));
     }
 
-    .shell { width: var(--shell); }
+    /* 百分比不能放在根级自定义属性里计算：否则移动端会按视口提前求值，版心会错误保持 1220px。 */
+    .shell {
+      width: min(var(--content-max), calc(100% - var(--content-gutter) - var(--content-gutter)));
+      max-width: 100%;
+      min-width: 0;
+    }
+
+    /* Grid 子项不能把内部横向轨道的最小内容宽度反向撑大整页。 */
+    #projects-react-root,
+    #recognition-react-root,
+    #experiments-react-root {
+      min-width: 0;
+      max-width: 100%;
+    }
 
     .section { padding: var(--space-9) 0 var(--space-8); }
     .section-intro { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-8); margin-bottom: var(--space-7); }
@@ -1061,7 +1079,7 @@
     }
 
     @media (max-width: 760px) {
-      header { inset: 12px auto auto 50%; width: calc(100% - 24px); }
+      header { inset: 12px auto auto 50%; width: calc(100% - 24px); overflow: visible; }
       header.is-condensed { top: 12px; width: calc(100% - 24px); }
       .nav-inner.shell { min-height: 54px; }
       header .nav-inner.shell, header.is-condensed .nav-inner.shell { padding: 0 8px; }
@@ -1472,6 +1490,9 @@
       .footer-nav a { font-size: 13px; }
     }
 
+    /* 发布版不暴露背景调参入口，保留已确定的默认视频质感与降级逻辑。 */
+    #video-tuner { display: none !important; }
+
   </style>
 </head>
 <body class="is-loading is-on-hero">
@@ -1775,7 +1796,18 @@
         }
         function entrance(selector, fromVars, toVars, trigger, options) {
           var settings = options || {};
-          var scrollTrigger = settings.scrollTrigger || { trigger: trigger || selector, start: settings.start || 'top 84%', once: true };
+          var attempt = arguments.length > 5 ? arguments[5] : 0;
+          var targetNode = document.querySelector(selector);
+          var triggerNode = typeof trigger === 'string' ? document.querySelector(trigger) : trigger;
+          if (!targetNode || (trigger && !triggerNode)) {
+            if (attempt < 20) {
+              window.setTimeout(function () {
+                entrance(selector, fromVars, toVars, trigger, settings, attempt + 1);
+              }, 50);
+            }
+            return;
+          }
+          var scrollTrigger = settings.scrollTrigger || { trigger: triggerNode || targetNode, start: settings.start || 'top 84%', once: true };
           var target = Object.assign({ autoAlpha: 1, duration: .6, ease: 'power3.out', scrollTrigger: scrollTrigger }, settings);
           delete target.start;
           delete target.scrollTrigger;
@@ -1789,10 +1821,10 @@
         entrance('#recognition .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#recognition', { duration: .5 });
         entrance('#recognition .recognition-react-root', { autoAlpha: 0, scale: .98 }, { scale: 1 }, '#recognition .recognition-react-root', { duration: .7, start: 'top 78%' });
         entrance('#experiments .section-intro', { autoAlpha: 0, y: 14 }, { y: 0 }, '#experiments', { duration: .5 });
-        entrance('#experiments .experiment-console', { autoAlpha: 0, y: 22 }, { y: 0 }, '#experiments .experiment-console', { duration: .6, start: 'top 80%' });
-        entrance('#experiments .experiment-rail', { autoAlpha: 0, y: 18 }, { y: 0 }, '#experiments .experiment-console', { duration: .44, stagger: .08, start: 'top 78%' });
+        entrance('#experiments-react-root .flip-experiment', { autoAlpha: 0, y: 22 }, { y: 0 }, '#experiments-react-root .flip-experiment', { duration: .6, start: 'top 80%' });
+        entrance('#experiments-react-root .flip-experiment__card', { autoAlpha: 0, y: 18 }, { y: 0 }, '#experiments-react-root .flip-experiment', { duration: .44, stagger: .08, start: 'top 78%' });
         entrance('#contact .footer-brand', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55 });
-        entrance('#contact .footer-social', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55, delay: .08 });
+        entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: 12 }, { y: 0 }, '#contact', { duration: .55, delay: .08 });
         if (experienceRoot && experienceSteps.length > 1 && experiencePanels.length === experienceSteps.length) {
           gsap.set(experiencePanels, { autoAlpha: 0, y: 18 });
           var experienceTimeline = gsap.timeline({
@@ -1885,13 +1917,21 @@
       var recognitionGroups = recognitionStage ? recognitionStage.querySelectorAll('.recognition-group[data-orbit]') : [];
       var recognitionRings = recognitionStage ? recognitionStage.querySelectorAll('.orbit') : [];
       var recognitionInView = Boolean(recognitionStage);
+      var recognitionFrame = 0;
+      function scheduleRecognitionOrbit() {
+        if (!recognitionFrame && recognitionInView && !document.hidden && !reduced) {
+          recognitionFrame = window.requestAnimationFrame(animateRecognitionOrbit);
+        }
+      }
       if (recognitionStage && 'IntersectionObserver' in window) {
         recognitionInView = false;
         var recognitionObserver = new IntersectionObserver(function (entries) {
           recognitionInView = Boolean(entries[0] && entries[0].isIntersecting);
+          if (recognitionInView) scheduleRecognitionOrbit();
         }, { rootMargin: '24% 0px' });
         recognitionObserver.observe(recognitionStage);
       }
+      document.addEventListener('visibilitychange', scheduleRecognitionOrbit);
       function selectRecognitionGroup(group) {
         var wasSelected = group.classList.contains('is-selected');
         recognitionGroups.forEach(function (item) {
@@ -1909,8 +1949,8 @@
         });
       });
       function animateRecognitionOrbit(now) {
-        if (!recognitionStage || reduced) return;
-        if (!recognitionInView || document.hidden) { window.requestAnimationFrame(animateRecognitionOrbit); return; }
+        recognitionFrame = 0;
+        if (!recognitionStage || reduced || !recognitionInView || document.hidden) return;
         var rect = recognitionStage.getBoundingClientRect();
         if (rect.width > 0 && rect.height > 0) {
           recognitionStage.classList.add('is-orbiting');
@@ -1930,9 +1970,9 @@
             group.style.transform = 'translate(' + tiltedX.toFixed(2) + 'px, ' + tiltedY.toFixed(2) + 'px)';
           });
         }
-        window.requestAnimationFrame(animateRecognitionOrbit);
+        scheduleRecognitionOrbit();
       }
-      if (recognitionStage && !reduced) window.requestAnimationFrame(animateRecognitionOrbit);
+      if (recognitionStage && !reduced) scheduleRecognitionOrbit();
 
       var status = document.querySelector('.copy-status');
       document.querySelectorAll('.copy-link[data-copy]').forEach(function (link) {

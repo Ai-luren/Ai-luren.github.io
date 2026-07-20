@@ -79,7 +79,7 @@ function ExperimentCard({ item, slot, onSelect, cardRef }) {
       glareOpacity={0.14}
       glareAngle={-32}
       glareSize={220}
-      transitionDuration={720}
+      transitionDuration={420}
     >
     <article
       ref={cardRef}
@@ -152,7 +152,7 @@ export default function ExperimentFlip() {
     if (!state) return;
     pendingFlipState.current = null;
     Flip.from(state, {
-      duration: 0.64,
+      duration: 0.48,
       ease: 'power3.inOut',
       absolute: false,
       scale: false,

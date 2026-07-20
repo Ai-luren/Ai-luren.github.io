@@ -73,7 +73,8 @@
   .impact-reach-dossier { padding: 14px; }
   .impact-reach-dossier-head { display: block; }
   .impact-reach-dossier-head span + span { display: block; margin-top: 3px; }
-  .impact-reach-profile-grid { grid-template-columns: 1fr; gap: 10px; }
+  .impact-reach-profile-grid { grid-template-columns: 1fr; gap: 28px; }
+  .impact-reach-profile-shot { height: auto; align-items: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -92,8 +92,10 @@ const SpecularButton = ({
     const btn = btnRef.current;
     const fx = fxRef.current;
     if (!btn || !fx) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
 
-    const dpr = window.devicePixelRatio || 1;
+    // 装饰性边缘光不需要跟随高密度屏幕放大到 3x/4x，1.5x 已足够清晰。
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true, dpr });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -166,10 +168,13 @@ const SpecularButton = ({
     let bright = 0;
     let last = performance.now();
     let raf = 0;
+    let isVisible = true;
     const lineC = new Color();
     const baseC = new Color();
 
     const update = (now) => {
+      raf = 0;
+      if (!isVisible || document.hidden) return;
       raf = requestAnimationFrame(update);
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
@@ -193,10 +198,26 @@ const SpecularButton = ({
       program.uniforms.uThickness.value = p.thickness * dpr;
       renderer.render({ scene: mesh });
     };
+    const resume = () => {
+      if (isVisible && !document.hidden && !raf) {
+        last = performance.now();
+        raf = requestAnimationFrame(update);
+      }
+    };
+    const visibilityObserver = 'IntersectionObserver' in window
+      ? new IntersectionObserver(([entry]) => {
+        isVisible = Boolean(entry?.isIntersecting);
+        if (isVisible) resume();
+      }, { rootMargin: '120px' })
+      : null;
+    visibilityObserver?.observe(btn);
+    document.addEventListener('visibilitychange', resume);
     raf = requestAnimationFrame(update);
 
     return () => {
       cancelAnimationFrame(raf);
+      visibilityObserver?.disconnect();
+      document.removeEventListener('visibilitychange', resume);
       ro.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
       if (gl.canvas.parentNode === fx) fx.removeChild(gl.canvas);
