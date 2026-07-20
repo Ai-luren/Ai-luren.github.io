@@ -1,4 +1,5 @@
 import CometCard from './CometCard.jsx';
+import { useEffect, useRef, useState } from 'react';
 import watsonsCover from '../../AI作品集封面/AI 创意广告-屈臣氏（优秀奖）.jpg';
 import lenovoCover from '../../AI作品集封面/AI 创意广告-联想（联想特别鸣谢奖_官号转发）.jpg';
 import tongyiCover from '../../AI作品集封面/AI 创意广告-通义万相先导片（官号首发）.jpg';
@@ -21,8 +22,27 @@ const ARCHIVES = [
 ];
 
 export default function MagneticProjectArchive() {
+  const archiveRef = useRef(null);
+  const [canScroll, setCanScroll] = useState(false);
+
+  useEffect(() => {
+    const archive = archiveRef.current;
+    if (!archive) return undefined;
+    const updateScrollHint = () => {
+      setCanScroll(archive.scrollWidth - archive.clientWidth - archive.scrollLeft > 8);
+    };
+    updateScrollHint();
+    archive.addEventListener('scroll', updateScrollHint, { passive: true });
+    window.addEventListener('resize', updateScrollHint, { passive: true });
+    return () => {
+      archive.removeEventListener('scroll', updateScrollHint);
+      window.removeEventListener('resize', updateScrollHint);
+    };
+  }, []);
+
   return (
-    <div className="comet-archive" role="list" aria-label="AI 视频创作档案">
+    <>
+      <div ref={archiveRef} className="comet-archive" role="list" aria-label="AI 视频创作档案">
       {ARCHIVES.map(archive => (
         <CometCard key={archive.id} className="comet-archive__item">
           <button
@@ -41,6 +61,8 @@ export default function MagneticProjectArchive() {
           </button>
         </CometCard>
       ))}
-    </div>
+      </div>
+      {canScroll && <p className="comet-archive__scroll-hint" aria-hidden="true">左右滑动查看更多 <span>→</span></p>}
+    </>
   );
 }

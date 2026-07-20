@@ -38,7 +38,6 @@
   color: #fff;
   text-decoration: none;
   outline: none;
-  will-change: width, height;
 }
 
 .floating-dock-item:hover,

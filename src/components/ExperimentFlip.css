@@ -279,9 +279,29 @@
   .flip-experiment__card[data-slot="feature"] { order: 1; }
   .flip-experiment__card[data-slot="secondary"] { order: 2; }
   .flip-experiment__card[data-slot="tertiary"] { order: 3; }
-  .flip-experiment__card:not(.is-feature) .flip-experiment__body { min-height: 128px; }
+  .flip-experiment__card:not(.is-feature) .flip-experiment__body { min-height: 0; }
+  .flip-experiment__card:not(.is-feature) .flip-experiment__copy { height: auto; }
+  .flip-experiment__card:not(.is-feature) .flip-experiment__link {
+    position: static;
+    margin-top: 14px;
+  }
+  .flip-experiment__glare.slot-feature,
+  .flip-experiment__card.is-feature {
+    min-height: 320px;
+  }
   .flip-experiment__card.is-feature .flip-experiment__body {
     display: block;
+    min-height: 0;
+  }
+  .flip-experiment__card.is-feature .flip-experiment__copy { height: auto; }
+  .flip-experiment__card.is-feature .flip-experiment__workflow {
+    display: none;
+  }
+  .flip-experiment__hint {
+    position: static;
+    display: block;
+    width: fit-content;
+    margin: 10px 14px 14px auto;
   }
   .flip-experiment__workflow {
     margin-top: 22px;

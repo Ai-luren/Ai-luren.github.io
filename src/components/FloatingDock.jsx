@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import './FloatingDock.css';
 
@@ -70,8 +70,15 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
 
 export default function FloatingDock() {
   const mouseX = useMotionValue(Infinity);
+  const [isCompact, setIsCompact] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 380);
   const [status, setStatus] = useState('');
   const spring = { mass: 0.1, stiffness: 150, damping: 12 };
+
+  useEffect(() => {
+    const updateCompactMode = () => setIsCompact(window.innerWidth <= 380);
+    window.addEventListener('resize', updateCompactMode, { passive: true });
+    return () => window.removeEventListener('resize', updateCompactMode);
+  }, []);
 
   const copy = (value, label) => {
     navigator.clipboard?.writeText(value).then(() => {
@@ -99,7 +106,15 @@ export default function FloatingDock() {
         onMouseMove={(event) => mouseX.set(event.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
-        {items.map((item) => <DockItem key={item.label} item={item} mouseX={mouseX} distance={155} magnification={60} baseItemSize={46} spring={spring} />)}
+        {items.map((item) => <DockItem
+          key={item.label}
+          item={item}
+          mouseX={mouseX}
+          distance={isCompact ? 120 : 155}
+          magnification={isCompact ? 48 : 60}
+          baseItemSize={isCompact ? 36 : 46}
+          spring={spring}
+        />)}
       </div>
       <div className="floating-dock-status" role="status" aria-live="polite">{status}</div>
     </div>

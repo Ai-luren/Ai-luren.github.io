@@ -187,6 +187,7 @@ export default function VideoPostProcess() {
     const video = document.getElementById('hero-video');
     const container = document.getElementById('video-bg');
     if (!video || !container || !window.WebGLRenderingContext) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
 
     const renderer = new Renderer({ alpha: false, antialias: false, dpr: Math.min(window.devicePixelRatio || 1, 1.5) });
     const gl = renderer.gl;

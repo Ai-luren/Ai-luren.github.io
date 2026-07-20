@@ -8,29 +8,22 @@ export default function CometCard({ children, className = '', ...props }) {
     const card = cardRef.current;
     if (!card) return undefined;
     const context = gsap.context(() => {
+      const rotateXTo = gsap.quickTo(card, '--comet-rotate-x', { duration: .22, ease: 'power2.out', unit: 'deg' });
+      const rotateYTo = gsap.quickTo(card, '--comet-rotate-y', { duration: .22, ease: 'power2.out', unit: 'deg' });
+      const liftTo = gsap.quickTo(card, '--comet-lift', { duration: .22, ease: 'power2.out', unit: 'px' });
       const reset = () => {
-        gsap.to(card, {
-          '--comet-rotate-x': '0deg',
-          '--comet-rotate-y': '0deg',
-          '--comet-lift': '0px',
-          duration: .34,
-          ease: 'power3.out',
-          overwrite: 'auto'
-        });
+        rotateXTo(0);
+        rotateYTo(0);
+        liftTo(0);
       };
       const handlePointerMove = event => {
         if (event.pointerType === 'touch') return;
         const rect = card.getBoundingClientRect();
         const x = (event.clientX - rect.left) / rect.width;
         const y = (event.clientY - rect.top) / rect.height;
-        gsap.to(card, {
-          '--comet-rotate-y': `${(x - 0.5) * 12}deg`,
-          '--comet-rotate-x': `${(0.5 - y) * 12}deg`,
-          '--comet-lift': '-4px',
-          duration: .22,
-          ease: 'power2.out',
-          overwrite: 'auto'
-        });
+        rotateYTo((x - 0.5) * 12);
+        rotateXTo((0.5 - y) * 12);
+        liftTo(-4);
       };
       const handlePointerDown = () => {
         gsap.to(card, { '--comet-press-scale': .985, duration: .1, ease: 'power2.out', overwrite: 'auto' });
