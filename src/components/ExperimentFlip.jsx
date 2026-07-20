@@ -50,7 +50,7 @@ const experiments = [
       ['React 页面', '组件化交互'],
       ['在线作品集', '持续迭代发布'],
     ],
-    href: 'https://github.com/Ai-luren/Ailuren-portfolio',
+    href: 'https://github.com/Ai-luren/Ai-luren.github.io',
     linkLabel: 'GitHub 开源项目',
   },
 ];
