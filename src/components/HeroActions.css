@@ -1,0 +1,31 @@
+#hero-actions-react-root { display: contents; }
+
+.hero-actions .specular-button {
+  min-height: 46px;
+  padding: 0 19px;
+  border: none;
+  border-radius: var(--sb-radius);
+  font: 500 12px/1 var(--sans, system-ui);
+  letter-spacing: .02em;
+}
+
+.hero-actions .specular-button--md { padding: 0 19px; }
+.hero-actions .specular-button.hero-primary {
+  border-color: transparent;
+  background: var(--accent-blue, #147ef5);
+  box-shadow: 0 10px 26px rgba(31, 98, 242, .28);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.hero-actions .specular-button:not(.hero-primary) {
+  background: rgba(8, 18, 28, .44);
+}
+
+@media (min-width: 721px) {
+  .hero-actions .specular-button { flex: 0 0 196px; width: 196px; min-height: 60px; padding: 0 20px; font-size: 14px; font-weight: 600; }
+}
+
+@media (max-width: 720px) {
+  .hero-actions .specular-button { width: 100%; min-height: 54px; padding: 0 25px; font-size: 14px; }
+}

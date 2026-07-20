@@ -135,11 +135,12 @@
     /* 工作经历：左侧时间轴导航，右侧窄详情卡，把中间空间还给背景视频。 */
     .experience-scroll { position: relative; min-height: 100svh; margin-top: 0; }
     .experience-pin { position: relative; display: grid; grid-template-columns: 220px minmax(0, 420px); column-gap: 0; justify-content: space-between; min-height: 100svh; align-items: center; padding: 40px 0; }
-    .experience-index { position: relative; grid-column: 1; grid-row: 1; width: min(100%, 220px); min-width: 0; }
+    .experience-index { position: relative; z-index: 3; grid-column: 1; grid-row: 1; width: min(100%, 220px); min-width: 0; }
     .experience-list { display: grid; gap: 6px; margin: 24px 0 0 24px; }
     .experience-step { position: relative; display: grid; gap: 4px; width: 100%; padding: 14px 12px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: var(--body-text); cursor: pointer; text-align: left; transition: border-color .22s ease, background .22s ease, color .22s ease; }
     .experience-step::before { position: absolute; top: 50%; left: -21px; z-index: 2; width: 7px; height: 7px; border: 1px solid rgba(180,200,215,.45); border-radius: 50%; background: var(--space-black); content: ''; transform: translateY(-50%); transition: border-color .22s ease, background .22s ease, box-shadow .22s ease; }
-    .experience-step:hover, .experience-step:focus-visible { border-color: var(--glass-border); background: rgba(13,27,40,.52); outline: none; }
+    .experience-step:hover { border-color: transparent; background: transparent; outline: none; }
+    .experience-step:focus-visible { border-color: transparent; background: transparent; outline: 1px solid rgba(41,151,255,.72); outline-offset: 3px; }
     .experience-step.is-active { border-color: rgba(41,151,255,.72); background: rgba(13,27,40,.92); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); color: #fff; }
     .experience-step.is-active::before { border-color: var(--accent-blue-on-dark); background: var(--accent-blue-on-dark); box-shadow: 0 0 12px rgba(41,151,255,.55); }
     .experience-step small { color: var(--subtle-text); font: 500 15px/1.25 var(--tech); letter-spacing: .02em; white-space: nowrap; }
@@ -151,14 +152,12 @@
     .experience-progress::before { display: none; }
     .experience-progress-fill { display: block; width: 100%; height: 100%; background: transparent; box-shadow: none; transform: scaleY(var(--experience-progress, 0)); transform-origin: top; }
     .experience-details { position: relative; grid-column: 2; grid-row: 1; width: min(100%, 420px); min-width: 0; min-height: 480px; justify-self: end; }
-    .experience-detail { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; min-height: 480px; overflow: hidden; padding: 20px; border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, rgba(13,27,40,.78), rgba(5,13,23,.52)); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); opacity: 0; visibility: hidden; }
+    .experience-detail { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; min-height: 480px; overflow: hidden; padding: 20px; border: 1px solid var(--glass-border); border-radius: var(--radius-card); background: linear-gradient(135deg, rgba(13,27,40,.78), rgba(5,13,23,.52)); box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); opacity: 0; visibility: hidden; pointer-events: none; }
     .experience-illustration { position: relative; width: 100%; aspect-ratio: 16 / 9; flex: 0 0 auto; margin-bottom: 16px; overflow: hidden; border: 1px solid rgba(184,215,236,.16); border-radius: 12px; background: linear-gradient(135deg, rgba(41,151,255,.12), rgba(5,12,20,.2) 55%, rgba(255,255,255,.05)); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
     .experience-illustration::after { position: absolute; right: 12px; bottom: 10px; color: rgba(207,221,231,.46); content: 'ILLUSTRATION / 16:9'; font: 500 9px var(--tech); letter-spacing: .08em; }
     .experience-illustration:has(img)::after { display: none; }
     .experience-illustration img { display: block; width: 100%; height: 100%; object-fit: cover; }
     .experience-detail::after { position: absolute; right: -16px; bottom: -48px; z-index: 0; color: rgba(41,151,255,.1); content: attr(data-experience-mark); font: 500 clamp(10rem, 20vw, 18rem)/.8 var(--tech); letter-spacing: -.12em; pointer-events: none; }
-    .experience-detail.is-active { position: relative; opacity: 1; visibility: visible; }
-    .experience-detail.is-active { border-color: rgba(184,215,236,.3); background: rgba(5,12,20,.86) !important; }
     .experience-detail > * { position: relative; z-index: 1; }
     .experience-detail small { color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .08em; }
     .experience-detail h3 { max-width: 12ch; margin: 10px 0 6px; color: var(--body-on-dark); font: 600 clamp(2rem, 3.2vw, 3rem)/1.05 var(--display); letter-spacing: -.05em; }
@@ -1472,6 +1471,7 @@
       .footer-nav { gap: 12px 18px; }
       .footer-nav a { font-size: 13px; }
     }
+
   </style>
 </head>
 <body class="is-loading is-on-hero">
@@ -1524,11 +1524,10 @@
       <div class="hero-shell shell">
         <div class="hero-copy">
           <p class="eyebrow reveal">01 / HERO</p>
-          <h1 id="hero-title" class="hero-title reveal"><span>AI创意</span><span>效果设计</span></h1>
+          <div id="hero-title-react-root"></div>
           <p class="hero-subtitle reveal">动态设计师，主要做 AI 图像和视频效果，也用 Vibe Coding 做些好玩的</p>
           <div class="hero-actions reveal">
-            <a class="hero-primary" href="#projects">查看创作档案</a>
-            <a href="#profile">浏览工作经历</a>
+            <div id="hero-actions-react-root"></div>
           </div>
           <a class="scroll-cue reveal" href="#profile" aria-label="继续阅读"><span aria-hidden="true">↓</span></a>
         </div>
@@ -1554,7 +1553,7 @@
             </div>
             <div class="experience-progress" aria-hidden="true"><span class="experience-progress-fill"></span></div>
             <div class="experience-details" aria-live="polite">
-              <article class="experience-detail is-active" data-experience-panel="0" data-experience-mark="01"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/01-motion-design.png" alt="宇航员在深空工作室控制电影胶片，表达动态设计与镜头节奏" loading="eager"></div><small>CAPABILITY / 01 · 2017—2018</small><h3>从镜头节奏开始</h3><p class="experience-role">英合创意文化传播 · 视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报</p></article>
+              <article class="experience-detail" data-experience-panel="0" data-experience-mark="01"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/01-motion-design.png" alt="宇航员在深空工作室控制电影胶片，表达动态设计与镜头节奏" loading="eager"></div><small>CAPABILITY / 01 · 2017—2018</small><h3>从镜头节奏开始</h3><p class="experience-role">英合创意文化传播 · 视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报</p></article>
               <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/02-product-brand.png" alt="宇航员在深空产品渲染舱调整产品与光影" loading="lazy"></div><small>CAPABILITY / 02 · 2018—2019</small><h3>把产品变成场景</h3><p class="experience-role">壹迦公关策划 · 三维设计组长</p><p class="experience-description">小米生态链产品渲染与品牌动态</p></article>
               <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/03-effect-play.png" alt="宇航员把特效创意送入循环装置，表达从实验到规模化产品" loading="lazy"></div><small>CAPABILITY / 03 · 2019—2024</small><h3>让创意进入产品</h3><p class="experience-role">快手 · 特效设计师 / AI 效果与动态设计</p><p class="experience-description">快影 AI 玩法、视频模板、特效与动态</p><p class="experience-honor">洛子峰奖 · 千万 DAU 产品</p></article>
               <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><div class="experience-illustration"><img src="./assets/work-history-illustrations/astronaut/04-ai-effect-delivery.png" alt="宇航员把 AI 图片效果通过验证门交付上线" loading="lazy"></div><small>CAPABILITY / 04 · 2024—2026</small><h3>从想法做到上线</h3><p class="experience-role">小米 · 高级动效原型设计师 / AI 效果设计</p><p class="experience-description">相册 AI 图片和视频效果，从想法做到上线</p><p class="experience-honor">Agent 挑战冠亚军 · AI 效率先锋官</p></article>
@@ -1579,11 +1578,7 @@
 
     <section id="experiments" class="section" aria-labelledby="experiments-title">
       <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title">AI实验室</h2></div></div>
-        <div class="experiment-console reveal"><div class="frame-corners" aria-hidden="true"></div><div class="experiment-track">
-          <article class="experiment-rail"><span class="rail-index">01</span><span class="rail-label">NEWS / AI 资讯</span><h3>AI 新闻追踪</h3><p>把橘鸦、AI HOT 和 follow-builders 的资讯收集到一起，整理成飞书卡片，定时发到群里，顺手去重。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ainews-to-Feishu" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">02</span><span class="rail-label">IMAGE / 文章配图</span><h3>AI 文章配图</h3><p>把文章里的重点画成白底的 AI路人配图，方便在公众号和工作流里直接使用。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-illustrations" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-          <article class="experiment-rail"><span class="rail-index">03</span><span class="rail-label">SITE / AI 网页</span><h3>AI 网页作品集</h3><p>用 Codex 和 Skill 边做边改，做出这套网页作品集。</p><p class="project-channel"><a href="https://github.com/Ai-luren/Ailuren-portfolio" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a></p></article>
-        </div></div>
+        <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目"></div>
       </div>
     </section>
   </main>
@@ -1729,7 +1724,11 @@
           step.classList.toggle('is-active', active);
           step.setAttribute('aria-current', active ? 'step' : 'false');
         });
+        experiencePanels.forEach(function (panel, panelIndex) {
+          panel.classList.toggle('is-selected', panelIndex === index);
+        });
       }
+      if (experienceSteps.length) setExperienceActive(0);
       if (experienceRoot && reduced) experienceRoot.classList.add('is-static');
 
       var floatingHeader = document.querySelector('header');
@@ -1816,27 +1815,11 @@
             }
           });
           // 工作经历动效参数：单位为秒；展示时间保持最长，过渡保持短促。
-          var experienceFirstEnterDuration = .8; // 01 动态设计进入
           var experienceFadeDuration = .6; // 中间卡片淡入 / 淡出
           var experienceHoldDuration = 1; // 每张卡片完整展示
-          var experienceLastExitDuration = 1.2; // 05 最后一张消失
-          // 01 提前在工作经历进入视口时开始出现，固定区开始时已经清晰可读。
-          gsap.fromTo(experiencePanels[0],
-            { autoAlpha: 0, y: 18 },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: experienceFirstEnterDuration,
-              ease: 'power2.out',
-              scrollTrigger: {
-                trigger: experienceRoot,
-                start: 'top bottom',
-                end: 'top top',
-                scrub: .7,
-                invalidateOnRefresh: true
-              }
-            });
+          // 时间轴从 0 开始就把 01 放到可见态，避免 ScrollTrigger 刚 pin 住时出现“左侧已选中、右侧空白”。
           experienceTimeline.addLabel('experience-0')
+            .set(experiencePanels[0], { autoAlpha: 1, y: 0 })
             .to(experiencePanels[0], { autoAlpha: 1, y: 0, duration: experienceHoldDuration });
           for (var experienceIndex = 1; experienceIndex < experiencePanels.length; experienceIndex += 1) {
             experienceTimeline.to(experiencePanels[experienceIndex - 1], { autoAlpha: 0, y: -18, duration: experienceFadeDuration })
@@ -1847,36 +1830,21 @@
               .addLabel('experience-' + experienceIndex)
               .to(experiencePanels[experienceIndex], { autoAlpha: 1, y: 0, duration: experienceHoldDuration });
           }
-          // 05 保持到精选创作进入视口，再开始慢慢离场。
-          gsap.to(experiencePanels[experiencePanels.length - 1], {
-            autoAlpha: 0,
-            y: -18,
-            duration: experienceLastExitDuration,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: '#projects',
-              start: 'top 45%',
-              end: 'top 5%',
-              scrub: .7,
-              invalidateOnRefresh: true
-            }
-          });
           experienceSteps.forEach(function (step, stepIndex) {
-            step.addEventListener('click', function () {
+            function jumpToExperience() {
               var trigger = experienceTimeline.scrollTrigger;
               if (!trigger || experienceSteps.length < 2) return;
               var labelTime = experienceTimeline.labels['experience-' + stepIndex];
               if (!Number.isFinite(labelTime)) return;
-              var target = trigger.start + ((trigger.end - trigger.start) * labelTime / experienceTimeline.duration());
+              var isLastExperience = stepIndex === experienceSteps.length - 1;
+              var target = isLastExperience
+                ? trigger.end - Math.max(2, Math.round(window.innerHeight * .04))
+                : trigger.start + ((trigger.end - trigger.start) * labelTime / experienceTimeline.duration());
               target = Math.max(trigger.start, Math.min(trigger.end - 1, target));
               setExperienceActive(stepIndex);
-              if (typeof trigger.scroll === 'function') {
-                trigger.scroll(target);
-              } else {
-                window.scrollTo({ top: target, behavior: 'smooth' });
-              }
+              window.scrollTo({ top: target, behavior: 'auto' });
               // 点击导航时跳到该卡片的完整展示段，避免 scrub 还停在淡出过渡帧。
-              var snappedProgress = labelTime / experienceTimeline.duration();
+              var snappedProgress = isLastExperience ? 1 : labelTime / experienceTimeline.duration();
               experienceTimeline.progress(snappedProgress);
               experiencePanels.forEach(function (panel, panelIndex) {
                 gsap.set(panel, {
@@ -1884,6 +1852,28 @@
                   y: panelIndex === stepIndex ? 0 : 18
                 });
               });
+              if (experienceTimeline.scrollTrigger) experienceTimeline.scrollTrigger.update();
+              var restoreSelectedPanel = function () {
+                experiencePanels.forEach(function (panel, panelIndex) {
+                  gsap.set(panel, {
+                    autoAlpha: panelIndex === stepIndex ? 1 : 0,
+                    y: panelIndex === stepIndex ? 0 : 18
+                  });
+                });
+              };
+              restoreSelectedPanel();
+              window.requestAnimationFrame(function () {
+                setExperienceActive(stepIndex);
+                experienceTimeline.progress(snappedProgress);
+                restoreSelectedPanel();
+              });
+            }
+            step.addEventListener('pointerdown', function (event) {
+              event.preventDefault();
+              jumpToExperience();
+            });
+            step.addEventListener('click', function (event) {
+              if (event.detail === 0) jumpToExperience();
             });
           });
         }

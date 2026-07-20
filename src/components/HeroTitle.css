@@ -1,0 +1,45 @@
+#hero-title .hero-title__prefix,
+#hero-title .hero-title__rotating {
+  display: block;
+  width: max-content;
+  color: #f0f4f6;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+}
+
+#hero-title .hero-title__rotating {
+  min-width: 4.6em;
+  min-height: 1em;
+  height: 1em;
+  line-height: 1em;
+  color: var(--accent-blue-on-dark);
+}
+
+#hero-title .hero-title__rotating .text-type__content {
+  display: inline;
+}
+
+/* index.html 中的旧版 .hero-title span 会把所有后代 span 强制变成 block。
+   这里恢复 React Bits TextType 的 inline 光标，否则光标会占满整行并错位。 */
+#hero-title .hero-title__rotating .text-type__cursor {
+  display: inline-block;
+  width: auto;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  margin: 0 0 0 .08em;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+@media (max-width: 500px) {
+  #hero-title .hero-title__prefix,
+  #hero-title .hero-title__rotating {
+    width: auto;
+  }
+}

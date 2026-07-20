@@ -1,0 +1,25 @@
+.glare-hover {
+  position: relative;
+  display: grid;
+  width: var(--gh-width);
+  height: var(--gh-height);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--gh-border);
+  border-radius: var(--gh-br);
+  background: var(--gh-bg);
+}
+.glare-hover::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(var(--gh-angle), hsla(0, 0%, 0%, 0) 60%, var(--gh-rgba) 70%, hsla(0, 0%, 0%, 0), hsla(0, 0%, 0%, 0) 100%);
+  background-position: -100% -100%, 0 0;
+  background-repeat: no-repeat;
+  background-size: var(--gh-size) var(--gh-size), 100% 100%;
+  transition: var(--gh-duration) ease;
+}
+.glare-hover:hover { cursor: pointer; }
+.glare-hover:hover::before { background-position: 100% 100%, 0 0; }
+.glare-hover--play-once::before { transition: none; }
+.glare-hover--play-once:hover::before { background-position: 100% 100%, 0 0; transition: var(--gh-duration) ease; }
