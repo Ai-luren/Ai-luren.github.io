@@ -2,6 +2,8 @@
 
 面向面试官、猎头和合作方的单页作品集，展示动态设计、AI 图像与视频创作，以及围绕 AI 内容搭建的小工具。
 
+线上地址：<https://ai-luren.github.io/>
+
 ## 本地运行
 
 ```bash
@@ -18,7 +20,7 @@ npm run build
 git diff --check
 ```
 
-构建产物输出到 `dist/`。项目使用相对资源路径，适合部署到 GitHub Pages 子路径。
+构建产物输出到 `dist/`。项目使用相对资源路径，兼容 GitHub Pages 根地址和子路径部署。
 
 ## 目录速查
 
