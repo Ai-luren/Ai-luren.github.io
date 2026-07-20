@@ -77,8 +77,8 @@
 }
 
 @media (max-width: 500px) {
-  .impact-evidence-note { display: block; }
-  .impact-evidence-note span + span { display: block; margin-top: 3px; }
+  .impact-evidence-note { display: flex; align-items: center; justify-content: space-between; gap: 10px; white-space: nowrap; }
+  .impact-evidence-note span + span { display: block; margin-top: 0; text-align: right; }
   .impact-award-shell { min-height: 0; padding-top: 20px; }
   .impact-circular-gallery { height: 270px; }
   .impact-reach-dossier { padding: 14px; }
