@@ -11,15 +11,28 @@ import polloLogo from '../../创作者LOGO/Pollo.webp';
 import qwenLogo from '../../创作者LOGO/qwen-color.webp';
 import viduLogo from '../../创作者LOGO/vidu-color.webp';
 
+import award1 from '../../获奖截图/画板 1.jpg';
+import award2 from '../../获奖截图/画板 2.jpg';
+import award3 from '../../获奖截图/画板 3.jpg';
+import award4 from '../../获奖截图/画板 4.jpg';
+import award5 from '../../获奖截图/画板 5.jpg';
+import award7 from '../../获奖截图/画板 7.jpg';
+import award8 from '../../获奖截图/画板 8.jpg';
+import award9 from '../../获奖截图/画板 9.jpg';
+import douyinScreenshot from '../../社交媒体主页/抖音主页.webp';
+import xiaohongshuScreenshot from '../../社交媒体主页/小红书主页.webp';
+import kuaishouScreenshot from '../../社交媒体主页/快手主页.webp';
+import wechatChannelScreenshot from '../../社交媒体主页/视频号主页.webp';
+
 const awards = [
-  { image: '获奖截图/画板 1.jpg', title: '无限剧场小赛', meta: '可灵 / 超棒奖' },
-  { image: '获奖截图/画板 2.jpg', title: '影视级特效小赛', meta: 'Pollo.ai / 优秀奖' },
-  { image: '获奖截图/画板 3.jpg', title: '中国联通 AI 创作赛', meta: '联通 / 三等奖' },
-  { image: '获奖截图/画板 4.jpg', title: '未来 AI 设计', meta: '美图 / 入围' },
-  { image: '获奖截图/画板 5.jpg', title: '平台官号转发', meta: '联想 / 官方认可' },
-  { image: '获奖截图/画板 7.jpg', title: 'MJ 官方优秀作品', meta: 'Midjourney / 官方精选' },
-  { image: '获奖截图/画板 8.jpg', title: '现实场景展示', meta: 'AI 视觉 / 入选' },
-  { image: '获奖截图/画板 9.jpg', title: '猫咪的一天', meta: '联通 / 三等奖' },
+  { image: award1, title: '无限剧场小赛', meta: '可灵 / 超棒奖' },
+  { image: award2, title: '影视级特效小赛', meta: 'Pollo.ai / 优秀奖' },
+  { image: award3, title: '中国联通 AI 创作赛', meta: '联通 / 三等奖' },
+  { image: award4, title: '未来 AI 设计', meta: '美图 / 入围' },
+  { image: award5, title: '平台官号转发', meta: '联想 / 官方认可' },
+  { image: award7, title: 'MJ 官方优秀作品', meta: 'Midjourney / 官方精选' },
+  { image: award8, title: '现实场景展示', meta: 'AI 视觉 / 入选' },
+  { image: award9, title: '猫咪的一天', meta: '联通 / 三等奖' },
 ];
 
 const creatorLogos = [
@@ -37,25 +50,25 @@ const reachCards = [
   {
     id: 'douyin',
     platform: '抖音',
-    screenshot: '社交媒体主页/抖音主页.webp',
+    screenshot: douyinScreenshot,
     stats: '1.7w粉丝 144.6w赞',
   },
   {
     id: 'xiaohongshu',
     platform: '小红书',
-    screenshot: '社交媒体主页/小红书主页.webp',
+    screenshot: xiaohongshuScreenshot,
     stats: '3494粉丝 5.6w赞',
   },
   {
     id: 'kuaishou',
     platform: '快手',
-    screenshot: '社交媒体主页/快手主页.webp',
+    screenshot: kuaishouScreenshot,
     stats: '4475粉丝 9938赞',
   },
   {
     id: 'wechat-channel',
     platform: '视频号',
-    screenshot: '社交媒体主页/视频号主页.webp',
+    screenshot: wechatChannelScreenshot,
     stats: '9087赞 4237喜爱',
   },
 ];

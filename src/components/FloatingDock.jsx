@@ -3,14 +3,22 @@ import { useEffect, useRef, useState } from 'react';
 
 import './FloatingDock.css';
 
+import mailIcon from '../../assets/images/mail.svg';
+import phoneIcon from '../../assets/images/phone.svg';
+import wechatIcon from '../../assets/images/wechat.svg';
+import githubIcon from '../../assets/images/github.svg';
+import xiaohongshuIcon from '../../assets/images/xiaohongshu-solid.svg';
+import douyinIcon from '../../assets/images/douyin.svg';
+import feishuIcon from '../../assets/images/feishu.png';
+
 const iconPaths = {
-  mail: 'assets/images/mail.svg',
-  phone: 'assets/images/phone.svg',
-  wechat: 'assets/images/wechat.svg',
-  github: 'assets/images/github.svg',
-  xiaohongshu: 'assets/images/xiaohongshu-solid.svg',
-  douyin: 'assets/images/douyin.svg',
-  feishu: 'assets/images/feishu.png'
+  mail: mailIcon,
+  phone: phoneIcon,
+  wechat: wechatIcon,
+  github: githubIcon,
+  xiaohongshu: xiaohongshuIcon,
+  douyin: douyinIcon,
+  feishu: feishuIcon
 };
 
 function MaskIcon({ name }) {
