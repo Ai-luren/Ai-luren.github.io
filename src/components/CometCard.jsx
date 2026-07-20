@@ -21,7 +21,7 @@ export default function CometCard({ children, className = '', ...props }) {
 
     const rotateY = ((event.clientX - left - rect.width / 2) / 25).toFixed(2);
     const rotateX = ((event.clientY - top - rect.height / 2) / -25).toFixed(2);
-    setCardState(card, `${rotateX}deg`, `${rotateY}deg`, '-4px');
+    setCardState(card, `${rotateX}deg`, `${rotateY}deg`, '0px');
   };
 
   const resetCard = () => {
