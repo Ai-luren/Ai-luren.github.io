@@ -378,11 +378,11 @@
     @media (max-width: 720px) {
       .comet-archive { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 18px 0 26px; overflow: visible; }
       .comet-archive__item { min-width: 0; aspect-ratio: 3 / 5; }
-      .comet-archive__card { grid-template-rows: auto minmax(0, 1fr) auto; padding-bottom: 24px; }
+      .comet-archive__card { grid-template-rows: auto minmax(0, 1fr) auto; padding-top: 10px; padding-bottom: 24px; }
       .comet-archive__copy { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: 6px; }
       .comet-archive__meta { white-space: nowrap; }
       .comet-archive__details { display: block; width: 100%; min-width: 0; }
-      .comet-archive__copy strong { max-width: 100%; white-space: normal; line-height: 1.1; overflow-wrap: anywhere; }
+      .comet-archive__copy strong { max-width: 100%; overflow: hidden; font-size: clamp(14px, 4.2vw, 16px); white-space: nowrap; line-height: 1.1; text-overflow: ellipsis; }
       .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { transform: none; }
       .comet-card:hover .comet-archive__copy, .comet-card:focus-within .comet-archive__copy { transform: none; }
       .comet-archive__scroll-hint { display: none !important; }
