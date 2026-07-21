@@ -4,7 +4,6 @@ node_modules/
 
 # Private project notes and non-runtime source material
 滚动驱动视频提示词.pdf
-src/assets/badge/README.md
 
 # Local development cache and logs
 .vite/

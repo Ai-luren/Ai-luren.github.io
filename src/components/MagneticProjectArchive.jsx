@@ -1,13 +1,13 @@
 import CometCard from './CometCard.jsx';
 import { useEffect, useRef, useState } from 'react';
-import watsonsCover from '../../AI作品集封面/optimized/AI 创意广告-屈臣氏（优秀奖）.webp';
-import lenovoCover from '../../AI作品集封面/optimized/AI 创意广告-联想（联想特别鸣谢奖_官号转发）.webp';
-import tongyiCover from '../../AI作品集封面/optimized/AI 创意广告-通义万相先导片（官号首发）.webp';
-import chageeCover from '../../AI作品集封面/optimized/AI 创意广告-霸王茶姬（中国联通三等奖）.webp';
-import catsCover from '../../AI作品集封面/optimized/AI 创意短片-猫咪的一天（中国联通三等奖）.webp';
-import yueyangCover from '../../AI作品集封面/optimized/AI 文旅宣传-岳阳楼（优秀奖_超棒奖）.webp';
-import riverCityCover from '../../AI作品集封面/optimized/AI 概念短片-人河流城市（MJ 官方优秀作品）.webp';
-import lightCover from '../../AI作品集封面/optimized/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.webp';
+import watsonsCover from '../../assets/images/project-covers/AI 创意广告-屈臣氏（优秀奖）.webp';
+import lenovoCover from '../../assets/images/project-covers/AI 创意广告-联想（联想特别鸣谢奖_官号转发）.webp';
+import tongyiCover from '../../assets/images/project-covers/AI 创意广告-通义万相先导片（官号首发）.webp';
+import chageeCover from '../../assets/images/project-covers/AI 创意广告-霸王茶姬（中国联通三等奖）.webp';
+import catsCover from '../../assets/images/project-covers/AI 创意短片-猫咪的一天（中国联通三等奖）.webp';
+import yueyangCover from '../../assets/images/project-covers/AI 文旅宣传-岳阳楼（优秀奖_超棒奖）.webp';
+import riverCityCover from '../../assets/images/project-covers/AI 概念短片-人河流城市（MJ 官方优秀作品）.webp';
+import lightCover from '../../assets/images/project-covers/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.webp';
 import './CometCard.css';
 
 const ARCHIVES = [
