@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import './FloatingDock.css';
 
-import mailIcon from '../../assets/images/mail.svg';
-import phoneIcon from '../../assets/images/phone.svg';
-import wechatIcon from '../../assets/images/wechat.svg';
-import githubIcon from '../../assets/images/github.svg';
-import xiaohongshuIcon from '../../assets/images/xiaohongshu-solid.svg';
-import douyinIcon from '../../assets/images/douyin.svg';
-import feishuIcon from '../../assets/images/feishu.webp';
+import mailIcon from '../../assets/images/icon/mail.svg';
+import phoneIcon from '../../assets/images/icon/phone.svg';
+import wechatIcon from '../../assets/images/icon/wechat.svg';
+import githubIcon from '../../assets/images/icon/github.svg';
+import xiaohongshuIcon from '../../assets/images/icon/xiaohongshu-solid.svg';
+import douyinIcon from '../../assets/images/icon/douyin.svg';
+import feishuIcon from '../../assets/images/icon/feishu.webp';
 
 const iconPaths = {
   mail: mailIcon,

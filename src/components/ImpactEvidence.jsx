@@ -3,27 +3,27 @@ import CircularGallery from './CircularGallery.jsx';
 import LogoLoop from './LogoLoop.jsx';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import hailuoLogo from '../../创作者LOGO/hailuo-color.webp';
-import jimengLogo from '../../创作者LOGO/jimeng-color.webp';
-import klingLogo from '../../创作者LOGO/kling-color.webp';
-import midjourneyLogo from '../../创作者LOGO/midjourney.webp';
-import pixverseLogo from '../../创作者LOGO/pixverse-color.webp';
-import polloLogo from '../../创作者LOGO/Pollo.webp';
-import qwenLogo from '../../创作者LOGO/qwen-color.webp';
-import viduLogo from '../../创作者LOGO/vidu-color.webp';
+import hailuoLogo from '../../assets/images/platform-logos/hailuo-color.webp';
+import jimengLogo from '../../assets/images/platform-logos/jimeng-color.webp';
+import klingLogo from '../../assets/images/platform-logos/kling-color.webp';
+import midjourneyLogo from '../../assets/images/platform-logos/midjourney.webp';
+import pixverseLogo from '../../assets/images/platform-logos/pixverse-color.webp';
+import polloLogo from '../../assets/images/platform-logos/Pollo.webp';
+import qwenLogo from '../../assets/images/platform-logos/qwen-color.webp';
+import viduLogo from '../../assets/images/platform-logos/vidu-color.webp';
 
-import award1 from '../../获奖截图/optimized/画板 1.webp';
-import award2 from '../../获奖截图/optimized/画板 2.webp';
-import award3 from '../../获奖截图/optimized/画板 3.webp';
-import award4 from '../../获奖截图/optimized/画板 4.webp';
-import award5 from '../../获奖截图/optimized/画板 5.webp';
-import award7 from '../../获奖截图/optimized/画板 7.webp';
-import award8 from '../../获奖截图/optimized/画板 8.webp';
-import award9 from '../../获奖截图/optimized/画板 9.webp';
-import douyinScreenshot from '../../社交媒体主页/抖音主页.webp';
-import xiaohongshuScreenshot from '../../社交媒体主页/小红书主页.webp';
-import kuaishouScreenshot from '../../社交媒体主页/快手主页.webp';
-import wechatChannelScreenshot from '../../社交媒体主页/视频号主页.webp';
+import award1 from '../../assets/images/awards/hailuo.webp';
+import award2 from '../../assets/images/awards/pollo.webp';
+import award3 from '../../assets/images/awards/liantong.webp';
+import award4 from '../../assets/images/awards/meitu.webp';
+import award5 from '../../assets/images/awards/Lenovo.webp';
+import award7 from '../../assets/images/awards/mj.webp';
+import award8 from '../../assets/images/awards/kling.webp';
+import award9 from '../../assets/images/awards/liantong2.webp';
+import douyinScreenshot from '../../assets/images/social-profiles/抖音主页.webp';
+import xiaohongshuScreenshot from '../../assets/images/social-profiles/小红书主页.webp';
+import kuaishouScreenshot from '../../assets/images/social-profiles/快手主页.webp';
+import wechatChannelScreenshot from '../../assets/images/social-profiles/视频号主页.webp';
 
 const awards = [
   { image: award1, title: '无限剧场小赛', meta: '可灵 / 超棒奖' },
