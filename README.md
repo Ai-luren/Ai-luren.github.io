@@ -136,6 +136,8 @@ git diff --check  # 检查补丁格式问题
 
 推送到 `main` 后，GitHub Actions 会自动安装 Node.js 22、执行 `npm ci` 和 `npm run build`，再把 `dist/` 发布到 GitHub Pages。部署配置位于 `.github/workflows/deploy-pages.yml`。除非用户明确要求，不要修改部署配置、环境变量、权限或 GitHub Actions。
 
+Netlify 也已连接此 GitHub 仓库：推送或合并到 `main` 后，会使用 `npm run build` 构建并发布 `dist/`，更新 [ailuren.netlify.app](https://ailuren.netlify.app/)。Pull Request 会生成预览部署。
+
 ## 修改原则
 
 先阅读 [`AGENTS.md`](AGENTS.md)、[`docs/设计规范.md`](docs/设计规范.md) 和 [`docs/交接说明.md`](docs/交接说明.md)，再修改页面。页面改动完成后必须执行构建验证。
