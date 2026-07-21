@@ -2,7 +2,10 @@
 
 Ai路人的网页作品集，展示AI 图像与视频创作，以及围绕 AI 内容搭建的小工具。
 
-线上地址：<https://ai-luren.github.io/>
+线上地址：
+
+- Netlify：<https://ailuren.netlify.app/>
+- GitHub Pages：<https://ai-luren.github.io/>
 
 ## 本地运行
 
@@ -29,7 +32,7 @@ git diff --check
 - `src/components/MagneticProjectArchive.jsx`：精选创作档案卡片。
 - `src/components/ImpactEvidence.jsx`：获奖作品、创作平台和内容发布模块。
 - `assets/`：字体、图标和页面图片。
-- `public/vendor/`：GSAP 与 ScrollTrigger 静态脚本。
+- `vendor/`：GSAP 与 ScrollTrigger 静态脚本。
 - `hero.mp4`：全站深空背景视频。
 - `docs/`：当前规范和交接说明。
 

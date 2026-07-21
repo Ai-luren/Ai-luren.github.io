@@ -27,3 +27,6 @@ pnpm-debug.log*
 .env
 .edgeone/*
 .tef_dist/*
+
+# Local Netlify folder
+.netlify
