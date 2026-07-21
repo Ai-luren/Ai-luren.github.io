@@ -2,7 +2,7 @@
 
 ## 目标
 
-维护可部署到 GitHub Pages 的单页作品集，保证桌面与移动端可访问、构建稳定。
+维护可部署到 GitHub Pages、Cloudflare Pages、Vercel 和 Netlify 的单页作品集，保证桌面与移动端可访问、构建稳定。
 
 ## 结构
 

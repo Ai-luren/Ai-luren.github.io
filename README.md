@@ -160,17 +160,6 @@ git diff --check
 4. 修改完成后执行 `npm run build` 和 `git diff --check`。
 5. 需要发布时使用功能分支和 Pull Request，不直接修改受保护的 `main`。
 
-## 部署
-
-推送并合并到 `main` 后，GitHub Actions 会执行：
-
-```text
-npm ci → npm run build → 上传 dist/ → 部署 GitHub Pages
-```
-
-部署配置位于 `.github/workflows/deploy-pages.yml`。除非明确需要，不修改部署配置、环境变量或权限设置。
-
-Netlify 也已连接此 GitHub 仓库：推送并合并到 `main` 后，会使用 `npm run build` 构建并发布 `dist/`，更新 [ailuren.netlify.app](https://ailuren.netlify.app/)。Pull Request 会生成预览部署。
 ## 清理规则
 
 - `dist/`：构建时自动生成，可删除，不提交。
