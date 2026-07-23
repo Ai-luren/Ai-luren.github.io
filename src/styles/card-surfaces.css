@@ -8,7 +8,7 @@
   --portfolio-card-border: rgba(184, 215, 236, .18);
   --portfolio-card-blur: blur(14px) saturate(1.08);
   --portfolio-card-shadow: 0 10px 24px rgba(0, 0, 0, .18);
-  --portfolio-card-radius: 16px;
+  --portfolio-card-radius: 12px;
 }
 
 .experience-detail,
