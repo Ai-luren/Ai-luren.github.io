@@ -10,7 +10,7 @@ const experiments = [
     index: '01',
     label: 'NEWS / AI 资讯',
     title: 'AI 新闻追踪',
-    description: '把橘鸦、AI HOT 和 follow-builders 的资讯收集到一起，整理成飞书卡片，定时发到群里，顺手去重。',
+    description: '聚合多源 AI 资讯，飞书卡片定时推送并去重。',
     facts: ['RSS 聚合', '飞书卡片', '定时推送'],
     workflow: [
       ['RSS', '橘鸦 / AI HOT'],
@@ -26,7 +26,7 @@ const experiments = [
     index: '02',
     label: 'IMAGE / 文章配图',
     title: 'AI 文章配图',
-    description: '把文章里的重点画成白底的 AI路人配图，方便在公众号和工作流里直接使用。',
+    description: '提取认知锚点，生成白底手绘风格正文配图。',
     facts: ['Codex Skill', '16:9 配图', 'Shot list'],
     workflow: [
       ['文章输入', '读取主题与上下文'],
@@ -42,7 +42,7 @@ const experiments = [
     index: '03',
     label: 'SITE / AI 网页',
     title: 'AI 网页作品集',
-    description: '用 Codex 和 Skill 边做边改，做出这套网页作品集。',
+    description: '用 Codex 和 Skill 做出滚动叙事作品集。',
     facts: ['Vite', 'React', 'GSAP'],
     workflow: [
       ['想法', '确定内容与叙事'],
@@ -74,7 +74,7 @@ function ExperimentCard({ item, slot, onSelect, cardRef }) {
       borderRadius="18px"
       borderColor="rgba(224, 224, 224, .18)"
       glareColor="#ffffff"
-      glareOpacity={0.14}
+      glareOpacity={0.25}
       glareAngle={-32}
       glareSize={220}
       transitionDuration={420}
@@ -161,6 +161,22 @@ export default function ExperimentFlip() {
       scale: false,
       nested: true,
       clearProps: 'transform',
+      onComplete: () => {
+        // 切换完成后，feature 卡的 workflow 子元素分层落位
+        const featureCard = rootRef.current?.querySelector('.flip-experiment__card.is-feature');
+        if (!featureCard) return;
+        const workflowEls = featureCard.querySelectorAll('.flip-experiment__workflow > *');
+        if (workflowEls.length) {
+          gsap.from(workflowEls, {
+            autoAlpha: 0,
+            y: 10,
+            stagger: 0.06,
+            duration: 0.4,
+            ease: 'power2.out',
+            delay: 0.18,
+          });
+        }
+      },
     });
   }, [activeId]);
 

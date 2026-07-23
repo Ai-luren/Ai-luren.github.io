@@ -72,7 +72,7 @@
 }
 
 @media (max-width: 720px) {
-  .impact-logo-shell .logo-loop { --logo-loop-height: 36px !important; }
+  .impact-logo-shell .logo-loop { --logo-loop-height: 30px !important; }
   .impact-logo-shell .logo-loop__list { gap: 24px; padding-right: 24px; }
 }
 

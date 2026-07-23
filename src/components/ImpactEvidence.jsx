@@ -161,7 +161,7 @@ function LogoIndex() {
       {ready && <LogoLoop
         logos={creatorLogos}
         speed={28}
-        logoHeight={48}
+        logoHeight={40}
         gap={48}
         hoverSpeed={0}
         ariaLabel="创作者平台 Logo"

@@ -65,13 +65,13 @@
 
 .flip-experiment__number {
   color: rgba(255, 255, 255, .78);
-  font: 500 12px/1 var(--font-mono, monospace);
+  font: 500 14px/1 var(--font-mono, monospace);
   letter-spacing: .12em;
 }
 
 .flip-experiment__label {
   color: var(--flip-blue);
-  font: 500 11px/1.4 var(--font-mono, monospace);
+  font: 500 14px/1.4 var(--font-mono, monospace);
   letter-spacing: .1em;
 }
 
@@ -141,7 +141,7 @@
   border: 1px solid rgba(184, 215, 236, .16);
   border-radius: 6px;
   color: rgba(214, 227, 237, .62);
-  font: 500 10px/1 var(--font-mono, monospace);
+  font: 500 13px/1 var(--font-mono, monospace);
   letter-spacing: .04em;
 }
 
@@ -154,7 +154,7 @@
   display: block;
   margin-bottom: 18px;
   color: rgba(76, 166, 255, .92);
-  font: 500 10px/1 var(--font-mono, monospace);
+  font: 500 13px/1 var(--font-mono, monospace);
   letter-spacing: .12em;
 }
 
@@ -205,7 +205,7 @@
 .flip-experiment__workflow strong,
 .flip-experiment__workflow small { display: block; }
 .flip-experiment__workflow strong { color: rgba(245, 249, 252, .94); font-size: 13px; font-weight: 600; }
-.flip-experiment__workflow small { max-width: 14ch; margin-top: 4px; color: rgba(214, 227, 237, .56); font-size: 11px; line-height: 1.45; }
+.flip-experiment__workflow small { max-width: 14ch; margin-top: 4px; color: rgba(214, 227, 237, .56); font-size: 13px; line-height: 1.45; }
 
 .flip-experiment__link:hover,
 .flip-experiment__link:focus-visible { gap: 11px; color: #fff; }
@@ -214,10 +214,22 @@
   position: absolute;
   right: 14px;
   bottom: 13px;
-  color: rgba(214, 227, 237, .45);
-  font: 500 10px/1 var(--font-mono, monospace);
+  color: rgba(214, 227, 237, .7);
+  font: 500 13px/1 var(--font-mono, monospace);
   letter-spacing: .1em;
   text-transform: uppercase;
+  animation: flip-hint-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes flip-hint-breathe {
+  0%, 100% { opacity: .5; }
+  50% { opacity: .85; }
+}
+
+.flip-experiment__card:not(.is-feature):hover,
+.flip-experiment__card:not(.is-feature):focus-visible {
+  border-color: rgba(41, 151, 255, .5);
+  box-shadow: 0 0 0 1px rgba(41, 151, 255, .22), 0 8px 20px rgba(0, 0, 0, .22);
 }
 
 .flip-experiment__status {
@@ -226,7 +238,7 @@
   gap: 9px;
   margin-top: 14px;
   color: rgba(214, 227, 237, .52);
-  font: 500 11px/1.4 var(--font-mono, monospace);
+  font: 500 13px/1.4 var(--font-mono, monospace);
   letter-spacing: .08em;
 }
 
@@ -262,6 +274,7 @@
 
 @media (max-width: 720px) {
   .flip-experiment { margin-top: 24px; }
+  .flip-experiment__status { display: none; }
   .flip-experiment__stage {
     display: flex;
     height: auto;
@@ -278,7 +291,7 @@
   .flip-experiment__card,
   .flip-experiment__card[data-slot="feature"],
   .flip-experiment__card[data-slot="secondary"],
-  .flip-experiment__card[data-slot="tertiary"] { min-height: 0; }
+  .flip-experiment__card[data-slot="tertiary"] { min-height: 190px; }
   .flip-experiment__card[data-slot="feature"] { order: 1; }
   .flip-experiment__card[data-slot="secondary"] { order: 2; }
   .flip-experiment__card[data-slot="tertiary"] { order: 3; }
@@ -290,13 +303,29 @@
   }
   .flip-experiment__glare.slot-feature,
   .flip-experiment__card.is-feature {
-    min-height: 280px;
+    min-height: 190px;
   }
   .flip-experiment__glare,
   .flip-experiment__card {
-    flex: 0 0 280px;
-    height: 280px;
-    min-height: 280px;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 190px;
+  }
+  .flip-experiment__card.is-feature .flip-experiment__link {
+    position: static;
+    margin-top: 14px;
+  }
+  /* 移动端增大链接触摸区域，从 19px 提升到约 40px */
+  .flip-experiment__link {
+    padding: 10px 0;
+  }
+  /* 移动端取消描述文字的宽度限制，避免右侧留白 */
+  .flip-experiment__body p {
+    max-width: none;
+  }
+  /* 移动端卡片内容均匀分布，GitHub 链接贴底，填充统一高度 */
+  .flip-experiment__copy {
+    justify-content: space-between;
   }
   /* 移动端不依赖 ScrollTrigger 入场，避免脚本延迟时卡片文字保持隐藏。 */
   .flip-experiment__card,

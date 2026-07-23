@@ -2,7 +2,7 @@ import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl';
 import { useEffect } from 'react';
 
 const DEFAULT_SETTINGS = {
-  brightness: 80,
+  brightness: 72,
   mask: 0,
   saturation: 80,
   contrast: 96,
