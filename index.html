@@ -1012,7 +1012,7 @@
     #hero-video { transition: opacity .3s ease; }
     #video-overlay, #video-vignette { display: none !important; }
     /* 仅 Hero 使用：蒙版在视频/WebGL 之上、页面文字之下，参考从左至右的黑色渐隐。 */
-    #hero-profile-mask { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg, rgba(3,5,8,.76) 0%, rgba(3,5,8,.58) 38%, rgba(3,5,8,.26) 62%, transparent 82%); opacity: 0; pointer-events: none; transition: opacity .18s linear; }
+    #hero-profile-mask { position: absolute; inset: 0; z-index: 2; background: linear-gradient(90deg, rgba(3,5,8,.76) 0%, rgba(3,5,8,.58) 38%, rgba(3,5,8,.26) 62%, transparent 82%); opacity: 0; pointer-events: none; }
     body.is-on-hero #hero-profile-mask,
     body.is-on-top #hero-profile-mask { opacity: calc(var(--hero-mask-strength, 1) * var(--hero-overlay-progress, 1)); }
     #video-bg.is-webgl-ready #hero-video { opacity: 0; }
@@ -1887,18 +1887,19 @@
             }
           });
           // 工作经历动效参数：单位为秒；展示时间保持最长，过渡保持短促。
-          var experienceFadeDuration = .6; // 中间卡片淡入 / 淡出
+          var experienceFadeOut = .35; // 旧卡片淡出
+          var experienceFadeIn = .45; // 新卡片淡入
           var experienceHoldDuration = 1; // 每张卡片完整展示
           // 时间轴从 0 开始就把 01 放到可见态，避免 ScrollTrigger 刚 pin 住时出现“左侧已选中、右侧空白”。
           experienceTimeline.addLabel('experience-0')
             .set(experiencePanels[0], { autoAlpha: 1, y: 0 })
             .to(experiencePanels[0], { autoAlpha: 1, y: 0, duration: experienceHoldDuration });
           for (var experienceIndex = 1; experienceIndex < experiencePanels.length; experienceIndex += 1) {
-            experienceTimeline.to(experiencePanels[experienceIndex - 1], { autoAlpha: 0, y: -18, duration: experienceFadeDuration })
+            // 先完全淡出旧卡片，再淡入新卡片，避免两张卡片同时半透明叠加。
+            experienceTimeline.to(experiencePanels[experienceIndex - 1], { autoAlpha: 0, y: -18, duration: experienceFadeOut })
               .fromTo(experiencePanels[experienceIndex],
                 { autoAlpha: 0, y: 18 },
-                { autoAlpha: 1, y: 0, duration: experienceFadeDuration },
-                '-=' + experienceFadeDuration)
+                { autoAlpha: 1, y: 0, duration: experienceFadeIn })
               .addLabel('experience-' + experienceIndex)
               .to(experiencePanels[experienceIndex], { autoAlpha: 1, y: 0, duration: experienceHoldDuration });
           }
@@ -2028,6 +2029,9 @@
         });
       });
 
+      // 初始即设为全量，避免 IntersectionObserver 异步回调前的短暂空窗导致蒙版不可见
+      document.documentElement.style.setProperty('--hero-overlay-progress', '1');
+
       var heroSection = document.getElementById('top');
       if (heroSection && 'IntersectionObserver' in window) {
         var heroOverlayObserver = new IntersectionObserver(function (entries) {
@@ -2057,8 +2061,11 @@
       }
       var storedHeroMask = 60;
       try {
-        var savedHeroMask = Number(window.localStorage.getItem(heroMaskStorageKey));
-        if (Number.isFinite(savedHeroMask)) storedHeroMask = savedHeroMask;
+        var savedRaw = window.localStorage.getItem(heroMaskStorageKey);
+        if (savedRaw !== null) {
+          var savedHeroMask = Number(savedRaw);
+          if (Number.isFinite(savedHeroMask)) storedHeroMask = savedHeroMask;
+        }
       } catch (error) {}
       applyHeroMask(storedHeroMask, false);
       if (heroMaskRange) heroMaskRange.addEventListener('input', function () { applyHeroMask(heroMaskRange.value, true); });
@@ -2226,7 +2233,7 @@
       });
       var sections = document.querySelectorAll('main section, footer');
       if ('IntersectionObserver' in window) {
-      var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { setNavActive(entry.target.id); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + entry.target.id); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+      var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { setNavActive(entry.target.id); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + entry.target.id); if (entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
         sections.forEach(function (section) { navObserver.observe(section); });
       }
       window.addEventListener('scroll', function () {

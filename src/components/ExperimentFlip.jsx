@@ -157,10 +157,12 @@ export default function ExperimentFlip() {
     // 在 Flip 动画开始前，立即隐藏新 feature 卡的 workflow 子元素，
     // 避免它们先以可见态渲染再被 gsap.from 突然隐藏导致的闪烁。
     const featureCard = rootRef.current?.querySelector('.flip-experiment__card.is-feature');
-    const workflowEls = featureCard?.querySelectorAll('.flip-experiment__workflow > *');
-    if (workflowEls?.length) {
-      gsap.set(workflowEls, { autoAlpha: 0 });
-    }
+    const workflowTitle = featureCard?.querySelector('.flip-experiment__workflow-title');
+    const workflowOl = featureCard?.querySelector('.flip-experiment__workflow ol');
+    const workflowItems = featureCard?.querySelectorAll('.flip-experiment__workflow li');
+    if (workflowTitle) gsap.set(workflowTitle, { autoAlpha: 0 });
+    if (workflowItems?.length) gsap.set(workflowItems, { autoAlpha: 0 });
+    if (workflowOl) workflowOl.setAttribute('data-line', '0');
     Flip.from(state, {
       duration: 0.48,
       ease: 'power3.inOut',
@@ -169,19 +171,29 @@ export default function ExperimentFlip() {
       nested: true,
       clearProps: 'transform',
       onComplete: () => {
-        // 切换完成后，feature 卡的 workflow 子元素分层落位
-        if (!workflowEls?.length) return;
-        gsap.fromTo(workflowEls,
-          { autoAlpha: 0, y: 8 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            stagger: 0.04,
-            duration: 0.3,
-            ease: 'power2.out',
-            delay: 0.05,
-          }
-        );
+        // 切换完成后：标题淡入 → 连线从左到右绘制 → 节点依次出现
+        if (workflowTitle) {
+          gsap.fromTo(workflowTitle,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: 0.3, ease: 'power2.out' }
+          );
+        }
+        if (workflowOl) {
+          workflowOl.removeAttribute('data-line');
+        }
+        if (workflowItems?.length) {
+          gsap.fromTo(workflowItems,
+            { autoAlpha: 0, x: -8 },
+            {
+              autoAlpha: 1,
+              x: 0,
+              stagger: 0.1,
+              duration: 0.28,
+              ease: 'power2.out',
+              delay: 0,
+            }
+          );
+        }
       },
     });
   }, [activeId]);

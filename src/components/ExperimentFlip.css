@@ -176,6 +176,14 @@
   height: 1px;
   content: '';
   background: linear-gradient(90deg, rgba(41, 151, 255, .68), rgba(41, 151, 255, .24));
+  transform: scaleX(var(--line-scale, 1));
+  transform-origin: left;
+  transition: transform .8s cubic-bezier(.22, .61, .36, 1);
+}
+
+.flip-experiment__workflow ol[data-line="0"]::before {
+  transform: scaleX(0);
+  transition: none;
 }
 
 .flip-experiment__workflow li {
@@ -365,6 +373,11 @@
     left: 3px;
     width: 1px;
     height: auto;
+    transform: scaleY(var(--line-scale, 1));
+    transform-origin: top;
+  }
+  .flip-experiment__workflow ol[data-line="0"]::before {
+    transform: scaleY(0);
   }
   .flip-experiment__workflow li {
     flex-direction: row;
