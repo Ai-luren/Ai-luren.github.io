@@ -9,7 +9,7 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
-- `assets/`、`vendor/`：运行时字体、图标、视频和第三方静态资源。
+- `assets/`、`vendor/`：图标、视频和第三方静态资源；字体由 Google Fonts CDN 提供。
 - `docs/`：当前有效的项目规范与交接说明。
 
 ## 规则

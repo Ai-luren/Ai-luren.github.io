@@ -104,7 +104,7 @@ git diff --check
 
 ```text
 .
-├── assets/                 页面字体、图片、视频和 README 展示素材
+├── assets/                 图片、视频和 README 展示素材（字体由 Google Fonts CDN 提供）
 ├── docs/                   设计规范与交接说明
 ├── src/components/         作品档案、影响力和实验室组件
 ├── vendor/                 GSAP 与 ScrollTrigger 静态运行时
