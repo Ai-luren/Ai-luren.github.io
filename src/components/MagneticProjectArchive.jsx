@@ -24,6 +24,7 @@ const ARCHIVES = [
 export default function MagneticProjectArchive() {
   const archiveRef = useRef(null);
   const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
+  const lastTapRef = useRef({ time: 0, href: '' });
   const [canScroll, setCanScroll] = useState(false);
 
   const handlePointerDown = (event) => {
@@ -64,6 +65,19 @@ export default function MagneticProjectArchive() {
       dragState.current.moved = false;
       return;
     }
+    // 移动端（触屏设备）需要双击才跳转，避免滑动时误触
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) {
+      const now = Date.now();
+      if (now - lastTapRef.current.time < 350 && lastTapRef.current.href === href) {
+        lastTapRef.current.time = 0;
+        window.open(href, '_blank', 'noopener,noreferrer');
+      } else {
+        lastTapRef.current = { time: now, href };
+      }
+      return;
+    }
+    // 桌面端单击即跳转
     window.open(href, '_blank', 'noopener,noreferrer');
   };
 

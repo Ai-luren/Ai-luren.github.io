@@ -183,6 +183,25 @@ function LogoIndex() {
 }
 
 function ReachDossier() {
+  const lastTapRef = useRef({ time: 0, id: '' });
+
+  const handleCardClick = (event, card) => {
+    if (!card.link) return;
+    // 移动端（触屏设备）需要双击才跳转，避免滑动时误触
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (isTouch) {
+      event.preventDefault();
+      const now = Date.now();
+      if (now - lastTapRef.current.time < 350 && lastTapRef.current.id === card.id) {
+        lastTapRef.current.time = 0;
+        window.open(card.link, '_blank', 'noopener,noreferrer');
+      } else {
+        lastTapRef.current = { time: now, id: card.id };
+      }
+      return;
+    }
+  };
+
   return (
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
@@ -195,7 +214,7 @@ function ReachDossier() {
           const hasQr = !!card.qrCode;
           const Tag = hasLink ? 'a' : 'div';
           const tagProps = hasLink
-            ? { href: card.link, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `访问${card.platform}主页` }
+            ? { href: card.link, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `访问${card.platform}主页`, onClick: (e) => handleCardClick(e, card) }
             : {};
           const shotClass = `impact-reach-profile-shot${hasLink ? ' impact-reach-profile-shot--link' : ''}${hasQr ? ' impact-reach-profile-shot--qr' : ''}`;
           return (
