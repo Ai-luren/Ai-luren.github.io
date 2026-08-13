@@ -32,6 +32,7 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
   const [hovered, setHovered] = useState(false);
+  const lastTapRef = useRef(0);
   const mouseDistance = useTransform(mouseX, (value) => {
     const rect = ref.current?.getBoundingClientRect() ?? { x: 0, width: baseItemSize };
     return value - rect.x - baseItemSize / 2;
@@ -56,9 +57,25 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
         if (item.onClick) {
           event.preventDefault();
           item.onClick();
+          return;
         }
         if (item.qrCode && !item.href) {
           event.preventDefault();
+          return;
+        }
+        // 移动端（触屏设备）有跳转链接的 items 需要双击才跳转
+        if (item.href) {
+          const isTouch = window.matchMedia('(pointer: coarse)').matches;
+          if (isTouch) {
+            const now = Date.now();
+            if (now - lastTapRef.current < 350) {
+              lastTapRef.current = 0;
+              return; // 允许默认跳转
+            }
+            lastTapRef.current = now;
+            event.preventDefault();
+            return;
+          }
         }
       }}
     >
