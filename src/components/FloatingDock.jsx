@@ -10,6 +10,9 @@ import githubIcon from '../../assets/images/icon/github.svg';
 import xiaohongshuIcon from '../../assets/images/icon/xiaohongshu-solid.svg';
 import douyinIcon from '../../assets/images/icon/douyin.svg';
 import feishuIcon from '../../assets/images/icon/feishu.webp';
+import wechatQrCode from '../../assets/images/social-profiles/微信二维码.webp';
+import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.webp';
+import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
 
 const iconPaths = {
   mail: mailIcon,
@@ -54,11 +57,26 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
           event.preventDefault();
           item.onClick();
         }
+        if (item.qrCode && !item.href) {
+          event.preventDefault();
+        }
       }}
     >
       <span className="floating-dock-icon">{item.icon}</span>
       <AnimatePresence>
-        {hovered && (
+        {hovered && item.qrCode && (
+          <motion.span
+            className="floating-dock-qr-popup"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+          >
+            <img src={item.qrCode} alt={item.label} />
+            <span>{item.qrLabel || item.label}</span>
+          </motion.span>
+        )}
+        {hovered && !item.qrCode && (
           <motion.span
             className="floating-dock-label"
             initial={{ opacity: 0, y: 4, x: '-50%' }}
@@ -98,10 +116,10 @@ export default function FloatingDock() {
   const items = [
     { label: '复制邮箱', onClick: () => copy('1746850550@qq.com', '邮箱'), icon: <DockIcon name="mail" /> },
     { label: '复制电话', onClick: () => copy('15580714085', '电话'), icon: <DockIcon name="phone" /> },
-    { label: '复制微信号', onClick: () => copy('15580714085', '微信号'), icon: <DockIcon name="wechat" /> },
+    { label: '微信二维码', qrCode: wechatQrCode, qrLabel: '扫码添加微信', icon: <DockIcon name="wechat" /> },
     { label: 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
-    { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
-    { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
+    { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
+    { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, qrCode: douyinQrCode, qrLabel: '使用抖音扫码访问', icon: <DockIcon name="douyin" /> },
     { label: '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
   ];
 

@@ -46,12 +46,36 @@
 .impact-logo-head { flex: 0 0 auto; }
 
 /* Profile dossier: real social homepages stay intact inside one shared glass shell. */
-.impact-reach-dossier { padding: 18px 20px 16px; }
+.impact-reach-dossier { padding: 18px 20px 16px; overflow: visible; }
 .impact-reach-dossier-head { display: flex; justify-content: space-between; gap: 20px; color: var(--impact-muted); font: 9px/1.6 var(--tech, var(--mono, monospace)); letter-spacing: .07em; }
 .impact-reach-dossier-head { margin-bottom: 18px; }
 .impact-reach-profile-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
 .impact-reach-profile { overflow: visible; border: 0; border-radius: 0; background: transparent; }
 .impact-reach-profile-shot { position: relative; display: flex; align-items: center; justify-content: center; height: clamp(156px, 12vw, 182px); overflow: visible; background: transparent; }
+.impact-reach-profile-shot--link { display: flex; text-decoration: none; cursor: pointer; border-radius: var(--impact-radius); }
+.impact-reach-profile-shot--link:hover .impact-reach-profile-media { box-shadow: 0 0 0 2px rgba(41, 151, 255, .35); }
+.impact-reach-profile-shot--link:focus-visible { outline: 2px solid var(--impact-blue); outline-offset: 2px; }
+.impact-reach-profile-shot--qr { cursor: default; }
+.impact-reach-qr-popup {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, calc(-100% - 4px));
+  z-index: 10;
+  padding: 10px;
+  border: 1px solid var(--impact-border);
+  border-radius: var(--impact-radius);
+  background: var(--impact-glass-strong);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+.impact-reach-profile-shot--qr:hover .impact-reach-qr-popup { opacity: 1; }
+.impact-reach-qr-popup img { display: block; width: 120px; height: 120px; object-fit: contain; border-radius: 6px; }
+.impact-reach-qr-popup span { display: block; margin-top: 6px; color: var(--impact-muted); font: 500 10px/1.2 var(--tech, var(--mono, monospace)); text-align: center; white-space: nowrap; }
 .impact-reach-profile-media { width: 100%; aspect-ratio: 1179 / 938; overflow: hidden; border-radius: var(--impact-radius); background: transparent; clip-path: inset(0 round var(--impact-radius)); }
 .impact-reach-profile-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; mix-blend-mode: screen; }
 .impact-reach-profile-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 10px; }

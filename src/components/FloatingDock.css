@@ -87,6 +87,24 @@
   white-space: nowrap;
 }
 
+.floating-dock-qr-popup {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, calc(-100% - 4px));
+  z-index: 10;
+  padding: 10px;
+  border: 1px solid rgba(232, 240, 245, .18);
+  border-radius: 14px;
+  background: rgba(5, 13, 23, .92);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  pointer-events: none;
+}
+.floating-dock-qr-popup img { display: block; width: 120px; height: 120px; object-fit: contain; border-radius: 6px; }
+.floating-dock-qr-popup span { display: block; margin-top: 6px; color: var(--quiet-text, #718392); font: 500 10px/1.2 var(--tech, var(--mono, monospace)); text-align: center; white-space: nowrap; }
+
 @media (max-width: 560px) {
   .floating-dock-panel {
     gap: 5px;
