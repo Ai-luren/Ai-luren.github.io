@@ -24,6 +24,11 @@ import douyinScreenshot from '../../assets/images/social-profiles/抖音主页.w
 import xiaohongshuScreenshot from '../../assets/images/social-profiles/小红书主页.webp';
 import kuaishouScreenshot from '../../assets/images/social-profiles/快手主页.webp';
 import wechatChannelScreenshot from '../../assets/images/social-profiles/视频号主页.webp';
+import wechatChannelQrCode from '../../assets/images/social-profiles/视频号二维码.webp';
+import wechatQrCode from '../../assets/images/social-profiles/微信二维码.webp';
+import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.webp';
+import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
+import kuaishouQrCode from '../../assets/images/social-profiles/快手二维码.webp';
 
 const awards = [
   { image: award1, title: '无限剧场小赛', meta: '可灵 / 超棒奖' },
@@ -53,24 +58,31 @@ const reachCards = [
     platform: '抖音',
     screenshot: douyinScreenshot,
     stats: '1.7w粉丝 144.6w赞',
+    link: 'https://v.douyin.com/idVkRoxL/',
+    qrCode: douyinQrCode,
   },
   {
     id: 'xiaohongshu',
     platform: '小红书',
     screenshot: xiaohongshuScreenshot,
     stats: '3494粉丝 5.6w赞',
+    link: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470',
+    qrCode: xiaohongshuQrCode,
   },
   {
     id: 'kuaishou',
     platform: '快手',
     screenshot: kuaishouScreenshot,
     stats: '4475粉丝 9938赞',
+    link: 'https://v.kuaishou.com/K75e2i3A',
+    qrCode: kuaishouQrCode,
   },
   {
     id: 'wechat-channel',
     platform: '视频号',
     screenshot: wechatChannelScreenshot,
     stats: '9087赞 4237喜爱',
+    qrCode: wechatChannelQrCode,
   },
 ];
 
@@ -178,16 +190,31 @@ function ReachDossier() {
         <span>AI SOCIAL MEDIA / AI 自媒体</span>
       </div>
       <div className="impact-reach-profile-grid">
-        {reachCards.map((card) => (
-          <article className="impact-reach-profile" key={card.id}>
-            <div className="impact-reach-profile-shot">
-              <div className="impact-reach-profile-media">
-                <img src={card.screenshot} alt={`${card.platform} 主页截图`} />
-              </div>
-            </div>
-            <div className="impact-reach-profile-caption"><strong>{card.platform}</strong><span>{card.stats}</span></div>
-          </article>
-        ))}
+        {reachCards.map((card) => {
+          const hasLink = !!card.link;
+          const hasQr = !!card.qrCode;
+          const Tag = hasLink ? 'a' : 'div';
+          const tagProps = hasLink
+            ? { href: card.link, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `访问${card.platform}主页` }
+            : {};
+          const shotClass = `impact-reach-profile-shot${hasLink ? ' impact-reach-profile-shot--link' : ''}${hasQr ? ' impact-reach-profile-shot--qr' : ''}`;
+          return (
+            <article className="impact-reach-profile" key={card.id}>
+              <Tag className={shotClass} {...tagProps}>
+                <div className="impact-reach-profile-media">
+                  <img src={card.screenshot} alt={`${card.platform} 主页截图`} />
+                </div>
+                {hasQr && (
+                  <div className="impact-reach-qr-popup">
+                    <img src={card.qrCode} alt={`${card.platform}二维码`} />
+                    <span>{card.id === 'douyin' ? `使用${card.platform}扫码访问` : `扫码访问${card.platform}`}</span>
+                  </div>
+                )}
+              </Tag>
+              <div className="impact-reach-profile-caption"><strong>{card.platform}</strong><span>{card.stats}</span></div>
+            </article>
+          );
+        })}
       </div>
     </div>
   );
