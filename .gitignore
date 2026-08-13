@@ -21,6 +21,7 @@ pnpm-debug.log*
 .audit/
 .impeccable/
 .uploads/
+video-compare-*.png
 
 # Tencent Cloud EdgeOne
 .env

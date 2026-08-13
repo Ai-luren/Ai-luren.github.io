@@ -11,14 +11,14 @@ import lightCover from '../../assets/images/project-covers/AI 概念短片-光�
 import './CometCard.css';
 
 const ARCHIVES = [
-  { id: '01', title: '屈臣氏 AI 创意广告', category: 'AI 创意广告', award: '优秀奖', cover: watsonsCover },
-  { id: '02', title: '联想 AI 创意广告', category: 'AI 创意广告', award: '联想特别鸣谢奖', cover: lenovoCover },
-  { id: '03', title: '通义万相先导片', category: 'AI 创意广告', award: '通义官号首发', cover: tongyiCover },
-  { id: '04', title: '霸王茶姬 AI 创意广告', category: 'AI 创意广告', award: '中国联通三等奖', cover: chageeCover },
-  { id: '05', title: '猫咪的一天', category: 'AI 创意短片', award: '中国联通三等奖', cover: catsCover },
-  { id: '06', title: '岳阳楼 AI 文旅宣传', category: 'AI 文旅宣传', award: '超棒奖 · 优秀奖', cover: yueyangCover },
-  { id: '07', title: '人河流城市', category: 'AI 概念短片', award: 'MJ 官方优秀作品', cover: riverCityCover },
-  { id: '08', title: '光', category: 'AI 概念短片', award: '还不错奖 · 优秀奖', cover: lightCover },
+  { id: '01', title: '屈臣氏 AI 创意广告', category: 'AI 创意广告', award: '优秀奖', cover: watsonsCover, href: 'https://www.xiaohongshu.com/discovery/item/688d99d1000000002203a643?source=webshare&xhsshare=pc_web&xsec_token=AB2HumoFo2_bj_DqZ4oAH4r0-H5GGEtHFUn9RIYEcCOv8=&xsec_source=pc_share' },
+  { id: '02', title: '联想 AI 创意广告', category: 'AI 创意广告', award: '联想特别鸣谢奖', cover: lenovoCover, href: 'https://www.xiaohongshu.com/discovery/item/684da8f8000000000c03a0e8?source=webshare&xhsshare=pc_web&xsec_token=AB4tZju6OcifF-7IglVCRs3XbtKen4Xwp6o5QSWw0Ltnk=&xsec_source=pc_share' },
+  { id: '03', title: '通义万相先导片', category: 'AI 创意广告', award: '通义官号首发', cover: tongyiCover, href: 'https://www.xiaohongshu.com/discovery/item/688c8fe10000000025029684?source=webshare&xhsshare=pc_web&xsec_token=AB-XBU6QEyozPm_ytwWd0BvdTlO-gqHMp_rmAlmaeRo-g=&xsec_source=pc_share' },
+  { id: '04', title: '霸王茶姬 AI 创意广告', category: 'AI 创意广告', award: '中国联通三等奖', cover: chageeCover, href: 'https://www.xiaohongshu.com/discovery/item/6834a782000000000c03a3c1?source=webshare&xhsshare=pc_web&xsec_token=ABNgGVOpSb6RP8pGc_DcVAxOfnmMhtaK2TiKQoaJkZKIw=&xsec_source=pc_share' },
+  { id: '05', title: '猫咪的一天', category: 'AI 创意短片', award: '中国联通三等奖', cover: catsCover, href: 'https://www.xiaohongshu.com/discovery/item/6858bb32000000002400ba58?source=webshare&xhsshare=pc_web&xsec_token=AB264App4J-oDzd1MVj8VrczGn9Tlyk1Y0L3Ob2aYkFag=&xsec_source=pc_share' },
+  { id: '06', title: '岳阳楼 AI 文旅宣传', category: 'AI 文旅宣传', award: '超棒奖 · 优秀奖', cover: yueyangCover, href: 'https://www.xiaohongshu.com/discovery/item/68165055000000000e00525b?source=webshare&xhsshare=pc_web&xsec_token=ABDq1xQzCks5P83-ccrIgTlh_Pj6F4otf3gkmI-Y0Ugh0=&xsec_source=pc_share' },
+  { id: '07', title: '人河流城市', category: 'AI 概念短片', award: 'MJ 官方优秀作品', cover: riverCityCover, href: 'https://www.xiaohongshu.com/discovery/item/68b8051d000000001d00936f?source=webshare&xhsshare=pc_web&xsec_token=AB_COh4fY4yQq-A1yx_pOf7OadIS_o61EUSTaIJWvmwOU=&xsec_source=pc_share' },
+  { id: '08', title: '光', category: 'AI 概念短片', award: '还不错奖 · 优秀奖', cover: lightCover, href: 'https://www.xiaohongshu.com/discovery/item/688f595c0000000023031b1e?source=webshare&xhsshare=pc_web&xsec_token=AB1dIKBSOCR_91FMS218sLjy66ZJrUFPjhjkxX0Dejau0=&xsec_source=pc_share' },
 ];
 
 export default function MagneticProjectArchive() {
@@ -32,7 +32,6 @@ export default function MagneticProjectArchive() {
     if (!archive) return;
     dragState.current = { active: true, startX: event.clientX, startScrollLeft: archive.scrollLeft, moved: false };
     archive.classList.add('is-dragging');
-    archive.setPointerCapture?.(event.pointerId);
   };
 
   const handlePointerMove = (event) => {
@@ -40,24 +39,32 @@ export default function MagneticProjectArchive() {
     const state = dragState.current;
     if (!archive || !state.active) return;
     const distance = event.clientX - state.startX;
-    if (Math.abs(distance) > 6) state.moved = true;
+    if (Math.abs(distance) > 6) {
+      if (!state.moved) {
+        state.moved = true;
+        archive.setPointerCapture?.(event.pointerId);
+      }
+    }
     archive.scrollLeft = state.startScrollLeft - distance;
   };
 
   const stopDragging = (event) => {
     const archive = archiveRef.current;
     if (!archive) return;
+    if (dragState.current.moved && event?.pointerId != null) {
+      archive.releasePointerCapture?.(event.pointerId);
+    }
     dragState.current.active = false;
     archive.classList.remove('is-dragging');
-    if (event?.pointerId != null) archive.releasePointerCapture?.(event.pointerId);
   };
 
-  const handleClickCapture = (event) => {
+  const handleCardClick = (event, href) => {
+    event.preventDefault();
     if (dragState.current.moved) {
-      event.preventDefault();
-      event.stopPropagation();
       dragState.current.moved = false;
+      return;
     }
+    window.open(href, '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
@@ -77,13 +84,15 @@ export default function MagneticProjectArchive() {
 
   return (
     <>
-      <div ref={archiveRef} className="comet-archive" role="list" aria-label="AI 视频创作档案" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging} onClickCapture={handleClickCapture}>
+      <div ref={archiveRef} className="comet-archive" role="list" aria-label="AI 视频创作档案" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging}>
       {ARCHIVES.map(archive => (
-        <CometCard key={archive.id} className="comet-archive__item">
-          <button
-            type="button"
+        <CometCard key={archive.id} className="comet-archive__item" onClick={(event) => handleCardClick(event, archive.href)}>
+          <a
             className="comet-archive__card"
-            aria-label={`${archive.title}，${archive.award}`}
+            href={archive.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${archive.title}，${archive.award}，点击查看作品`}
             style={{ '--comet-cover': `url(${archive.cover})` }}
           >
             <span className="comet-archive__glass" aria-hidden="true" />
@@ -93,7 +102,7 @@ export default function MagneticProjectArchive() {
               <span className="comet-archive__meta">{archive.id} / AWARD</span>
               <span className="comet-archive__details"><strong>{archive.award}</strong></span>
             </span>
-          </button>
+          </a>
         </CometCard>
       ))}
       </div>
