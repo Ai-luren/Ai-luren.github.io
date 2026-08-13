@@ -116,7 +116,7 @@ export default function FloatingDock() {
   const items = [
     { label: '复制邮箱', onClick: () => copy('1746850550@qq.com', '邮箱'), icon: <DockIcon name="mail" /> },
     { label: '复制电话', onClick: () => copy('15580714085', '电话'), icon: <DockIcon name="phone" /> },
-    { label: '微信二维码', qrCode: wechatQrCode, qrLabel: '扫码添加微信', icon: <DockIcon name="wechat" /> },
+    { label: '微信', onClick: () => copy('15580714085', '微信号'), qrCode: wechatQrCode, qrLabel: '扫码添加微信', icon: <DockIcon name="wechat" /> },
     { label: 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
     { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
     { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, qrCode: douyinQrCode, qrLabel: '使用抖音扫码访问', icon: <DockIcon name="douyin" /> },
