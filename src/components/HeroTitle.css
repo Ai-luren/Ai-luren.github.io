@@ -24,17 +24,15 @@
    这里恢复 React Bits TextType 的 inline 光标，否则光标会占满整行并错位。 */
 #hero-title .hero-title__rotating .text-type__cursor {
   display: inline-block;
-  width: auto;
+  width: .42em;
+  height: .06em;
   min-width: 0;
-  height: auto;
   min-height: 0;
-  margin: 0 0 0 .08em;
+  margin: 0 0 0 .12em;
   padding: 0;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  line-height: inherit;
-  vertical-align: baseline;
+  border-radius: 1px;
+  background: currentColor;
+  vertical-align: -.1em;
 }
 
 @media (max-width: 500px) {

@@ -36,7 +36,7 @@ export default function HeroTitle() {
         pauseDuration={2600}
         initialDelay={260}
         showCursor
-        cursorCharacter="_"
+        cursorCharacter=""
       />
     </h1>
   );
