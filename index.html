@@ -46,9 +46,6 @@
   }
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --space-black: #050a10;
@@ -71,10 +68,10 @@
       --surface: #08121c;
       --surface-raised: #0d1b28;
       --shell: min(1220px, calc(100% - 64px));
-      --sans: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      /* 中文展示统一使用同一套 Noto Sans SC，避免 Glow Sans 的字宽和粗细造成视觉跳变。 */
+      --sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', system-ui, sans-serif;
+      /* 使用系统字体，避免 Google Fonts CDN 在部分地区不可用导致中文乱码 */
       --display: var(--sans);
-      --mono: 'DM Mono', 'SFMono-Regular', monospace;
+      --mono: 'SF Mono', 'Menlo', 'Consolas', 'SFMono-Regular', monospace;
       --tech: var(--mono);
     }
 
@@ -1191,9 +1188,9 @@
       --space-xl: 32px;
       --space-xxl: 48px;
       --space-section: 80px;
-      --font-display: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-      --font-body: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-      --font-mono: 'DM Mono', 'SFMono-Regular', monospace;
+      --font-display: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+      --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+      --font-mono: 'SF Mono', 'Menlo', 'Consolas', 'SFMono-Regular', monospace;
       --glass-surface: rgba(8, 18, 28, .72);
       --glass-surface-raised: rgba(13, 27, 40, .82);
       --glass-border: rgba(224, 224, 224, .18);
