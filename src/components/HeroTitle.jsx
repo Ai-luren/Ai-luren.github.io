@@ -1,10 +1,17 @@
 import { useEffect, useRef } from 'react';
 import TextType from './TextType.jsx';
 import { getGsap } from '../gsap-runtime.js';
+import { useLang } from '../i18n/index.js';
 import './HeroTitle.css';
+
+const ROTATING_WORDS = {
+  zh: ['图像设计', '视频设计', '氛围编程'],
+  en: ['Image Design', 'Video Design', 'Vibe Coding'],
+};
 
 export default function HeroTitle() {
   const titleRef = useRef(null);
+  const lang = useLang();
 
   useEffect(() => {
     const title = titleRef.current;
@@ -26,11 +33,12 @@ export default function HeroTitle() {
 
   return (
     <h1 ref={titleRef} id="hero-title" className="hero-title">
-      <span className="hero-title__prefix">AI创意</span>
+      <span className="hero-title__prefix">{lang === 'en' ? 'AI Creative' : 'AI创意'}</span>
       <TextType
+        key={lang}
         as="span"
         className="hero-title__rotating"
-        text={['图像设计', '视频设计', '氛围编程']}
+        text={ROTATING_WORDS[lang]}
         typingSpeed={125}
         deletingSpeed={80}
         pauseDuration={2600}
