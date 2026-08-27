@@ -86,7 +86,7 @@
 
 .flip-experiment__card.is-feature .flip-experiment__body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(270px, .72fr);
+  grid-template-columns: minmax(0, 1fr) minmax(310px, .72fr);
   align-items: center;
   gap: clamp(24px, 4vw, 72px);
 }
@@ -211,7 +211,7 @@
 }
 
 .flip-experiment__workflow strong,
-.flip-experiment__workflow small { display: block; }
+.flip-experiment__workflow small { display: block; overflow-wrap: break-word; }
 .flip-experiment__workflow strong { color: rgba(245, 249, 252, .94); font-size: 13px; font-weight: 600; }
 .flip-experiment__workflow small { max-width: 14ch; margin-top: 4px; color: rgba(214, 227, 237, .56); font-size: 13px; line-height: 1.45; }
 

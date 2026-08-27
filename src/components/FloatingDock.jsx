@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
+import { useLang } from '../i18n/index.js';
 import './FloatingDock.css';
 
 import mailIcon from '../../assets/images/icon/mail.svg';
@@ -115,6 +116,7 @@ export default function FloatingDock() {
   const mouseX = useMotionValue(Infinity);
   const [isCompact, setIsCompact] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 430);
   const [status, setStatus] = useState('');
+  const lang = useLang();
   const spring = { mass: 0.1, stiffness: 150, damping: 12 };
 
   useEffect(() => {
@@ -124,20 +126,21 @@ export default function FloatingDock() {
   }, []);
 
   const copy = (value, label) => {
+    const copied = lang === 'en' ? `${label.en} copied` : `${label.zh}已复制`;
     navigator.clipboard?.writeText(value).then(() => {
-      setStatus(`${label}已复制`);
+      setStatus(copied);
       window.setTimeout(() => setStatus(''), 1600);
-    }).catch(() => setStatus('复制失败，请手动联系'));
+    }).catch(() => setStatus(lang === 'en' ? 'Copy failed, please reach out manually' : '复制失败，请手动联系'));
   };
 
   const items = [
-    { label: '复制邮箱', onClick: () => copy('1746850550@qq.com', '邮箱'), icon: <DockIcon name="mail" /> },
-    { label: '复制电话', onClick: () => copy('15580714085', '电话'), icon: <DockIcon name="phone" /> },
-    { label: '微信', onClick: () => copy('15580714085', '微信号'), qrCode: wechatQrCode, qrLabel: '扫码添加微信', icon: <DockIcon name="wechat" /> },
-    { label: 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
-    { label: '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
-    { label: '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, qrCode: douyinQrCode, qrLabel: '使用抖音扫码访问', icon: <DockIcon name="douyin" /> },
-    { label: '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
+    { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
+    { label: lang === 'en' ? 'Copy phone' : '复制电话', onClick: () => copy('15580714085', { zh: '电话', en: 'Phone' }), icon: <DockIcon name="phone" /> },
+    { label: lang === 'en' ? 'WeChat' : '微信', onClick: () => copy('15580714085', { zh: '微信号', en: 'WeChat ID' }), qrCode: wechatQrCode, qrLabel: lang === 'en' ? 'Scan to add on WeChat' : '扫码添加微信', icon: <DockIcon name="wechat" /> },
+    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
+    { label: lang === 'en' ? 'Rednote profile' : '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: lang === 'en' ? 'Scan to visit Rednote' : '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
+    { label: lang === 'en' ? 'TikTok profile' : '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, qrCode: douyinQrCode, qrLabel: lang === 'en' ? 'Scan with the TikTok app' : '使用抖音扫码访问', icon: <DockIcon name="douyin" /> },
+    { label: lang === 'en' ? 'Lark portfolio' : '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
   ];
 
   return (
@@ -145,7 +148,7 @@ export default function FloatingDock() {
       <div
         className="floating-dock-panel"
         role="toolbar"
-        aria-label="联系方式与作品集链接"
+        aria-label={lang === 'en' ? 'Contact and portfolio links' : '联系方式与作品集链接'}
         onMouseMove={(event) => mouseX.set(event.clientX)}
         onMouseLeave={() => mouseX.set(Infinity)}
       >

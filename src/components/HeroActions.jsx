@@ -1,7 +1,10 @@
 import SpecularButton from './SpecularButton.jsx';
+import { useT } from '../i18n/index.js';
 import './HeroActions.css';
 
 export default function HeroActions() {
+  const t = useT();
+
   return (
     <>
       <SpecularButton
@@ -23,7 +26,7 @@ export default function HeroActions() {
         proximity={250}
         onClick={() => { window.location.hash = 'projects'; }}
       >
-        查看创作档案
+        {t('查看创作档案', 'View Selected Work')}
       </SpecularButton>
       <SpecularButton
         size="md"
@@ -43,7 +46,7 @@ export default function HeroActions() {
         proximity={250}
         onClick={() => { window.location.hash = 'profile'; }}
       >
-        浏览工作经历
+        {t('浏览工作经历', 'Explore Work History')}
       </SpecularButton>
     </>
   );

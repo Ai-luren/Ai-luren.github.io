@@ -2,61 +2,72 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Flip from 'gsap/Flip';
 import GlareHover from './GlareHover.jsx';
 import { getGsap } from '../gsap-runtime.js';
+import { useLang } from '../i18n/index.js';
 import './ExperimentFlip.css';
 
 const experiments = [
   {
     id: 'news',
     index: '01',
-    label: 'NEWS / AI 资讯',
-    title: 'AI 新闻追踪',
-    description: '聚合多源 AI 资讯，飞书卡片定时推送并去重。',
-    facts: ['RSS 聚合', '飞书卡片', '定时推送'],
+    label: { zh: 'NEWS / AI 资讯', en: 'NEWS / AI FEED' },
+    title: { zh: 'AI 新闻追踪', en: 'AI News Tracker' },
+    description: { zh: '聚合多源 AI 资讯，飞书卡片定时推送并去重。', en: 'Aggregates AI news from multiple sources into deduped, scheduled Lark card updates.' },
+    facts: [
+      { zh: 'RSS 聚合', en: 'RSS aggregation' },
+      { zh: '飞书卡片', en: 'Lark cards' },
+      { zh: '定时推送', en: 'Scheduled delivery' },
+    ],
     workflow: [
-      ['RSS', '橘鸦 / AI HOT'],
-      ['抓取清洗', '解析与去重'],
-      ['飞书卡片', '结构化整理'],
-      ['定时推送', '同步到群组'],
+      ['RSS', { zh: '橘鸦 / AI HOT', en: 'Juyan / AI HOT' }],
+      [{ zh: '抓取清洗', en: 'Fetch & Clean' }, { zh: '解析与去重', en: 'Parse and dedupe' }],
+      [{ zh: '飞书卡片', en: 'Lark Cards' }, { zh: '结构化整理', en: 'Structured digest' }],
+      [{ zh: '定时推送', en: 'Scheduled Push' }, { zh: '同步到群组', en: 'Sync to groups' }],
     ],
     href: 'https://github.com/Ai-luren/Ainews-to-Feishu',
-    linkLabel: 'GitHub 开源项目',
+    linkLabel: { zh: 'GitHub 开源项目', en: 'GitHub open-source project' },
   },
   {
     id: 'illustration',
     index: '02',
-    label: 'IMAGE / 文章配图',
-    title: 'AI 文章配图',
-    description: '提取认知锚点，生成白底手绘风格正文配图。',
-    facts: ['Codex Skill', '16:9 配图', 'Shot list'],
+    label: { zh: 'IMAGE / 文章配图', en: 'IMAGE / ILLUSTRATION' },
+    title: { zh: 'AI 文章配图', en: 'AI Article Illustration' },
+    description: { zh: '提取认知锚点，生成白底手绘风格正文配图。', en: 'Extracts cognitive anchors and generates clean hand-drawn style article illustrations.' },
+    facts: [
+      'Codex Skill',
+      { zh: '16:9 配图', en: '16:9 visuals' },
+      'Shot list',
+    ],
     workflow: [
-      ['文章输入', '读取主题与上下文'],
-      ['认知锚点', '提炼一个核心判断'],
-      ['Shot list', '规划画面结构'],
-      ['AI 配图', '输出可复用 PNG'],
+      [{ zh: '文章输入', en: 'Article Input' }, { zh: '读取主题与上下文', en: 'Read theme and context' }],
+      [{ zh: '认知锚点', en: 'Cognitive Anchor' }, { zh: '提炼一个核心判断', en: 'Distill one core insight' }],
+      ['Shot list', { zh: '规划画面结构', en: 'Plan the composition' }],
+      [{ zh: 'AI 配图', en: 'AI Visuals' }, { zh: '输出可复用 PNG', en: 'Reusable PNG output' }],
     ],
     href: 'https://github.com/Ai-luren/Ailuren-illustrations',
-    linkLabel: 'GitHub 开源项目',
+    linkLabel: { zh: 'GitHub 开源项目', en: 'GitHub open-source project' },
   },
   {
     id: 'portfolio',
     index: '03',
-    label: 'SITE / AI 网页',
-    title: 'AI 网页作品集',
-    description: '用 Codex 和 Skill 做出滚动叙事作品集。',
+    label: { zh: 'SITE / AI 网页', en: 'SITE / PORTFOLIO' },
+    title: { zh: 'AI 网页作品集', en: 'AI Web Portfolio' },
+    description: { zh: '用 Codex 和 Skill 做出滚动叙事作品集。', en: 'Built this scroll-driven narrative portfolio with Codex and Skills.' },
     facts: ['Vite', 'React', 'GSAP'],
     workflow: [
-      ['想法', '确定内容与叙事'],
-      ['Codex / Skill', '边做边验证'],
-      ['React 页面', '组件化交互'],
-      ['在线作品集', '持续迭代发布'],
+      [{ zh: '想法', en: 'Idea' }, { zh: '确定内容与叙事', en: 'Define content and narrative' }],
+      ['Codex / Skill', { zh: '边做边验证', en: 'Build and verify' }],
+      [{ zh: 'React 页面', en: 'React Page' }, { zh: '组件化交互', en: 'Componentized interactions' }],
+      [{ zh: '在线作品集', en: 'Live Portfolio' }, { zh: '持续迭代发布', en: 'Iterate and ship' }],
     ],
     href: 'https://github.com/Ai-luren/Ai-luren.github.io',
-    linkLabel: 'GitHub 开源项目',
+    linkLabel: { zh: 'GitHub 开源项目', en: 'GitHub open-source project' },
   },
 ];
 
 function ExperimentCard({ item, slot, onSelect, cardRef }) {
   const isFeature = slot === 'feature';
+  const lang = useLang();
+  const pick = (value) => (typeof value === 'string' ? value : value[lang]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -86,20 +97,20 @@ function ExperimentCard({ item, slot, onSelect, cardRef }) {
       data-experiment-id={item.id}
       tabIndex="0"
       role="button"
-      aria-label={`${isFeature ? '当前项目' : '切换到'}：${item.title}`}
+      aria-label={`${isFeature ? (lang === 'en' ? 'Current project' : '当前项目') : (lang === 'en' ? 'Switch to' : '切换到')}：${pick(item.title)}`}
       onClick={() => onSelect(item.id)}
       onKeyDown={handleKeyDown}
     >
       <div className="flip-experiment__meta">
         <span className="flip-experiment__number">{item.index}</span>
-        <span className="flip-experiment__label">{item.label}</span>
+        <span className="flip-experiment__label">{pick(item.label)}</span>
       </div>
       <div className="flip-experiment__body">
         <div className="flip-experiment__copy">
-          <h3>{item.title}</h3>
-          <p>{item.description}</p>
-          <div className="flip-experiment__facts" aria-label="项目能力标签">
-            {item.facts.map((fact) => <span key={fact}>{fact}</span>)}
+          <h3>{pick(item.title)}</h3>
+          <p>{pick(item.description)}</p>
+          <div className="flip-experiment__facts" aria-label={lang === 'en' ? 'Project capability tags' : '项目能力标签'}>
+            {item.facts.map((fact) => <span key={pick(fact)}>{pick(fact)}</span>)}
           </div>
           <a
             className="flip-experiment__link"
@@ -108,24 +119,24 @@ function ExperimentCard({ item, slot, onSelect, cardRef }) {
             rel="noopener noreferrer"
             onClick={(event) => event.stopPropagation()}
           >
-            {item.linkLabel} <span aria-hidden="true">↗</span>
+            {pick(item.linkLabel)} <span aria-hidden="true">↗</span>
           </a>
         </div>
         {isFeature && (
-          <div className="flip-experiment__workflow" aria-label={`${item.title}工作流`}>
-            <span className="flip-experiment__workflow-title">WORKFLOW / 工作流</span>
+          <div className="flip-experiment__workflow" aria-label={`${pick(item.title)}${lang === 'en' ? ' workflow' : '工作流'}`}>
+            <span className="flip-experiment__workflow-title">{lang === 'en' ? 'WORKFLOW' : 'WORKFLOW / 工作流'}</span>
             <ol>
               {item.workflow.map(([label, detail]) => (
-                <li key={label}>
+                <li key={pick(label)}>
                   <span className="flip-experiment__workflow-node" aria-hidden="true" />
-                  <span><strong>{label}</strong><small>{detail}</small></span>
+                  <span><strong>{pick(label)}</strong><small>{pick(detail)}</small></span>
                 </li>
               ))}
             </ol>
           </div>
         )}
       </div>
-      {!isFeature && <span className="flip-experiment__hint">点击切换</span>}
+      {!isFeature && <span className="flip-experiment__hint">{lang === 'en' ? 'Click to switch' : '点击切换'}</span>}
     </article>
     </GlareHover>
   );
@@ -136,6 +147,7 @@ export default function ExperimentFlip() {
   const cardRefs = useRef(new Map());
   const pendingFlipState = useRef(null);
   const [activeId, setActiveId] = useState(experiments[0].id);
+  const lang = useLang();
 
   useEffect(() => {
     const root = rootRef.current;
@@ -220,7 +232,7 @@ export default function ExperimentFlip() {
   const orderedIds = [activeId, ...experiments.map((item) => item.id).filter((id) => id !== activeId)];
 
   return (
-    <div ref={rootRef} className="flip-experiment" aria-label="AI 实验项目切换台">
+    <div ref={rootRef} className="flip-experiment" aria-label={lang === 'en' ? 'AI experiments switchboard' : 'AI 实验项目切换台'}>
       <div className="flip-experiment__stage">
         {experiments.map((item) => {
           const slot = orderedIds.indexOf(item.id) === 0
@@ -242,7 +254,7 @@ export default function ExperimentFlip() {
       </div>
       <div className="flip-experiment__status" aria-live="polite">
         <span className="flip-experiment__status-dot" aria-hidden="true" />
-        当前查看：{experiments.find((item) => item.id === activeId)?.title}
+        {lang === 'en' ? 'Now viewing: ' : '当前查看：'}{experiments.find((item) => item.id === activeId)?.title[lang]}
       </div>
     </div>
   );

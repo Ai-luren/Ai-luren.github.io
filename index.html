@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>try { if (window.localStorage.getItem('ailuren-lang') === 'en') document.documentElement.lang = 'en'; } catch (error) {}</script>
   <meta name="description" content="Ai路人（宁磊），8 年小米动态设计经验，现专注 AI 创意效果设计。作品涵盖 AI 广告、概念短片、文旅宣传，多次获中国联通、通义、Midjourney 等平台奖项。本作品集展示 AI 图像与视频创意效果设计的完整流程与成果。" />
   <meta name="author" content="Ai路人" />
   <meta name="theme-color" content="#050a10" />
@@ -109,6 +110,12 @@
     nav a.is-active::after { transform: scaleX(1); }
     .nav-contact { padding: 7px 12px; border: 1px solid rgba(232,240,245,.24); color: rgba(231,236,244,.78); }
     .nav-contact::after { display: none; }
+    .nav-lang { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; min-height: 36px; padding: 0 12px; border: 1px solid rgba(232,240,245,.24); border-radius: 999px; background: transparent; color: rgba(231,236,244,.78); font: 500 12px/1 var(--tech); letter-spacing: .06em; white-space: nowrap; cursor: pointer; transition: color .2s ease, border-color .2s ease; }
+    .nav-lang i { color: rgba(184,215,236,.4); font-style: normal; }
+    .nav-lang [data-lang-part] { opacity: .55; transition: opacity .2s ease, color .2s ease; }
+    .nav-lang:hover, .nav-lang:focus-visible { border-color: rgba(255,255,255,.6); color: #fff; outline: none; }
+    html[lang="zh-CN"] .nav-lang [data-lang-part="zh"], html[lang="en"] .nav-lang [data-lang-part="en"] { opacity: 1; color: #fff; }
+    .nav-lang:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
 
     main, footer { position: relative; z-index: 1; }
     .section { position: relative; display: grid; align-items: center; min-height: auto; padding: 112px 0 104px; isolation: isolate; }
@@ -174,6 +181,7 @@
     .experience-step small { color: var(--subtle-text); font: 500 15px/1.25 var(--tech); letter-spacing: .02em; white-space: nowrap; }
     .experience-step small i { font-style: normal; }
     .experience-step small i::after { content: ' / '; }
+    .experience-step small b { font-weight: inherit; }
     .experience-step strong { color: inherit; font: 600 16px/1.3 var(--display); letter-spacing: -.025em; }
     .experience-step span { color: var(--muted); font-size: 14px; line-height: 1.5; }
     .experience-step.is-active small { color: rgba(255,255,255,.96); }
@@ -219,7 +227,12 @@
       .experience-detail, .experience-details { grid-column: auto; grid-row: 3; width: 100%; min-height: 400px; }
       .experience-details { align-self: center; }
       .experience-detail { padding: 20px 20px 32px; }
+      /* 中文面板 3 内容最满（2 行职位 + 荣誉行），400px 时荣誉行距底只剩 8px 贴边。 */
+      .experience-details, .experience-detail { min-height: 425px; }
       .experience-detail h3 { font-size: clamp(2rem, 10vw, 3rem); }
+      /* 移动端禁用 backdrop-filter：pin 滚动叙事 + 模糊层在 Safari 真机上会导致文字/图片渲染错乱与滚动卡顿。
+         card-surfaces.css 用 !important 锁定 backdrop-filter，这里通过覆盖变量解除。 */
+      .experience-detail { --portfolio-card-blur: none; --glass-blur: none; --portfolio-card-surface: linear-gradient(135deg, rgba(13,27,40,.94), rgba(5,13,23,.9)); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -410,12 +423,25 @@
     @media (max-width: 720px) {
       .comet-archive { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 18px 0 26px; overflow: visible; }
       .comet-archive__item { min-width: 0; aspect-ratio: 3 / 5; }
+      /* 英文标题占 2 行，固定 3/5 比例高度容不下，文字会叠到图片上；改为内容驱动高度。 */
+      html[lang="en"] .comet-archive__item { aspect-ratio: auto; min-height: 291px; }
+      /* 英文 kick 标签是等宽字体，"WORK / xxx" 比 "WORK / 中文" 宽得多，20px 内边距下放不下会省略号截断；
+         英文卡片是内容驱动高度（无固定比例），收窄内边距没有图片压字风险。中文卡片保持 20px 不动。 */
+      html[lang="en"] .comet-archive__card { padding-left: 14px; padding-right: 14px; }
       .comet-archive__card { grid-template-rows: auto minmax(0, 1fr) auto; padding-top: 10px; padding-bottom: 24px; }
-      .comet-archive__image { top: 12px; }
+      /* top: 12px 的视觉偏移会让图片压住下方 copy 行 12px（英文 2 行标题时尤其明显），归位。 */
+      .comet-archive__image { top: 0; }
+      /* 顶部 kick 标签（如 "WORK / AI Travel Promos"）在部分宽度换行成 2 行，同行卡片 award 行高不同会把下方图片顶得错位；强制单行省略保证所有卡片图片顶边对齐。 */
+      .comet-archive__award { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      /* 单行省略后 11px 放不下最长标签（WORK / AI Concept Films），微降字号与字距让全部 kick 文案完整显示。 */
+      .comet-archive__award { font-size: 10px; letter-spacing: 0; }
+      /* 英文模式内容驱动高度正好填满，图片与文字零间距显得贴死；顶部 kick 与图片之间同样留出呼吸。 */
+      .comet-archive__image { margin-top: 10px; }
+      .comet-archive__copy { margin-top: 12px; }
       .comet-archive__copy { display: grid; grid-template-columns: minmax(0, 1fr); align-items: end; gap: 6px; }
       .comet-archive__meta { white-space: nowrap; }
-      .comet-archive__details { display: block; width: 100%; min-width: 0; }
-      .comet-archive__copy strong { max-width: 100%; overflow: hidden; font-size: clamp(14px, 4.2vw, 16px); white-space: nowrap; line-height: 1.1; text-overflow: ellipsis; }
+      .comet-archive__card .comet-archive__details { display: block; width: 100%; min-width: 0; }
+      .comet-archive__card .comet-archive__copy strong { max-width: 100%; overflow: hidden; font-size: clamp(14px, 4.2vw, 16px); white-space: nowrap; line-height: 1.1; text-overflow: ellipsis; }
       .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { transform: none; }
       .comet-card:hover .comet-archive__copy, .comet-card:focus-within .comet-archive__copy { transform: none; }
       .comet-archive__scroll-hint { display: none !important; }
@@ -1125,10 +1151,66 @@
       header .nav-inner.shell, header.is-condensed .nav-inner.shell { padding: 0 8px; }
       .brand { width: 38px; height: 38px; }
       .nav-toggle { display: none !important; }
-      .nav-inner > nav { position: static; display: flex !important; flex: 1; margin-left: 0; transform: none; }
+      .nav-inner > nav { position: static; display: flex !important; flex: 1; margin-left: 0; transform: none; justify-content: center; }
+      .nav-lang { min-height: 34px; padding: 0 10px; font-size: 11px; }
       .nav-list { display: flex !important; flex-wrap: nowrap; gap: 0; justify-content: center; }
       .nav-list a { width: auto; min-height: 36px; padding: 0 5px; font-size: 11px; }
       .nav-list a::after { right: 5px; bottom: 4px; left: 5px; }
+      /* 玻璃胶囊宽度是 100%-24px，语言按钮 flex-shrink:0，内容超宽时会被顶出胶囊右缘，收紧间距。 */
+      .nav-inner.shell { gap: 10px; }
+      .nav-lang { padding: 0 7px; }
+    }
+
+    /* 英文文案更长：放宽为中文设计的固定宽度与单行限制，避免截断和溢出。 */
+    .nav-short { display: none; }
+    /* 7ch 行宽按中文 4 字设计，英文 "AI Creative" 等词会横向溢出容器甚至视口。 */
+    html[lang="en"] .hero-title { max-width: none; }
+    @media (min-width: 721px) {
+      html[lang="en"] .hero-actions .specular-button { flex: 0 0 auto; width: auto; padding: 0 26px; white-space: nowrap; }
+      /* 步骤标题 nowrap，英文 "01 / Motion Design" 会把 grid 轨道撑出 220px 列宽，卡片溢出左侧排版区。 */
+      html[lang="en"] .experience-pin { grid-template-columns: 258px minmax(0, 420px); }
+      html[lang="en"] .experience-index { width: min(100%, 258px); }
+    }
+    html[lang="en"] .experience-details { min-height: 585px; }
+    html[lang="en"] .experience-detail { min-height: 585px; }
+    html[lang="en"] .comet-archive__copy strong { max-width: 100%; white-space: normal; text-overflow: clip; line-height: 1.25; }
+    /* 英文标题换行行数不一（1~2 行）会让 space-between 卡片各行间隙不同，图片与文字纵向错位；统一按 2 行占位。 */
+    html[lang="en"] .comet-archive__copy strong { min-height: 2.5em; }
+    /* 12ch/34ch 行宽按中文设计，英文长标题会被压成竖条状换行。 */
+    html[lang="en"] .experience-detail h3 { max-width: 100%; }
+    html[lang="en"] .experience-detail .experience-description { max-width: 100%; }
+    @media (max-width: 520px) {
+      /* 英文完整标签过长，窄屏切换短标签；中文标签短，压缩内边距即可放下完整标签。 */
+      html[lang="en"] .nav-list a span:not(.nav-short) { display: none; }
+      html[lang="en"] .nav-list a .nav-short { display: inline; }
+      html[lang="en"] .nav-list a { padding: 0 4px; }
+      html[lang="zh-CN"] .nav-list a { padding: 0 2px; letter-spacing: 0; }
+    }
+    @media (max-width: 380px) {
+      /* 375px 以下放不下完整中文标签，字号降一档保住完整文案。 */
+      html[lang="zh-CN"] .nav-list a { font-size: 10px; }
+    }
+    @media (max-width: 360px) {
+      .nav-list a { padding: 0 2px; letter-spacing: 0; }
+      .nav-lang { padding: 0 7px; }
+      html[lang="zh-CN"] .nav-list a { font-size: 9.5px; }
+    }
+    @media (max-width: 340px) {
+      /* 320px 超窄屏（iPhone SE 一代等）：默认组合下语言按钮被顶出胶囊 33px，压缩间距与头像。 */
+      .nav-inner.shell { gap: 4px; }
+      .brand { width: 32px; height: 32px; }
+      .nav-list a { padding: 0; font-size: 9px; }
+      html[lang="zh-CN"] .nav-list a { font-size: 9px; }
+      .nav-lang { padding: 0 5px; font-size: 10px; }
+    }
+    @media (max-width: 720px) {
+      html[lang="en"] .experience-step small { white-space: normal; }
+      html[lang="en"] .experience-step span { -webkit-line-clamp: 3; }
+      html[lang="en"] .experience-details, html[lang="en"] .experience-detail { min-height: 545px; }
+    }
+    @media (max-width: 560px) {
+      /* 窄屏英文标题再降一档字号，给 "Image Design" 等长词留足余量。 */
+      html[lang="en"] .hero-title { font-size: clamp(2.9rem, 13vw, 4.4rem); }
     }
 
     /* 圆角规范：品牌图标、社交入口与所有操作按钮统一为 18px。 */
@@ -1550,50 +1632,51 @@
   </style>
 </head>
 <body class="is-loading is-on-hero">
-  <div id="loading" aria-live="polite"><span class="loading-copy">正在进入创作舱</span><span class="loading-line"></span></div>
+  <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
   <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div></div>
   <div class="video-tuner" id="video-tuner">
-    <button class="video-tuner__toggle" type="button" aria-expanded="false" aria-controls="video-tuner-panel">编辑背景</button>
+    <button class="video-tuner__toggle" type="button" aria-expanded="false" aria-controls="video-tuner-panel" data-i18n="tuner.toggle">编辑背景</button>
     <div class="video-tuner__panel" id="video-tuner-panel" hidden>
-      <p class="video-tuner__intro">WebGL 复古视频管线：像素、调色板、抖动和 CRT 参数全局生效，Hero 与后续章节保持同一套质感。</p>
-      <div class="video-tuner__group"><label class="video-tuner__label" for="hero-mask-range"><span>Hero 蒙版强度</span><output class="video-tuner__value" id="hero-mask-value" for="hero-mask-range">60%</output></label><input class="video-tuner__range" id="hero-mask-range" type="range" min="0" max="100" step="1" value="60" /></div>
-      <div class="video-tuner__group"><label class="video-tuner__label" for="video-brightness-range"><span>视频亮度</span><output class="video-tuner__value" id="video-brightness-value" for="video-brightness-range">72%</output></label><input class="video-tuner__range" id="video-brightness-range" type="range" min="0" max="100" step="1" value="72" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-mask-range"><span>蒙版强度</span><output class="video-tuner__value" id="video-mask-value" for="video-mask-range">20%</output></label><input class="video-tuner__range" id="video-mask-range" type="range" min="0" max="100" step="1" value="20" /></div>
-      <div class="video-tuner__group"><label class="video-tuner__label" for="video-saturation-range"><span>色彩饱和度</span><output class="video-tuner__value" id="video-saturation-value" for="video-saturation-range">80%</output></label><input class="video-tuner__range" id="video-saturation-range" type="range" min="0" max="100" step="1" value="80" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-contrast-range"><span>对比度</span><output class="video-tuner__value" id="video-contrast-value" for="video-contrast-range">96%</output></label><input class="video-tuner__range" id="video-contrast-range" type="range" min="75" max="150" step="1" value="96" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-blur-range"><span>模糊</span><output class="video-tuner__value" id="video-blur-value" for="video-blur-range">0%</output></label><input class="video-tuner__range" id="video-blur-range" type="range" min="0" max="100" step="1" value="0" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-vignette-range"><span>边缘暗角</span><output class="video-tuner__value" id="video-vignette-value" for="video-vignette-range">100%</output></label><input class="video-tuner__range" id="video-vignette-range" type="range" min="0" max="100" step="1" value="100" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-noise-range"><span>噪点与色差</span><output class="video-tuner__value" id="video-noise-value" for="video-noise-range">8%</output></label><input class="video-tuner__range" id="video-noise-range" type="range" min="0" max="100" step="1" value="8" /></div>
-      <div class="video-tuner__group"><label class="video-tuner__label" for="video-pixel-master-range"><span>像素画强度</span><output class="video-tuner__value" id="video-pixel-master-value" for="video-pixel-master-range">35%</output></label><input class="video-tuner__range" id="video-pixel-master-range" type="range" min="0" max="100" step="1" value="35" /></div>
-      <div class="video-tuner__group"><label class="video-tuner__label" for="video-crt-master-range"><span>CRT强度</span><output class="video-tuner__value" id="video-crt-master-value" for="video-crt-master-range">60%</output></label><input class="video-tuner__range" id="video-crt-master-range" type="range" min="0" max="100" step="1" value="60" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-pixel-range"><span>像素采样</span><output class="video-tuner__value" id="video-pixel-value" for="video-pixel-range">31%</output></label><input class="video-tuner__range" id="video-pixel-range" type="range" min="0" max="100" step="1" value="31" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-color-depth-range"><span>色彩深度</span><output class="video-tuner__value" id="video-color-depth-value" for="video-color-depth-range">40</output></label><input class="video-tuner__range" id="video-color-depth-range" type="range" min="4" max="64" step="1" value="40" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-dither-range"><span>抖动强度</span><output class="video-tuner__value" id="video-dither-value" for="video-dither-range">10%</output></label><input class="video-tuner__range" id="video-dither-range" type="range" min="0" max="100" step="1" value="10" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-edge-range"><span>边缘增强</span><output class="video-tuner__value" id="video-edge-value" for="video-edge-range">20%</output></label><input class="video-tuner__range" id="video-edge-range" type="range" min="0" max="100" step="1" value="20" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-crt-range"><span>CRT扫描</span><output class="video-tuner__value" id="video-crt-value" for="video-crt-range">38%</output></label><input class="video-tuner__range" id="video-crt-range" type="range" min="0" max="100" step="1" value="38" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-glow-range"><span>荧光辉光</span><output class="video-tuner__value" id="video-glow-value" for="video-glow-range">24%</output></label><input class="video-tuner__range" id="video-glow-range" type="range" min="0" max="100" step="1" value="24" /></div>
-      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-chroma-range"><span>色差</span><output class="video-tuner__value" id="video-chroma-value" for="video-chroma-range">4%</output></label><input class="video-tuner__range" id="video-chroma-range" type="range" min="0" max="100" step="1" value="4" /></div>
-      <button class="video-tuner__more" type="button" id="video-tuner-more" aria-expanded="false">更多质感参数</button>
-      <button class="video-tuner__reset" type="button" id="video-mask-reset">恢复 16-bit 默认</button>
-      <button class="video-tuner__reset" type="button" id="video-effects-zero">恢复 0 效果</button>
+      <p class="video-tuner__intro" data-i18n="tuner.intro">WebGL 复古视频管线：像素、调色板、抖动和 CRT 参数全局生效，Hero 与后续章节保持同一套质感。</p>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="hero-mask-range"><span data-i18n="tuner.heroMask">Hero 蒙版强度</span><output class="video-tuner__value" id="hero-mask-value" for="hero-mask-range">60%</output></label><input class="video-tuner__range" id="hero-mask-range" type="range" min="0" max="100" step="1" value="60" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-brightness-range"><span data-i18n="tuner.brightness">视频亮度</span><output class="video-tuner__value" id="video-brightness-value" for="video-brightness-range">72%</output></label><input class="video-tuner__range" id="video-brightness-range" type="range" min="0" max="100" step="1" value="72" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-mask-range"><span data-i18n="tuner.mask">蒙版强度</span><output class="video-tuner__value" id="video-mask-value" for="video-mask-range">20%</output></label><input class="video-tuner__range" id="video-mask-range" type="range" min="0" max="100" step="1" value="20" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-saturation-range"><span data-i18n="tuner.saturation">色彩饱和度</span><output class="video-tuner__value" id="video-saturation-value" for="video-saturation-range">80%</output></label><input class="video-tuner__range" id="video-saturation-range" type="range" min="0" max="100" step="1" value="80" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-contrast-range"><span data-i18n="tuner.contrast">对比度</span><output class="video-tuner__value" id="video-contrast-value" for="video-contrast-range">96%</output></label><input class="video-tuner__range" id="video-contrast-range" type="range" min="75" max="150" step="1" value="96" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-blur-range"><span data-i18n="tuner.blur">模糊</span><output class="video-tuner__value" id="video-blur-value" for="video-blur-range">0%</output></label><input class="video-tuner__range" id="video-blur-range" type="range" min="0" max="100" step="1" value="0" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-vignette-range"><span data-i18n="tuner.vignette">边缘暗角</span><output class="video-tuner__value" id="video-vignette-value" for="video-vignette-range">100%</output></label><input class="video-tuner__range" id="video-vignette-range" type="range" min="0" max="100" step="1" value="100" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-noise-range"><span data-i18n="tuner.noise">噪点与色差</span><output class="video-tuner__value" id="video-noise-value" for="video-noise-range">8%</output></label><input class="video-tuner__range" id="video-noise-range" type="range" min="0" max="100" step="1" value="8" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-pixel-master-range"><span data-i18n="tuner.pixelMaster">像素画强度</span><output class="video-tuner__value" id="video-pixel-master-value" for="video-pixel-master-range">35%</output></label><input class="video-tuner__range" id="video-pixel-master-range" type="range" min="0" max="100" step="1" value="35" /></div>
+      <div class="video-tuner__group"><label class="video-tuner__label" for="video-crt-master-range"><span data-i18n="tuner.crtMaster">CRT强度</span><output class="video-tuner__value" id="video-crt-master-value" for="video-crt-master-range">60%</output></label><input class="video-tuner__range" id="video-crt-master-range" type="range" min="0" max="100" step="1" value="60" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-pixel-range"><span data-i18n="tuner.pixel">像素采样</span><output class="video-tuner__value" id="video-pixel-value" for="video-pixel-range">31%</output></label><input class="video-tuner__range" id="video-pixel-range" type="range" min="0" max="100" step="1" value="31" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-color-depth-range"><span data-i18n="tuner.colorDepth">色彩深度</span><output class="video-tuner__value" id="video-color-depth-value" for="video-color-depth-range">40</output></label><input class="video-tuner__range" id="video-color-depth-range" type="range" min="4" max="64" step="1" value="40" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-dither-range"><span data-i18n="tuner.dither">抖动强度</span><output class="video-tuner__value" id="video-dither-value" for="video-dither-range">10%</output></label><input class="video-tuner__range" id="video-dither-range" type="range" min="0" max="100" step="1" value="10" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-edge-range"><span data-i18n="tuner.edge">边缘增强</span><output class="video-tuner__value" id="video-edge-value" for="video-edge-range">20%</output></label><input class="video-tuner__range" id="video-edge-range" type="range" min="0" max="100" step="1" value="20" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-crt-range"><span data-i18n="tuner.crt">CRT扫描</span><output class="video-tuner__value" id="video-crt-value" for="video-crt-range">38%</output></label><input class="video-tuner__range" id="video-crt-range" type="range" min="0" max="100" step="1" value="38" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-glow-range"><span data-i18n="tuner.glow">荧光辉光</span><output class="video-tuner__value" id="video-glow-value" for="video-glow-range">24%</output></label><input class="video-tuner__range" id="video-glow-range" type="range" min="0" max="100" step="1" value="24" /></div>
+      <div class="video-tuner__group video-tuner__advanced-field"><label class="video-tuner__label" for="video-chroma-range"><span data-i18n="tuner.chroma">色差</span><output class="video-tuner__value" id="video-chroma-value" for="video-chroma-range">4%</output></label><input class="video-tuner__range" id="video-chroma-range" type="range" min="0" max="100" step="1" value="4" /></div>
+      <button class="video-tuner__more" type="button" id="video-tuner-more" aria-expanded="false" data-i18n="tuner.more">更多质感参数</button>
+      <button class="video-tuner__reset" type="button" id="video-mask-reset" data-i18n="tuner.reset">恢复 16-bit 默认</button>
+      <button class="video-tuner__reset" type="button" id="video-effects-zero" data-i18n="tuner.zero">恢复 0 效果</button>
     </div>
   </div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
-  <button class="back-to-top" aria-label="返回顶部" type="button">
+  <button class="back-to-top" aria-label="返回顶部" data-i18n-aria="backToTop.aria" type="button">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </button>
 
   <header>
     <div class="nav-inner shell">
-      <a class="brand" href="#top" aria-label="Ai路人，返回顶部"><img src="assets/images/ai-luren-avatar.webp" alt="" /></a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="展开主导航">
+      <a class="brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" /></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="展开主导航" data-i18n-aria="nav.toggle.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
       </button>
-      <nav id="primary-nav" aria-label="主导航">
+      <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
         <ul class="nav-list">
-          <li><a href="#profile">工作经历</a></li><li><a href="#projects">精选创作</a></li><li><a href="#recognition">AI影响力</a></li><li><a href="#experiments">AI实验室</a></li><li><a class="nav-contact" href="#contact">联系我</a></li>
+          <li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">工作经历</span></a></li><li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">精选创作</span></a></li><li><a href="#recognition"><span data-i18n="nav.recognition">AI影响力</span><span class="nav-short" data-i18n="nav.recognition.short">AI影响力</span></a></li><li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">AI实验室</span></a></li><li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系我</span></a></li>
         </ul>
       </nav>
+      <button class="nav-lang" id="nav-lang" type="button" aria-label="切换语言 / Switch language" data-i18n-aria="nav.lang.aria"><span data-lang-part="zh">中</span><i aria-hidden="true">/</i><span data-lang-part="en">EN</span></button>
     </div>
   </header>
 
@@ -1603,39 +1686,39 @@
         <div class="hero-copy">
           <p class="eyebrow reveal">01 / HERO</p>
           <div id="hero-title-react-root"></div>
-          <p class="hero-subtitle reveal">动态设计师，主要做 AI 图像和视频效果，也用 Vibe Coding 做些好玩的</p>
+          <p class="hero-subtitle reveal" data-i18n="hero.subtitle">动态设计师，主要做 AI 图像和视频效果，也用 Vibe Coding 做些好玩的</p>
           <div class="hero-actions reveal">
             <div id="hero-actions-react-root"></div>
           </div>
-          <a class="scroll-cue reveal" href="#profile" aria-label="继续阅读"><span aria-hidden="true">↓</span></a>
+          <a class="scroll-cue reveal" href="#profile" aria-label="继续阅读" data-i18n-aria="hero.scrollCue.aria"><span aria-hidden="true">↓</span></a>
         </div>
-        <div class="hero-proof reveal" aria-label="创作能力方向">
-          <div class="hero-proof-card"><span class="card-kicker">IMAGE / AI 图像</span><strong>创意效果</strong><span>从想法做到能用</span></div>
-          <div class="hero-proof-card"><span class="card-kicker">METHOD / Vibe Coding</span><strong>网页工具</strong><span>把常用流程做成工具</span></div>
+        <div class="hero-proof reveal" aria-label="创作能力方向" data-i18n-aria="hero.proof.aria">
+          <div class="hero-proof-card"><span class="card-kicker" data-i18n="hero.proof1.kicker">IMAGE / AI 图像</span><strong data-i18n="hero.proof1.title">创意效果</strong><span data-i18n="hero.proof1.desc">从想法做到能用</span></div>
+          <div class="hero-proof-card"><span class="card-kicker" data-i18n="hero.proof2.kicker">METHOD / Vibe Coding</span><strong data-i18n="hero.proof2.title">网页工具</strong><span data-i18n="hero.proof2.desc">把常用流程做成工具</span></div>
         </div>
       </div>
     </section>
 
     <section id="profile" class="section" aria-labelledby="profile-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / WORK HISTORY</p><h2 id="profile-title" class="section-title">工作经历</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / WORK HISTORY</p><h2 id="profile-title" class="section-title" data-i18n="profile.title">工作经历</h2></div></div>
         <div class="experience-scroll">
           <div class="experience-pin">
             <div class="experience-index">
-              <div class="experience-list" role="list" aria-label="能力成长阶段">
-                <button class="experience-step is-active" type="button" data-experience-index="0"><small><i>01</i>动态设计</small><span>视频 · 动态海报</span></button>
-                <button class="experience-step" type="button" data-experience-index="1"><small><i>02</i>三维与品牌</small><span>产品渲染 · 品牌动态</span></button>
-                <button class="experience-step" type="button" data-experience-index="2"><small><i>03</i>特效玩法</small><span>AI 玩法 · 动态设计</span></button>
-                <button class="experience-step" type="button" data-experience-index="3"><small><i>04</i>AI效果</small><span>AI 图片与视频效果</span></button>
-                <button class="experience-step" type="button" data-experience-index="4"><small><i>05</i>NOW</small><span>AI 创意效果</span></button>
+              <div class="experience-list" role="list" aria-label="能力成长阶段" data-i18n-aria="profile.list.aria">
+                <button class="experience-step is-active" type="button" data-experience-index="0"><small><i>01</i><b data-i18n="profile.step1.title">动态设计</b></small><span data-i18n="profile.step1.desc">视频 · 动态海报</span></button>
+                <button class="experience-step" type="button" data-experience-index="1"><small><i>02</i><b data-i18n="profile.step2.title">三维与品牌</b></small><span data-i18n="profile.step2.desc">产品渲染 · 品牌动态</span></button>
+                <button class="experience-step" type="button" data-experience-index="2"><small><i>03</i><b data-i18n="profile.step3.title">特效玩法</b></small><span data-i18n="profile.step3.desc">AI 玩法 · 动态设计</span></button>
+                <button class="experience-step" type="button" data-experience-index="3"><small><i>04</i><b data-i18n="profile.step4.title">AI效果</b></small><span data-i18n="profile.step4.desc">AI 图片与视频效果</span></button>
+                <button class="experience-step" type="button" data-experience-index="4"><small><i>05</i><b data-i18n="profile.step5.title">NOW</b></small><span data-i18n="profile.step5.desc">AI 创意效果</span></button>
               </div>
             </div>
             <div class="experience-progress" aria-hidden="true"><span class="experience-progress-fill"></span></div>
             <div class="experience-details" aria-live="polite">
-              <article class="experience-detail" data-experience-panel="0" data-experience-mark="01"><div class="experience-illustration"><img src="./assets/work-history-illustrations/01-motion-design.webp" alt="宇航员在深空工作室控制电影胶片，表达动态设计与镜头节奏" loading="eager" fetchpriority="high" decoding="async"></div><small>CAPABILITY / 01 · 2017—2018</small><h3>从镜头节奏开始</h3><p class="experience-role">英合创意文化传播 · 视频设计师</p><p class="experience-description">网综片头、栏目包装与动态海报</p></article>
-              <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><div class="experience-illustration"><img src="./assets/work-history-illustrations/02-product-brand.webp" alt="宇航员在深空产品渲染舱调整产品与光影" loading="lazy" decoding="async"></div><small>CAPABILITY / 02 · 2018—2019</small><h3>把产品变成场景</h3><p class="experience-role">壹迦公关策划 · 三维设计组长</p><p class="experience-description">小米生态链产品渲染与品牌动态</p></article>
-              <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><div class="experience-illustration"><img src="./assets/work-history-illustrations/03-effect-play.webp" alt="宇航员把特效创意送入循环装置，表达从实验到规模化产品" loading="lazy" decoding="async"></div><small>CAPABILITY / 03 · 2019—2024</small><h3>让创意进入产品</h3><p class="experience-role">快手 · 特效设计师 / AI 效果与动态设计</p><p class="experience-description">快影 AI 玩法、视频模板、特效与动态</p><p class="experience-honor">洛子峰奖 · 千万 DAU 产品</p></article>
-              <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><div class="experience-illustration"><img src="./assets/work-history-illustrations/04-ai-effect-delivery.webp" alt="宇航员把 AI 图片效果通过验证门交付上线" loading="lazy" decoding="async"></div><small>CAPABILITY / 04 · 2024—2026</small><h3>从想法做到上线</h3><p class="experience-role">小米 · 高级动效原型设计师 / AI 效果设计</p><p class="experience-description">相册 AI 图片和视频效果，从想法做到上线</p><p class="experience-honor">Agent 挑战冠亚军 · AI 效率先锋官</p></article>
-              <article class="experience-detail" data-experience-panel="4" data-experience-mark="05"><div class="experience-illustration"><img src="./assets/work-history-illustrations/05-ai-workflow.webp" alt="宇航员整理可复用的 AI 工作流模块" loading="lazy" decoding="async"></div><small>CAPABILITY / 05 · NOW</small><h3>挖掘AI 无限可能</h3><p class="experience-role">AI 创意效果</p><p class="experience-description">继续探索 AI 的各种形态</p></article>
+              <article class="experience-detail" data-experience-panel="0" data-experience-mark="01"><div class="experience-illustration"><img src="./assets/work-history-illustrations/01-motion-design.webp" alt="宇航员在深空工作室控制电影胶片，表达动态设计与镜头节奏" data-i18n-alt="profile.panel1.alt" loading="eager" fetchpriority="high" decoding="async"></div><small>CAPABILITY / 01 · 2017—2018</small><h3 data-i18n="profile.panel1.title">从镜头节奏开始</h3><p class="experience-role" data-i18n="profile.panel1.role">英合创意文化传播 · 视频设计师</p><p class="experience-description" data-i18n="profile.panel1.desc">网综片头、栏目包装与动态海报</p></article>
+              <article class="experience-detail" data-experience-panel="1" data-experience-mark="02"><div class="experience-illustration"><img src="./assets/work-history-illustrations/02-product-brand.webp" alt="宇航员在深空产品渲染舱调整产品与光影" data-i18n-alt="profile.panel2.alt" loading="lazy" decoding="async"></div><small>CAPABILITY / 02 · 2018—2019</small><h3 data-i18n="profile.panel2.title">把产品变成场景</h3><p class="experience-role" data-i18n="profile.panel2.role">壹迦公关策划 · 三维设计组长</p><p class="experience-description" data-i18n="profile.panel2.desc">小米生态链产品渲染与品牌动态</p></article>
+              <article class="experience-detail" data-experience-panel="2" data-experience-mark="03"><div class="experience-illustration"><img src="./assets/work-history-illustrations/03-effect-play.webp" alt="宇航员把特效创意送入循环装置，表达从实验到规模化产品" data-i18n-alt="profile.panel3.alt" loading="lazy" decoding="async"></div><small>CAPABILITY / 03 · 2019—2024</small><h3 data-i18n="profile.panel3.title">让创意进入产品</h3><p class="experience-role" data-i18n="profile.panel3.role">快手 · 特效设计师 / AI 效果与动态设计</p><p class="experience-description" data-i18n="profile.panel3.desc">快影 AI 玩法、视频模板、特效与动态</p><p class="experience-honor" data-i18n="profile.panel3.honor">洛子峰奖 · 千万 DAU 产品</p></article>
+              <article class="experience-detail" data-experience-panel="3" data-experience-mark="04"><div class="experience-illustration"><img src="./assets/work-history-illustrations/04-ai-effect-delivery.webp" alt="宇航员把 AI 图片效果通过验证门交付上线" data-i18n-alt="profile.panel4.alt" loading="lazy" decoding="async"></div><small>CAPABILITY / 04 · 2024—2026</small><h3 data-i18n="profile.panel4.title">从想法做到上线</h3><p class="experience-role" data-i18n="profile.panel4.role">小米 · 高级动效原型设计师 / AI 效果设计</p><p class="experience-description" data-i18n="profile.panel4.desc">相册 AI 图片和视频效果，从想法做到上线</p><p class="experience-honor" data-i18n="profile.panel4.honor">Agent 挑战冠亚军 · AI 效率先锋官</p></article>
+              <article class="experience-detail" data-experience-panel="4" data-experience-mark="05"><div class="experience-illustration"><img src="./assets/work-history-illustrations/05-ai-workflow.webp" alt="宇航员整理可复用的 AI 工作流模块" data-i18n-alt="profile.panel5.alt" loading="lazy" decoding="async"></div><small>CAPABILITY / 05 · NOW</small><h3 data-i18n="profile.panel5.title">挖掘AI 无限可能</h3><p class="experience-role" data-i18n="profile.panel5.role">AI 创意效果</p><p class="experience-description" data-i18n="profile.panel5.desc">继续探索 AI 的各种形态</p></article>
             </div>
           </div>
         </div>
@@ -1643,20 +1726,20 @@
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03 / SELECTED WORK</p><h2 id="projects-title" class="section-title">精选创作档案</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
 
     <section id="recognition" class="section" aria-labelledby="recognition-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">04 / IMPACT PROOF</p><h2 id="recognition-title" class="section-title">AI 影响力</h2></div></div>
-        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI 影响力"></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">04 / IMPACT PROOF</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">AI 影响力</h2></div></div>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI 影响力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
     <section id="experiments" class="section" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title">AI实验室</h2></div></div>
-        <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目"></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI实验室</h2></div></div>
+        <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
       </div>
     </section>
   </main>
@@ -1664,22 +1747,22 @@
   <footer id="contact" aria-labelledby="contact-title">
     <div class="shell footer-stack">
       <div class="footer-topline">
-        <a class="footer-brand" href="#top" aria-label="Ai路人，返回顶部">
+        <a class="footer-brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria">
           <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" /></span>
           <span class="footer-brand-copy"><strong id="contact-title">Ai路人</strong></span>
         </a>
-        <nav class="footer-nav" aria-label="页脚导航">
-          <a href="#profile">工作经历</a>
-          <a href="#projects">精选创作</a>
-          <a href="#recognition">AI影响力</a>
-          <a href="#experiments">AI实验室</a>
+        <nav class="footer-nav" aria-label="页脚导航" data-i18n-aria="footer.nav.aria">
+          <a href="#profile" data-i18n="nav.profile">工作经历</a>
+          <a href="#projects" data-i18n="nav.projects">精选创作</a>
+          <a href="#recognition" data-i18n="nav.recognition">AI影响力</a>
+          <a href="#experiments" data-i18n="nav.experiments">AI实验室</a>
         </nav>
       </div>
       <div class="footer-bottom">
         <div class="footer-contact-panel">
           <div id="footer-dock-react-root"></div>
         </div>
-        <p class="footer-bottom-copy">© 2024-2026 Ai路人 · 保留所有权利</p>
+        <p class="footer-bottom-copy" data-i18n="footer.copyright">© 2024-2026 Ai路人 · 保留所有权利</p>
       </div>
     </div>
   </footer>
@@ -2051,7 +2134,7 @@
         link.addEventListener('click', function (event) {
           event.preventDefault();
           var value = link.getAttribute('data-copy');
-          var done = function () { status.textContent = '已复制：' + value; status.classList.add('is-visible'); window.setTimeout(function () { status.classList.remove('is-visible'); }, 1500); };
+          var done = function () { status.textContent = (window.__i18n ? window.__i18n.t('copy.copiedPrefix') : '已复制：') + value; status.classList.add('is-visible'); window.setTimeout(function () { status.classList.remove('is-visible'); }, 1500); };
           if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(value).then(done).catch(done);
           else { var input = document.createElement('textarea'); input.value = value; input.style.position = 'fixed'; input.style.opacity = '0'; document.body.appendChild(input); input.focus(); input.select(); try { document.execCommand('copy'); } catch (error) {} document.body.removeChild(input); done(); }
         });
