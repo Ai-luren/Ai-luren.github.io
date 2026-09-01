@@ -3,12 +3,12 @@
 
 export const DICT = {
   zh: {
-    'meta.title': 'Ai路人（宁磊）｜AI 创意效果设计师 · 8 年小米动态设计经验 · AI 广告/概念短片/文旅宣传作品集',
-    'meta.description': 'Ai路人（宁磊），8 年小米动态设计经验，现专注 AI 创意效果设计。作品涵盖 AI 广告、概念短片、文旅宣传，多次获中国联通、通义、Midjourney 等平台奖项。本作品集展示 AI 图像与视频创意效果设计的完整流程与成果。',
-    'meta.og.title': 'Ai路人｜AI 创意效果设计师',
-    'meta.og.description': '8 年动态设计经验，现专注 AI 图像与视频创意效果。涵盖 AI 广告、概念短片、文旅宣传，多个平台超级创作者。',
+    'meta.title': 'Ai路人（宁磊）｜AI 视频创意设计师 · 9 年动态设计（快手/小米）· AIGC 内容创作作品集',
+    'meta.description': 'Ai路人（宁磊），9 年动态设计经验（快手/小米），专注 AI 视频创意与 AIGC 内容创作，涵盖 AI 广告、概念短片、文旅宣传。获可灵超棒奖、通义官方宣传片、MJ 官方优秀作品等奖项，抖音单视频千万播放。',
+    'meta.og.title': 'Ai路人｜AI 视频创意设计师',
+    'meta.og.description': '9 年动态设计经验（快手/小米），专注 AIGC 内容创作与 AI 视频全流程制作。抖音单视频千万播放，多平台超级创作者。',
     'meta.og.siteName': 'Ai路人作品集',
-    'meta.twitter.description': '8 年动态设计经验，现专注 AI 图像与视频创意效果。涵盖 AI 广告、概念短片、文旅宣传。',
+    'meta.twitter.description': '9 年动态设计（快手/小米），专注 AI 视频创意与 AIGC 内容创作。抖音单视频千万播放。',
     'meta.og.locale': 'zh_CN',
     'meta.htmlLang': 'zh-CN',
 
@@ -110,12 +110,12 @@ export const DICT = {
     'copy.copiedPrefix': '已复制：',
   },
   en: {
-    'meta.title': 'Ai Luren (Ning Lei) | AI Creative Effects Designer · 8 Years of Motion Design at Xiaomi · AI Ads / Concept Films / Travel Promo Portfolio',
-    'meta.description': 'Ai Luren (Ning Lei), 8 years of motion design at Xiaomi, now focused on AI creative effects. Works span AI advertising, concept films, and travel promotions, with awards from China Unicom, Tongyi, Midjourney, and more. This portfolio walks through the full process and results of AI image and video creative design.',
-    'meta.og.title': 'Ai Luren | AI Creative Effects Designer',
-    'meta.og.description': '8 years of motion design, now focused on AI image and video creative effects. Spanning AI ads, concept films, and travel promos — super creator on multiple platforms.',
+    'meta.title': 'Ai Luren (Ning Lei) | AI Video Creative Designer · 9 Years of Motion Design (Kuaishou/Xiaomi) · AIGC Content Creation',
+    'meta.description': 'Ai Luren (Ning Lei), 9 years of motion design at Kuaishou and Xiaomi, now focused on AI video creative and AIGC content creation — AI ads, concept films, and travel promos, from storyboard to final cut. Awarded by Kling, Tongyi, and Midjourney; viral AI videos with 10M+ plays on Douyin.',
+    'meta.og.title': 'Ai Luren | AI Video Creative Designer',
+    'meta.og.description': '9 years of motion design (Kuaishou/Xiaomi), focused on AIGC content creation and end-to-end AI video production. Viral AI videos with 10M+ plays on Douyin.',
     'meta.og.siteName': 'Ai Luren Portfolio',
-    'meta.twitter.description': '8 years of motion design, now focused on AI image and video creative effects. Spanning AI ads, concept films, and travel promos.',
+    'meta.twitter.description': '9 years of motion design (Kuaishou/Xiaomi), focused on AI video creative and AIGC content creation.',
     'meta.og.locale': 'en_US',
     'meta.htmlLang': 'en',
 
