@@ -16,7 +16,6 @@
   display: flex;
   width: max-content;
   align-items: center;
-  will-change: transform;
 }
 
 .logo-loop__list {
@@ -49,7 +48,7 @@
 }
 
 .logo-loop__link:focus-visible {
-  outline: 2px solid var(--impact-blue, #8fbdff);
+  outline: 2px solid var(--edge-highlight, #fff);
   outline-offset: 6px;
 }
 
@@ -62,7 +61,7 @@
   -webkit-user-drag: none;
   opacity: .92;
   filter: none;
-  transition: opacity .24s ease, transform .24s ease;
+  transition: opacity var(--motion-duration-card) ease, transform var(--motion-duration-card) var(--motion-ease-control);
 }
 
 .logo-loop__image--light {
@@ -79,6 +78,33 @@
   transform: scale(1.08);
 }
 
+/* 静态品牌索引只渲染一组 Logo，并在窄屏内换行，避免循环副本造成重复和裁切。 */
+.logo-loop--static {
+  width: 100%;
+  margin-inline: 0;
+  padding-inline: 0;
+  overflow: visible;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.logo-loop--static .logo-loop__track {
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  transform: none !important;
+}
+
+.logo-loop--static .logo-loop__list {
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px var(--logo-loop-gap);
+  padding: 0;
+}
+
+.logo-loop--static .logo-loop__list[aria-hidden="true"] { display: none; }
+
 @media (max-width: 720px) {
   .logo-loop__list {
     gap: 34px;
@@ -87,6 +113,10 @@
 
   .logo-loop__image {
     max-width: 124px;
+  }
+
+  .logo-loop--static .logo-loop__list {
+    gap: 12px 24px;
   }
 }
 

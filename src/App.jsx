@@ -6,8 +6,8 @@ import FloatingDock from './components/FloatingDock.jsx';
 import ExperimentFlip from './components/ExperimentFlip.jsx';
 import HeroActions from './components/HeroActions.jsx';
 import HeroTitle from './components/HeroTitle.jsx';
-import ExperienceGlareLayers from './components/ExperienceGlareLayers.jsx';
 import './styles/card-surfaces.css';
+import './styles/apple-system.css';
 
 export default function App() {
   const projectArchiveRoot = document.getElementById('projects-react-root');
@@ -26,7 +26,6 @@ export default function App() {
       {experimentRoot && createPortal(<ExperimentFlip />, experimentRoot)}
       {heroActionsRoot && createPortal(<HeroActions />, heroActionsRoot)}
       {heroTitleRoot && createPortal(<HeroTitle />, heroTitleRoot)}
-      <ExperienceGlareLayers />
     </>
   );
 }

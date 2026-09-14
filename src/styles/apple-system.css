@@ -1,0 +1,694 @@
+/*
+ * Apple-inspired system layer
+ *
+ * The video remains the atmosphere. This layer gives every section the same
+ * hierarchy: system typography, neutral materials, one blue action color, and
+ * calm interruptible transitions.
+ */
+:root {
+  --apple-bg: #000;
+  --apple-surface: rgba(28, 28, 30, .78);
+  --apple-surface-solid: #1c1c1e;
+  --apple-surface-raised: rgba(44, 44, 46, .88);
+  --apple-text: #f5f5f7;
+  --apple-secondary: #a1a1a6;
+  --apple-tertiary: #86868b;
+  --apple-blue: #2997ff;
+  --apple-hairline: rgba(255, 255, 255, .14);
+  --apple-hairline-soft: rgba(255, 255, 255, .09);
+  --apple-radius-control: 999px;
+  --apple-radius-card: 18px;
+  --apple-radius-panel: 24px;
+  --apple-shadow-panel: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+  --apple-shadow-card: 0 14px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
+  --apple-ease: cubic-bezier(.22, 1, .36, 1);
+  --apple-duration-control: 180ms;
+  --apple-duration-card: 320ms;
+  --apple-duration-section: 520ms;
+  --apple-duration-modal: 240ms;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Menlo", "Consolas", "SFMono-Regular", monospace;
+  --sans: var(--font-body);
+  --display: var(--font-display);
+  --mono: var(--font-mono);
+  --tech: var(--font-mono);
+  --motion-duration-control: var(--apple-duration-control);
+  --motion-duration-card: var(--apple-duration-card);
+  --motion-duration-section: var(--apple-duration-section);
+  --motion-duration-modal: var(--apple-duration-modal);
+  --motion-ease-control: var(--apple-ease);
+  --motion-ease-emphasized: var(--apple-ease);
+  --motion-ease-linear: linear;
+  --radius-card: var(--apple-radius-card);
+  --glass-surface: var(--apple-surface);
+  --glass-surface-raised: var(--apple-surface-raised);
+  --glass-border: var(--apple-hairline);
+  --glass-border-strong: rgba(255, 255, 255, .32);
+  --glass-shadow: var(--apple-shadow-panel);
+  --glass-blur: blur(22px) saturate(1.12);
+  --body-on-dark: var(--apple-text);
+  --body-text: rgba(245, 245, 247, .82);
+  --subtle-text: var(--apple-secondary);
+  --quiet-text: var(--apple-tertiary);
+}
+
+html { background: var(--apple-bg); }
+body {
+  background: var(--apple-bg);
+  font-family: var(--font-body);
+  font-optical-sizing: auto;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-optical-sizing: auto; }
+
+/* The video is an environmental layer, not a second interface. */
+#hero-video {
+  filter: saturate(.82) brightness(.78) contrast(.94);
+}
+#video-overlay {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, .64), rgba(0, 0, 0, .27) 44%, rgba(0, 0, 0, .12) 76%, rgba(0, 0, 0, .24)),
+    linear-gradient(180deg, rgba(0, 0, 0, .28), transparent 30%, transparent 76%, rgba(0, 0, 0, .32));
+}
+#video-vignette { box-shadow: inset 0 0 12vw rgba(0, 0, 0, .28); }
+
+/* Floating navigation chrome, shared by desktop and mobile. */
+header,
+header.is-condensed {
+  position: fixed;
+  inset: 14px auto auto 50%;
+  width: min(980px, calc(100% - 48px));
+  border: 1px solid var(--portfolio-card-border) !important;
+  border-radius: var(--portfolio-card-radius) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+  transform: translateX(-50%);
+}
+header::after {
+  position: absolute;
+  right: 18px;
+  bottom: -8px;
+  left: 18px;
+  height: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .06), transparent);
+  content: '';
+  opacity: .5;
+  pointer-events: none;
+}
+header .nav-inner.shell { width: 100%; min-height: 56px; padding: 0 10px; }
+.brand { letter-spacing: -.01em; }
+#primary-nav .nav-list { gap: 2px; }
+#primary-nav .nav-list a {
+  min-height: 34px;
+  padding-inline: 13px;
+  border-radius: 10px;
+  color: rgba(245, 245, 247, .62);
+  font: 500 13px/1 var(--font-body);
+  transition: color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
+}
+#primary-nav .nav-list a::after { display: none !important; }
+#primary-nav .nav-list a:hover,
+#primary-nav .nav-list a:focus-visible,
+#primary-nav .nav-list a.is-active {
+  background: rgba(255, 255, 255, .08);
+  color: var(--apple-text);
+}
+#primary-nav .nav-list a.is-active { box-shadow: none !important; }
+header .nav-lang,
+header .nav-contact-icon {
+  border-color: var(--apple-hairline) !important;
+  background: rgba(255, 255, 255, .04) !important;
+  color: var(--apple-secondary) !important;
+}
+header .nav-lang:hover,
+header .nav-lang:focus-visible,
+header .nav-contact-icon:hover,
+header .nav-contact-icon:focus-visible {
+  border-color: rgba(255, 255, 255, .34) !important;
+  background: rgba(255, 255, 255, .09) !important;
+  color: var(--apple-text) !important;
+}
+
+/* One editorial rhythm for every section. */
+.section { padding: clamp(112px, 13vw, 168px) 0 clamp(104px, 12vw, 148px); }
+.section-intro { margin-bottom: 42px; }
+.section-intro .eyebrow,
+.eyebrow {
+  color: var(--apple-secondary) !important;
+  font: 600 10px/1.4 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.section-title {
+  margin-top: 12px;
+  color: var(--apple-text);
+  font: 600 clamp(2.55rem, 5vw, 4.6rem)/1.02 var(--font-display);
+  letter-spacing: -.055em;
+  text-shadow: none;
+}
+.section-title::after {
+  width: 28px;
+  height: 2px;
+  margin-top: 22px;
+  border-radius: 2px;
+  background: var(--apple-blue);
+}
+.section-note {
+  max-width: 34ch;
+  padding-left: 18px;
+  border-left-color: var(--apple-hairline);
+  color: var(--apple-secondary);
+  font: 400 14px/1.65 var(--font-body);
+}
+.reveal {
+  transform: translateY(14px);
+  transition: opacity var(--apple-duration-section) var(--apple-ease), transform var(--apple-duration-section) var(--apple-ease);
+}
+
+/* Hero: one thesis, one action, one quiet secondary route. */
+#top { padding-top: 116px; padding-bottom: 76px; }
+.hero-shell { min-height: calc(100svh - 192px); }
+.hero-copy { max-width: 720px; margin-top: 0; padding-right: 0; }
+.hero-title {
+  margin-top: 22px;
+  font: 600 clamp(4rem, 7.5vw, 7.2rem)/.94 var(--font-display);
+  letter-spacing: -.07em;
+  text-shadow: none;
+}
+#hero-title .hero-title__prefix { color: var(--apple-text); }
+#hero-title .hero-title__rotating { color: var(--apple-blue); }
+.hero-subtitle {
+  max-width: 33ch;
+  margin-top: 28px;
+  color: rgba(245, 245, 247, .82);
+  font: 400 clamp(15px, 1.4vw, 18px)/1.65 var(--font-body);
+  text-shadow: none;
+}
+.hero-actions { margin-top: 30px; gap: 12px; }
+.hero-actions .hero-primary {
+  min-width: 152px !important;
+  min-height: 48px !important;
+  padding-inline: 24px !important;
+  background: var(--apple-blue) !important;
+  box-shadow: 0 8px 22px rgba(41, 151, 255, .18) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
+}
+.hero-actions .hero-primary:hover,
+.hero-actions .hero-primary:focus-visible {
+  background: #4aa8ff !important;
+  box-shadow: 0 10px 28px rgba(41, 151, 255, .28) !important;
+  transform: translateY(-1px);
+}
+.hero-actions .hero-secondary { color: var(--apple-secondary) !important; }
+.hero-actions .hero-secondary:hover,
+.hero-actions .hero-secondary:focus-visible { color: var(--apple-text) !important; }
+.hero-proof { gap: 12px; }
+.hero-proof-card {
+  min-height: 112px;
+  padding: 18px;
+  border-radius: var(--portfolio-card-radius) !important;
+}
+
+/* Selected work: image-led cards with the same edge, radius and type roles. */
+#projects { padding-top: clamp(104px, 12vw, 150px); }
+#projects .section-intro { margin-bottom: 28px; }
+#projects .section-note { margin-top: 10px; padding-left: 0; border-left: 0; }
+.comet-archive { gap: clamp(16px, 1.8vw, 26px); padding-top: 0; }
+.comet-archive__card {
+  row-gap: 10px;
+  border-radius: var(--apple-radius-card);
+  background: transparent;
+}
+.comet-archive__title {
+  color: rgba(245, 245, 247, .78);
+  font: 500 clamp(13px, 1.15vw, 15px)/1.35 var(--font-body);
+  letter-spacing: -.01em;
+}
+.comet-archive__image {
+  border: 1px solid rgba(255, 255, 255, .18) !important;
+  border-radius: var(--apple-radius-card) !important;
+  background: var(--comet-cover) center / cover no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04), var(--apple-shadow-card) !important;
+  transition: border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
+}
+.comet-card:hover .comet-archive__image,
+.comet-card:focus-within .comet-archive__image {
+  border-color: rgba(255, 255, 255, .4) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 18px 38px rgba(0, 0, 0, .34) !important;
+}
+.comet-archive__image::after { height: 28%; background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .6)); }
+.comet-archive__details { padding-left: 12px; }
+.comet-archive__details::before { width: 2px; height: 15px; border-radius: 2px; background: var(--apple-blue); }
+.comet-archive__details strong {
+  color: var(--apple-secondary);
+  font: 500 12px/1.35 var(--font-body);
+}
+.comet-archive__meta { color: rgba(245, 245, 247, .76); font-family: var(--font-body); text-decoration-color: rgba(245, 245, 247, .35); }
+
+/* Work history: one panel, one active state, no competing surfaces. */
+#profile { padding-top: clamp(96px, 11vw, 136px); }
+#profile .career-strip {
+  border: 1px solid var(--apple-hairline) !important;
+  border-radius: var(--apple-radius-panel) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+}
+#profile .career-summary { padding: 28px 30px 24px; }
+#profile .career-summary h3 { margin-top: 10px; font: 600 clamp(2rem, 3.2vw, 3.1rem)/1 var(--font-display); letter-spacing: -.055em; }
+#profile .career-summary p { color: var(--apple-secondary); font: 400 14px/1.55 var(--font-body); }
+#profile .career-summary-note { color: var(--apple-tertiary); font: 400 12px/1.5 var(--font-body); }
+#profile .career-tabs { border-top-color: var(--apple-hairline-soft) !important; border-bottom-color: var(--apple-hairline-soft) !important; }
+#profile .career-tab { min-height: 118px; padding: 18px 16px; border-right-color: var(--apple-hairline-soft) !important; transition: background-color var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease); }
+#profile .career-tab:hover,
+#profile .career-tab:focus-visible { background: rgba(255, 255, 255, .05); }
+#profile .career-tab.is-active { background: rgba(255, 255, 255, .05) !important; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82) !important; }
+#profile .career-tab small,
+#profile .career-meta { color: var(--apple-tertiary) !important; font-family: var(--font-mono); }
+#profile .career-tab strong { font: 600 15px/1.3 var(--font-display); }
+#profile .career-tab span { color: var(--apple-tertiary); font: 400 11px/1.4 var(--font-body); }
+#profile .career-detail { min-height: 286px; padding: 28px 30px 30px; gap: 34px; }
+#profile .career-detail h3 { font: 600 clamp(2.25rem, 4vw, 4rem)/.98 var(--font-display); letter-spacing: -.065em; }
+#profile .career-role { color: var(--apple-secondary); font: 400 15px/1.5 var(--font-body); }
+#profile .career-description { color: rgba(245, 245, 247, .82); font: 400 14px/1.75 var(--font-body); }
+#profile .career-honor { color: var(--apple-secondary); font: 500 11px/1.5 var(--font-mono); }
+#profile .career-honor::before { background: var(--apple-secondary); }
+#profile .career-image { border-color: var(--apple-hairline-soft) !important; border-radius: var(--apple-radius-card) !important; }
+
+/* Impact proof: keep the editorial two-column reading order, but share materials. */
+#recognition { padding-top: clamp(108px, 12vw, 152px); }
+.impact-evidence { gap: 68px; }
+.impact-evidence-row { gap: clamp(28px, 5vw, 70px); }
+.impact-evidence-label strong { color: var(--apple-text); font: 600 clamp(1.9rem, 3.6vw, 3.45rem)/1 var(--font-display); letter-spacing: -.06em; }
+.impact-evidence-label p { color: var(--apple-secondary); font: 400 12px/1.7 var(--font-body); }
+.impact-glass {
+  border: 1px solid var(--apple-hairline) !important;
+  border-radius: var(--apple-radius-panel) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+}
+.impact-evidence-note,
+.impact-logo-head,
+.impact-reach-dossier-head { color: var(--apple-tertiary); font-family: var(--font-mono); }
+.impact-award-card { border-color: rgba(255, 255, 255, .22) !important; border-radius: 14px !important; background: rgba(0, 0, 0, .58) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04) !important; transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
+.impact-award-card:hover,
+.impact-award-card:focus-visible { border-color: rgba(255, 255, 255, .5) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .28) !important; transform: translateY(-3px); }
+.impact-award-rail-nav { border-color: var(--apple-hairline) !important; background: var(--apple-surface-solid) !important; transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important; }
+.impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .34) !important; background: var(--apple-surface-raised) !important; }
+.impact-logo-shell { box-shadow: var(--apple-shadow-panel) !important; }
+.impact-reach-dossier { background: var(--portfolio-card-surface) !important; }
+.impact-reach-profile-media { border-radius: 14px !important; clip-path: inset(0 round 14px); }
+.impact-reach-profile-shot--link:hover .impact-reach-profile-media { box-shadow: 0 0 0 2px rgba(255, 255, 255, .24), 0 12px 28px rgba(0, 0, 0, .22); }
+
+/* AI lab: a quiet list with the same neutral hierarchy as the other modules. */
+#experiments { padding-top: clamp(108px, 12vw, 150px); }
+.flip-experiment { margin-top: 28px; }
+.flip-experiment__list { gap: 10px; }
+.flip-experiment__row {
+  min-height: 124px;
+  padding: 22px 24px;
+  border: 1px solid var(--portfolio-card-border) !important;
+  border-radius: var(--portfolio-card-radius) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+  transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
+}
+.flip-experiment__row:hover,
+.flip-experiment__row:focus-within { border-color: rgba(255, 255, 255, .28) !important; background: rgba(44, 44, 46, .76) !important; transform: translateY(-2px); }
+.flip-experiment__row-title { border-left-color: var(--apple-hairline); }
+.flip-experiment__row-title h3 { font: 600 clamp(1.35rem, 2vw, 1.8rem)/1.05 var(--font-display); letter-spacing: -.045em; }
+.flip-experiment__row-description { color: var(--apple-secondary); font: 400 13px/1.65 var(--font-body); }
+.flip-experiment__facts span { color: var(--apple-tertiary); font: 500 11px/1.3 var(--font-mono); }
+.flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary); }
+.flip-experiment__link { color: rgba(245, 245, 247, .76); font: 500 12px/1.35 var(--font-body); transition: gap var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
+.flip-experiment__link:hover,
+.flip-experiment__link:focus-visible { color: var(--apple-text); }
+.flip-experiment__status { color: var(--apple-tertiary); font-family: var(--font-mono); }
+.flip-experiment__status-dot { background: var(--apple-secondary); box-shadow: none; }
+
+/* Footer closes the story with the same calm material and one clear ask. */
+footer { padding: 128px 0 36px !important; }
+footer::before { background: transparent !important; }
+.footer-topline { padding-bottom: 26px; border-bottom-color: var(--apple-hairline-soft) !important; }
+.footer-brand-copy strong { font: 600 22px/1 var(--font-display); letter-spacing: -.04em; }
+.footer-nav { gap: 28px; }
+.footer-nav a { color: var(--apple-secondary); font: 400 13px/1.3 var(--font-body); }
+.footer-nav a:hover,
+.footer-nav a:focus-visible { color: var(--apple-text); }
+.footer-contact-copy {
+  max-width: 720px;
+  margin-bottom: 28px;
+  padding: clamp(32px, 5vw, 56px) clamp(24px, 6vw, 70px);
+  border: 1px solid var(--portfolio-card-border) !important;
+  border-radius: var(--portfolio-card-radius) !important;
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+}
+.footer-contact-kicker { color: var(--apple-secondary) !important; font-family: var(--font-mono); }
+.footer-contact-copy h2 { font: 600 clamp(2.8rem, 6vw, 5rem)/.98 var(--font-display); letter-spacing: -.065em; }
+.footer-contact-copy > p:not(.footer-contact-kicker) { color: #f0f4f6 !important; font: 400 15px/1.65 var(--font-body); }
+.footer-contact-direct strong { color: var(--apple-text); font: 500 14px/1.4 var(--font-body); }
+.footer-contact-direct a:hover,
+.footer-contact-direct a:focus-visible { color: var(--apple-blue); }
+.floating-dock-panel { border-color: var(--portfolio-card-border) !important; border-radius: var(--portfolio-card-radius) !important; background: var(--portfolio-card-surface) !important; box-shadow: var(--portfolio-card-shadow) !important; backdrop-filter: var(--portfolio-card-blur) !important; -webkit-backdrop-filter: var(--portfolio-card-blur) !important; }
+.floating-dock-item { border-color: var(--apple-hairline-soft); border-radius: 12px; background: rgba(255, 255, 255, .05); transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
+.floating-dock-item:hover,
+.floating-dock-item:focus-visible { border-color: rgba(255, 255, 255, .28); background: rgba(255, 255, 255, .1); transform: translateY(-2px); }
+.footer-bottom { margin-top: 34px; padding-top: 22px; border-top-color: var(--apple-hairline-soft) !important; }
+.footer-bottom-copy { color: var(--apple-tertiary); font: 400 12px/1.5 var(--font-body); }
+
+/* Mobile is a deliberate layout, not a squeezed desktop. */
+@media (max-width: 760px) {
+  header,
+  header.is-condensed { inset: 12px auto auto 50%; width: calc(100% - 24px); border-radius: 20px !important; }
+  header .nav-inner.shell { min-height: 54px; padding: 0 8px !important; }
+  .nav-toggle { border-color: var(--apple-hairline) !important; background: rgba(255, 255, 255, .04) !important; color: var(--apple-text) !important; }
+  .nav-toggle:hover,
+  .nav-toggle:focus-visible,
+  body.mobile-nav-open .nav-toggle { border-color: rgba(255, 255, 255, .34) !important; background: rgba(255, 255, 255, .1) !important; outline: none !important; }
+  .mobile-nav-drawer { background: var(--portfolio-modal-surface, rgba(12, 12, 13, .9)) !important; backdrop-filter: var(--portfolio-modal-blur, blur(28px) saturate(1.02)) !important; -webkit-backdrop-filter: var(--portfolio-modal-blur, blur(28px) saturate(1.02)) !important; overscroll-behavior: contain; }
+  #mobile-primary-nav .nav-list a { min-height: 58px; border-radius: 14px; font: 600 clamp(1.55rem, 7vw, 2rem)/1 var(--font-display); letter-spacing: -.05em; }
+  #mobile-primary-nav .nav-list a:hover,
+  #mobile-primary-nav .nav-list a.is-active,
+  #mobile-primary-nav .nav-list a.nav-contact:hover,
+  #mobile-primary-nav .nav-list a.nav-contact.is-active { border-color: transparent !important; background: transparent !important; box-shadow: none !important; }
+  #mobile-primary-nav .nav-list a:focus-visible,
+  #mobile-primary-nav .nav-list a.nav-contact:focus-visible { border-color: transparent !important; background: transparent !important; outline: 2px solid var(--apple-blue) !important; outline-offset: 4px; }
+  #mobile-primary-nav .nav-list a { color: var(--apple-secondary) !important; }
+  #mobile-primary-nav .nav-list a.is-active { color: var(--apple-text) !important; }
+  #mobile-primary-nav .nav-list a.nav-contact { font-size: clamp(1.55rem, 7vw, 2rem); line-height: 1; letter-spacing: -.05em; }
+  .section { padding: 96px 0 88px; }
+  .shell { width: min(100% - 32px, 680px); }
+  .section-intro { margin-bottom: 28px; }
+  .section-title { margin-top: 10px; font-size: clamp(2.45rem, 11vw, 3.8rem); }
+  .section-title::after { margin-top: 18px; }
+  .section-note { font-size: 13px; }
+  #top { padding-top: 100px; padding-bottom: 52px; }
+  .hero-shell { min-height: calc(100svh - 152px); align-items: center; }
+  .hero-copy { width: 100%; margin-top: 6vh; }
+  .hero-title { margin-top: 18px; font-size: clamp(3.4rem, 15vw, 5rem); line-height: .96; }
+  .hero-subtitle { max-width: 28ch; margin-top: 24px; font-size: 15px; }
+  .hero-actions { margin-top: 26px; gap: 10px; }
+  .hero-actions .hero-primary { min-width: 142px !important; min-height: 46px !important; padding-inline: 20px !important; }
+  .hero-proof { display: none; }
+  #projects .section-intro { margin-bottom: 22px; }
+  .comet-archive { gap: 12px; padding-bottom: 14px; }
+  .comet-archive__title { font-size: 12px; }
+  .comet-archive__image { border-radius: 16px !important; }
+  .comet-archive__details strong { font-size: 11px; }
+  #profile .career-summary { padding: 22px 20px 20px; }
+  #profile .career-tabs { gap: 8px; padding: 8px; }
+  #profile .career-tab { min-height: 106px; padding: 14px; border: 1px solid var(--apple-hairline-soft) !important; border-radius: 14px; }
+  #profile .career-tab.is-active { border-color: rgba(255, 255, 255, .18) !important; background: rgba(255, 255, 255, .05) !important; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82) !important; }
+  #profile .career-detail { gap: 20px; padding: 20px; }
+  #profile .career-detail h3 { font-size: clamp(2.2rem, 11vw, 3.2rem); }
+  .impact-evidence { gap: 48px; }
+  .impact-evidence-row { gap: 18px; }
+  .impact-evidence-label strong { margin-top: 12px; font-size: clamp(2rem, 10vw, 3rem); }
+  .impact-award-shell { border-radius: var(--apple-radius-panel) !important; }
+  .impact-award-rail { height: 304px; padding-inline: 52px; clip-path: inset(0 52px); }
+  .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
+  .impact-logo-shell { border-radius: var(--apple-radius-panel) !important; }
+  .impact-reach-dossier { border-radius: var(--apple-radius-panel) !important; }
+  .flip-experiment { margin-top: 20px; }
+  .flip-experiment__row { min-height: 0; padding: 20px 18px 22px; border-radius: 16px !important; }
+  .flip-experiment__row:hover,
+  .flip-experiment__row:focus-within { transform: none; }
+  .flip-experiment__row-title h3 { font-size: 1.45rem; }
+  .flip-experiment__row-description { font-size: 13px; }
+  footer { padding: 96px 0 28px !important; }
+  .footer-topline { padding-bottom: 20px; }
+  .footer-contact-copy { padding: 30px 22px; border-radius: var(--apple-radius-panel) !important; text-align: left; }
+  .footer-contact-copy h2 { font-size: clamp(2.8rem, 14vw, 4rem); }
+  .footer-contact-copy > p:not(.footer-contact-kicker) { margin-left: 0; }
+  .footer-contact-direct { justify-content: flex-start; justify-items: start; }
+  .footer-contact-direct a { text-align: left; }
+  .footer-contact-panel { justify-self: start; }
+  .footer-bottom { align-items: flex-start; margin-top: 24px; padding-top: 18px; }
+  .footer-bottom-copy { text-align: left; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  header,
+  .hero-proof-card,
+  #profile .career-strip,
+  .impact-glass,
+  .flip-experiment__row,
+  .footer-contact-copy,
+  .floating-dock-panel { background: var(--apple-surface-solid) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+  .reveal { transform: none; }
+  .comet-card:hover .comet-archive__image,
+  .comet-card:focus-within .comet-archive__image,
+  .flip-experiment__row:hover,
+  .flip-experiment__row:focus-within,
+  .floating-dock-item:hover,
+  .floating-dock-item:focus-visible { transform: none; }
+}
+
+/* Internal cards keep a smaller role-based radius; the outer panels stay at 24px. */
+#experiments .flip-experiment__row { border-radius: var(--apple-radius-card) !important; }
+#experiments .flip-experiment__link {
+  min-height: 44px;
+  padding: 10px 0;
+  touch-action: manipulation;
+}
+
+/* Image tiles are media, not another glass layer. */
+.impact-award-card { background: rgba(0, 0, 0, .58) !important; }
+.impact-reach-profile-media { background: rgba(0, 0, 0, .24) !important; }
+.impact-reach-profile-media img { mix-blend-mode: normal !important; }
+
+/* AI Lab uses the same quiet hierarchy as the other modules. */
+#experiments .flip-experiment__row-title { border-left-color: var(--apple-hairline) !important; }
+#experiments .flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary) !important; }
+#experiments .flip-experiment__status-dot { background: var(--apple-secondary) !important; box-shadow: none !important; }
+#experiments .flip-experiment__row:hover,
+#experiments .flip-experiment__row:focus-within {
+  background: rgba(44, 44, 46, .76) !important;
+}
+
+/* Footer editorial lockup: one reading grid, one floating surface. */
+footer {
+  padding: clamp(82px, 9vw, 120px) 0 32px !important;
+}
+.footer-topline {
+  padding-bottom: 20px !important;
+  border-bottom-color: var(--apple-hairline-soft) !important;
+}
+.footer-bottom {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-areas: 'contact dock' 'copyright copyright' !important;
+  align-items: end !important;
+  column-gap: clamp(24px, 5vw, 80px) !important;
+  row-gap: 24px !important;
+  padding-top: 28px !important;
+}
+.footer-contact-copy {
+  grid-area: contact !important;
+  width: min(100%, 600px) !important;
+  max-width: 600px !important;
+  margin: 0 !important;
+  padding: 0 0 2px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  align-self: end !important;
+  text-align: left !important;
+}
+.footer-contact-kicker { margin-bottom: 12px !important; }
+.footer-contact-copy h2 {
+  font-size: clamp(2.2rem, 3.2vw, 3.25rem) !important;
+  line-height: 1 !important;
+}
+.footer-contact-copy > p:not(.footer-contact-kicker) {
+  max-width: 34ch !important;
+  margin: 16px 0 0 !important;
+}
+.footer-contact-direct {
+  justify-content: flex-start !important;
+  gap: 0 !important;
+  margin-top: 24px !important;
+}
+.footer-contact-direct a {
+  min-width: 180px !important;
+  padding-right: 24px !important;
+  margin-right: 24px !important;
+}
+.footer-contact-panel {
+  grid-area: dock !important;
+  align-self: end !important;
+  justify-self: end !important;
+  width: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.footer-bottom-copy {
+  grid-area: copyright !important;
+  margin: 0 !important;
+  padding-top: 18px !important;
+  border-top: 1px solid var(--apple-hairline-soft) !important;
+}
+
+@media (max-width: 720px) {
+  footer { padding: 72px 0 30px !important; }
+  .footer-topline { width: 100%; }
+  .footer-topline { padding-bottom: 18px !important; }
+  .footer-brand { justify-content: flex-start !important; }
+  .footer-bottom {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: 'contact' 'dock' 'copyright' !important;
+    row-gap: 28px !important;
+    padding-top: 24px !important;
+  }
+  .footer-contact-copy {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  .footer-contact-copy h2 { font-size: clamp(2rem, 9vw, 2.6rem) !important; }
+  .footer-contact-direct { margin-top: 22px !important; }
+  .footer-contact-direct a,
+  .footer-contact-direct a:last-child {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 0 !important;
+    margin: 0 !important;
+    border-right: 0 !important;
+    border-top: 1px solid var(--apple-hairline-soft) !important;
+  }
+  .footer-contact-panel {
+    width: 100% !important;
+    justify-self: start !important;
+    justify-items: start !important;
+  }
+  .footer-contact-panel #footer-dock-react-root,
+  .floating-dock-shell,
+  .floating-dock-panel { max-width: 100% !important; }
+}
+
+/* Apple-like composition pass: hierarchy comes from type and spacing, not pills
+   or hard section dividers. Keep blue for the action/cursor/status roles. */
+.section::after { display: none !important; }
+
+@media (min-width: 721px) {
+  #primary-nav .nav-list a,
+  #primary-nav .nav-list a:hover,
+  #primary-nav .nav-list a:focus-visible,
+  #primary-nav .nav-list a.is-active {
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+  #primary-nav .nav-list a.is-active {
+    box-shadow: none !important;
+  }
+}
+
+#hero-title .hero-title__rotating { color: var(--apple-text) !important; }
+#hero-title .hero-title__rotating .text-type__cursor { background: var(--apple-blue) !important; }
+.section-title::after { width: 24px; margin-top: 20px; background: rgba(41, 151, 255, .86); }
+.section-note { padding-left: 0; border-left: 0; }
+
+/* 最终边界层：档案图片不再放大覆盖邻卡，获奖预览在手机端保持可读尺寸。 */
+.comet-archive__image { border-color: rgba(255, 255, 255, .18) !important; }
+.comet-card:hover .comet-archive__image,
+.comet-card:focus-within .comet-archive__image { transform: none !important; }
+.impact-award-card { background: rgba(0, 0, 0, .58) !important; }
+
+@media (max-width: 720px) {
+  .impact-award-rail > li {
+    flex: 0 0 min(220px, calc(100% - 48px));
+    width: min(220px, calc(100% - 48px));
+  }
+}
+
+/* Icon controls share the language button's quiet feedback: edge, surface and
+   icon color respond together, while the control keeps its exact geometry. */
+.brand,
+.footer-avatar,
+header .nav-lang,
+header .nav-contact-icon {
+  transition: border-color var(--apple-duration-control) var(--apple-ease),
+    background-color var(--apple-duration-control) var(--apple-ease),
+    color var(--apple-duration-control) var(--apple-ease),
+    box-shadow var(--apple-duration-control) var(--apple-ease) !important;
+}
+.brand:hover,
+.brand:focus-visible,
+.footer-avatar:hover,
+.footer-avatar:focus-visible {
+  border-color: rgba(255, 255, 255, .34) !important;
+  background: rgba(255, 255, 255, .09) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .08) !important;
+  transform: none !important;
+}
+header .nav-lang:hover,
+header .nav-lang:focus-visible,
+header .nav-contact-icon:hover,
+header .nav-contact-icon:focus-visible {
+  border-color: rgba(255, 255, 255, .34) !important;
+  background: rgba(255, 255, 255, .09) !important;
+  color: var(--apple-text) !important;
+}
+.back-to-top {
+  transition: opacity var(--apple-duration-control) var(--apple-ease),
+    transform var(--apple-duration-control) var(--apple-ease),
+    border-color var(--apple-duration-control) var(--apple-ease),
+    background-color var(--apple-duration-control) var(--apple-ease),
+    color var(--apple-duration-control) var(--apple-ease) !important;
+}
+.back-to-top:hover,
+.back-to-top:focus-visible {
+  border-color: rgba(255, 255, 255, .34) !important;
+  background: rgba(255, 255, 255, .09) !important;
+  color: var(--apple-text) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand,
+  .footer-avatar,
+  header .nav-lang,
+  header .nav-contact-icon,
+  .back-to-top { transition: none !important; }
+}
+
+/* Keep the mobile brand mark in the same circular control family as language
+   and contact: no inset square, black backing, or extra halo. */
+@media (max-width: 760px) {
+  header .brand {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    border-color: var(--apple-hairline) !important;
+    background: rgba(255, 255, 255, .04) !important;
+    box-shadow: none !important;
+  }
+
+  header .brand img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% !important;
+  }
+}

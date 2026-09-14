@@ -9,7 +9,7 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
-- `assets/`、`vendor/`：图标、视频和第三方静态资源；字体由 Google Fonts CDN 提供。
+- `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：当前有效的项目规范与交接说明。
 
 ## 规则
@@ -29,6 +29,8 @@ npm run build
 npm run check:i18n
 git diff --check
 ```
+
+本地预览必须先启动 Vite 开发服务，再访问 `http://127.0.0.1:5174/`；不要直接打开 `index.html`，否则 React 挂载、资源路径和动态模块可能不完整。
 
 `check:i18n` 说明（`scripts/check-i18n.mjs`）：
 - 双语言 × 手机/桌面两种视口全页滚动扫描，检测视口溢出与文字被裁剪。

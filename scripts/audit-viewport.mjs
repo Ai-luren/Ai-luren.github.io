@@ -1,9 +1,11 @@
 // 对抗式审查 1：断点临界视口 × 中英文，全页滚动扫描溢出/截断/重叠
+// 项目预览地址固定为 Vite 的 5174 端口；横向滚动轨道内部的内容不作为视口溢出判断对象。
 // 攻击目标：常规检测只用 393/1440，这里用断点边界值（320/360/375/390/414/519/520/559/560/640/719/720/721/760/761/820/900/980/1024/1280/1920）
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
 
 const BROWSER = ['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'].find(existsSync);
+const BASE_URL = 'http://127.0.0.1:5174/';
 const VIEWPORTS = [320, 360, 375, 390, 414, 519, 560, 640, 720, 721, 760, 761, 900, 1024, 1280, 1920];
 
 const SCAN_FN = `(() => {
@@ -11,10 +13,20 @@ const SCAN_FN = `(() => {
   const vh = window.innerHeight;
   const issues = [];
   const selfIgnored = /^(sr-only|logo-loop|specular-button__fx)/;
+  function isInsideHorizontalScroller(el) {
+    let node = el.parentElement;
+    while (node) {
+      const style = getComputedStyle(node);
+      const scrollable = /(auto|scroll|overlay)/.test(style.overflowX);
+      if (scrollable && node.scrollWidth > node.clientWidth + 2) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
   for (const el of document.querySelectorAll('body *')) {
     const cls = (el.className || '').toString();
     if (selfIgnored.test(cls) || el.tagName === 'CANVAS') continue;
-    if (el.closest && el.closest('.logo-loop, .impact-award-mobile-grid, .impact-circular-gallery')) continue;
+    if (isInsideHorizontalScroller(el)) continue;
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0 || r.bottom < -80 || r.top > vh + 80) continue;
     const cs = getComputedStyle(el);
@@ -38,11 +50,11 @@ const OVERLAP_FN = `(() => {
   // 文字元素 vs 图片/卡片边界的互相重叠（非父子关系）
   const issues = [];
   const texts = [];
-  for (const el of document.querySelectorAll('.comet-archive__copy strong, .comet-archive__award, .comet-archive__meta, .hero-subtitle, .hero-title, .footer-tagline, .experience-step b, .experience-step span')) {
+  for (const el of document.querySelectorAll('.comet-archive__copy strong, .comet-archive__award, .comet-archive__meta, .hero-subtitle, .hero-title, .footer-tagline, .career-tab strong, .career-tab span')) {
     const r = el.getBoundingClientRect();
     if (r.width > 0 && r.height > 0) texts.push({ el, r, cls: (el.className || '').toString() });
   }
-  for (const img of document.querySelectorAll('.comet-archive__image, .experience-illustration, .hero-proof-card img')) {
+  for (const img of document.querySelectorAll('.comet-archive__image, .career-image img, .hero-proof-card img')) {
     const ir = img.getBoundingClientRect();
     if (ir.width === 0) continue;
     for (const t of texts) {
@@ -69,7 +81,7 @@ for (const lang of ['zh', 'en']) {
     const pageErrors = [];
     page.on('pageerror', (err) => pageErrors.push(err.message.slice(0, 80)));
     try {
-      await page.goto('http://localhost:5174/', { waitUntil: 'networkidle', timeout: 30000 });
+      await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
       await page.waitForTimeout(1200);
       const pageHeight = await page.evaluate(() => document.scrollingElement.scrollHeight);
       const found = new Set();
