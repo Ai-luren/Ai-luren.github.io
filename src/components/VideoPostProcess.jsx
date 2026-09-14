@@ -2,7 +2,7 @@ import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl';
 import { useEffect } from 'react';
 
 const DEFAULT_SETTINGS = {
-  brightness: 62,
+  brightness: 63,
   mask: 0,
   saturation: 80,
   contrast: 96,
@@ -188,6 +188,7 @@ export default function VideoPostProcess() {
     const container = document.getElementById('video-bg');
     if (!video || !container || !window.WebGLRenderingContext) return undefined;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (window.matchMedia?.('(prefers-reduced-transparency: reduce)').matches) return undefined;
 
     const renderer = new Renderer({ alpha: false, antialias: false, dpr: Math.min(window.devicePixelRatio || 1, 1.5) });
     const gl = renderer.gl;
@@ -267,7 +268,12 @@ export default function VideoPostProcess() {
     };
     let frame = 0;
     let lastRenderAt = 0;
-    const renderInterval = window.innerWidth <= 760 ? 1000 / 30 : 1000 / 60;
+    const idleRenderInterval = window.innerWidth <= 760 ? 1000 / 30 : 1000 / 60;
+    let renderInterval = window.__videoScrollActive ? 1000 / 60 : idleRenderInterval;
+    const onVideoScrubState = (event) => {
+      renderInterval = event.detail?.active ? 1000 / 60 : idleRenderInterval;
+      if (event.detail?.active) lastRenderAt = 0;
+    };
     const render = (time) => {
       if (document.hidden) {
         frame = 0;
@@ -291,6 +297,7 @@ export default function VideoPostProcess() {
     video.addEventListener('loadeddata', revealWebgl, { once: true });
     video.addEventListener('canplay', revealWebgl, { once: true });
     window.addEventListener('resize', onResize, { passive: true });
+    window.addEventListener('video-scrub-state', onVideoScrubState);
     document.addEventListener('visibilitychange', onVisibilityChange);
     frame = requestAnimationFrame(render);
     revealWebgl();
@@ -303,6 +310,7 @@ export default function VideoPostProcess() {
       video.removeEventListener('loadeddata', revealWebgl);
       video.removeEventListener('canplay', revealWebgl);
       document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('video-scrub-state', onVideoScrubState);
       container.classList.remove('is-webgl-ready');
       canvas.remove();
       renderer.gl.getExtension('WEBGL_lose_context')?.loseContext();

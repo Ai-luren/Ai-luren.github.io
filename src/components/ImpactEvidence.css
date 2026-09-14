@@ -1,24 +1,24 @@
 .impact-evidence {
-  --impact-radius: var(--radius-lg, 18px);
-  --impact-glass: var(--glass-card-surface, rgba(5, 12, 20, .68));
-  --impact-card-blur: blur(14px) saturate(1.08);
-  --impact-card-shadow: 0 10px 24px rgba(0, 0, 0, .18);
-  --impact-glass-strong: var(--glass-surface-raised, rgba(13, 27, 40, .82));
-  --impact-border: var(--glass-border, rgba(224, 224, 224, .18));
-  --impact-hairline: var(--hairline, rgba(224, 224, 224, .16));
-  --impact-text: var(--mist, #e8f0f5);
-  --impact-signal: var(--body-text, #d2dce2);
-  --impact-muted: var(--quiet-text, #718392);
-  --impact-blue: var(--accent-blue-on-dark, #2997ff);
+  --impact-radius: var(--portfolio-card-radius);
+  --impact-glass: var(--portfolio-card-surface);
+  --impact-card-blur: var(--portfolio-card-blur);
+  --impact-card-shadow: var(--apple-shadow-card);
+  --impact-glass-strong: var(--apple-surface-raised);
+  --impact-border: var(--portfolio-card-border);
+  --impact-hairline: var(--apple-hairline);
+  --impact-text: var(--apple-text);
+  --impact-signal: var(--apple-secondary);
+  --impact-muted: var(--apple-tertiary);
+  --impact-edge: rgba(255, 255, 255, .82);
   display: grid;
   gap: 84px;
   width: 100%;
 }
 
 .impact-evidence button { font: inherit; }
-.impact-eyebrow { margin: 0; color: var(--impact-blue); font: 500 10px/1.5 var(--tech, var(--mono, monospace)); letter-spacing: .08em; text-transform: uppercase; }
+.impact-eyebrow { margin: 0; color: var(--impact-muted); font: 500 10px/1.5 var(--tech, var(--mono, monospace)); letter-spacing: .08em; text-transform: uppercase; }
 .impact-evidence-row { display: grid; grid-template-columns: minmax(250px, .42fr) minmax(0, 1.58fr); align-items: start; gap: clamp(28px, 5vw, 72px); }
-.impact-evidence-label { position: relative; top: auto; padding-top: 4px; }
+.impact-evidence-label { position: relative; top: auto; padding-top: 4px; text-shadow: 0 2px 16px rgba(0, 0, 0, .72); }
 .impact-evidence-label strong { display: block; margin-top: 17px; color: var(--impact-text); font-size: clamp(1.55rem, 2.8vw, 2.65rem); font-weight: 600; line-height: 1.08; letter-spacing: -.03em; white-space: nowrap; }
 html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: normal; text-wrap: balance; }
 .impact-evidence-label p { max-width: 170px; margin: 15px 0 0; color: var(--impact-signal); font-size: 11px; line-height: 1.75; }
@@ -27,20 +27,48 @@ html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: 
 .impact-evidence-note { margin-bottom: 14px; }
 .impact-glass { overflow: hidden; border: 1px solid var(--impact-border); border-radius: var(--impact-radius); background: var(--impact-glass); box-shadow: var(--impact-card-shadow); backdrop-filter: var(--impact-card-blur); -webkit-backdrop-filter: var(--impact-card-blur); }
 
-/* Circular Gallery: React Bits OGL renderer, tuned to the site's glass shell. */
-.impact-award-shell { position: relative; min-height: 0; padding: 26px 0 0; }
+/* Award gallery: 横向滚动条 + 点击放大灯箱，替代原 WebGL 弧形轮播。 */
+.impact-award-shell { position: relative; min-height: 0; padding: 18px 0 0; }
 .impact-award-shell .impact-evidence-note { margin-right: 24px; margin-left: 24px; }
-.impact-circular-gallery { position: relative; height: 390px; overflow: hidden; border-radius: 0; }
-.impact-circular-gallery > div { width: 100%; height: 100%; cursor: grab; }
-.impact-award-loader { position: absolute; inset: 0; z-index: 2; display: grid; place-content: center; gap: 8px; color: var(--impact-muted); font: 500 10px/1.2 var(--tech, var(--mono, monospace)); letter-spacing: .1em; pointer-events: none; text-align: center; transition: opacity .3s ease; }
-.impact-award-loader strong { color: var(--impact-text); font: 500 12px/1 var(--tech, var(--mono, monospace)); letter-spacing: .08em; }
-.impact-award-mobile-grid { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(122px, 30vw); gap: 12px; height: 100%; overflow-x: auto; padding: 24px 18px; overscroll-behavior-inline: contain; scrollbar-width: thin; }
-.impact-award-mobile-grid figure { min-width: 0; height: 100%; margin: 0; overflow: hidden; border: 1px solid var(--impact-border); border-radius: 14px; background: rgba(3, 8, 14, .35); }
-.impact-award-mobile-grid img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.impact-circular-gallery > div:active { cursor: grabbing; }
-.impact-circular-gallery > div:focus,
-.impact-circular-gallery > div:focus-visible { outline: none !important; }
-.impact-circular-gallery canvas { display: block; width: 100%; height: 100%; }
+.impact-award-shell .impact-evidence-note { margin-bottom: 8px; }
+.impact-award-rail { display: flex; align-items: center; gap: 14px; height: 370px; margin: 0; padding: 14px 62px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-padding-inline: 62px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; clip-path: inset(0 62px); list-style: none; }
+.impact-award-rail::-webkit-scrollbar { display: none; }
+.impact-award-rail > li { flex: 0 0 calc((100% - 42px) / 4); width: calc((100% - 42px) / 4); height: 100%; scroll-snap-align: start; }
+.impact-award-card { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 1px solid rgba(255, 255, 255, .22); border-radius: 14px; background: rgba(0, 0, 0, .58); cursor: zoom-in; transition: border-color var(--motion-duration-card) ease, box-shadow var(--motion-duration-card) ease, transform var(--motion-duration-card) var(--motion-ease-control); }
+.impact-award-card img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.impact-award-card:hover, .impact-award-card:focus-visible { border-color: var(--impact-edge); box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), 0 14px 30px rgba(0, 0, 0, .35); transform: translateY(-3px); }
+.impact-award-card:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
+.impact-award-card--static, .impact-award-card--static:hover, .impact-award-card--static:focus-visible { cursor: default; border-color: var(--impact-border); box-shadow: none; outline: none; transform: none; }
+.impact-award-card-zoom { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid rgba(215, 227, 235, .4); border-radius: 50%; background: rgba(0, 0, 0, .55); color: rgba(237, 244, 249, .9); font: 500 14px/1 var(--tech, var(--mono, monospace)); opacity: 0; transition: opacity var(--motion-duration-card) ease; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.impact-award-card:hover .impact-award-card-zoom, .impact-award-card:focus-visible .impact-award-card-zoom { opacity: 1; }
+@media (hover: none) { .impact-award-card-zoom { opacity: 1; } }
+.impact-award-rail-nav { position: absolute; top: 50%; z-index: 2; display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(255, 255, 255, .38); border-radius: 50%; background: rgba(12, 12, 13, .94); color: rgba(255, 255, 255, .94); cursor: pointer; transform: translateY(-12%); transition: border-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease, opacity var(--motion-duration-control) ease, background-color var(--motion-duration-control) ease; }
+.impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .82); background: #1c1c1e; color: #fff; }
+.impact-award-rail-nav:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
+.impact-award-rail-nav:disabled { cursor: default; opacity: .28; }
+.impact-award-rail-nav--prev { left: 10px; }
+.impact-award-rail-nav--next { right: 10px; }
+.impact-award-nav-icon { display: block; width: 18px; height: 18px; }
+
+/* 放大预览：独立悬浮卡，不遮罩、不锁滚动，整页仍可见且不发生布局跳动。 */
+.impact-award-lightbox { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; width: auto; max-height: none; padding: max(72px, env(safe-area-inset-top)) clamp(72px, 10vw, 160px) 34px; overflow: auto; overscroll-behavior: contain; border: 0; border-radius: 0; background: rgba(0, 0, 0, .78); box-shadow: none; backdrop-filter: blur(16px) saturate(.88); -webkit-backdrop-filter: blur(16px) saturate(.88); transform: none; animation: impact-award-lightbox-in .22s ease; }
+.impact-award-lightbox figure { position: relative; display: grid; grid-template-columns: minmax(48px, 1fr) minmax(0, min(62vw, 640px)) minmax(48px, 1fr); grid-template-rows: auto auto; column-gap: clamp(18px, 3vw, 42px); align-items: center; width: min(100%, 980px); max-width: 100%; margin: 0; }
+.impact-award-lightbox img { grid-column: 2; grid-row: 1; justify-self: center; display: block; width: auto; max-width: 100%; max-height: min(82svh, 820px); border: 0; border-radius: 10px; box-shadow: 0 22px 60px rgba(0, 0, 0, .48); object-fit: contain; }
+.impact-award-lightbox figcaption { grid-column: 2; grid-row: 2; display: flex; align-items: baseline; justify-content: center; gap: 12px; margin-top: 12px; }
+.impact-award-lightbox figcaption strong { color: var(--impact-text); font: 600 15px/1.3 var(--font-display, var(--sans, sans-serif)); }
+.impact-award-lightbox figcaption span { color: var(--impact-muted); font: 500 10px/1.4 var(--tech, var(--mono, monospace)); letter-spacing: .05em; }
+.impact-award-lightbox-nav { position: static; display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid rgba(255, 255, 255, .42); border-radius: 50%; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .96); cursor: pointer; transition: border-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease, background-color var(--motion-duration-control) ease, transform var(--motion-duration-control) var(--motion-ease-control); }
+.impact-award-lightbox-nav:hover { border-color: rgba(255, 255, 255, .82); background: #242426; color: #fff; }
+.impact-award-lightbox-nav:hover { transform: scale(1.04); }
+.impact-award-lightbox-nav:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
+.impact-award-lightbox-nav--prev { grid-column: 1; grid-row: 1; justify-self: center; }
+.impact-award-lightbox-nav--next { grid-column: 3; grid-row: 1; justify-self: center; }
+.impact-award-lightbox-close { position: fixed; top: max(18px, env(safe-area-inset-top)); right: max(18px, env(safe-area-inset-right)); display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgba(255, 255, 255, .42); border-radius: 50%; background: rgba(255, 255, 255, .06); color: rgba(255, 255, 255, .9); cursor: pointer; font: 400 16px/1 var(--sans, sans-serif); transition: border-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease, background-color var(--motion-duration-control) ease; }
+.impact-award-lightbox-close:hover { border-color: rgba(255, 255, 255, .74); background: rgba(255, 255, 255, .06); color: #fff; }
+.impact-award-lightbox-close:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
+.impact-award-lightbox:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 4px; }
+@keyframes impact-award-lightbox-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .impact-award-lightbox { animation: none; } }
 
 /* Logo Index: one shared glass shell, with no repeated inner frame. */
 .impact-logo-shell { min-height: 0; padding: 10px 24px 12px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 10px; border: 0; box-shadow: 0 18px 50px rgba(0,0,0,.1); }
@@ -54,8 +82,8 @@ html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: 
 .impact-reach-profile { overflow: visible; border: 0; border-radius: 0; background: transparent; }
 .impact-reach-profile-shot { position: relative; display: flex; align-items: center; justify-content: center; height: clamp(156px, 12vw, 182px); overflow: visible; background: transparent; }
 .impact-reach-profile-shot--link { display: flex; text-decoration: none; cursor: pointer; border-radius: var(--impact-radius); }
-.impact-reach-profile-shot--link:hover .impact-reach-profile-media { box-shadow: 0 0 0 2px rgba(41, 151, 255, .35); }
-.impact-reach-profile-shot--link:focus-visible { outline: 2px solid var(--impact-blue); outline-offset: 2px; }
+.impact-reach-profile-shot--link:hover .impact-reach-profile-media { box-shadow: 0 0 0 2px rgba(255, 255, 255, .35); }
+.impact-reach-profile-shot--link:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
 .impact-reach-profile-shot--qr { cursor: default; }
 .impact-reach-qr-popup {
   position: absolute;
@@ -72,7 +100,7 @@ html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: 
   -webkit-backdrop-filter: blur(18px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .22s ease;
+  transition: opacity var(--motion-duration-card) ease;
 }
 .impact-reach-profile-shot--qr:hover .impact-reach-qr-popup { opacity: 1; }
 .impact-reach-qr-popup img { display: block; width: 120px; height: 120px; margin: 0 auto; object-fit: contain; border-radius: 6px; }
@@ -90,8 +118,8 @@ html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: 
   .impact-evidence-label p { max-width: 360px; }
   .impact-award-shell { min-height: 0; }
   .impact-award-shell .impact-evidence-note { margin-right: 14px; margin-left: 14px; }
-  .impact-circular-gallery { height: 330px; }
-  .impact-award-mobile-grid { grid-auto-columns: minmax(122px, 30vw); }
+  .impact-award-rail { height: 330px; padding: 18px 58px; scroll-padding-inline: 58px; clip-path: inset(0 58px); }
+  .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
   .impact-logo-shell { min-height: 0; padding: 8px 16px 10px; }
   .impact-reach-dossier { padding: 16px; }
 }
@@ -99,13 +127,22 @@ html[lang="en"] .impact-evidence-label strong { line-height: 1.15; white-space: 
 @media (max-width: 720px) {
   .impact-logo-shell .logo-loop { --logo-loop-height: 30px !important; }
   .impact-logo-shell .logo-loop__list { gap: 24px; padding-right: 24px; }
+  .impact-award-card-zoom { display: grid; opacity: 1; }
+  .impact-award-rail > li { flex: 0 0 min(220px, calc(100% - 48px)); width: min(220px, calc(100% - 48px)); }
+  .impact-award-shell .impact-evidence-note { color: rgba(245, 245, 247, .68); }
 }
 
 @media (max-width: 500px) {
   .impact-evidence-note { display: flex; align-items: center; justify-content: space-between; gap: 10px; white-space: nowrap; }
   .impact-evidence-note span + span { display: block; margin-top: 0; text-align: right; }
   .impact-award-shell { min-height: 0; padding-top: 20px; }
-  .impact-circular-gallery { height: 270px; }
+  .impact-award-rail { height: 300px; }
+  /* 窄屏预览：切换按钮固定在预览卡内侧，避免被裁出屏外。 */
+  .impact-award-lightbox { padding: max(64px, env(safe-area-inset-top)) 16px 24px; }
+  .impact-award-lightbox figure { width: min(100%, 420px); grid-template-columns: 40px minmax(0, 1fr) 40px; column-gap: 6px; }
+  .impact-award-lightbox img { max-height: calc(100svh - 118px); }
+  .impact-award-lightbox-nav { width: 40px; height: 40px; }
+  .impact-award-lightbox-close { top: 12px; right: 12px; }
   .impact-reach-dossier { padding: 14px; }
   .impact-reach-dossier-head { display: block; }
   .impact-reach-dossier-head span + span { display: block; margin-top: 3px; }

@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
 const PORT = 5199;
-const URL = `http://localhost:${PORT}/`;
+const URL = `http://127.0.0.1:${PORT}/`;
 const LANGS = ['zh', 'en'];
 const VIEWPORTS = [
   { name: 'mobile', width: 393, height: 852 },
@@ -51,17 +51,26 @@ async function waitForServer(url, timeoutMs = 30000) {
 }
 
 // 页面内通用溢出扫描：在当前滚动位置下找横向溢出与文本被裁剪的元素。
-// 忽略名单是设计上故意溢出的元素：走马灯 logo 条、奖状轮播（露出下一张）、按钮扫光特效层。
+// 位于真实横向滚动容器内部的内容不参与视口判断，避免把可滑动轨道的正常 peek 误报为页面溢出。
 const SCAN_FN = `(() => {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const issues = [];
   const selfIgnored = /^(sr-only|logo-loop|specular-button__fx)/;
-  const ancestorIgnored = /logo-loop|impact-award-mobile-grid|impact-circular-gallery/;
+  function isInsideHorizontalScroller(el) {
+    let node = el.parentElement;
+    while (node) {
+      const style = getComputedStyle(node);
+      const scrollable = /(auto|scroll|overlay)/.test(style.overflowX);
+      if (scrollable && node.scrollWidth > node.clientWidth + 2) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
   for (const el of document.querySelectorAll('body *')) {
     const cls = (el.className || '').toString();
     if (selfIgnored.test(cls) || el.tagName === 'CANVAS') continue;
-    if (el.closest && el.closest('.logo-loop, .impact-award-mobile-grid, .impact-circular-gallery')) continue;
+    if (isInsideHorizontalScroller(el)) continue;
     const r = el.getBoundingClientRect();
     if (r.width === 0 || r.height === 0 || r.bottom < -80 || r.top > vh + 80) continue;
     const cs = getComputedStyle(el);
@@ -119,16 +128,16 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.map(b => b.textContent.slice(0, 16)).join(' | ') };
     });
   },
-  workStepAligned: async (page) => {
+  careerTabAligned: async (page) => {
     if (page.viewportSize().width < 721) return { ok: true };
-    const list = await page.$('.experience-list');
-    const step = await page.$('.experience-step');
-    if (!list || !step) return { ok: true };
+    const list = await page.$('.career-tabs');
+    const tab = await page.$('.career-tab');
+    if (!list || !tab) return { ok: true };
     return page.evaluate(([l, s]) => {
       const lr = l.getBoundingClientRect();
       const sr = s.getBoundingClientRect();
-      return { ok: sr.right <= lr.right + 1, detail: `卡片右缘 ${Math.round(sr.right)} / 列表右缘 ${Math.round(lr.right)}` };
-    }, [list, step]);
+      return { ok: sr.right <= lr.right + 1, detail: `标签右缘 ${Math.round(sr.right)} / 标签栏右缘 ${Math.round(lr.right)}` };
+    }, [list, tab]);
   },
   cardsNoOverlap: async (page) => {
     const cards = await page.$$('.comet-archive__card');
@@ -207,6 +216,15 @@ const CHECKS = {
         }
       }
       return { ok: bad.length === 0, detail: bad.join(' | ') };
+    });
+  },
+  // 当前工作经历只有一个可见详情面板，检查动态切换后的内容是否被容器裁剪。
+  careerPanelNoOverflow: async (page) => {
+    return page.evaluate(() => {
+      const panel = document.querySelector('.career-detail');
+      if (!panel) return { ok: true };
+      const overflow = panel.scrollHeight - panel.clientHeight;
+      return { ok: overflow <= 1, detail: `详情面板内容 ${panel.scrollHeight}px / 容器 ${panel.clientHeight}px` };
     });
   },
 };

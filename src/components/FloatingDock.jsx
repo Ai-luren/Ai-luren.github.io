@@ -26,19 +26,18 @@ const iconPaths = {
 };
 
 function DockIcon({ name }) {
-  return <img src={iconPaths[name]} alt="" aria-hidden="true" />;
+  return <img src={iconPaths[name]} alt="" width="23" height="23" aria-hidden="true" />;
 }
 
-function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring }) {
+function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion }) {
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
   const [hovered, setHovered] = useState(false);
-  const lastTapRef = useRef(0);
   const mouseDistance = useTransform(mouseX, (value) => {
     const rect = ref.current?.getBoundingClientRect() ?? { x: 0, width: baseItemSize };
     return value - rect.x - baseItemSize / 2;
   });
-  const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, magnification, baseItemSize]);
+  const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, reducedMotion ? baseItemSize : magnification, baseItemSize]);
   const size = useSpring(targetSize, spring);
 
   return (
@@ -64,20 +63,6 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
           event.preventDefault();
           return;
         }
-        // 移动端（触屏设备）有跳转链接的 items 需要双击才跳转
-        if (item.href) {
-          const isTouch = window.matchMedia('(pointer: coarse)').matches;
-          if (isTouch) {
-            const now = Date.now();
-            if (now - lastTapRef.current < 350) {
-              lastTapRef.current = 0;
-              return; // 允许默认跳转
-            }
-            lastTapRef.current = now;
-            event.preventDefault();
-            return;
-          }
-        }
       }}
     >
       <span className="floating-dock-icon">{item.icon}</span>
@@ -85,22 +70,22 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
         {hovered && item.qrCode && (
           <motion.span
             className="floating-dock-qr-popup"
-            initial={{ opacity: 0 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
+            exit={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.18 }}
           >
-            <img src={item.qrCode} alt={item.label} />
+            <img src={item.qrCode} alt={item.label} width="630" height="632" loading="lazy" decoding="async" />
             <span>{item.qrLabel || item.label}</span>
           </motion.span>
         )}
         {hovered && !item.qrCode && (
           <motion.span
             className="floating-dock-label"
-            initial={{ opacity: 0, y: 4, x: '-50%' }}
+            initial={reducedMotion ? false : { opacity: 0, y: 4, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={{ opacity: 0, y: 4, x: '-50%' }}
-            transition={{ duration: 0.18 }}
+            exit={reducedMotion ? { opacity: 1, y: 0, x: '-50%' } : { opacity: 0, y: 4, x: '-50%' }}
+            transition={{ duration: reducedMotion ? 0 : 0.18 }}
             style={{ left: '50%' }}
             role="tooltip"
           >
@@ -115,14 +100,43 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring 
 export default function FloatingDock() {
   const mouseX = useMotionValue(Infinity);
   const [isCompact, setIsCompact] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 430);
+  const [hasFinePointer, setHasFinePointer] = useState(() => (
+    typeof window !== 'undefined'
+      && (!window.matchMedia || window.matchMedia('(hover: hover) and (pointer: fine)').matches)
+  ));
+  const [reducedMotion, setReducedMotion] = useState(() => (
+    typeof window !== 'undefined'
+      && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
+  ));
   const [status, setStatus] = useState('');
   const lang = useLang();
-  const spring = { mass: 0.1, stiffness: 150, damping: 12 };
+  const spring = { mass: 0.18, stiffness: 180, damping: 22 };
 
   useEffect(() => {
     const updateCompactMode = () => setIsCompact(window.innerWidth <= 430);
     window.addEventListener('resize', updateCompactMode, { passive: true });
     return () => window.removeEventListener('resize', updateCompactMode);
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia?.('(hover: hover) and (pointer: fine)');
+    if (!media) return undefined;
+    const updatePointerMode = () => {
+      setHasFinePointer(media.matches);
+      if (!media.matches) mouseX.set(Infinity);
+    };
+    updatePointerMode();
+    media.addEventListener?.('change', updatePointerMode);
+    return () => media.removeEventListener?.('change', updatePointerMode);
+  }, [mouseX]);
+
+  useEffect(() => {
+    const media = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (!media) return undefined;
+    const updateMotionPreference = () => setReducedMotion(media.matches);
+    updateMotionPreference();
+    media.addEventListener?.('change', updateMotionPreference);
+    return () => media.removeEventListener?.('change', updateMotionPreference);
   }, []);
 
   const copy = (value, label) => {
@@ -135,7 +149,6 @@ export default function FloatingDock() {
 
   const items = [
     { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
-    { label: lang === 'en' ? 'Copy phone' : '复制电话', onClick: () => copy('15580714085', { zh: '电话', en: 'Phone' }), icon: <DockIcon name="phone" /> },
     { label: lang === 'en' ? 'WeChat' : '微信', onClick: () => copy('15580714085', { zh: '微信号', en: 'WeChat ID' }), qrCode: wechatQrCode, qrLabel: lang === 'en' ? 'Scan to add on WeChat' : '扫码添加微信', icon: <DockIcon name="wechat" /> },
     { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
     { label: lang === 'en' ? 'Rednote profile' : '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: lang === 'en' ? 'Scan to visit Rednote' : '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
@@ -149,7 +162,7 @@ export default function FloatingDock() {
         className="floating-dock-panel"
         role="toolbar"
         aria-label={lang === 'en' ? 'Contact and portfolio links' : '联系方式与作品集链接'}
-        onMouseMove={(event) => mouseX.set(event.clientX)}
+        onMouseMove={(event) => { if (hasFinePointer) mouseX.set(event.clientX); }}
         onMouseLeave={() => mouseX.set(Infinity)}
       >
         {items.map((item) => <DockItem
@@ -157,9 +170,10 @@ export default function FloatingDock() {
           item={item}
           mouseX={mouseX}
           distance={isCompact ? 120 : 155}
-          magnification={isCompact ? 48 : 60}
-          baseItemSize={isCompact ? 36 : 46}
-          spring={spring}
+          magnification={hasFinePointer ? (isCompact ? 46 : 60) : (isCompact ? 44 : 60)}
+          baseItemSize={isCompact ? 44 : 46}
+          spring={reducedMotion ? { duration: 0 } : spring}
+          reducedMotion={reducedMotion}
         />)}
       </div>
       <div className="floating-dock-status" role="status" aria-live="polite">{status}</div>

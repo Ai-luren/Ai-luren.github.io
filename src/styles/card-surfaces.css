@@ -1,21 +1,25 @@
 /*
  * The page is a hybrid shell: static sections live in index.html while
  * selected work and impact evidence are React portals. Keep one surface
- * contract in the React bundle so both sides render the same card material.
+ * contract so static HTML and React surfaces render the same material.
  */
 :root {
-  --portfolio-card-surface: rgba(5, 12, 20, .68);
-  --portfolio-card-border: rgba(184, 215, 236, .18);
-  --portfolio-card-blur: blur(14px) saturate(1.08);
-  --portfolio-card-shadow: 0 10px 24px rgba(0, 0, 0, .18);
-  --portfolio-card-radius: 12px;
+  --portfolio-card-surface: rgba(28, 28, 30, .72);
+  --portfolio-card-border: rgba(255, 255, 255, .14);
+  --portfolio-card-blur: blur(22px) saturate(1.08);
+  --portfolio-card-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+  --portfolio-card-radius: 24px;
+  --portfolio-modal-surface: rgba(12, 12, 13, .9);
+  --portfolio-modal-blur: blur(28px) saturate(1.02);
 }
 
-.experience-detail,
-.comet-archive__glass,
 .impact-glass,
-#experiments .experiment-rail,
-.contact-links {
+#experiments .flip-experiment__row,
+#profile .career-strip,
+#top .hero-proof-card,
+.floating-dock-panel,
+header,
+header.is-condensed {
   border: 1px solid var(--portfolio-card-border) !important;
   border-radius: var(--portfolio-card-radius) !important;
   background: var(--portfolio-card-surface) !important;
@@ -24,15 +28,16 @@
   -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
 }
 
-.hero-proof-card,
-.experience-detail,
-.comet-archive__card,
-.comet-archive__glass,
 .impact-glass,
-#experiments .experiment-rail {
+#profile .career-strip,
+#top .hero-proof-card {
   border-radius: var(--portfolio-card-radius) !important;
 }
 
-.experience-detail::after {
-  content: none !important;
+/* Content reach uses the same stable dark shell as the creator-platform panel. */
+.impact-glass.impact-reach-dossier {
+  background: var(--portfolio-card-surface) !important;
+  box-shadow: var(--portfolio-card-shadow) !important;
+  backdrop-filter: var(--portfolio-card-blur) !important;
+  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
 }

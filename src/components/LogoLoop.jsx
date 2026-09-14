@@ -59,7 +59,7 @@ function useImageLoader(sequenceRef, onLoad, dependencies) {
   }, [onLoad, sequenceRef, dependencies]);
 }
 
-function useAnimationLoop(trackRef, velocity, sequenceWidth, isHovered, hoverSpeed) {
+function useAnimationLoop(trackRef, velocity, sequenceWidth, isHovered, hoverSpeed, motionEnabled) {
   const frameRef = useRef(null);
   const lastTimestampRef = useRef(null);
   const offsetRef = useRef(0);
@@ -70,7 +70,7 @@ function useAnimationLoop(trackRef, velocity, sequenceWidth, isHovered, hoverSpe
     if (!track) return undefined;
 
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) {
+    if (reducedMotion || !motionEnabled) {
       track.style.transform = 'translate3d(0, 0, 0)';
       return undefined;
     }
@@ -129,7 +129,7 @@ function useAnimationLoop(trackRef, velocity, sequenceWidth, isHovered, hoverSpe
       visibilityObserver?.disconnect();
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [trackRef, velocity, sequenceWidth, isHovered, hoverSpeed]);
+  }, [trackRef, velocity, sequenceWidth, isHovered, hoverSpeed, motionEnabled]);
 }
 
 const LogoLoop = memo(function LogoLoop({
@@ -140,6 +140,7 @@ const LogoLoop = memo(function LogoLoop({
   gap = 52,
   hoverSpeed,
   scaleOnHover = false,
+  motionEnabled,
   ariaLabel = 'Partner logos',
   className,
   style
@@ -150,6 +151,20 @@ const LogoLoop = memo(function LogoLoop({
   const [sequenceWidth, setSequenceWidth] = useState(0);
   const [copyCount, setCopyCount] = useState(MIN_COPIES);
   const [isHovered, setIsHovered] = useState(false);
+  const [viewportMotionEnabled, setViewportMotionEnabled] = useState(() => (
+    typeof window === 'undefined'
+      || !window.matchMedia
+      || !window.matchMedia('(max-width: 720px)').matches
+  ));
+
+  useEffect(() => {
+    const media = window.matchMedia?.('(max-width: 720px)');
+    if (!media) return undefined;
+    const updateMotion = () => setViewportMotionEnabled(!media.matches);
+    updateMotion();
+    media.addEventListener?.('change', updateMotion);
+    return () => media.removeEventListener?.('change', updateMotion);
+  }, []);
 
   const updateDimensions = useCallback(() => {
     const containerWidth = containerRef.current?.clientWidth ?? 0;
@@ -164,16 +179,17 @@ const LogoLoop = memo(function LogoLoop({
 
   const directionMultiplier = direction === 'right' ? -1 : 1;
   const targetVelocity = Math.abs(speed) * directionMultiplier * (speed < 0 ? -1 : 1);
-  useAnimationLoop(trackRef, targetVelocity, sequenceWidth, isHovered, hoverSpeed);
+  const shouldAnimate = motionEnabled ?? viewportMotionEnabled;
+  useAnimationLoop(trackRef, targetVelocity, sequenceWidth, isHovered, hoverSpeed, shouldAnimate);
 
   const renderLogoItem = useCallback((logo, key) => (
     <li className={joinClasses('logo-loop__item', scaleOnHover && 'logo-loop__item--hoverable')} key={key}>
       {logo.href ? (
         <a className="logo-loop__link" href={logo.href} target="_blank" rel="noreferrer noopener" aria-label={logo.alt || logo.title}>
-          <img className={joinClasses('logo-loop__image', logo.className)} src={logo.src} alt={logo.alt ?? ''} title={logo.title} draggable="false" />
+          <img className={joinClasses('logo-loop__image', logo.className)} src={logo.src} alt={logo.alt ?? ''} title={logo.title} width={logo.width} height={logo.height} draggable="false" />
         </a>
       ) : (
-        <img className={joinClasses('logo-loop__image', logo.className)} src={logo.src} alt={logo.alt ?? ''} title={logo.title} draggable="false" />
+        <img className={joinClasses('logo-loop__image', logo.className)} src={logo.src} alt={logo.alt ?? ''} title={logo.title} width={logo.width} height={logo.height} draggable="false" />
       )}
     </li>
   ), [scaleOnHover]);
@@ -193,7 +209,7 @@ const LogoLoop = memo(function LogoLoop({
   return (
     <div
       ref={containerRef}
-      className={joinClasses('logo-loop', className)}
+      className={joinClasses('logo-loop', !shouldAnimate && 'logo-loop--static', className)}
       style={cssVariables}
       role="region"
       aria-label={ariaLabel}
@@ -204,7 +220,7 @@ const LogoLoop = memo(function LogoLoop({
         <ul className="logo-loop__list" ref={sequenceRef} aria-hidden="false">
           {logos.map((logo, logoIndex) => renderLogoItem(logo, `sequence-${logoIndex}`))}
         </ul>
-        {logoLists}
+        {shouldAnimate && logoLists}
       </div>
     </div>
   );
