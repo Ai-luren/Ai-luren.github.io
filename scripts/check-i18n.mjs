@@ -204,6 +204,180 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
+  // 移动端获奖轮播的分页圆点必须完整落在外层面板内，不能被面板的 overflow:hidden 裁掉。
+  awardPaginationVisible: async (page) => {
+    if (page.viewportSize().width > 720) return { ok: true };
+    return page.evaluate(() => {
+      const shell = document.querySelector('.impact-award-shell');
+      const rail = document.querySelector('.impact-award-rail');
+      const pagination = document.querySelector('.impact-award-pagination');
+      if (!shell || !rail || !pagination) return { ok: true };
+      const shellRect = shell.getBoundingClientRect();
+      const railRect = rail.getBoundingClientRect();
+      const paginationRect = pagination.getBoundingClientRect();
+      const style = getComputedStyle(pagination);
+      const buttons = pagination.querySelectorAll('button');
+      const hidden = style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0;
+      const clipped = paginationRect.top < shellRect.top - 1 || paginationRect.bottom > shellRect.bottom + 1;
+      const overlapsRail = paginationRect.top < railRect.bottom - 6;
+      return {
+        ok: !hidden && !clipped && !overlapsRail && buttons.length > 0,
+        detail: `分页区域 ${Math.round(paginationRect.top)}-${Math.round(paginationRect.bottom)} / 轨道底部 ${Math.round(railRect.bottom)} / 面板 ${Math.round(shellRect.top)}-${Math.round(shellRect.bottom)}`,
+      };
+    });
+  },
+  // 三个影响力模块共享同一套标题-卡片与模块间距；移动端不能被视口高度强行撑满。
+  impactRhythm: async (page) => {
+    return page.evaluate(() => {
+      const rows = [...document.querySelectorAll('.impact-evidence-row')];
+      if (rows.length !== 3) return { ok: true };
+      const metrics = rows.map((row) => {
+        const label = row.querySelector('.impact-evidence-label')?.getBoundingClientRect();
+        const panel = row.querySelector(':scope > div:last-child > .impact-glass')?.getBoundingClientRect();
+        const rect = row.getBoundingClientRect();
+        return {
+          id: row.id,
+          height: rect.height,
+          titleToPanel: label && panel ? panel.top - label.bottom : null,
+          top: rect.top + scrollY,
+          bottom: rect.bottom + scrollY,
+          panelBottom: panel ? panel.bottom + scrollY : null,
+        };
+      });
+      const titleGaps = metrics.map((item) => item.titleToPanel).filter(Number.isFinite);
+      const rowGaps = metrics.slice(1).map((item, index) => item.top - metrics[index].bottom);
+      const maxDelta = (values) => values.length ? Math.max(...values) - Math.min(...values) : 0;
+      const mobile = window.innerWidth <= 720;
+      const experimentHeading = document.querySelector('#experiments .section-title');
+      const experimentTop = experimentHeading ? experimentHeading.getBoundingClientRect().top + scrollY : null;
+      const lastPanelBottom = metrics.at(-1)?.panelBottom;
+      const labGap = Number.isFinite(experimentTop) && Number.isFinite(lastPanelBottom) ? experimentTop - lastPanelBottom : 0;
+      const mobileOverfull = mobile
+        ? metrics.some((item) => item.height > window.innerHeight * .9)
+        : false;
+      const ok = !mobileOverfull && maxDelta(titleGaps) <= 3 && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
+      return {
+        ok,
+        detail: `标题-卡片 ${titleGaps.map(Math.round).join('/')}px / 模块间 ${rowGaps.map(Math.round).join('/')}px / 自媒体-实验室 ${Math.round(labGap)}px / 模块高度 ${metrics.map((item) => Math.round(item.height)).join('/')}`,
+      };
+    });
+  },
+  // 设计系统的字体职责必须稳定：标题用展示字体，正文用正文字体，
+  // 年份/数据/英文元信息用等宽字体；英文长标题不能被 nowrap 锁死。
+  typographyRoles: async (page) => {
+    return page.evaluate(() => {
+      const visible = (selector) => [...document.querySelectorAll(selector)].filter((el) => {
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && getComputedStyle(el).display !== 'none';
+      });
+      const bad = [];
+      const firstFamily = (selector) => {
+        const el = visible(selector)[0];
+        return el ? getComputedStyle(el).fontFamily : '';
+      };
+      // Comparing computed family strings keeps this assertion stable across
+      // browser font fallback serialization; the design system exposes the
+      // role by using a representative element for each family.
+      const displayFamily = firstFamily('.impact-evidence-label h2, #experiments .section-title');
+      const bodyFamily = firstFamily('.impact-award-description, .impact-platform-desktop-description, .impact-reach-dossier-description');
+      const monoFamily = firstFamily('.impact-evidence-note, .impact-platform-desktop-head, .impact-reach-dossier-head');
+      const assertFamily = (selector, family, label) => {
+        for (const el of visible(selector)) {
+          const style = getComputedStyle(el);
+          if (family && style.fontFamily !== family) {
+            bad.push(`${label}: ${el.textContent.trim().slice(0, 20)} (${style.fontFamily})`);
+          }
+        }
+      };
+      assertFamily('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-card-caption strong', displayFamily, '展示字体');
+      assertFamily('.impact-award-description, .impact-platform-desktop-description, .impact-platform-mobile-manifesto p, .impact-reach-dossier-description, .flip-experiment__row-description', bodyFamily, '正文字体');
+      assertFamily('.impact-evidence-note, .impact-platform-desktop-head, .impact-platform-mobile-meta, .impact-platform-mobile-network-head, .impact-reach-dossier-head, .impact-reach-profile-caption span, .impact-award-card-caption small, .flip-experiment__facts span', monoFamily, '等宽字体');
+      for (const el of visible('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-card-caption strong')) {
+        if (getComputedStyle(el).fontWeight !== '600') bad.push(`展示字重不一致: ${el.textContent.trim().slice(0, 24)}`);
+      }
+      if (document.documentElement.lang === 'en') {
+        for (const el of visible('.impact-evidence-label h2, .flip-experiment__row-title h3')) {
+          if (getComputedStyle(el).whiteSpace === 'nowrap') bad.push(`英文标题仍被 nowrap 锁定: ${el.textContent.trim().slice(0, 24)}`);
+        }
+      }
+      return { ok: bad.length === 0, detail: bad.join(' | ') };
+    });
+  },
+  // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18、内部小卡片 12，
+  // 操作控件使用胶囊，圆形控制使用 50%；内容层不再叠加第二层模糊。
+  surfaceHierarchy: async (page) => {
+    return page.evaluate(() => {
+      const visible = (selector) => [...document.querySelectorAll(selector)].filter((el) => {
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
+      const bad = [];
+      const assertRadius = (selector, expected, label) => {
+        for (const el of visible(selector)) {
+          const actual = getComputedStyle(el).borderRadius;
+          if (actual !== expected) bad.push(`${label}: ${el.className || el.tagName}=${actual}，应为${expected}`);
+        }
+      };
+      assertRadius('header, header.is-condensed, #profile .career-strip, .impact-glass, #contact .footer-contact-copy, .floating-dock-panel', '24px', '外层面板圆角');
+      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #profile .career-image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #experiments .flip-experiment__row', '18px', '内容卡片圆角');
+      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, #profile .career-tab, #profile .career-tabs--focus .career-tab, .floating-dock-item', '12px', '内部卡片圆角');
+      assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
+      assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a', '50%', '圆形控件圆角');
+
+      const panel = visible('header')[0];
+      if (panel) {
+        const reference = getComputedStyle(panel);
+        for (const el of visible('#profile .career-strip, .impact-glass, #contact .footer-contact-copy, .floating-dock-panel')) {
+          const style = getComputedStyle(el);
+          if (style.backgroundColor !== reference.backgroundColor || style.backdropFilter !== reference.backdropFilter || style.boxShadow !== reference.boxShadow) {
+            bad.push(`外层材质不一致: ${el.className || el.tagName}`);
+          }
+        }
+      }
+      for (const el of visible('#projects .comet-archive__image, #profile .career-image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, #profile .career-tab, .floating-dock-item')) {
+        if (getComputedStyle(el).backdropFilter !== 'none') bad.push(`内容层仍有模糊: ${el.className || el.tagName}`);
+      }
+      return { ok: bad.length === 0, detail: bad.join(' | ') };
+    });
+  },
+  // 移动端菜单必须把 7 个入口作为同一组动画打开；同时禁止 transition: all。
+  motionSystem: async (page) => {
+    if (page.viewportSize().width > 760) return { ok: true };
+    return page.evaluate(() => {
+      const bad = [];
+      const drawer = document.querySelector('#mobile-nav-drawer');
+      const items = [...document.querySelectorAll('#mobile-primary-nav .nav-list li')];
+      if (!drawer || items.length !== 7) return { ok: false, detail: `移动菜单项目数 ${items.length}，应为 7` };
+
+      const wasOpen = document.body.classList.contains('mobile-nav-open');
+      const wasDrawerOpen = drawer.classList.contains('is-open');
+      document.body.classList.add('mobile-nav-open');
+      drawer.classList.add('is-open');
+      const drawerStyle = getComputedStyle(drawer);
+      const itemStyles = items.map((item) => getComputedStyle(item));
+      const delays = itemStyles.map((style) => parseFloat(style.animationDelay) || 0);
+      if (drawerStyle.transitionProperty === 'none') bad.push('菜单抽屉没有过渡');
+      if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('opacity')) bad.push('菜单抽屉缺少 opacity 过渡');
+      if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('transform')) bad.push('菜单抽屉缺少 transform 过渡');
+      if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('7 个菜单项没有统一入场动画');
+      if (new Set(itemStyles.map((style) => style.animationDuration)).size !== 1) bad.push('菜单项动画时长不一致');
+      if (new Set(itemStyles.map((style) => style.animationTimingFunction)).size !== 1) bad.push('菜单项 easing 不一致');
+      if (delays.some((delay, index) => index > 0 && delay <= delays[index - 1])) bad.push('菜单项延迟没有递增');
+      if (Math.max(...delays) > .18) bad.push(`最后菜单项延迟 ${Math.round(Math.max(...delays) * 1000)}ms 过长`);
+      for (const el of document.querySelectorAll('body *')) {
+        const style = getComputedStyle(el);
+        const hasMotion = style.transitionDuration.split(',').some((value) => parseFloat(value) > 0);
+        if (hasMotion && style.transitionProperty.split(',').map((value) => value.trim()).includes('all')) {
+          bad.push(`发现 transition: all: ${el.className || el.tagName}`);
+          break;
+        }
+      }
+      if (!wasOpen) document.body.classList.remove('mobile-nav-open');
+      if (!wasDrawerOpen) drawer.classList.remove('is-open');
+      return { ok: bad.length === 0, detail: bad.join(' | ') };
+    });
+  },
   // 导航等 data-i18n 文案必须来自字典。曾出现过导航显示 key 原文（如 "nav.profile"）的反馈，
   // 若字典缺 key 或写入异常，元素会显示 "xx.yy" 形态的 key，逐个元素锁死。
   navNoRawKeys: async (page) => {
@@ -279,7 +453,7 @@ async function run() {
         if (vp.name === 'mobile') {
           for (const w of [375, 360]) {
             await page.setViewportSize({ width: w, height: vp.height });
-            for (const name of ['navFits', 'archiveKickNoClip', 'archiveAwardNoClip']) {
+            for (const name of ['navFits', 'archiveKickNoClip', 'archiveAwardNoClip', 'awardPaginationVisible']) {
               const result = await CHECKS[name](page);
               if (result && result.ok === false) {
                 failures.push(`[mobile-${w}px ${lang}] ${name} 失败（${result.detail}）`);

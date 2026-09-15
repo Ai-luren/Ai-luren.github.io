@@ -43,7 +43,7 @@
 }
 
 .logo-loop__link {
-  border-radius: 8px;
+  border-radius: var(--portfolio-tile-radius);
   line-height: 0;
 }
 
@@ -61,7 +61,7 @@
   -webkit-user-drag: none;
   opacity: .92;
   filter: none;
-  transition: opacity var(--motion-duration-card) ease, transform var(--motion-duration-card) var(--motion-ease-control);
+  transition: opacity var(--motion-duration-card) var(--motion-ease-control), transform var(--motion-duration-card) var(--motion-ease-control);
 }
 
 .logo-loop__image--light {

@@ -1,6 +1,4 @@
 .flip-experiment {
-  --flip-surface: var(--portfolio-card-surface);
-  --flip-border: var(--portfolio-card-border);
   --flip-muted: var(--apple-secondary);
   --flip-quiet: var(--apple-tertiary);
   --flip-neutral: var(--apple-tertiary);
@@ -19,14 +17,8 @@
   align-items: center;
   min-height: 116px;
   padding: 17px 18px;
-  border: 1px solid var(--flip-border);
-  border-radius: var(--apple-radius-card);
   color: var(--flip-muted);
-  background: var(--flip-surface);
-  box-shadow: var(--apple-shadow-card);
-  -webkit-backdrop-filter: var(--portfolio-card-blur);
-  backdrop-filter: var(--portfolio-card-blur);
-  transition: border-color var(--motion-duration-card) ease, background-color var(--motion-duration-card) ease, color var(--motion-duration-card) ease;
+  transition: border-color var(--motion-duration-card) var(--motion-ease-control), background-color var(--motion-duration-card) var(--motion-ease-control), color var(--motion-duration-card) var(--motion-ease-control);
 }
 
 .flip-experiment__row:hover,
@@ -89,7 +81,7 @@
   line-height: 1.35;
   text-decoration: none;
   white-space: nowrap;
-  transition: gap var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) ease, border-color var(--motion-duration-control) ease;
+  transition: gap var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control), border-color var(--motion-duration-control) var(--motion-ease-control);
 }
 
 .flip-experiment__link:hover,

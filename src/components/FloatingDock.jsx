@@ -12,8 +12,6 @@ import xiaohongshuIcon from '../../assets/images/icon/xiaohongshu-solid.svg';
 import douyinIcon from '../../assets/images/icon/douyin.svg';
 import feishuIcon from '../../assets/images/icon/feishu.webp';
 import wechatQrCode from '../../assets/images/social-profiles/微信二维码.webp';
-import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.webp';
-import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
 
 const iconPaths = {
   mail: mailIcon,
@@ -29,7 +27,7 @@ function DockIcon({ name }) {
   return <img src={iconPaths[name]} alt="" width="23" height="23" aria-hidden="true" />;
 }
 
-function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion }) {
+function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer }) {
   const ref = useRef(null);
   const isHovered = useMotionValue(0);
   const [hovered, setHovered] = useState(false);
@@ -44,13 +42,14 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
     <motion.a
       ref={ref}
       href={item.href || '#'}
+      download={item.download}
       target={item.external ? '_blank' : undefined}
       rel={item.external ? 'noopener noreferrer' : undefined}
       aria-label={item.label}
       className="floating-dock-item"
       style={{ width: size, height: size }}
-      onMouseEnter={() => { isHovered.set(1); setHovered(true); }}
-      onMouseLeave={() => { isHovered.set(0); setHovered(false); }}
+      onMouseEnter={() => { if (hasFinePointer) { isHovered.set(1); setHovered(true); } }}
+      onMouseLeave={() => { if (hasFinePointer) { isHovered.set(0); setHovered(false); } }}
       onFocus={() => { isHovered.set(1); setHovered(true); }}
       onBlur={() => { isHovered.set(0); setHovered(false); }}
       onClick={(event) => {
@@ -59,27 +58,11 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
           item.onClick();
           return;
         }
-        if (item.qrCode && !item.href) {
-          event.preventDefault();
-          return;
-        }
       }}
     >
       <span className="floating-dock-icon">{item.icon}</span>
       <AnimatePresence>
-        {hovered && item.qrCode && (
-          <motion.span
-            className="floating-dock-qr-popup"
-            initial={reducedMotion ? false : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 0.18 }}
-          >
-            <img src={item.qrCode} alt={item.label} width="630" height="632" loading="lazy" decoding="async" />
-            <span>{item.qrLabel || item.label}</span>
-          </motion.span>
-        )}
-        {hovered && !item.qrCode && (
+        {hovered && (
           <motion.span
             className="floating-dock-label"
             initial={reducedMotion ? false : { opacity: 0, y: 4, x: '-50%' }}
@@ -89,7 +72,7 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
             style={{ left: '50%' }}
             role="tooltip"
           >
-            {item.label}
+            {item.hoverLabel || item.label}
           </motion.span>
         )}
       </AnimatePresence>
@@ -149,11 +132,11 @@ export default function FloatingDock() {
 
   const items = [
     { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
-    { label: lang === 'en' ? 'WeChat' : '微信', onClick: () => copy('15580714085', { zh: '微信号', en: 'WeChat ID' }), qrCode: wechatQrCode, qrLabel: lang === 'en' ? 'Scan to add on WeChat' : '扫码添加微信', icon: <DockIcon name="wechat" /> },
-    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
-    { label: lang === 'en' ? 'Rednote profile' : '小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, qrCode: xiaohongshuQrCode, qrLabel: lang === 'en' ? 'Scan to visit Rednote' : '扫码访问小红书', icon: <DockIcon name="xiaohongshu" /> },
-    { label: lang === 'en' ? 'TikTok profile' : '抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, qrCode: douyinQrCode, qrLabel: lang === 'en' ? 'Scan with the TikTok app' : '使用抖音扫码访问', icon: <DockIcon name="douyin" /> },
-    { label: lang === 'en' ? 'Lark portfolio' : '飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
+    { label: lang === 'en' ? 'Save WeChat QR code' : '保存微信二维码', hoverLabel: lang === 'en' ? 'Save WeChat QR' : '保存微信二维码', href: wechatQrCode, download: 'wechat-qr-code.webp', icon: <DockIcon name="wechat" /> },
+    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
+    { label: lang === 'en' ? 'Rednote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open Rednote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
+    { label: lang === 'en' ? 'TikTok profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open TikTok profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
+    { label: lang === 'en' ? 'Lark portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Lark portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
   ];
 
   return (
@@ -174,6 +157,7 @@ export default function FloatingDock() {
           baseItemSize={isCompact ? 44 : 46}
           spring={reducedMotion ? { duration: 0 } : spring}
           reducedMotion={reducedMotion}
+          hasFinePointer={hasFinePointer}
         />)}
       </div>
       <div className="floating-dock-status" role="status" aria-live="polite">{status}</div>

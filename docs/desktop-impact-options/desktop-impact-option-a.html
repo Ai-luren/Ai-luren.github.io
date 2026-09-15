@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>桌面端 AI 影响力方案 A</title>
+  <style>
+    :root { color-scheme: dark; --bg:#08090b; --text:#f5f5f7; --secondary:#a1a1a6; --tertiary:#6e6e73; --blue:#2997ff; --glass:rgba(26,28,32,.76); --glass-strong:rgba(18,20,24,.9); --line:rgba(255,255,255,.13); --radius:28px; --ease:cubic-bezier(.22,.61,.36,1); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",Arial,sans-serif; }
+    * { box-sizing:border-box; }
+    html,body { margin:0; min-height:100%; background:var(--bg); }
+    body { color:var(--text); overflow-x:hidden; }
+    body::before { content:"桌面端方案 A · 左标题右内容"; position:fixed; z-index:20; right:20px; bottom:18px; color:rgba(255,255,255,.38); font:11px/1 monospace; letter-spacing:.08em; pointer-events:none; }
+    .backdrop { position:fixed; inset:0; z-index:-2; overflow:hidden; background:#08090b url("../../public/og-image.png") center/cover no-repeat; }
+    .backdrop video { width:100%; height:100%; object-fit:cover; opacity:.48; filter:contrast(.92) saturate(.8); }
+    .backdrop::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(4,6,9,.76),rgba(4,6,9,.28) 55%,rgba(4,6,9,.62)); }
+    .app { width:min(1320px,calc(100% - 72px)); min-height:100vh; margin:auto; padding:24px 0 34px; }
+    .toolbar { display:flex; align-items:center; gap:30px; min-height:72px; padding:10px 16px; border:1px solid var(--line); border-radius:24px; background:rgba(20,22,26,.72); backdrop-filter:blur(22px) saturate(130%); box-shadow:0 16px 50px rgba(0,0,0,.23); }
+    .avatar { display:grid; place-items:center; width:48px; height:48px; flex:none; border:1px solid rgba(255,255,255,.26); border-radius:50%; background:#000; overflow:hidden; }
+    .avatar img { width:82%; height:82%; object-fit:contain; }
+    .tabs { display:flex; align-items:center; justify-content:center; gap:6px; flex:1; }
+    .tab,.lang { border:0; color:var(--secondary); background:transparent; cursor:pointer; font:500 14px/1.2 inherit; transition:color .22s var(--ease),background .22s var(--ease),transform .22s var(--ease); }
+    .tab { position:relative; padding:14px 16px; border-radius:14px; }
+    .tab::after { content:""; position:absolute; left:16px; right:16px; bottom:5px; height:2px; border-radius:2px; background:var(--blue); transform:scaleX(0); transform-origin:center; transition:transform .3s var(--ease); }
+    .tab:hover,.tab[aria-selected="true"] { color:var(--text); background:rgba(255,255,255,.07); }
+    .tab[aria-selected="true"]::after { transform:scaleX(1); }
+    .toolbar-tools { display:flex; align-items:center; gap:8px; }
+    .lang { width:42px; height:42px; border:1px solid var(--line); border-radius:50%; }
+    .lang:hover { color:var(--text); background:rgba(255,255,255,.08); transform:translateY(-1px); }
+    .screen { display:grid; grid-template-columns:minmax(380px,.84fr) minmax(0,1.62fr); gap:38px; align-items:center; min-height:calc(100vh - 130px); padding:48px 8px 30px; }
+    .section-copy { align-self:center; padding:8px 0 20px; }
+    .section-kicker { color:var(--tertiary); font:12px/1.3 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.13em; text-transform:uppercase; }
+    h1 { margin:22px 0 0; color:var(--text); font-size:clamp(3.6rem,5.7vw,6rem); font-weight:600; line-height:.98; letter-spacing:-.085em; white-space:nowrap; }
+    .blue-line { width:54px; height:3px; margin:30px 0 26px; border-radius:4px; background:var(--blue); box-shadow:0 0 20px rgba(41,151,255,.25); }
+    .section-desc { max-width:260px; margin:0; color:var(--secondary); font-size:17px; line-height:1.65; }
+    .screen-note { display:flex; align-items:center; gap:10px; margin-top:40px; color:var(--tertiary); font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.05em; }
+    .screen-note i { width:6px; height:6px; border-radius:50%; background:var(--blue); }
+    .module { min-width:0; min-height:560px; padding:26px; border:1px solid rgba(255,255,255,.16); border-radius:var(--radius); background:var(--glass); backdrop-filter:blur(24px) saturate(125%); box-shadow:0 24px 70px rgba(0,0,0,.28); opacity:1; transform:translateY(0); transition:opacity .3s var(--ease),transform .3s var(--ease); }
+    .module.is-leaving { opacity:0; transform:translateY(10px); }
+    .module-top { display:flex; justify-content:space-between; align-items:center; padding-bottom:18px; color:var(--tertiary); font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.09em; text-transform:uppercase; }
+    .module-top span:last-child { color:var(--secondary); }
+    .module-rule { height:1px; margin:0 -26px 24px; background:var(--line); }
+    .award-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; align-items:stretch; }
+    .award-item { min-width:0; }
+    .award-item img { display:block; width:100%; height:325px; object-fit:cover; object-position:center; border:1px solid rgba(255,255,255,.16); border-radius:18px; background:#101216; }
+    .award-item strong { display:block; margin-top:14px; color:var(--text); font-size:14px; font-weight:600; line-height:1.35; }
+    .award-item small { display:block; margin-top:6px; color:var(--secondary); font-size:11px; line-height:1.4; }
+    .platform-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-top:48px; }
+    .platform { display:flex; flex-direction:column; justify-content:space-between; min-height:174px; padding:20px; border:1px solid var(--line); border-radius:20px; background:rgba(255,255,255,.045); transition:background .22s var(--ease),border-color .22s var(--ease),transform .22s var(--ease); }
+    .platform:hover { border-color:rgba(255,255,255,.3); background:rgba(255,255,255,.08); transform:translateY(-3px); }
+    .platform img { width:48px; height:48px; object-fit:contain; }
+    .platform strong { display:block; margin-top:24px; color:var(--text); font-size:16px; font-weight:600; }
+    .platform span { display:block; margin-top:7px; color:var(--secondary); font-size:12px; }
+    .reach-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:30px; }
+    .reach-card { display:grid; grid-template-columns:150px minmax(0,1fr); gap:18px; align-items:center; min-height:188px; padding:14px; border:1px solid var(--line); border-radius:20px; background:rgba(255,255,255,.045); }
+    .reach-card img { width:150px; height:120px; object-fit:cover; border-radius:13px; background:#000; }
+    .reach-card strong { color:var(--text); font-size:17px; }
+    .reach-card span { display:block; margin-top:10px; color:var(--secondary); font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    [hidden] { display:none !important; }
+    @media (max-width:1000px) and (min-width:721px) { .app { width:min(920px,calc(100% - 40px)); } .screen { grid-template-columns:300px minmax(0,1fr); gap:24px; } h1 { font-size:clamp(3rem,6vw,4.6rem); } .module { padding:20px; } .module-rule { margin-inline:-20px; } .award-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .award-item img { height:220px; } .platform-grid { grid-template-columns:repeat(2,minmax(0,1fr)); margin-top:24px; } }
+    @media (max-width:720px) { body::after { content:"此文件仅用于桌面端方案预览，主站手机端不在本方案内修改"; position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:32px; color:var(--text); background:#08090b; font-size:18px; line-height:1.6; text-align:center; } .app { opacity:.08; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="backdrop"><video autoplay muted loop playsinline poster="../../public/og-image.png"><source src="../../assets/videos/hero.mp4" type="video/mp4"></video></div>
+  <main class="app">
+    <header class="toolbar">
+      <div class="avatar"><img src="../../assets/images/ai-luren-avatar.webp" alt="Ai路人头像"></div>
+      <nav class="tabs" aria-label="AI 影响力模块">
+        <button class="tab" type="button" data-tab="awards" aria-selected="true" data-zh="AI 获奖作品" data-en="AI Awarded Works">AI 获奖作品</button>
+        <button class="tab" type="button" data-tab="platforms" aria-selected="false" data-zh="AI 平台超创" data-en="AI Platform Creator">AI 平台超创</button>
+        <button class="tab" type="button" data-tab="reach" aria-selected="false" data-zh="AI 自媒体" data-en="AI Social Media">AI 自媒体</button>
+      </nav>
+      <div class="toolbar-tools"><button class="lang" type="button" aria-label="切换语言">中</button></div>
+    </header>
+
+    <section class="screen">
+      <div class="section-copy">
+        <div class="section-kicker" data-zh="AI 影响力" data-en="AI IMPACT">AI 影响力</div>
+        <h1 id="page-title" data-zh="AI 获奖作品" data-en="AI Awarded Works">AI 获奖作品</h1>
+        <div class="blue-line"></div>
+        <p id="page-desc" class="section-desc" data-zh="参与 AI 创作赛事，呈现获奖与入围作品。" data-en="Award-winning and finalist work from AI creation contests.">参与 AI 创作赛事，呈现获奖与入围作品。</p>
+        <div class="screen-note"><i></i><span data-zh="当前仅展示一个模块" data-en="ONE MODULE IN FOCUS">当前仅展示一个模块</span></div>
+      </div>
+
+      <div>
+        <article class="module" data-panel="awards">
+          <div class="module-top"><span data-zh="获奖作品" data-en="AWARDED WORKS">获奖作品</span><span data-zh="左右浏览 · 选择作品" data-en="BROWSE THE WORK">左右浏览 · 选择作品</span></div>
+          <div class="module-rule"></div>
+          <div class="award-grid">
+            <div class="award-item"><img src="../../assets/images/awards/Lenovo.webp" alt="海螺 AI 动物跳水"><strong data-zh="海螺 AI 动物跳水" data-en="AI Animal Dive">海螺 AI 动物跳水</strong><small data-zh="登陆 LED 大屏" data-en="LED screen campaign">登陆 LED 大屏</small></div>
+            <div class="award-item"><img src="../../assets/images/awards/pollo.webp" alt="AI 创意作品"><strong data-zh="AI 创意短片" data-en="AI Creative Short">AI 创意短片</strong><small data-zh="优秀奖" data-en="Excellence Award">优秀奖</small></div>
+            <div class="award-item"><img src="../../assets/images/awards/liantong.webp" alt="AI 获奖作品"><strong data-zh="AI 品牌创作" data-en="AI Brand Film">AI 品牌创作</strong><small data-zh="入围作品" data-en="Finalist">入围作品</small></div>
+            <div class="award-item"><img src="../../assets/images/awards/hailuo.webp" alt="AI 视频作品"><strong data-zh="AI 视觉实验" data-en="AI Visual Study">AI 视觉实验</strong><small data-zh="平台推荐" data-en="Platform Pick">平台推荐</small></div>
+          </div>
+        </article>
+
+        <article class="module" data-panel="platforms" hidden>
+          <div class="module-top"><span data-zh="创作平台" data-en="CREATOR PLATFORMS">创作平台</span><span data-zh="合作创作者" data-en="CREATOR PARTNER">合作创作者</span></div>
+          <div class="module-rule"></div>
+          <div class="platform-grid">
+            <div class="platform"><img src="../../assets/images/platform-logos/kling-color.webp" alt="可灵 AI"><div><strong data-zh="可灵 AI" data-en="Kling AI">可灵 AI</strong><span data-zh="优质创作者" data-en="Premium Creator">优质创作者</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/jimeng-color.webp" alt="即梦 AI"><div><strong data-zh="即梦 AI" data-en="Jimeng AI">即梦 AI</strong><span data-zh="成长创作者" data-en="Rising Creator">成长创作者</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/hailuo-color.webp" alt="海螺 AI"><div><strong data-zh="海螺 AI" data-en="Hailuo AI">海螺 AI</strong><span data-zh="超级创作者" data-en="Super Creator">超级创作者</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/vidu-color.webp" alt="Vidu AI"><div><strong data-zh="Vidu AI" data-en="Vidu AI">Vidu AI</strong><span data-zh="艺术家" data-en="AI Artist">艺术家</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/pixverse-color.webp" alt="拍我 AI"><div><strong data-zh="拍我 AI" data-en="Paiwo AI">拍我 AI</strong><span data-zh="超级创作者" data-en="Super Creator">超级创作者</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/Pollo.webp" alt="Pollo AI"><div><strong data-zh="Pollo AI" data-en="Pollo AI">Pollo AI</strong><span data-zh="优秀创作者" data-en="Outstanding Creator">优秀创作者</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/midjourney.webp" alt="Midjourney"><div><strong data-zh="Midjourney" data-en="Midjourney">Midjourney</strong><span data-zh="官方精选" data-en="Official Featured">官方精选</span></div></div>
+            <div class="platform"><img src="../../assets/images/platform-logos/qwen-color.webp" alt="通义 Wan"><div><strong data-zh="通义 Wan" data-en="Tongyi Wan">通义 Wan</strong><span data-zh="官方创作者" data-en="Official Creator">官方创作者</span></div></div>
+          </div>
+        </article>
+
+        <article class="module" data-panel="reach" hidden>
+          <div class="module-top"><span data-zh="多平台分享 AI 内容" data-en="AI CONTENT, SHARED ACROSS PLATFORMS">多平台分享 AI 内容</span><span data-zh="内容发布" data-en="CONTENT REACH">内容发布</span></div>
+          <div class="module-rule"></div>
+          <div class="reach-grid">
+            <div class="reach-card"><img src="../../assets/images/social-profiles/抖音主页.webp" alt="抖音主页"><div><strong data-zh="抖音" data-en="TikTok">抖音</strong><span data-zh="1.7 万粉丝 · 144.6 万赞" data-en="17K followers · 1.45M likes">1.7 万粉丝 · 144.6 万赞</span></div></div>
+            <div class="reach-card"><img src="../../assets/images/social-profiles/小红书主页.webp" alt="小红书主页"><div><strong data-zh="小红书" data-en="Rednote">小红书</strong><span data-zh="3494 粉丝 · 5.6 万赞" data-en="3.5K followers · 56K likes">3494 粉丝 · 5.6 万赞</span></div></div>
+            <div class="reach-card"><img src="../../assets/images/social-profiles/快手主页.webp" alt="快手主页"><div><strong data-zh="快手" data-en="Kuaishou">快手</strong><span data-zh="4475 粉丝 · 9938 赞" data-en="4.5K followers · 9.9K likes">4475 粉丝 · 9938 赞</span></div></div>
+            <div class="reach-card"><img src="../../assets/images/social-profiles/视频号主页.webp" alt="视频号主页"><div><strong data-zh="视频号" data-en="WeChat Channels">视频号</strong><span data-zh="9087 赞 · 4237 喜爱" data-en="9.1K likes · 4.2K favorites">9087 赞 · 4237 喜爱</span></div></div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+  <script>
+    const tabs=[...document.querySelectorAll('.tab')]; const panels=[...document.querySelectorAll('[data-panel]')]; const title=document.querySelector('#page-title'); const desc=document.querySelector('#page-desc'); const langButton=document.querySelector('.lang'); let current='awards'; let lang='zh';
+    const content={awards:{title:['AI 获奖作品','AI Awarded Works'],desc:['参与 AI 创作赛事，呈现获奖与入围作品。','Award-winning and finalist work from AI creation contests.']},platforms:{title:['AI 平台超创','AI Platform Creator'],desc:['多个 AI 视频平台的合作创作者。','Creator partner across multiple AI video platforms.']},reach:{title:['AI 自媒体','AI Social Media'],desc:['在多个平台分享 AI 内容。','AI content shared across multiple platforms.']}};
+    function translate(){ document.documentElement.lang=lang==='zh'?'zh-CN':'en'; document.querySelectorAll('[data-zh]').forEach(el=>el.textContent=el.dataset[lang==='zh'?'zh':'en']); langButton.textContent=lang==='zh'?'中':'EN'; title.textContent=content[current].title[lang==='zh'?0:1]; desc.textContent=content[current].desc[lang==='zh'?0:1]; }
+    function show(name){ if(name===current)return; const active=document.querySelector(`[data-panel="${current}"]`); active.classList.add('is-leaving'); setTimeout(()=>{ panels.forEach(panel=>panel.hidden=panel.dataset.panel!==name); active.classList.remove('is-leaving'); current=name; tabs.forEach(tab=>tab.setAttribute('aria-selected',String(tab.dataset.tab===name))); translate(); },180); }
+    tabs.forEach(tab=>tab.addEventListener('click',()=>show(tab.dataset.tab))); langButton.addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';translate()}); translate();
+  </script>
+</body>
+</html>

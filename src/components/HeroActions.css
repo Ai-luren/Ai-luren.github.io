@@ -16,7 +16,7 @@
   letter-spacing: 0;
   box-shadow: none;
   cursor: pointer;
-  transition: background-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease;
+  transition: background-color var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control);
 }
 
 .hero-actions button:active { transform: scale(.98); }

@@ -4,11 +4,27 @@
  * contract so static HTML and React surfaces render the same material.
  */
 :root {
-  --portfolio-card-surface: rgba(28, 28, 30, .72);
-  --portfolio-card-border: rgba(255, 255, 255, .14);
-  --portfolio-card-blur: blur(22px) saturate(1.08);
-  --portfolio-card-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
-  --portfolio-card-radius: 24px;
+  /* Material roles: panel 24 / content 18 / tile 12 / control pill. */
+  --portfolio-panel-radius: 24px;
+  --portfolio-content-radius: 18px;
+  --portfolio-tile-radius: 12px;
+  --portfolio-control-radius: 999px;
+  --portfolio-panel-surface: rgba(28, 28, 30, .72);
+  --portfolio-panel-border: rgba(255, 255, 255, .14);
+  --portfolio-panel-blur: blur(22px) saturate(1.08);
+  --portfolio-panel-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+  --portfolio-card-surface: var(--portfolio-panel-surface);
+  --portfolio-card-border: var(--portfolio-panel-border);
+  --portfolio-card-blur: var(--portfolio-panel-blur);
+  --portfolio-card-shadow: var(--portfolio-panel-shadow);
+  --portfolio-card-radius: var(--portfolio-panel-radius);
+  --portfolio-content-surface: rgba(0, 0, 0, .58);
+  --portfolio-content-border: rgba(255, 255, 255, .18);
+  --portfolio-content-shadow: 0 14px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
+  --portfolio-tile-surface: rgba(255, 255, 255, .05);
+  --portfolio-tile-border: rgba(255, 255, 255, .09);
+  --portfolio-tile-shadow: none;
+  --portfolio-tile-surface-hover: rgba(255, 255, 255, .09);
   --portfolio-modal-surface: rgba(12, 12, 13, .9);
   --portfolio-modal-blur: blur(28px) saturate(1.02);
 }
@@ -17,6 +33,8 @@
 #experiments .flip-experiment__row,
 #profile .career-strip,
 #top .hero-proof-card,
+#contact .footer-contact-copy,
+#projects .comet-archive-mobile-shell,
 .floating-dock-panel,
 header,
 header.is-condensed {
@@ -28,16 +46,115 @@ header.is-condensed {
   -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
 }
 
-.impact-glass,
-#profile .career-strip,
+/* Content media is opaque and does not add a second blur layer. */
 #top .hero-proof-card {
-  border-radius: var(--portfolio-card-radius) !important;
+  border-radius: var(--portfolio-content-radius) !important;
 }
 
-/* Content reach uses the same stable dark shell as the creator-platform panel. */
-.impact-glass.impact-reach-dossier {
-  background: var(--portfolio-card-surface) !important;
-  box-shadow: var(--portfolio-card-shadow) !important;
-  backdrop-filter: var(--portfolio-card-blur) !important;
-  -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+#projects .comet-archive__image,
+#profile .career-image,
+#recognition .impact-award-card,
+#impact-reach .impact-reach-profile-media,
+.impact-award-lightbox img {
+  border: 1px solid var(--portfolio-content-border) !important;
+  border-radius: var(--portfolio-content-radius) !important;
+  background-color: var(--portfolio-content-surface) !important;
+  box-shadow: var(--portfolio-content-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+#impact-reach .impact-reach-profile-shot--link {
+  border-radius: var(--portfolio-content-radius) !important;
+}
+
+/* Repeated compact items use the same quiet tile treatment. */
+#recognition .impact-platform-desktop-tile,
+#recognition .impact-platform-mobile-tile,
+#profile .career-tab,
+#profile .career-tabs--focus .career-tab,
+.floating-dock-item {
+  border: 1px solid var(--portfolio-tile-border);
+  border-radius: var(--portfolio-tile-radius) !important;
+  background: var(--portfolio-tile-surface);
+  color: var(--apple-text, #f5f5f7);
+  box-shadow: var(--portfolio-tile-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.floating-dock-label {
+  border: 1px solid var(--portfolio-tile-border);
+  border-radius: var(--portfolio-tile-radius);
+  background: var(--apple-surface-raised, var(--portfolio-tile-surface));
+  color: var(--apple-text, #f5f5f7);
+}
+
+/* Action-shaped controls share a pill; navigation and close controls are true
+   circles and keep their geometry independent from content cards. */
+.hero-actions button,
+.impact-qr-dialog-actions a,
+.comet-archive__meta,
+.impact-reach-profile-hover-label,
+.video-tuner__toggle {
+  border-radius: var(--portfolio-control-radius) !important;
+}
+
+.brand,
+.footer-avatar,
+header .nav-lang,
+header .nav-contact-icon,
+.nav-toggle,
+.mobile-nav-close,
+.impact-award-rail-nav,
+.impact-award-card-zoom,
+.impact-award-lightbox-nav,
+.impact-award-lightbox-close,
+.comet-archive-page-arrow,
+.footer-social a {
+  border-radius: 50% !important;
+}
+
+/* The QR dialog is a solid modal card. Only the scrim carries blur. */
+.impact-qr-dialog {
+  border: 1px solid var(--portfolio-card-border) !important;
+  border-radius: var(--portfolio-panel-radius) !important;
+  background: var(--apple-surface-solid, #1c1c1e) !important;
+  box-shadow: var(--portfolio-panel-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.impact-qr-dialog img { border-radius: var(--portfolio-tile-radius) !important; }
+
+/* Small media controls are part of the content surface contract; their
+   opacity and interaction state remain component-owned. */
+.impact-award-card-zoom {
+  border: 1px solid rgba(215, 227, 235, .4);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, .55);
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.impact-reach-profile-hover-label {
+  border: 1px solid rgba(255, 255, 255, .28);
+  border-radius: var(--portfolio-control-radius);
+  background: rgba(20, 20, 22, .78);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+}
+
+.impact-award-rail-nav,
+.impact-award-lightbox-nav,
+.impact-award-lightbox-close {
+  border: 1px solid rgba(255, 255, 255, .38);
+  border-radius: 50%;
+  background: rgba(12, 12, 13, .94);
+}
+
+.impact-award-lightbox-nav,
+.impact-award-lightbox-close {
+  border-color: rgba(255, 255, 255, .42);
+  background: rgba(255, 255, 255, .06);
 }

@@ -142,10 +142,6 @@
     .hero-readout strong { color: var(--signal); font-weight: 400; }
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(255,255,255,.25); transform: translateY(-50%); pointer-events: none; }
     .scroll-rail span { display: block; width: 3px; height: 100%; margin-left: -1px; background: var(--accent-blue-on-dark); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(0); transform-origin: top; }
-    .back-to-top { position: fixed; right: 20px; bottom: 24px; z-index: 36; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(12,12,13,.78); color: rgba(245,245,247,.78); cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity var(--motion-duration-control) ease, transform var(--motion-duration-control) var(--motion-ease-control), border-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease; backdrop-filter: blur(12px) saturate(1.1); -webkit-backdrop-filter: blur(12px) saturate(1.1); }
-    .back-to-top.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
-    .back-to-top:hover, .back-to-top:focus-visible { border-color: var(--accent-blue-on-dark); color: #fff; outline: none; }
-    .back-to-top svg { width: 18px; height: 18px; }
 
     #profile { padding-top: 96px; padding-bottom: 120px; }
     #projects { padding-top: 112px; padding-bottom: 120px; }
@@ -235,17 +231,6 @@
     :root {
       --content-max: 1220px;
       --content-gutter: 32px;
-      --space-1: 4px;
-      --space-2: 8px;
-      --space-3: 12px;
-      --space-4: 16px;
-      --space-5: 24px;
-      --space-6: 32px;
-      --space-7: 48px;
-      --space-8: 64px;
-      --space-9: 96px;
-      --space-10: 128px;
-      --space-11: 144px;
       --shell: min(var(--content-max), calc(100% - var(--content-gutter) - var(--content-gutter)));
     }
 
@@ -472,13 +457,12 @@
       .footer-bottom { flex-direction: column; align-items: center; gap: 7px; margin-top: 30px; }
     }
 
-    /* 顶部导航：顶部保持轻盈，向下滚动后收拢成磨砂玻璃胶囊。 */
-    header { position: fixed; inset: 16px auto auto 50%; width: 100%; z-index: 40; overflow: hidden; border: 1px solid transparent; border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: blur(0); transform: translateX(-50%); transition: width var(--motion-duration-section) var(--motion-ease-linear), border-color var(--motion-duration-card) ease, border-radius var(--motion-duration-section) var(--motion-ease-linear), background var(--motion-duration-card) ease, box-shadow var(--motion-duration-card) ease, backdrop-filter var(--motion-duration-card) ease; }
+    /* 顶部导航：固定为磨砂玻璃胶囊，滚动时不改变尺寸或材质状态。 */
+    header { position: fixed; inset: 16px auto auto 50%; width: min(calc(100% - 48px), 1080px); z-index: 40; overflow: hidden; border: 1px solid transparent; border-radius: var(--portfolio-card-radius); background: transparent; box-shadow: none; backdrop-filter: blur(0); transform: translateX(-50%); }
     header::before { display: none; }
-    header.is-condensed { top: 16px; width: min(calc(100% - 48px), 1080px); border-color: var(--portfolio-card-border); border-radius: var(--portfolio-card-radius); background: var(--portfolio-card-surface); box-shadow: var(--portfolio-card-shadow); backdrop-filter: var(--portfolio-card-blur); -webkit-backdrop-filter: var(--portfolio-card-blur); }
+    header.is-condensed { top: 16px; border-color: var(--portfolio-card-border); background: var(--portfolio-card-surface); box-shadow: var(--portfolio-card-shadow); backdrop-filter: var(--portfolio-card-blur); -webkit-backdrop-filter: var(--portfolio-card-blur); }
     header.is-condensed::before { opacity: .72; }
-    header.is-scroll-linked, header.is-scroll-linked .nav-inner.shell { transition: none; }
-    .nav-inner.shell { position: relative; z-index: 1; width: 100%; min-height: 56px; padding: 0 clamp(24px, 5vw, 72px); gap: 16px; transition: padding var(--motion-duration-section) var(--motion-ease-linear); }
+    .nav-inner.shell { position: relative; z-index: 1; width: 100%; min-height: 56px; padding: 0 16px; gap: 16px; }
     header.is-condensed .nav-inner.shell { padding: 0 16px; }
     .brand { display: grid; flex-shrink: 0; width: 36px; height: 36px; overflow: hidden; border: 1px solid rgba(232,240,245,.28); border-radius: 50%; background: #000; box-shadow: 0 0 0 3px rgba(255,255,255,.05); place-items: center; transition: border-color var(--motion-duration-control) ease, transform var(--motion-duration-control) var(--motion-ease-control); }
     .brand::before { display: none; }
@@ -689,46 +673,25 @@
       --accent-blue-focus: var(--apple-blue);
       --accent-blue-on-dark: var(--apple-blue);
       --ink: #1d1d1f;
-      --body-on-dark: #f5f5f7;
-      --body-muted: #a1a1a6;
-      --body-text: #e8e8ed;
-      --subtle-text: #a1a1a6;
-      --quiet-text: #86868b;
+      --body-on-dark: var(--apple-text);
+      --body-muted: var(--apple-secondary);
+      --body-text: var(--apple-text);
+      --subtle-text: var(--apple-secondary);
+      --quiet-text: var(--apple-tertiary);
       --hairline: rgba(255, 255, 255, .1);
       --line: rgba(255, 255, 255, .18);
-      --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-full: 999px;
-      --space-xxs: 4px;
-      --space-xs: 8px;
-      --space-sm: 12px;
-      --space-md: 17px;
-      --space-lg: 24px;
-      --space-xl: 32px;
-      --space-xxl: 48px;
-      --space-section: 80px;
-      --font-display: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
-      --font-body: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
-      --font-mono: 'SF Mono', 'Menlo', 'Consolas', 'SFMono-Regular', monospace;
-      --glass-surface: var(--portfolio-card-surface);
-      --glass-surface-raised: var(--apple-surface-raised);
-      --glass-border: var(--portfolio-card-border);
-      --glass-border-strong: rgba(255, 255, 255, .28);
-      --glass-shadow: var(--portfolio-card-shadow);
+      --radius-sm: var(--portfolio-tile-radius);
+      --radius-md: var(--portfolio-tile-radius);
+      --radius-full: var(--portfolio-control-radius);
       --glass-shadow-image: 0 3px 30px rgba(0, 0, 0, .22);
-      --glass-blur: var(--portfolio-card-blur);
     }
     .comet-archive__card { border-color: transparent; background: transparent; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 
     /* 组件语法：卡片是面，控件是件，胶囊只留给状态标签。 */
     :root {
-      --radius-control: 8px;
+      --radius-control: var(--portfolio-control-radius);
       --radius-icon: 50%;
       --section-title-gap: 20px;
-      --type-hero: clamp(3.4rem, 6.4vw, 6.2rem);
-      --type-section: clamp(2.25rem, 4vw, 3.35rem);
-      --type-card: clamp(1rem, 1.45vw, 1.2rem);
-      --type-body: 14px;
     }
     body { font-family: var(--font-body); }
     h1, h2, h3, p { text-wrap: balance; }
@@ -910,7 +873,6 @@
     button:focus-visible { outline-color: var(--edge-highlight-strong) !important; }
     nav a::after { background: var(--edge-highlight) !important; }
     nav a.is-active::before { background: var(--edge-highlight-strong) !important; box-shadow: 0 0 10px rgba(255,255,255,.34) !important; }
-    .back-to-top:hover, .back-to-top:focus-visible,
     .nav-lang:hover, .nav-lang:focus-visible,
     .hero-actions a:hover, .hero-actions a:focus-visible,
     .video-tuner__toggle:hover, .video-tuner__toggle:focus-visible {
@@ -1641,14 +1603,19 @@
       header.is-condensed,
       header .nav-inner.shell,
       header.is-condensed .nav-inner.shell,
-      header .nav-toggle,
-      .mobile-nav-drawer,
-      .mobile-nav-drawer.is-open {
+      header .nav-toggle {
         transition: none !important;
       }
       .mobile-nav-drawer,
       .mobile-nav-drawer.is-open {
+        transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal), transform var(--motion-duration-modal) var(--motion-ease-emphasized) !important;
+      }
+      .mobile-nav-drawer {
+        transform: translateY(-12px) !important;
+      }
+      .mobile-nav-drawer.is-open {
         transform: none !important;
+        transition-delay: 0s !important;
       }
       body.mobile-nav-open header {
         pointer-events: none;
@@ -1686,11 +1653,6 @@
       body.mobile-nav-open #mobile-primary-nav .nav-list li {
         animation: mobile-nav-item-in var(--motion-duration-section) var(--motion-ease-emphasized) both;
       }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(1) { animation-delay: 40ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(2) { animation-delay: 85ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(3) { animation-delay: 130ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(4) { animation-delay: 175ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(5) { animation-delay: 220ms; }
 
       @media (prefers-reduced-motion: reduce) {
         .nav-toggle-line { transition: none; }
@@ -1918,18 +1880,18 @@
       }
       header .nav-lang { margin-left: auto; }
       header .nav-lang {
-        width: 36px;
-        min-width: 36px;
-        height: 36px;
-        min-height: 36px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
+        min-height: 44px;
         padding: 0;
       }
       header .nav-contact-icon {
         display: inline-flex;
-        flex: 0 0 36px;
-        width: 36px;
-        min-width: 36px;
-        height: 36px;
+        flex: 0 0 44px;
+        width: 44px;
+        min-width: 44px;
+        height: 44px;
         align-items: center;
         justify-content: center;
         margin-left: -14px;
@@ -2200,10 +2162,6 @@
     </div>
   </div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
-  <button class="back-to-top" aria-label="返回顶部" data-i18n-aria="backToTop.aria" type="button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-  </button>
-
   <header>
     <div class="nav-inner shell">
       <a class="brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></a>
@@ -2212,7 +2170,7 @@
       </button>
       <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
         <ul class="nav-list">
-          <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">精选创作</span></a></li><li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">工作经历</span></a></li><li><a href="#recognition"><span data-i18n="nav.recognition">AI影响力</span><span class="nav-short" data-i18n="nav.recognition.short">AI影响力</span></a></li><li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">AI实验室</span></a></li><li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系我</span></a></li>
+          <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">精选创作</span></a></li><li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">工作经历</span></a></li><li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li><li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li><li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li><li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">AI实验室</span></a></li><li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系我</span></a></li>
         </ul>
       </nav>
       <button class="nav-lang" id="nav-lang" type="button" aria-label="切换语言 / Switch language" data-i18n-aria="nav.lang.aria"><svg class="nav-lang-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8" /><path d="M3.8 12h16.4M12 3.2c2.2 2.4 3.3 5.3 3.3 8.8S14.2 18.4 12 20.8C9.8 18.4 8.7 15.5 8.7 12S9.8 5.6 12 3.2Z" /></svg><span data-lang-part="zh">中</span><i aria-hidden="true">/</i><span data-lang-part="en">EN</span></button>
@@ -2231,7 +2189,9 @@
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
         <li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">经历</span></a></li>
-        <li><a href="#recognition"><span data-i18n="nav.recognition">AI影响力</span><span class="nav-short" data-i18n="nav.recognition.short">影响力</span></a></li>
+        <li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li>
+        <li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li>
+        <li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li>
         <li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">实验室</span></a></li>
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
       </ul>
@@ -2273,7 +2233,7 @@
             </div>
             <span class="career-summary-note" data-i18n="profile.summaryNote">点击阶段，快速查看对应经历</span>
           </div>
-          <div class="career-tabs" id="career-tablist" role="tablist" aria-orientation="horizontal" aria-label="能力阶段">
+          <div class="career-tabs career-tabs--focus" id="career-tablist" role="tablist" aria-orientation="horizontal" aria-label="能力阶段">
             <button class="career-tab is-active" id="career-tab-0" type="button" role="tab" aria-selected="true" aria-controls="career-panel" tabindex="0" data-career-index="0"><small>2026-NOW</small><strong data-i18n="profile.step5.title">AIGC</strong><span data-i18n="profile.step5.desc">AI 内容创作</span></button>
             <button class="career-tab" id="career-tab-1" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="1"><small>2024-2026</small><strong data-i18n="profile.step4.title">AI效果</strong><span data-i18n="profile.step4.desc">AI 图片与视频效果</span></button>
             <button class="career-tab" id="career-tab-2" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="2"><small>2019-2024</small><strong data-i18n="profile.step3.title">特效玩法</strong><span data-i18n="profile.step3.desc">AI 玩法 · 动态设计</span></button>
@@ -2290,13 +2250,25 @@
             </div>
             <div class="career-image"><img src="./assets/work-history-illustrations/05-ai-workflow.webp" alt="宇航员整理可复用的 AI 工作流模块" data-i18n-alt="profile.panel5.alt" width="1672" height="941" loading="eager" fetchpriority="high" decoding="async"></div>
           </article>
+          <div class="career-controls">
+          <button type="button" class="career-arrow" data-career-direction="-1" aria-label="上一段经历 / Previous experience"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 5-7 7 7 7" /></svg></button>
+          <div class="career-pagination" role="tablist" aria-label="选择工作经历" data-i18n-aria="profile.pagination.aria">
+            <button type="button" role="tab" aria-selected="true" aria-label="AIGC" data-i18n-aria="profile.step5.title" data-career-pagination-index="0" class="is-active"></button>
+            <button type="button" role="tab" aria-selected="false" aria-label="AI效果" data-i18n-aria="profile.step4.title" data-career-pagination-index="1"></button>
+            <button type="button" role="tab" aria-selected="false" aria-label="特效玩法" data-i18n-aria="profile.step3.title" data-career-pagination-index="2"></button>
+            <button type="button" role="tab" aria-selected="false" aria-label="三维与品牌" data-i18n-aria="profile.step2.title" data-career-pagination-index="3"></button>
+            <button type="button" role="tab" aria-selected="false" aria-label="动态设计" data-i18n-aria="profile.step1.title" data-career-pagination-index="4"></button>
+          </div>
+          <button type="button" class="career-arrow" data-career-direction="1" aria-label="下一段经历 / Next experience"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 5 7 7-7 7" /></svg></button>
+          </div>
         </div>
       </div>
     </section>
 
     <section id="recognition" class="section" aria-labelledby="recognition-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">04 / IMPACT PROOF</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">AI 影响力</h2></div></div>
-        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI 影响力" data-i18n-aria="recognition.root.aria"></div>
+      <div class="shell">
+        <h2 id="recognition-title" class="sr-only" data-i18n="recognition.title">AI影响力</h2>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI影响力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
@@ -2317,7 +2289,9 @@
         <nav class="footer-nav" aria-label="页脚导航" data-i18n-aria="footer.nav.aria">
           <a href="#projects" data-i18n="nav.projects">精选创作</a>
           <a href="#profile" data-i18n="nav.profile">工作经历</a>
-          <a href="#recognition" data-i18n="nav.recognition">AI影响力</a>
+          <a href="#impact-awards" data-i18n="nav.recognition">AI 获奖作品</a>
+          <a href="#impact-programs" data-i18n="nav.superCreator">AI 平台超创</a>
+          <a href="#impact-reach" data-i18n="nav.media">AI 自媒体</a>
           <a href="#experiments" data-i18n="nav.experiments">AI实验室</a>
         </nav>
       </div>
@@ -2328,7 +2302,7 @@
           <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
           <div class="footer-contact-direct">
             <a href="mailto:1746850550@qq.com"><span data-i18n="footer.contact.emailLabel">邮箱</span><strong>1746850550@qq.com</strong></a>
-            <a href="#footer-dock-react-root"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>
+            <a class="copy-link" href="#copy-wechat" data-copy="15580714085" data-i18n-aria="footer.contact.copyWechat" aria-label="点击复制微信号"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>
           </div>
         </div>
         <div class="footer-contact-panel">
@@ -2425,11 +2399,6 @@
         lastScrollAt = performance.now();
         publishScrubState(true);
         if (!progressRaf) progressRaf = window.requestAnimationFrame(setVideoTarget);
-        var backToTop = document.querySelector('.back-to-top');
-        if (backToTop) {
-          if (window.scrollY > window.innerHeight * 0.6) backToTop.classList.add('is-visible');
-          else backToTop.classList.remove('is-visible');
-        }
       }
 
       function seekLoop(now) {
@@ -2457,12 +2426,6 @@
       }, { once: true });
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', function () { window.clearTimeout(window.__refreshTimer); window.__refreshTimer = window.setTimeout(function () { setVideoTarget(); if (window.ScrollTrigger) window.ScrollTrigger.refresh(); }, 180); }, { passive: true });
-      var backToTopBtn = document.querySelector('.back-to-top');
-      if (backToTopBtn) {
-        backToTopBtn.addEventListener('click', function () {
-          window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
-        });
-      }
       function showReveals() {
         var nodes = document.querySelectorAll('.reveal');
         if (window.gsap && window.ScrollTrigger && !reduced) return;
@@ -2477,7 +2440,8 @@
       showReveals();
 
       /* 工作经历新版：点击阶段切换摘要，不再通过滚动锁定页面。 */
-      var careerTabs = Array.prototype.slice.call(document.querySelectorAll('[data-career-index]'));
+      var careerTabs = Array.prototype.slice.call(document.querySelectorAll('.career-tab[data-career-index]'));
+      var careerPagination = Array.prototype.slice.call(document.querySelectorAll('[data-career-pagination-index]'));
       var careerDetail = document.querySelector('.career-detail');
       if (careerTabs.length && careerDetail) {
         var careerImage = careerDetail.querySelector('.career-image img');
@@ -2486,6 +2450,7 @@
         var careerRole = careerDetail.querySelector('.career-role');
         var careerDescription = careerDetail.querySelector('.career-description');
         var careerHonor = careerDetail.querySelector('.career-honor');
+        var careerTablist = document.getElementById('career-tablist');
         var careerItems = [
           { meta: '01 · 2026-NOW', image: './assets/work-history-illustrations/05-ai-workflow.webp', alt: 'profile.panel5.alt', title: 'profile.panel5.title', role: 'profile.panel5.role', description: 'profile.panel5.desc', honor: 'profile.panel5.honor' },
           { meta: '02 · 2024-2026', image: './assets/work-history-illustrations/04-ai-effect-delivery.webp', alt: 'profile.panel4.alt', title: 'profile.panel4.title', role: 'profile.panel4.role', description: 'profile.panel4.desc', honor: 'profile.panel4.honor' },
@@ -2499,11 +2464,19 @@
         function setCareerActive(index, shouldReveal, shouldFocus) {
           var item = careerItems[index];
           if (!item) return;
+          document.querySelectorAll('[data-career-direction]').forEach(function (button) {
+            button.disabled = Number(button.dataset.careerDirection) < 0 ? index === 0 : index === careerItems.length - 1;
+          });
           careerTabs.forEach(function (tab, tabIndex) {
             var active = tabIndex === index;
             tab.classList.toggle('is-active', active);
             tab.setAttribute('aria-selected', String(active));
             tab.setAttribute('tabindex', active ? '0' : '-1');
+          });
+          careerPagination.forEach(function (dot, dotIndex) {
+            var active = dotIndex === index;
+            dot.classList.toggle('is-active', active);
+            dot.setAttribute('aria-selected', String(active));
           });
           careerDetail.setAttribute('aria-labelledby', careerTabs[index].id);
           careerMeta.textContent = item.meta;
@@ -2517,7 +2490,7 @@
             node.setAttribute('data-i18n', key);
             node.textContent = careerText(key) || node.textContent;
           });
-          if (shouldReveal && window.matchMedia && window.matchMedia('(max-width: 720px)').matches) {
+          if (shouldReveal && window.matchMedia && window.matchMedia('(max-width: 720px)').matches && !(careerTablist && careerTablist.classList.contains('career-tabs--focus'))) {
             var activeTab = careerTabs[index];
             if (activeTab) activeTab.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
           }
@@ -2541,7 +2514,16 @@
             setCareerActive(nextIndex, true, true);
           });
         });
+        careerPagination.forEach(function (dot, dotIndex) {
+          dot.addEventListener('click', function () { setCareerActive(dotIndex, true, false); });
+        });
         setCareerActive(0);
+        document.querySelectorAll('[data-career-direction]').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var index = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
+            setCareerActive(index + Number(button.dataset.careerDirection), false, false);
+          });
+        });
       }
 
       var floatingHeader = document.querySelector('header');
@@ -2555,15 +2537,40 @@
       function scrollToSectionAnchor(sectionId, behavior) {
         var target = document.getElementById(sectionId);
         if (!target) return false;
+        // 对齐章节标题而不是 section 外框：section 自身保留节奏留白，
+        // 但点击导航后应让用户立即看到该模块的语义入口。
+        var mobileImpactHeading = window.matchMedia && window.matchMedia('(max-width: 720px)').matches
+          ? target.querySelector('.impact-evidence-label h2')
+          : null;
+        var anchor = mobileImpactHeading
+          || target.querySelector('.section-intro')
+          || target;
         var currentScroll = window.scrollY || window.pageYOffset || 0;
-        var targetTop = target.getBoundingClientRect().top + currentScroll - getAnchorOffset();
+        var targetTop = anchor.getBoundingClientRect().top + currentScroll - getAnchorOffset();
         window.scrollTo({ top: Math.max(0, targetTop), behavior: behavior || 'auto' });
+        var isMobileImpactTarget = window.innerWidth <= 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
+        if (isMobileImpactTarget) {
+          target.classList.remove('is-mobile-anchor-enter');
+          window.requestAnimationFrame(function () {
+            target.classList.add('is-mobile-anchor-enter');
+            window.setTimeout(function () { target.classList.remove('is-mobile-anchor-enter'); }, 520);
+          });
+        }
+        return true;
+      }
+      function scrollToContactEnd(behavior) {
+        window.scrollTo({ top: Math.max(0, document.documentElement.scrollHeight - window.innerHeight), behavior: behavior || 'auto' });
         return true;
       }
       function alignInitialHash() {
         if (initialHashAligned || !hasInitialSectionAnchor) return;
         var sectionId = decodeURIComponent(window.location.hash.slice(1));
-        if (!sectionId || sectionId === 'top' || sectionId === 'contact') return;
+        if (!sectionId || sectionId === 'top') return;
+        if (sectionId === 'contact') {
+          scrollToContactEnd('auto');
+          initialHashAligned = true;
+          return;
+        }
         if (!scrollToSectionAnchor(sectionId, 'auto')) return;
         initialHashAligned = true;
       }
@@ -2576,63 +2583,21 @@
       window.addEventListener('load', function () {
         window.requestAnimationFrame(alignInitialHash);
       }, { once: true });
-      function updateHeaderMode(scrollY) {
-        if (!floatingHeader) return;
-        // 移动端导航固定为桌面端的基础状态，不参与滚动收缩或缩放。
-        var shouldCondense = window.innerWidth > 760 && scrollY > 0;
-        floatingHeader.classList.toggle('is-condensed', shouldCondense);
-      }
-      updateHeaderMode(window.scrollY || window.pageYOffset || 0);
-
       if (window.gsap && window.ScrollTrigger && !reduced) {
         gsap.registerPlugin(ScrollTrigger);
-        var headerNav = floatingHeader ? floatingHeader.querySelector('.nav-inner.shell') : null;
-        if (floatingHeader && headerNav && window.innerWidth > 760) {
-          floatingHeader.classList.add('is-scroll-linked');
-          var headerCollapse = gsap.timeline({
-            defaults: { ease: 'none' },
-            scrollTrigger: {
-              start: 0,
-              end: function () { return Math.min(280, Math.round(window.innerHeight * .26)); },
-              scrub: true,
-              invalidateOnRefresh: true,
-              onUpdate: function (self) { floatingHeader.classList.toggle('is-condensed', self.progress > .01); },
-              onLeaveBack: function () { updateHeaderMode(0); },
-              onRefresh: function () { updateHeaderMode(window.scrollY || window.pageYOffset || 0); }
-            }
-          });
-          headerCollapse.fromTo(floatingHeader,
-            { width: function () { return window.innerWidth; }, borderRadius: 0 },
-            { width: function () { return Math.min(window.innerWidth - 48, 1080); }, borderRadius: 28, duration: 1 },
-            0
-          );
-          headerCollapse.fromTo(headerNav,
-            { paddingLeft: function () { return Math.min(72, Math.max(24, window.innerWidth * .05)); }, paddingRight: function () { return Math.min(72, Math.max(24, window.innerWidth * .05)); } },
-            { paddingLeft: 16, paddingRight: 16, duration: 1 },
-            0
-          );
-        } else {
-          ScrollTrigger.create({
-            start: 1,
-            end: 'max',
-            onUpdate: function (self) { updateHeaderMode(self.scroll()); },
-            onLeaveBack: function () { updateHeaderMode(0); },
-            onRefresh: function () { updateHeaderMode(window.scrollY || window.pageYOffset || 0); }
-          });
-        }
         /* 入场动画统一 token：所有入场调用共享相同的缓动与节奏，避免参数碎片化。 */
         var compactMotion = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
         var ANIM = compactMotion ? {
           ease: 'power3.out',
-          intro: { duration: 0.32, y: 6 },
-          hero: { duration: 0.38, y: 8, stagger: 0.04 },
-          stage: { duration: 0.36, y: 6 },
-          footer: { duration: 0.34, y: 6 }
+          intro: { duration: 0.36, y: 6 },
+          hero: { duration: 0.4, y: 8, stagger: 0.04 },
+          stage: { duration: 0.38, y: 6 },
+          footer: { duration: 0.36, y: 6 }
         } : {
           ease: 'power3.out',
-          intro: { duration: 0.42, y: 10 },
-          hero: { duration: 0.5, y: 12, stagger: 0.06 },
-          stage: { duration: 0.44, y: 8 },
+          intro: { duration: 0.4, y: 10 },
+          hero: { duration: 0.44, y: 12, stagger: 0.06 },
+          stage: { duration: 0.42, y: 8 },
           footer: { duration: 0.4, y: 8 }
         };
         function entrance(selector, fromVars, toVars, trigger, options) {
@@ -2664,8 +2629,6 @@
         entrance('#experiments .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#experiments', { duration: ANIM.intro.duration });
         entrance('#contact .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration });
         entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration, delay: .08 });
-      } else if (floatingHeader) {
-        window.addEventListener('scroll', function () { updateHeaderMode(window.scrollY || window.pageYOffset || 0); }, { passive: true });
       }
 
       var status = document.querySelector('.copy-status');
@@ -2939,7 +2902,7 @@
           event.preventDefault();
           setNavActive('contact');
           try { window.history.pushState(null, '', '#contact'); } catch (error) {}
-          window.scrollTo({ top: Math.max(0, document.documentElement.scrollHeight - window.innerHeight), behavior: reduced ? 'auto' : 'smooth' });
+          scrollToContactEnd(reduced ? 'auto' : 'smooth');
         });
       });
       links.forEach(function (link) {
@@ -2956,15 +2919,31 @@
           }
           event.preventDefault();
           try { window.history.pushState(null, '', target); } catch (error) {}
-          scrollToSectionAnchor(target.slice(1), reduced ? 'auto' : 'smooth');
+          var isDesktopImpactTab = window.innerWidth > 760 && /^#impact-(awards|programs|reach)$/.test(target);
+          if (isDesktopImpactTab) window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: target.slice(1) }));
+          else {
+            var isMobileImpactTab = window.innerWidth <= 760 && /^#impact-(awards|programs|reach)$/.test(target);
+            scrollToSectionAnchor(target.slice(1), reduced || isMobileImpactTab ? 'auto' : 'smooth');
+          }
         });
       });
       var sections = document.querySelectorAll('main section, footer');
       if ('IntersectionObserver' in window) {
       // is-on-hero 由 Hero 占比观察器独立管理；导航观察器换章时不能顺带抹掉它，
       // 否则 Hero 离场途中蒙版会瞬间消失又在下个阈值恢复（01→02 背景闪跳的根源）。
-      var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { setNavActive(entry.target.id); var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + entry.target.id); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
-        sections.forEach(function (section) { navObserver.observe(section); });
+        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { var sectionId = entry.target.id; setNavActive(sectionId); var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + sectionId); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+        var observeNavSections = function () {
+          document.querySelectorAll('main section, footer').forEach(function (section) {
+            if (window.innerWidth > 760 && section.id === 'recognition') return;
+            navObserver.observe(section);
+          });
+          if (window.innerWidth > 760) document.querySelectorAll('#recognition .impact-evidence-row').forEach(function (row) { navObserver.observe(row); });
+        };
+        observeNavSections();
+        window.addEventListener('portfolio:react-ready', function () {
+          observeNavSections();
+          window.requestAnimationFrame(function () { window.requestAnimationFrame(observeNavSections); });
+        });
       }
       window.addEventListener('scroll', function () {
         if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) setNavActive('contact');

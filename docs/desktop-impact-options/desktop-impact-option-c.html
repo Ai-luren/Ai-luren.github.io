@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>桌面端 AI 影响力方案 C</title>
+  <style>
+    :root { color-scheme:dark; --bg:#070809; --text:#f5f5f7; --secondary:#a1a1a6; --tertiary:#707176; --blue:#2997ff; --glass:rgba(21,23,27,.82); --line:rgba(255,255,255,.14); --ease:cubic-bezier(.22,.61,.36,1); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Helvetica Neue",Arial,sans-serif; }
+    * { box-sizing:border-box; }
+    html,body { min-height:100%; margin:0; background:var(--bg); }
+    body { color:var(--text); overflow-x:hidden; }
+    body::before { content:"桌面端方案 C · 聚焦画布"; position:fixed; right:20px; bottom:18px; z-index:20; color:rgba(255,255,255,.36); font:11px/1 monospace; letter-spacing:.08em; pointer-events:none; }
+    .backdrop { position:fixed; inset:0; z-index:-2; overflow:hidden; background:#08090b url("../../public/og-image.png") center/cover; }
+    .backdrop video { width:100%; height:100%; object-fit:cover; opacity:.38; filter:contrast(.9) saturate(.72); }
+    .backdrop::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(2,4,7,.78),rgba(2,4,7,.35) 48%,rgba(2,4,7,.72)); }
+    .app { width:min(1340px,calc(100% - 72px)); min-height:100vh; margin:auto; padding:24px 0 38px; }
+    .toolbar { display:flex; align-items:center; gap:22px; min-height:72px; padding:10px 16px; border:1px solid var(--line); border-radius:24px; background:rgba(20,22,26,.7); backdrop-filter:blur(22px) saturate(130%); box-shadow:0 16px 52px rgba(0,0,0,.24); }
+    .avatar { display:grid; place-items:center; width:48px; height:48px; flex:none; border:1px solid rgba(255,255,255,.25); border-radius:50%; background:#000; overflow:hidden; }
+    .avatar img { width:82%; height:82%; object-fit:contain; }
+    .top-tabs { display:flex; justify-content:center; gap:4px; flex:1; }
+    button { color:inherit; font:inherit; }
+    .tab,.lang { border:0; background:transparent; color:var(--secondary); cursor:pointer; transition:background .22s var(--ease),color .22s var(--ease),transform .22s var(--ease); }
+    .tab { padding:15px 17px; border-radius:14px; font-size:14px; }
+    .tab:hover,.tab[aria-selected=true] { color:var(--text); background:rgba(255,255,255,.08); }
+    .lang { width:42px; height:42px; border:1px solid var(--line); border-radius:50%; font-size:12px; }
+    .lang:hover { color:var(--text); background:rgba(255,255,255,.08); transform:translateY(-1px); }
+    .workspace { display:grid; grid-template-columns:350px minmax(0,1fr); gap:38px; min-height:calc(100vh - 130px); padding:64px 8px 20px; align-items:stretch; }
+    .rail { display:flex; flex-direction:column; justify-content:center; }
+    .rail-kicker { color:var(--tertiary); font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.14em; text-transform:uppercase; }
+    .rail h1 { margin:20px 0 0; color:var(--text); font-size:clamp(3.2rem,4.7vw,5.3rem); font-weight:600; line-height:.98; letter-spacing:-.085em; white-space:nowrap; }
+    .blue-line { width:52px; height:3px; margin:28px 0 24px; border-radius:4px; background:var(--blue); }
+    .rail-desc { max-width:210px; margin:0; color:var(--secondary); font-size:15px; line-height:1.7; }
+    .rail-list { display:grid; gap:8px; margin:48px 0 0; padding:0; list-style:none; }
+    .rail-list button { display:flex; align-items:center; gap:11px; width:100%; padding:12px 14px; border:1px solid transparent; border-radius:14px; color:var(--tertiary); background:transparent; cursor:pointer; text-align:left; transition:color .22s var(--ease),background .22s var(--ease),border-color .22s var(--ease); }
+    .rail-list button::before { content:""; width:4px; height:4px; border-radius:50%; background:currentColor; }
+    .rail-list button:hover { color:var(--secondary); background:rgba(255,255,255,.045); }
+    .rail-list button[aria-selected=true] { color:var(--text); border-color:var(--line); background:rgba(255,255,255,.075); }
+    .rail-list button[aria-selected=true]::before { width:6px; height:6px; background:var(--blue); box-shadow:0 0 13px rgba(41,151,255,.6); }
+    .canvas { min-width:0; min-height:590px; padding:28px; border:1px solid var(--line); border-radius:30px; background:var(--glass); backdrop-filter:blur(25px) saturate(125%); box-shadow:0 28px 80px rgba(0,0,0,.3); }
+    .canvas-head { display:flex; justify-content:space-between; align-items:center; padding-bottom:20px; color:var(--tertiary); font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .canvas-head span:last-child { color:var(--secondary); }
+    .canvas-rule { height:1px; margin:0 -28px 28px; background:var(--line); }
+    .panel { opacity:1; transform:none; transition:opacity .3s var(--ease),transform .3s var(--ease); }
+    .panel.is-leaving { opacity:0; transform:translateX(8px); }
+    .award-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+    .award-item img { display:block; width:100%; height:352px; object-fit:cover; border:1px solid rgba(255,255,255,.16); border-radius:17px; }
+    .award-item strong { display:block; margin-top:13px; font-size:14px; line-height:1.35; }
+    .award-item small { display:block; margin-top:5px; color:var(--secondary); font-size:11px; }
+    .platform-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:13px; margin-top:50px; }
+    .platform { min-height:174px; padding:18px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.045); transition:background .22s var(--ease),transform .22s var(--ease); }
+    .platform:hover { background:rgba(255,255,255,.09); transform:translateY(-3px); }
+    .platform img { width:48px; height:48px; object-fit:contain; }
+    .platform strong { display:block; margin-top:21px; font-size:15px; }
+    .platform span { display:block; margin-top:7px; color:var(--secondary); font-size:11px; }
+    .reach-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-top:34px; }
+    .reach-card { display:grid; grid-template-columns:210px minmax(0,1fr); align-items:center; gap:18px; min-height:220px; padding:14px; border:1px solid var(--line); border-radius:18px; background:rgba(255,255,255,.045); }
+    .reach-card img { width:210px; height:180px; object-fit:cover; border-radius:13px; background:#000; }
+    .reach-card strong { font-size:18px; }
+    .reach-card span { display:block; max-width:150px; margin-top:11px; color:var(--secondary); font:11px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    [hidden] { display:none !important; }
+    @media (max-width:1000px) and (min-width:721px) { .app { width:min(920px,calc(100% - 40px)); } .workspace { grid-template-columns:280px minmax(0,1fr); gap:22px; padding-top:42px; } .rail h1 { font-size:clamp(2.8rem,6vw,4.3rem); } .canvas { padding:20px; } .canvas-rule { margin-inline:-20px; } .award-grid,.platform-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .award-item img { height:240px; } .reach-grid { grid-template-columns:1fr; } }
+    @media (max-width:720px) { body::after { content:"此文件仅用于桌面端方案预览，主站手机端不在本方案内修改"; position:fixed; inset:0; z-index:50; display:grid; place-items:center; padding:32px; color:var(--text); background:#08090b; font-size:18px; line-height:1.6; text-align:center; } .app { opacity:.08; } }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { transition-duration:.01ms !important; animation-duration:.01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="backdrop"><video autoplay muted loop playsinline poster="../../public/og-image.png"><source src="../../assets/videos/hero.mp4" type="video/mp4"></video></div>
+  <main class="app">
+    <header class="toolbar"><div class="avatar"><img src="../../assets/images/ai-luren-avatar.webp" alt="Ai路人头像"></div><nav class="top-tabs" aria-label="AI 影响力模块"><button class="tab" type="button" data-tab="awards" aria-selected="true" data-zh="AI 获奖作品" data-en="AI Awarded Works">AI 获奖作品</button><button class="tab" type="button" data-tab="platforms" aria-selected="false" data-zh="AI 平台超创" data-en="AI Platform Creator">AI 平台超创</button><button class="tab" type="button" data-tab="reach" aria-selected="false" data-zh="AI 自媒体" data-en="AI Social Media">AI 自媒体</button></nav><button class="lang" type="button" aria-label="切换语言">中</button></header>
+    <section class="workspace">
+      <aside class="rail"><div class="rail-kicker" data-zh="AI 影响力" data-en="AI IMPACT">AI 影响力</div><h1 id="title">AI 获奖作品</h1><div class="blue-line"></div><p id="desc" class="rail-desc">参与 AI 创作赛事，呈现获奖与入围作品。</p><div class="rail-list"><button type="button" data-tab="awards" aria-selected="true" data-zh="AI 获奖作品" data-en="AI Awarded Works">AI 获奖作品</button><button type="button" data-tab="platforms" aria-selected="false" data-zh="AI 平台超创" data-en="AI Platform Creator">AI 平台超创</button><button type="button" data-tab="reach" aria-selected="false" data-zh="AI 自媒体" data-en="AI Social Media">AI 自媒体</button></div></aside>
+      <section class="canvas"><div class="canvas-head"><span data-zh="当前模块" data-en="CURRENT MODULE">当前模块</span><span data-zh="独立内容画布" data-en="SINGLE CONTENT CANVAS">独立内容画布</span></div><div class="canvas-rule"></div>
+        <div class="panel" data-panel="awards"><div class="award-grid"><div class="award-item"><img src="../../assets/images/awards/Lenovo.webp" alt="海螺 AI 动物跳水"><strong data-zh="海螺 AI 动物跳水" data-en="AI Animal Dive">海螺 AI 动物跳水</strong><small data-zh="登陆 LED 大屏" data-en="LED screen campaign">登陆 LED 大屏</small></div><div class="award-item"><img src="../../assets/images/awards/pollo.webp" alt="AI 创意短片"><strong data-zh="AI 创意短片" data-en="AI Creative Short">AI 创意短片</strong><small data-zh="优秀奖" data-en="Excellence Award">优秀奖</small></div><div class="award-item"><img src="../../assets/images/awards/liantong.webp" alt="AI 品牌创作"><strong data-zh="AI 品牌创作" data-en="AI Brand Film">AI 品牌创作</strong><small data-zh="入围作品" data-en="Finalist">入围作品</small></div><div class="award-item"><img src="../../assets/images/awards/hailuo.webp" alt="AI 视觉实验"><strong data-zh="AI 视觉实验" data-en="AI Visual Study">AI 视觉实验</strong><small data-zh="平台推荐" data-en="Platform Pick">平台推荐</small></div></div></div>
+        <div class="panel" data-panel="platforms" hidden><div class="platform-grid"><div class="platform"><img src="../../assets/images/platform-logos/kling-color.webp" alt="可灵 AI"><strong data-zh="可灵 AI" data-en="Kling AI">可灵 AI</strong><span data-zh="优质创作者" data-en="Premium Creator">优质创作者</span></div><div class="platform"><img src="../../assets/images/platform-logos/jimeng-color.webp" alt="即梦 AI"><strong data-zh="即梦 AI" data-en="Jimeng AI">即梦 AI</strong><span data-zh="成长创作者" data-en="Rising Creator">成长创作者</span></div><div class="platform"><img src="../../assets/images/platform-logos/hailuo-color.webp" alt="海螺 AI"><strong data-zh="海螺 AI" data-en="Hailuo AI">海螺 AI</strong><span data-zh="超级创作者" data-en="Super Creator">超级创作者</span></div><div class="platform"><img src="../../assets/images/platform-logos/vidu-color.webp" alt="Vidu AI"><strong data-zh="Vidu AI" data-en="Vidu AI">Vidu AI</strong><span data-zh="艺术家" data-en="AI Artist">艺术家</span></div><div class="platform"><img src="../../assets/images/platform-logos/pixverse-color.webp" alt="拍我 AI"><strong data-zh="拍我 AI" data-en="Paiwo AI">拍我 AI</strong><span data-zh="超级创作者" data-en="Super Creator">超级创作者</span></div><div class="platform"><img src="../../assets/images/platform-logos/Pollo.webp" alt="Pollo AI"><strong data-zh="Pollo AI" data-en="Pollo AI">Pollo AI</strong><span data-zh="优秀创作者" data-en="Outstanding Creator">优秀创作者</span></div><div class="platform"><img src="../../assets/images/platform-logos/midjourney.webp" alt="Midjourney"><strong data-zh="Midjourney" data-en="Midjourney">Midjourney</strong><span data-zh="官方精选" data-en="Official Featured">官方精选</span></div><div class="platform"><img src="../../assets/images/platform-logos/qwen-color.webp" alt="通义 Wan"><strong data-zh="通义 Wan" data-en="Tongyi Wan">通义 Wan</strong><span data-zh="官方创作者" data-en="Official Creator">官方创作者</span></div></div></div>
+        <div class="panel" data-panel="reach" hidden><div class="reach-grid"><div class="reach-card"><img src="../../assets/images/social-profiles/抖音主页.webp" alt="抖音主页"><div><strong data-zh="抖音" data-en="TikTok">抖音</strong><span data-zh="1.7 万粉丝 · 144.6 万赞" data-en="17K followers · 1.45M likes">1.7 万粉丝 · 144.6 万赞</span></div></div><div class="reach-card"><img src="../../assets/images/social-profiles/小红书主页.webp" alt="小红书主页"><div><strong data-zh="小红书" data-en="Rednote">小红书</strong><span data-zh="3494 粉丝 · 5.6 万赞" data-en="3.5K followers · 56K likes">3494 粉丝 · 5.6 万赞</span></div></div><div class="reach-card"><img src="../../assets/images/social-profiles/快手主页.webp" alt="快手主页"><div><strong data-zh="快手" data-en="Kuaishou">快手</strong><span data-zh="4475 粉丝 · 9938 赞" data-en="4.5K followers · 9.9K likes">4475 粉丝 · 9938 赞</span></div></div><div class="reach-card"><img src="../../assets/images/social-profiles/视频号主页.webp" alt="视频号主页"><div><strong data-zh="视频号" data-en="WeChat Channels">视频号</strong><span data-zh="9087 赞 · 4237 喜爱" data-en="9.1K likes · 4.2K favorites">9087 赞 · 4237 喜爱</span></div></div></div></div>
+      </section>
+    </section>
+  </main>
+  <script>
+    const controls=[...document.querySelectorAll('[data-tab]')], panels=[...document.querySelectorAll('[data-panel]')], title=document.querySelector('#title'), desc=document.querySelector('#desc'), langButton=document.querySelector('.lang'); let current='awards', lang='zh'; const copy={awards:[['AI 获奖作品','AI Awarded Works'],['参与 AI 创作赛事，呈现获奖与入围作品。','Award-winning and finalist work from AI creation contests.']],platforms:[['AI 平台超创','AI Platform Creator'],['多个 AI 视频平台的合作创作者。','Creator partner across multiple AI video platforms.']],reach:[['AI 自媒体','AI Social Media'],['在多个平台分享 AI 内容。','AI content shared across multiple platforms.']]};
+    function translate(){ document.documentElement.lang=lang==='zh'?'zh-CN':'en'; document.querySelectorAll('[data-zh]').forEach(el=>el.textContent=el.dataset[lang]); title.textContent=copy[current][0][lang==='zh'?0:1]; desc.textContent=copy[current][1][lang==='zh'?0:1]; langButton.textContent=lang==='zh'?'中':'EN'; }
+    function show(name){ if(name===current)return; const old=document.querySelector(`[data-panel="${current}"]`); old.classList.add('is-leaving'); setTimeout(()=>{panels.forEach(panel=>panel.hidden=panel.dataset.panel!==name); old.classList.remove('is-leaving'); current=name; controls.forEach(control=>control.setAttribute('aria-selected',String(control.dataset.tab===name))); translate();},180); }
+    controls.forEach(control=>control.addEventListener('click',()=>show(control.dataset.tab))); langButton.addEventListener('click',()=>{lang=lang==='zh'?'en':'zh';translate()}); translate();
+  </script>
+</body>
+</html>

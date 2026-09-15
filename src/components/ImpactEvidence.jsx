@@ -43,14 +43,14 @@ const awards = [
 ];
 
 const creatorLogos = [
-  { src: klingLogo, width: 640, height: 640, alt: { zh: '可灵优创', en: 'Kling Creator' }, title: { zh: '可灵优创', en: 'Kling Creator' } },
-  { src: jimengLogo, width: 640, height: 640, alt: { zh: '即梦', en: 'Jimeng' }, title: { zh: '即梦', en: 'Jimeng' } },
-  { src: hailuoLogo, width: 640, height: 640, alt: { zh: '海螺 AI', en: 'Hailuo AI' }, title: { zh: '海螺 AI', en: 'Hailuo AI' } },
-  { src: viduLogo, width: 640, height: 640, alt: 'Vidu', title: 'Vidu' },
-  { src: pixverseLogo, width: 640, height: 640, alt: 'PixVerse', title: 'PixVerse' },
-  { src: polloLogo, width: 446, height: 418, alt: 'Pollo AI', title: 'Pollo AI' },
-  { src: midjourneyLogo, width: 640, height: 640, alt: 'Midjourney', title: 'Midjourney', className: 'logo-loop__image--light' },
-  { src: qwenLogo, width: 640, height: 640, alt: { zh: '通义万相', en: 'Tongyi Wanxiang' }, title: { zh: '通义万相', en: 'Tongyi Wanxiang' } },
+  { src: klingLogo, width: 640, height: 640, alt: { zh: '可灵 AI', en: 'Kling AI' }, title: { zh: '可灵 AI', en: 'Kling AI' }, role: { zh: '优质创作者', en: 'Premium Creator' } },
+  { src: jimengLogo, width: 640, height: 640, alt: { zh: '即梦 AI', en: 'Jimeng AI' }, title: { zh: '即梦 AI', en: 'Jimeng AI' }, role: { zh: '成长创作者', en: 'Rising Creator' } },
+  { src: hailuoLogo, width: 640, height: 640, alt: { zh: '海螺 AI', en: 'Hailuo AI' }, title: { zh: '海螺 AI', en: 'Hailuo AI' }, role: { zh: '超级创作者', en: 'Super Creator' } },
+  { src: viduLogo, width: 640, height: 640, alt: { zh: 'Vidu AI', en: 'Vidu AI' }, title: { zh: 'Vidu AI', en: 'Vidu AI' }, role: { zh: '艺术家', en: 'AI Artist' } },
+  { src: pixverseLogo, width: 640, height: 640, alt: { zh: '拍我 AI', en: 'Paiwo AI' }, title: { zh: '拍我 AI', en: 'Paiwo AI' }, role: { zh: '超级创作者', en: 'Super Creator' } },
+  { src: polloLogo, width: 446, height: 418, alt: { zh: 'Pollo AI', en: 'Pollo AI' }, title: { zh: 'Pollo AI', en: 'Pollo AI' }, role: { zh: '优秀创作者', en: 'Outstanding Creator' } },
+  { src: midjourneyLogo, width: 640, height: 640, alt: { zh: 'Midjourney', en: 'Midjourney' }, title: { zh: 'Midjourney', en: 'Midjourney' }, role: { zh: '官方精选', en: 'Official Featured' }, className: 'logo-loop__image--light' },
+  { src: qwenLogo, width: 640, height: 640, alt: { zh: '通义 Wan', en: 'Tongyi Wan' }, title: { zh: '通义 Wan', en: 'Tongyi Wan' }, role: { zh: '官方创作者', en: 'Official Creator' } },
 ];
 
 const reachCards = [
@@ -60,6 +60,8 @@ const reachCards = [
     screenshot: douyinScreenshot,
     stats: { zh: '1.7w粉丝 144.6w赞', en: '17K followers · 1.45M likes' },
     link: 'https://v.douyin.com/idVkRoxL/',
+    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
+    qrNote: { zh: '使用 抖音 扫码访问 @Ai路人 主页', en: 'Scan with TikTok to visit @Ai路人 profile' },
     qrCode: douyinQrCode,
   },
   {
@@ -68,6 +70,8 @@ const reachCards = [
     screenshot: xiaohongshuScreenshot,
     stats: { zh: '3494粉丝 5.6w赞', en: '3.5K followers · 56K likes' },
     link: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470',
+    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
+    qrNote: { zh: '使用 微信/小红书 扫码访问 @Ai路人 主页', en: 'Scan with WeChat or Rednote to visit @Ai路人 profile' },
     qrCode: xiaohongshuQrCode,
   },
   {
@@ -76,6 +80,8 @@ const reachCards = [
     screenshot: kuaishouScreenshot,
     stats: { zh: '4475粉丝 9938赞', en: '4.5K followers · 9.9K likes' },
     link: 'https://v.kuaishou.com/K75e2i3A',
+    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
+    qrNote: { zh: '使用 微信/快手 扫码访问 @Ai路人 主页', en: 'Scan with WeChat or Kuaishou to visit @Ai路人 profile' },
     qrCode: kuaishouQrCode,
   },
   {
@@ -83,6 +89,8 @@ const reachCards = [
     platform: { zh: '视频号', en: 'WeChat Channels' },
     screenshot: wechatChannelScreenshot,
     stats: { zh: '9087赞 4237喜爱', en: '9.1K likes · 4.2K favorites' },
+    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
+    qrNote: { zh: '使用 微信 扫码访问 @Ai路人- 主页', en: 'Scan with WeChat to visit @Ai路人- profile' },
     qrCode: wechatChannelQrCode,
   },
 ];
@@ -109,12 +117,11 @@ function useNearViewport(rootMargin = '500px') {
   return [ref, ready];
 }
 
-function ImpactLabel({ index, title, description }) {
+function ImpactLabel({ id, index, title }) {
   return (
     <div className="impact-evidence-label">
       <span className="impact-eyebrow">{index.split(' / ')[0]}</span>
-      <strong>{title}</strong>
-      <p>{description}</p>
+      <h2 id={id}>{title}</h2>
     </div>
   );
 }
@@ -122,36 +129,75 @@ function ImpactLabel({ index, title, description }) {
 function AwardGallery() {
   const lang = useLang();
   const [openIndex, setOpenIndex] = useState(-1);
+  const [isClosing, setIsClosing] = useState(false);
   const [railState, setRailState] = useState({ canScrollLeft: false, canScrollRight: true });
   const [isMobile, setIsMobile] = useState(() => (
     typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
   ));
+  const [mobileAwardIndex, setMobileAwardIndex] = useState(0);
   const railRef = useRef(null);
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
+  const closeTimerRef = useRef(null);
+  const closingRef = useRef(false);
   const isOpen = openIndex >= 0;
 
   const open = useCallback((index, event) => {
     triggerRef.current = event.currentTarget;
+    window.clearTimeout(closeTimerRef.current);
+    closingRef.current = false;
+    setIsClosing(false);
     setOpenIndex(index);
   }, []);
-  const close = useCallback(() => setOpenIndex(-1), []);
+  const close = useCallback(() => {
+    if (!isOpen || closingRef.current) return;
+    closingRef.current = true;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      setOpenIndex(-1);
+      setIsClosing(false);
+      closingRef.current = false;
+      requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
+      return;
+    }
+    setIsClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpenIndex(-1);
+      setIsClosing(false);
+      closingRef.current = false;
+      requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
+    }, 240);
+  }, [isOpen]);
   const step = useCallback((delta) => {
     setOpenIndex((index) => (index < 0 ? index : (index + delta + awards.length) % awards.length));
   }, []);
   const syncRail = useCallback(() => {
     const rail = railRef.current;
     if (!rail) return;
+    if (isMobile) {
+      setRailState({ canScrollLeft: mobileAwardIndex > 0, canScrollRight: mobileAwardIndex < awards.length - 1 });
+      return;
+    }
     setRailState({
       canScrollLeft: rail.scrollLeft > 2,
       canScrollRight: rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 2,
     });
+  }, [isMobile, mobileAwardIndex]);
+
+  const moveToMobileAward = useCallback((index) => {
+    const safeIndex = Math.max(0, Math.min(awards.length - 1, index));
+    setMobileAwardIndex(safeIndex);
+    setRailState({ canScrollLeft: safeIndex > 0, canScrollRight: safeIndex < awards.length - 1 });
   }, []);
+
   const scrollRail = useCallback((direction) => {
     const rail = railRef.current;
     if (!rail) return;
+    if (isMobile) {
+      moveToMobileAward(mobileAwardIndex + direction);
+      return;
+    }
     rail.scrollBy({ left: direction * rail.clientWidth * .82, behavior: 'smooth' });
-  }, []);
+  }, [isMobile, mobileAwardIndex, moveToMobileAward]);
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 720px)');
@@ -172,6 +218,10 @@ function AwardGallery() {
       window.removeEventListener('resize', syncRail);
     };
   }, [syncRail]);
+
+  useEffect(() => {
+    return () => window.clearTimeout(closeTimerRef.current);
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -204,7 +254,8 @@ function AwardGallery() {
 
   return (
     <div className="impact-glass impact-award-shell">
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : 'AWARD CERTIFICATES / 获奖截图'}</span><span>{galleryHint}</span></div>
+      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
+      <p className="impact-award-description">{lang === 'en' ? 'AI creation contests with wins and finalists.' : '参与 AI 创作赛事，含获奖和入围作品。'}</p>
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
@@ -213,7 +264,7 @@ function AwardGallery() {
         disabled={!railState.canScrollLeft}
         onClick={() => scrollRail(-1)}
       >
-        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m14 5-7 7 7 7" /></svg>
+        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
       </button>
       <button
         type="button"
@@ -223,31 +274,51 @@ function AwardGallery() {
         disabled={!railState.canScrollRight}
         onClick={() => scrollRail(1)}
       >
-        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10 5 7 7-7 7" /></svg>
+        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
-      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Award artwork' : '获奖作品图片'} aria-describedby="impact-award-gallery-note" tabIndex={0}>
-        {awards.map((award, index) => (
+      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Award artwork' : '获奖作品图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
+        {(isMobile ? [awards[mobileAwardIndex]] : awards).map((award, visibleIndex) => {
+          const index = isMobile ? mobileAwardIndex : visibleIndex;
+          return (
           <li key={award.image}>
             <button
               type="button"
               className="impact-award-card"
-              aria-label={lang === 'en' ? `Zoom in: ${award.title.en}` : `放大查看：${award.title.zh}`}
+              aria-label={lang === 'en' ? `Zoom in: ${award.title.en}, ${award.meta.en}` : `放大查看：${award.title.zh}，${award.meta.zh}`}
               aria-haspopup="dialog"
               aria-controls="impact-award-lightbox"
               onClick={(event) => open(index, event)}
             >
-              <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading="lazy" decoding="async" onLoad={syncRail} />
-              <span className="impact-award-card-zoom" aria-hidden="true">＋</span>
+              <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
+              <span className="impact-award-card-caption" aria-hidden="true">
+                <strong>{award.title[lang]}</strong>
+                <small>{award.meta[lang]}</small>
+              </span>
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
+      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award' : '选择获奖作品'}>
+        {awards.map((award, index) => (
+          <button
+            key={award.image}
+            type="button"
+            role="tab"
+            aria-controls="impact-award-rail"
+            aria-selected={mobileAwardIndex === index}
+            aria-label={lang === 'en' ? `Show ${award.title.en}` : `查看${award.title.zh}`}
+            className={mobileAwardIndex === index ? 'is-active' : ''}
+            onClick={() => moveToMobileAward(index)}
+          />
+        ))}
+      </div>
       {/* 预览通过 Portal 独立于玻璃壳，避免 backdrop-filter 改变 fixed 定位；作为可退出的全屏模态层。 */}
       {active && createPortal(
         <div
           id="impact-award-lightbox"
           ref={dialogRef}
-          className="impact-award-lightbox"
+          className={`impact-award-lightbox${isClosing ? ' is-closing' : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="impact-award-lightbox-title"
@@ -285,7 +356,7 @@ function LogoIndex() {
   })), [lang]);
   return (
     <div ref={logoRef} className="impact-glass impact-logo-shell">
-      <div className="impact-logo-head"><span>{lang === 'en' ? 'CREATOR PLATFORMS' : 'CREATOR PLATFORMS / 创作平台'}</span><span>{lang === 'en' ? 'SUPER CREATORS' : 'SUPER CREATORS / 超级创作者'}</span></div>
+      <div className="impact-logo-head"><span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span><span>{lang === 'en' ? 'SUPER CREATORS' : '超级创作者'}</span></div>
       {ready && <LogoLoop
         logos={logos}
         speed={0}
@@ -295,67 +366,231 @@ function LogoIndex() {
         motionEnabled={false}
         ariaLabel={lang === 'en' ? 'Creator platform logos' : '创作者平台 Logo'}
       />}
+      <div className="impact-platform-desktop-card">
+        <div className="impact-platform-desktop-head">
+          <span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span>
+          <span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span>
+        </div>
+        <p className="impact-platform-desktop-description">{lang === 'en' ? 'Creator partner across multiple AI video platforms.' : '多个 AI 视频平台的合作创作者。'}</p>
+        <div className="impact-platform-desktop-grid">
+          {logos.map((logo) => (
+            <div className="impact-platform-desktop-tile" key={`desktop-${logo.title}`}>
+              <img src={logo.src} alt={logo.alt} width={logo.width} height={logo.height} loading="lazy" decoding="async" className={logo.className || ''} />
+              <div><strong>{logo.title}</strong><span>{logo.role[lang]}</span></div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="impact-platform-mobile-card">
+        <div className="impact-platform-mobile-manifesto">
+          <div className="impact-platform-mobile-meta"><span>{lang === 'en' ? 'AI CREATOR INDEX' : 'AI 创作者索引'}</span><span>{lang === 'en' ? '02 / EDITORIAL' : '02 / 编辑视角'}</span></div>
+          <h3>{lang === 'en' ? 'AI VIDEO CREATOR' : 'AI 视频创作者'}</h3>
+          <p>{lang === 'en'
+            ? 'Creator partner across multiple AI video platforms.'
+            : '多个 AI 视频平台的合作创作者。'}</p>
+          <div className="impact-platform-mobile-signature">{lang === 'en' ? 'CREATOR PARTNER · MULTI-PLATFORM' : '合作创作者 · 多平台创作'}</div>
+        </div>
+        <div className="impact-platform-mobile-network">
+          <div className="impact-platform-mobile-network-head">{lang === 'en' ? 'CREATOR PLATFORMS / CREDENTIALS' : '创作平台 / 创作者身份'}</div>
+          <div className="impact-platform-mobile-grid">
+            {logos.map((logo) => (
+              <div className="impact-platform-mobile-tile" key={logo.title}>
+                <img src={logo.src} alt={logo.alt} className={logo.className || ''} width={logo.width} height={logo.height} loading="lazy" decoding="async" />
+                <div><strong>{logo.title}</strong><span>{logo.role[lang]}</span></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 function ReachDossier() {
   const lang = useLang();
+  const [activeQr, setActiveQr] = useState(null);
+  const [isQrClosing, setIsQrClosing] = useState(false);
+  const qrDialogRef = useRef(null);
+  const qrTriggerRef = useRef(null);
+  const qrCloseTimerRef = useRef(null);
+  const qrClosingRef = useRef(false);
+
+  const closeQr = useCallback(() => {
+    if (!activeQr || qrClosingRef.current) return;
+    qrClosingRef.current = true;
+    const finish = () => {
+      setActiveQr(null);
+      setIsQrClosing(false);
+      qrClosingRef.current = false;
+      requestAnimationFrame(() => qrTriggerRef.current?.focus({ preventScroll: true }));
+    };
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      finish();
+      return;
+    }
+    setIsQrClosing(true);
+    qrCloseTimerRef.current = window.setTimeout(finish, 240);
+  }, [activeQr]);
+
+  useEffect(() => () => window.clearTimeout(qrCloseTimerRef.current), []);
+
+  useEffect(() => {
+    if (!activeQr) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeQr();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    requestAnimationFrame(() => qrDialogRef.current?.focus({ preventScroll: true }));
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [activeQr, closeQr]);
 
   return (
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
-        <span>{lang === 'en' ? 'CONTENT REACH' : 'CONTENT REACH / 内容发布'}</span>
-        <span>{lang === 'en' ? 'AI SOCIAL MEDIA' : 'AI SOCIAL MEDIA / AI 自媒体'}</span>
+        <span>{lang === 'en' ? 'CONTENT REACH' : '多平台分享 AI 内容'}</span>
+        {lang === 'en' && <span>AI SOCIAL MEDIA</span>}
       </div>
+      <p className="impact-reach-dossier-description">{lang === 'en' ? 'AI content shared across TikTok, Rednote, Kuaishou, and WeChat Channels.' : '抖音、小红书、快手、视频号均有 AI 内容分享。'}</p>
       <div className="impact-reach-profile-grid">
         {reachCards.map((card) => {
           const hasLink = !!card.link;
           const hasQr = !!card.qrCode;
           const Tag = hasLink ? 'a' : 'div';
+          const hoverLabel = card.hoverLabel?.[lang];
           const tagProps = hasLink
             ? { href: card.link, target: '_blank', rel: 'noopener noreferrer', 'aria-label': lang === 'en' ? `Visit ${card.platform.en} profile` : `访问${card.platform.zh}主页` }
             : {};
-          const shotClass = `impact-reach-profile-shot${hasLink ? ' impact-reach-profile-shot--link' : ''}${hasQr ? ' impact-reach-profile-shot--qr' : ''}`;
+          const shotClass = `impact-reach-profile-shot${hasLink ? ' impact-reach-profile-shot--link' : ''}`;
           return (
             <article className="impact-reach-profile" key={card.id}>
               <Tag className={shotClass} {...tagProps}>
                 <div className="impact-reach-profile-media">
                   <img src={card.screenshot} alt={lang === 'en' ? `${card.platform.en} profile screenshot` : `${card.platform.zh} 主页截图`} width="1179" height="938" loading="lazy" decoding="async" />
+                  {hoverLabel && <span className="impact-reach-profile-hover-label" aria-hidden="true">{hoverLabel}</span>}
                 </div>
-                {hasQr && (
-                  <div className="impact-reach-qr-popup">
-                    <img src={card.qrCode} alt={lang === 'en' ? `${card.platform.en} QR code` : `${card.platform.zh}二维码`} width="630" height="632" loading="lazy" decoding="async" />
-                    <span>{lang === 'en'
-                      ? (card.id === 'douyin' ? `Scan with the TikTok app` : `Scan to visit ${card.platform.en}`)
-                      : (card.id === 'douyin' ? `使用${card.platform.zh}扫码访问` : `扫码访问${card.platform.zh}`)}</span>
-                  </div>
-                )}
+                {hoverLabel && <span className="impact-reach-mobile-link" aria-hidden="true">{lang === 'en' ? 'Visit ↗' : '跳转 ↗'}</span>}
               </Tag>
               <div className="impact-reach-profile-caption"><strong>{card.platform[lang]}</strong><span>{card.stats[lang]}</span></div>
+              <div className="impact-reach-profile-actions">
+                {hasQr && (
+                  <button
+                    type="button"
+                    className="impact-reach-profile-qr"
+                    aria-haspopup="dialog"
+                    aria-label={lang === 'en' ? `View ${card.platform.en} QR code` : `查看${card.platform.zh}二维码`}
+                    onClick={(event) => {
+                      qrTriggerRef.current = event.currentTarget;
+                      window.clearTimeout(qrCloseTimerRef.current);
+                      qrClosingRef.current = false;
+                      setIsQrClosing(false);
+                      setActiveQr(card);
+                    }}
+                  >
+                    <svg className="impact-qr-icon" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M2.5 2.5h5v5h-5zM10.5 2.5h5v5h-5zM2.5 10.5h5v5h-5z" />
+                      <path d="M12 11v2M10.5 15.5h2M15.5 11v4.5h-2M10.5 9.5h5" />
+                    </svg>
+                    {lang === 'en' ? 'VIEW QR' : '查看二维码'}
+                  </button>
+                )}
+              </div>
             </article>
           );
         })}
       </div>
+      {activeQr && createPortal(
+        <div className={`impact-qr-lightbox${isQrClosing ? ' is-closing' : ''}`} role="presentation" onClick={closeQr}>
+          <div
+            ref={qrDialogRef}
+            className="impact-qr-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="impact-qr-dialog-title"
+            aria-describedby="impact-qr-dialog-note"
+            tabIndex={-1}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button type="button" className="impact-qr-dialog-close" aria-label={lang === 'en' ? 'Close QR code' : '关闭二维码'} onClick={closeQr}>×</button>
+            <p className="impact-qr-dialog-kicker">{lang === 'en' ? 'SOCIAL PROFILE' : '自媒体主页'}</p>
+            <h3 id="impact-qr-dialog-title">{activeQr.platform[lang]}</h3>
+            <img src={activeQr.qrCode} alt={lang === 'en' ? `${activeQr.platform.en} QR code` : `${activeQr.platform.zh}二维码`} width="630" height="632" />
+            <p id="impact-qr-dialog-note">{activeQr.qrNote[lang]}</p>
+            <div className="impact-qr-dialog-actions">
+              <a href={activeQr.qrCode} download={`${activeQr.id}-qr-code.webp`}>
+                {lang === 'en' ? 'SAVE QR' : '保存二维码'}
+              </a>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }
 
 export default function ImpactEvidence() {
   const lang = useLang();
+  const initialImpactId = typeof window !== 'undefined' && ['impact-awards', 'impact-programs', 'impact-reach'].includes(window.location.hash.slice(1))
+    ? window.location.hash.slice(1)
+    : 'impact-awards';
+  const [activeImpactId, setActiveImpactId] = useState(initialImpactId);
+  const [impactNavigationVersion, setImpactNavigationVersion] = useState(0);
+  const shouldAlignRef = useRef(initialImpactId !== 'impact-awards' || (typeof window !== 'undefined' && window.location.hash === '#impact-awards'));
+
+  useEffect(() => {
+    const onNavigate = (event) => {
+      const nextId = event.detail;
+      if (!['impact-awards', 'impact-programs', 'impact-reach'].includes(nextId)) return;
+      shouldAlignRef.current = true;
+      setActiveImpactId(nextId);
+      setImpactNavigationVersion((version) => version + 1);
+    };
+    const onHistory = () => {
+      const nextId = window.location.hash.slice(1);
+      if (!['impact-awards', 'impact-programs', 'impact-reach'].includes(nextId)) return;
+      shouldAlignRef.current = true;
+      setActiveImpactId(nextId);
+      setImpactNavigationVersion((version) => version + 1);
+    };
+    window.addEventListener('portfolio:navigate', onNavigate);
+    window.addEventListener('hashchange', onHistory);
+    window.addEventListener('popstate', onHistory);
+    return () => {
+      window.removeEventListener('portfolio:navigate', onNavigate);
+      window.removeEventListener('hashchange', onHistory);
+      window.removeEventListener('popstate', onHistory);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!shouldAlignRef.current || window.matchMedia?.('(max-width: 760px)').matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.getElementById(activeImpactId);
+      const header = document.querySelector('header');
+      if (!target) return;
+      const offset = (header?.getBoundingClientRect().bottom || 0) + 34;
+      window.scrollTo({ top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - offset), behavior: 'smooth' });
+      shouldAlignRef.current = false;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeImpactId, impactNavigationVersion]);
+
   return (
     <div className="impact-evidence">
-      <section className="impact-evidence-row" aria-labelledby="impact-awards-title">
-        <ImpactLabel index="01 / INDUSTRY AWARDS" title={lang === 'en' ? 'Awarded Works' : '获奖作品'} description={lang === 'en' ? 'AI creation contests with wins and finalists' : '参与 AI 创作赛事 含获奖和入围作品'} />
-        <div><h3 id="impact-awards-title" className="sr-only">{lang === 'en' ? 'Industry Awards' : '行业奖项'}</h3><AwardGallery /></div>
+      <section id="impact-awards" className={`impact-evidence-row${activeImpactId === 'impact-awards' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-awards-heading">
+        <ImpactLabel id="impact-awards-heading" index="01 / AI AWARDED WORKS" title={lang === 'en' ? 'AI Awarded Works' : 'AI 获奖作品'} />
+        <div><AwardGallery /></div>
       </section>
-      <section className="impact-evidence-row" aria-labelledby="impact-programs-title">
-        <ImpactLabel index="02 / CREATOR PROGRAMS" title={lang === 'en' ? 'Creator Platforms' : '创作平台'} description={lang === 'en' ? 'Super creator across multiple platforms' : '多个平台的超级创作者'} />
-        <div><h3 id="impact-programs-title" className="sr-only">{lang === 'en' ? 'Creator Certifications' : '创作者认证'}</h3><LogoIndex /></div>
+      <section id="impact-programs" className={`impact-evidence-row${activeImpactId === 'impact-programs' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-programs-heading">
+        <ImpactLabel id="impact-programs-heading" index="02 / AI PLATFORM CREATOR" title={lang === 'en' ? 'AI Platform Creator' : 'AI 平台超创'} />
+        <div><LogoIndex /></div>
       </section>
-      <section className="impact-evidence-row" aria-labelledby="impact-reach-title">
-        <ImpactLabel index="03 / CONTENT REACH" title={lang === 'en' ? 'Content Publishing' : '内容发布'} description={lang === 'en' ? 'AI content shared on TikTok, Rednote, Kuaishou, and WeChat Channels' : '抖音、小红书、快手、视频号均有AI 内容分享'} />
-        <div><h3 id="impact-reach-title" className="sr-only">{lang === 'en' ? 'Published Content' : '发过的内容'}</h3><ReachDossier /></div>
+      <section id="impact-reach" className={`impact-evidence-row${activeImpactId === 'impact-reach' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-reach-heading">
+        <ImpactLabel id="impact-reach-heading" index="03 / AI MEDIA" title={lang === 'en' ? 'AI Media' : 'AI 自媒体'} />
+        <div><ReachDossier /></div>
       </section>
     </div>
   );

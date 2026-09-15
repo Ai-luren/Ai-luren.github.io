@@ -12,8 +12,8 @@ import lightCover from '../../assets/images/project-covers/AI 概念短片-光�
 import './CometCard.css';
 
 // viewLabel 按链接实际平台标注，避免「小红书观看」指向抖音链接。
-const VIEW_REDS = { zh: '小红书 ↗', en: 'RED ↗' };
-const VIEW_DOUYIN = { zh: '抖音 ↗', en: 'Douyin ↗' };
+const VIEW_REDS = { zh: '跳转 ↗', en: 'JUMP ↗' };
+const VIEW_DOUYIN = { zh: '跳转 ↗', en: 'JUMP ↗' };
 
 const ARCHIVES = [
   { id: '01', platform: { zh: '01 / 小红书', en: '01 / RED' }, title: { zh: '屈臣氏 AI 品牌广告', en: 'Watsons AI Brand Ad' }, award: { zh: '优秀奖', en: 'Excellence Award' }, view: VIEW_REDS, cover: watsonsCover, href: 'https://www.xiaohongshu.com/discovery/item/688d99d1000000002203a643?source=webshare&xhsshare=pc_web&xsec_token=AB2HumoFo2_bj_DqZ4oAH4r0-H5GGEtHFUn9RIYEcCOv8=&xsec_source=pc_share' },
@@ -23,12 +23,13 @@ const ARCHIVES = [
   { id: '05', platform: { zh: '05 / 小红书', en: '05 / RED' }, title: { zh: '宠物 AI 创意短片', en: 'Pet AI Short Film' }, award: { zh: '中国联通三等奖', en: 'China Unicom 3rd Prize' }, view: VIEW_REDS, cover: catsCover, href: 'https://www.xiaohongshu.com/discovery/item/6858bb32000000002400ba58?source=webshare&xhsshare=pc_web&xsec_token=AB264App4J-oDzd1MVj8Vrc327aQZBjWlclryVOGFc1X8=&xsec_source=pc_share' },
   { id: '06', platform: { zh: '06 / 小红书', en: '06 / RED' }, title: { zh: '湖南 AI 文旅宣传', en: 'Hunan AI Travel Film' }, award: { zh: '超棒奖', en: 'Awesome Award' }, view: VIEW_REDS, cover: yueyangCover, href: 'https://www.xiaohongshu.com/discovery/item/68165055000000000e00525b?source=webshare&xhsshare=pc_web&xsec_token=ABDq1xQzCks5P83-ccrIgTlh_Pj6F4otf3gkmI-Y0Ugh0=&xsec_source=pc_share' },
   { id: '07', platform: { zh: '07 / 小红书', en: '07 / RED' }, title: { zh: '悠船 AI 创意短片', en: 'Midjourney AI Short Film' }, award: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, view: VIEW_REDS, cover: riverCityCover, href: 'https://www.xiaohongshu.com/discovery/item/68b8051d000000001d00936f?source=webshare&xhsshare=pc_web&xsec_token=AB_COh4fY4yQq-A1yx_pOf7OadIS_o61EUSTaIJWvmwOU=&xsec_source=pc_share' },
-  { id: '08', platform: { zh: '08 / 小红书', en: '08 / RED' }, title: { zh: '通义万相 AI 创意短片', en: 'Wan AI Short Film' }, award: { zh: '优秀奖', en: 'Excellence Award' }, view: VIEW_REDS, cover: lightCover, href: 'https://www.xiaohongshu.com/discovery/item/688f595c0000000023031b1e?source=webshare&xhsshare=pc_web&xsec_token=AB1dIKBSOCR_91FMS218sLjy66ZJrUFPjhjkxX0Dejau0=&xsec_source=pc_share' },
+  { id: '08', platform: { zh: '08 / 小红书', en: '08 / RED' }, title: { zh: '通义万相 AI 创意短片', en: 'WAN AI Short Film' }, award: { zh: '优秀奖', en: 'Excellence Award' }, view: VIEW_REDS, cover: lightCover, href: 'https://www.xiaohongshu.com/discovery/item/688f595c0000000023031b1e?source=webshare&xhsshare=pc_web&xsec_token=AB1dIKBSOCR_91FMS218sLjy66ZJrUFPjhjkxX0Dejau0=&xsec_source=pc_share' },
 ];
 
 // 标题统一是「品牌 + AI + 类型」结构。在 " AI " 处切分成两段，
 // 让桌面端自然成行、手机端也能在固定标题区内保持对齐。
 const renderTitle = (raw) => {
+  if (raw === 'WAN AI Short Film') return <span className="comet-archive__title-content">{raw}</span>;
   const idx = raw.indexOf(' AI ');
   if (idx === -1) return <span className="comet-archive__title-content">{raw}</span>;
   return (
@@ -45,6 +46,10 @@ export default function MagneticProjectArchive() {
   const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
   const touchState = useRef({ startX: 0, startY: 0, moved: false });
   const [canScroll, setCanScroll] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
+  ));
+  const [mobilePage, setMobilePage] = useState(0);
   const lang = useLang();
 
   const handleTouchStart = (event) => {
@@ -59,6 +64,23 @@ export default function MagneticProjectArchive() {
     const dx = Math.abs(touch.clientX - touchState.current.startX);
     const dy = Math.abs(touch.clientY - touchState.current.startY);
     if (dx > 10 || dy > 10) touchState.current.moved = true;
+  };
+
+  const handleTouchEnd = (event) => {
+    if (!isMobile) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const distance = touch.clientX - touchState.current.startX;
+    if (Math.abs(distance) > 42) {
+      setMobilePage((page) => Math.max(0, Math.min(1, page + (distance < 0 ? 1 : -1))));
+    }
+  };
+
+  const handlePageKeyDown = (event) => {
+    if (!isMobile) return;
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    setMobilePage((page) => Math.max(0, Math.min(1, page + (event.key === 'ArrowRight' ? 1 : -1))));
   };
 
   const handlePointerDown = (event) => {
@@ -103,6 +125,14 @@ export default function MagneticProjectArchive() {
   };
 
   useEffect(() => {
+    const media = window.matchMedia('(max-width: 720px)');
+    const updateViewport = () => setIsMobile(media.matches);
+    updateViewport();
+    media.addEventListener?.('change', updateViewport);
+    return () => media.removeEventListener?.('change', updateViewport);
+  }, []);
+
+  useEffect(() => {
     const archive = archiveRef.current;
     if (!archive) return undefined;
     const updateScrollHint = () => {
@@ -117,10 +147,18 @@ export default function MagneticProjectArchive() {
     };
   }, []);
 
+  const visibleArchives = isMobile ? ARCHIVES.slice(mobilePage * 4, mobilePage * 4 + 4) : ARCHIVES;
+  const mobilePreviousDisabled = mobilePage === 0;
+  const mobileNextDisabled = mobilePage === 1;
+
   return (
     <>
-      <div ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove}>
-      {ARCHIVES.map(archive => (
+      <div className="comet-archive-mobile-shell">
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={() => setMobilePage((page) => Math.max(0, page - 1))}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
+      </button>
+      <div ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} tabIndex={isMobile ? 0 : undefined} onKeyDown={handlePageKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      {visibleArchives.map(archive => (
         <CometCard key={archive.id} className="comet-archive__item" enableTilt={false} onClick={handleCardClick}>
           <a
             className="comet-archive__card"
@@ -132,12 +170,22 @@ export default function MagneticProjectArchive() {
             <span className="comet-archive__image">
               <span className="comet-archive__meta" aria-hidden="true">{archive.view[lang]}</span>
             </span>
+            <span className="comet-archive__mobile-link" aria-hidden="true">{archive.view[lang]}</span>
             <span className="comet-archive__copy">
               <span className="comet-archive__details"><strong>{archive.award[lang]}</strong></span>
             </span>
           </a>
         </CometCard>
       ))}
+      </div>
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={() => setMobilePage((page) => Math.min(1, page + 1))}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
+      </button>
+      <div className="comet-archive-pagination" role="tablist" aria-label={lang === 'en' ? 'Select project page' : '选择作品页'}>
+        {[0, 1].map((page) => (
+          <button key={page} type="button" role="tab" aria-selected={isMobile && mobilePage === page} aria-label={lang === 'en' ? `Show project page ${page + 1}` : `查看第${page + 1}页作品`} className={isMobile && mobilePage === page ? 'is-active' : ''} onClick={() => setMobilePage(page)} />
+        ))}
+      </div>
       </div>
       {canScroll && <p className="comet-archive__scroll-hint" aria-hidden="true">{lang === 'en' ? 'Swipe to explore ' : '左右滑动查看更多 '}<span>→</span></p>}
     </>
