@@ -1,5 +1,5 @@
 .specular-button {
-  --sb-radius: 18px;
+  --sb-radius: var(--apple-radius-card);
   --sb-tint: #ffffff;
   --sb-tint-opacity: 0;
   --sb-blur: 0px;
