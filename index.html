@@ -1284,7 +1284,7 @@
       .nav-toggle-code { display: inline; color: var(--subtle-text); font-size: 9px; }
       .nav-toggle:hover, .nav-toggle:focus-visible, body.mobile-nav-open .nav-toggle { border-color: rgba(255,255,255,.56); background: rgba(255,255,255,.06); outline: 2px solid rgba(255,255,255,.18); outline-offset: 2px; }
 
-      .mobile-nav-drawer { position: fixed; inset: 0; z-index: 55; display: flex; flex-direction: column; padding: calc(88px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom)); overflow-y: auto; background: var(--portfolio-card-surface); -webkit-backdrop-filter: var(--portfolio-card-blur); backdrop-filter: var(--portfolio-card-blur); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-12px); transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal), transform var(--motion-duration-modal) var(--motion-ease-emphasized); }
+      .mobile-nav-drawer { position: fixed; inset: 0; z-index: 55; display: flex; flex-direction: column; padding: calc(88px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom)); overflow-y: auto; background: var(--portfolio-card-surface); -webkit-backdrop-filter: var(--portfolio-card-blur); backdrop-filter: var(--portfolio-card-blur); opacity: 0; visibility: hidden; pointer-events: none; transform: none; transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal); }
       .mobile-nav-drawer.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition-delay: 0s; }
       .mobile-nav-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
       .mobile-nav-drawer-brand { color: rgba(237,244,249,.76); font: 500 10px var(--tech); letter-spacing: .12em; }
@@ -1598,7 +1598,7 @@
       }
       .nav-lang-icon { display: block; }
 
-      /* 移动端导航固定在顶部；打开全屏菜单后，顶部导航只保留抽屉里的关闭按钮。 */
+      /* 移动端导航固定在顶部；打开全屏菜单后仍保留完整顶部导航，只变形菜单按钮图标。 */
       header,
       header.is-condensed,
       header .nav-inner.shell,
@@ -1608,57 +1608,80 @@
       }
       .mobile-nav-drawer,
       .mobile-nav-drawer.is-open {
-        transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal), transform var(--motion-duration-modal) var(--motion-ease-emphasized) !important;
+        transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal) !important;
       }
       .mobile-nav-drawer {
-        transform: translateY(-12px) !important;
+        transform: none !important;
+        transition-delay: 0s !important;
       }
       .mobile-nav-drawer.is-open {
         transform: none !important;
         transition-delay: 0s !important;
       }
-      body.mobile-nav-open header {
-        pointer-events: none;
-      }
-      body.mobile-nav-open header .brand,
-      body.mobile-nav-open header #primary-nav,
-      body.mobile-nav-open header .nav-lang {
-        visibility: hidden;
+      .mobile-nav-drawer.is-closing {
         opacity: 0;
+        visibility: visible;
         pointer-events: none;
+        transition-delay: 0s, var(--motion-duration-modal) !important;
+      }
+      .mobile-nav-drawer.is-closed {
+        visibility: hidden !important;
+        transition: none !important;
+      }
+      body.mobile-nav-open header {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
       }
       body.mobile-nav-open header .nav-toggle {
         visibility: visible;
         opacity: 1;
         pointer-events: auto;
-        border-color: transparent;
-        background: transparent;
+        border-color: rgba(255, 255, 255, .34) !important;
+        background: rgba(255, 255, 255, .1) !important;
+        box-shadow: none !important;
         outline: none;
       }
       .nav-toggle-line {
         transform-box: fill-box;
         transform-origin: center;
-        transition: transform 220ms var(--motion-ease-control), opacity 140ms ease;
+        transition: transform 320ms var(--motion-ease-control), opacity 180ms ease;
+      }
+      header .nav-toggle {
+        transition: border-color 320ms var(--motion-ease-control),
+          background-color 320ms var(--motion-ease-control),
+          box-shadow 320ms var(--motion-ease-control),
+          color 320ms var(--motion-ease-control) !important;
       }
       /* 菜单图标只保留两条线：关闭时为“＝”，打开时同步旋转成 X。 */
       .nav-toggle svg { width: 18px; height: 18px; overflow: visible; }
-      body.mobile-nav-open .nav-toggle-line--top { transform: translateY(4px) rotate(45deg); }
-      body.mobile-nav-open .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
+      body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--top { transform: translateY(4px) rotate(45deg); }
+      body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
       body.mobile-nav-open .mobile-nav-close { display: none; }
 
       @keyframes mobile-nav-item-in {
-        from { opacity: 0; transform: translateY(14px); }
+        from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
       body.mobile-nav-open #mobile-primary-nav .nav-list li {
-        animation: mobile-nav-item-in var(--motion-duration-section) var(--motion-ease-emphasized) both;
+        animation: mobile-nav-item-in 360ms var(--motion-ease-emphasized) both;
+        will-change: opacity, transform;
       }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(1) { animation-delay: 0ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(2) { animation-delay: 28ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(3) { animation-delay: 56ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(4) { animation-delay: 84ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(5) { animation-delay: 112ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(6) { animation-delay: 140ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(7) { animation-delay: 168ms; }
+      body.mobile-nav-closing #mobile-primary-nav .nav-list li { animation-play-state: paused; }
 
       @media (prefers-reduced-motion: reduce) {
         .nav-toggle-line { transition: none; }
-        body.mobile-nav-open .nav-toggle-line--top { transform: translateY(4px) rotate(45deg); }
-        body.mobile-nav-open .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
-        body.mobile-nav-open #mobile-primary-nav .nav-list li { animation: none; }
+        header .nav-toggle { transition: none !important; }
+        body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--top { transform: translateY(4px) rotate(45deg); }
+        body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
+        body.mobile-nav-open #mobile-primary-nav .nav-list li { animation: none; will-change: auto; }
       }
 
       .mobile-nav-close {
@@ -2451,6 +2474,9 @@
         var careerDescription = careerDetail.querySelector('.career-description');
         var careerHonor = careerDetail.querySelector('.career-honor');
         var careerTablist = document.getElementById('career-tablist');
+        var careerTouchTarget = document.querySelector('.career-strip');
+        var careerTouchState = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
+        var careerTransitionTimer = null;
         var careerItems = [
           { meta: '01 · 2026-NOW', image: './assets/work-history-illustrations/05-ai-workflow.webp', alt: 'profile.panel5.alt', title: 'profile.panel5.title', role: 'profile.panel5.role', description: 'profile.panel5.desc', honor: 'profile.panel5.honor' },
           { meta: '02 · 2024-2026', image: './assets/work-history-illustrations/04-ai-effect-delivery.webp', alt: 'profile.panel4.alt', title: 'profile.panel4.title', role: 'profile.panel4.role', description: 'profile.panel4.desc', honor: 'profile.panel4.honor' },
@@ -2461,7 +2487,65 @@
         function careerText(key) {
           return window.__i18n && typeof window.__i18n.t === 'function' ? window.__i18n.t(key) : '';
         }
-        function setCareerActive(index, shouldReveal, shouldFocus) {
+        function resetCareerTouchState() {
+          careerTouchState = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
+        }
+        function setCareerTouchOffset(offset, dragging) {
+          if (!careerDetail) return;
+          careerDetail.classList.toggle('is-touch-dragging', dragging);
+          careerDetail.style.setProperty('--career-swipe-x', offset + 'px');
+        }
+        function animateCareerChange(direction) {
+          if (!careerDetail || reduced) return;
+          window.clearTimeout(careerTransitionTimer);
+          careerDetail.classList.remove('is-swipe-forward', 'is-swipe-back');
+          void careerDetail.offsetWidth;
+          careerDetail.classList.add(direction < 0 ? 'is-swipe-back' : 'is-swipe-forward');
+          careerTransitionTimer = window.setTimeout(function () {
+            careerDetail.classList.remove('is-swipe-forward', 'is-swipe-back');
+          }, 380);
+        }
+        function handleCareerTouchStart(event) {
+          var touch = event.touches[0];
+          if (!touch) return;
+          careerTouchState = { startX: touch.clientX, startY: touch.clientY, moved: false, axis: 'none', suppressClickUntil: 0 };
+        }
+        function handleCareerTouchMove(event) {
+          var touch = event.touches[0];
+          if (!touch) return;
+          var dx = touch.clientX - careerTouchState.startX;
+          var dy = touch.clientY - careerTouchState.startY;
+          var distanceX = Math.abs(dx);
+          var distanceY = Math.abs(dy);
+          if (distanceX > 10 || distanceY > 10) {
+            careerTouchState.moved = true;
+            if (careerTouchState.axis === 'none') careerTouchState.axis = distanceX > distanceY ? 'horizontal' : 'vertical';
+          }
+          if (careerTouchState.axis === 'horizontal') {
+            var currentIndex = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
+            var atBoundary = (currentIndex === 0 && dx > 0) || (currentIndex === careerTabs.length - 1 && dx < 0);
+            setCareerTouchOffset(atBoundary ? dx * .35 : dx, true);
+          }
+        }
+        function handleCareerTouchEnd(event) {
+          if (!window.matchMedia || !window.matchMedia('(max-width: 720px)').matches) return;
+          var touch = event.changedTouches[0];
+          if (!touch) return;
+          var distanceX = touch.clientX - careerTouchState.startX;
+          var distanceY = touch.clientY - careerTouchState.startY;
+          var isHorizontalSwipe = careerTouchState.axis === 'horizontal' && Math.abs(distanceX) > 42 && Math.abs(distanceX) > Math.abs(distanceY);
+          if (isHorizontalSwipe) {
+            careerTouchState.suppressClickUntil = Date.now() + 450;
+            var activeIndex = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
+            var nextIndex = Math.max(0, Math.min(careerTabs.length - 1, activeIndex + (distanceX < 0 ? 1 : -1)));
+            setCareerTouchOffset(0, false);
+            if (nextIndex !== activeIndex) setCareerActive(nextIndex, true, false, true, distanceX < 0 ? 1 : -1);
+          } else if (careerTouchState.moved) {
+            careerTouchState.suppressClickUntil = Date.now() + 250;
+            setCareerTouchOffset(0, false);
+          }
+        }
+        function setCareerActive(index, shouldReveal, shouldFocus, forceCenter, swipeDirection) {
           var item = careerItems[index];
           if (!item) return;
           document.querySelectorAll('[data-career-direction]').forEach(function (button) {
@@ -2490,7 +2574,8 @@
             node.setAttribute('data-i18n', key);
             node.textContent = careerText(key) || node.textContent;
           });
-          if (shouldReveal && window.matchMedia && window.matchMedia('(max-width: 720px)').matches && !(careerTablist && careerTablist.classList.contains('career-tabs--focus'))) {
+          if (swipeDirection) animateCareerChange(swipeDirection);
+          if (shouldReveal && window.matchMedia && window.matchMedia('(max-width: 720px)').matches && (forceCenter || !(careerTablist && careerTablist.classList.contains('career-tabs--focus')))) {
             var activeTab = careerTabs[index];
             if (activeTab) activeTab.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
           }
@@ -2502,7 +2587,15 @@
           }
         }
         careerTabs.forEach(function (tab, tabIndex) {
-          tab.addEventListener('click', function () { setCareerActive(tabIndex, true, false); });
+          tab.addEventListener('click', function (event) {
+            if (Date.now() < careerTouchState.suppressClickUntil) {
+              event.preventDefault();
+              resetCareerTouchState();
+              return;
+            }
+            resetCareerTouchState();
+            setCareerActive(tabIndex, true, false);
+          });
           tab.addEventListener('keydown', function (event) {
             var nextIndex = tabIndex;
             if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (tabIndex + 1) % careerTabs.length;
@@ -2514,6 +2607,15 @@
             setCareerActive(nextIndex, true, true);
           });
         });
+        if (careerTouchTarget) {
+          careerTouchTarget.addEventListener('touchstart', handleCareerTouchStart, { passive: true });
+          careerTouchTarget.addEventListener('touchmove', handleCareerTouchMove, { passive: true });
+          careerTouchTarget.addEventListener('touchend', handleCareerTouchEnd, { passive: true });
+          careerTouchTarget.addEventListener('touchcancel', function () {
+            setCareerTouchOffset(0, false);
+            resetCareerTouchState();
+          }, { passive: true });
+        }
         careerPagination.forEach(function (dot, dotIndex) {
           dot.addEventListener('click', function () { setCareerActive(dotIndex, true, false); });
         });
@@ -2807,6 +2909,7 @@
       var mobileNavToggle = document.querySelector('.nav-toggle');
       var mobileNavClose = mobileNavDrawer ? mobileNavDrawer.querySelector('.mobile-nav-close') : null;
       var mobileNavLastFocus = mobileNavToggle;
+      var mobileNavCloseTimer = null;
       function mobileNavLabel(key, fallback) {
         return window.__i18n && typeof window.__i18n.t === 'function' ? window.__i18n.t(key) : fallback;
       }
@@ -2836,21 +2939,38 @@
       }
       function setMobileNavOpen(isOpen, restoreFocus) {
         if (!mobileNavDrawer || !mobileNavToggle) return;
-        if (isOpen) mobileNavLastFocus = document.activeElement || mobileNavToggle;
-        mobileNavDrawer.classList.toggle('is-open', isOpen);
-        mobileNavDrawer.setAttribute('aria-hidden', String(!isOpen));
-        document.body.classList.toggle('mobile-nav-open', isOpen);
-        renderMobileNavTrigger(isOpen);
         if (isOpen) {
+          window.clearTimeout(mobileNavCloseTimer);
+          mobileNavLastFocus = document.activeElement || mobileNavToggle;
+          document.body.classList.add('mobile-nav-open');
+          document.body.classList.remove('mobile-nav-closing');
+          mobileNavDrawer.classList.remove('is-closing', 'is-closed');
+          mobileNavDrawer.classList.add('is-open');
+          mobileNavDrawer.setAttribute('aria-hidden', 'false');
+          renderMobileNavTrigger(true);
           window.setTimeout(function () {
             var firstLink = mobileNavDrawer.querySelector('#mobile-primary-nav a');
             if (firstLink) firstLink.focus();
             else if (mobileNavClose) mobileNavClose.focus();
           }, 0);
-        } else if (restoreFocus !== false) {
-          var focusTarget = mobileNavLastFocus && typeof mobileNavLastFocus.focus === 'function' ? mobileNavLastFocus : mobileNavToggle;
-          focusTarget.focus();
+          return;
         }
+        window.clearTimeout(mobileNavCloseTimer);
+        document.body.classList.add('mobile-nav-open', 'mobile-nav-closing');
+        mobileNavDrawer.classList.add('is-closing');
+        mobileNavDrawer.classList.remove('is-open');
+        mobileNavDrawer.setAttribute('aria-hidden', 'false');
+        renderMobileNavTrigger(false);
+        mobileNavCloseTimer = window.setTimeout(function () {
+          mobileNavDrawer.classList.remove('is-closing');
+          mobileNavDrawer.classList.add('is-closed');
+          mobileNavDrawer.setAttribute('aria-hidden', 'true');
+          document.body.classList.remove('mobile-nav-closing', 'mobile-nav-open');
+          if (restoreFocus !== false) {
+            var focusTarget = mobileNavLastFocus && typeof mobileNavLastFocus.focus === 'function' ? mobileNavLastFocus : mobileNavToggle;
+            focusTarget.focus();
+          }
+        }, 380);
       }
       if (mobileNavToggle && mobileNavDrawer) {
         mobileNavToggle.addEventListener('click', function () {
@@ -2864,7 +2984,7 @@
           link.addEventListener('click', function () { setMobileNavOpen(false, true); });
         });
         document.addEventListener('keydown', function (event) {
-          if (!mobileNavDrawer.classList.contains('is-open')) return;
+          if (!mobileNavDrawer.classList.contains('is-open') && !document.body.classList.contains('mobile-nav-closing')) return;
           if (event.key === 'Escape') {
             event.preventDefault();
             setMobileNavOpen(false, true);

@@ -136,6 +136,7 @@ function AwardGallery() {
   ));
   const [mobileAwardIndex, setMobileAwardIndex] = useState(0);
   const railRef = useRef(null);
+  const awardTouchState = useRef({ startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 });
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
@@ -189,6 +190,13 @@ function AwardGallery() {
     setRailState({ canScrollLeft: safeIndex > 0, canScrollRight: safeIndex < awards.length - 1 });
   }, []);
 
+  const setRailTouchOffset = (offset, dragging) => {
+    const rail = railRef.current;
+    if (!rail) return;
+    rail.classList.toggle('is-touch-dragging', dragging);
+    rail.style.setProperty('--mobile-swipe-x', `${offset}px`);
+  };
+
   const scrollRail = useCallback((direction) => {
     const rail = railRef.current;
     if (!rail) return;
@@ -198,6 +206,56 @@ function AwardGallery() {
     }
     rail.scrollBy({ left: direction * rail.clientWidth * .82, behavior: 'smooth' });
   }, [isMobile, mobileAwardIndex, moveToMobileAward]);
+
+  const handleRailTouchStart = (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    awardTouchState.current = { startX: touch.clientX, startY: touch.clientY, moved: false, axis: 'none', suppressClickUntil: 0 };
+  };
+
+  const handleRailTouchMove = (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    const dx = touch.clientX - awardTouchState.current.startX;
+    const dy = touch.clientY - awardTouchState.current.startY;
+    const distanceX = Math.abs(dx);
+    const distanceY = Math.abs(dy);
+    if (distanceX > 10 || distanceY > 10) {
+      awardTouchState.current.moved = true;
+      if (awardTouchState.current.axis === 'none') {
+        awardTouchState.current.axis = distanceX > distanceY ? 'horizontal' : 'vertical';
+      }
+    }
+    if (awardTouchState.current.axis === 'horizontal') {
+      const atBoundary = (mobileAwardIndex === 0 && dx > 0)
+        || (mobileAwardIndex === awards.length - 1 && dx < 0);
+      setRailTouchOffset(atBoundary ? dx * .35 : dx, true);
+    }
+  };
+
+  const handleRailTouchEnd = (event) => {
+    if (!isMobile) return;
+    const touch = event.changedTouches[0];
+    if (!touch) return;
+    const distanceX = touch.clientX - awardTouchState.current.startX;
+    const distanceY = touch.clientY - awardTouchState.current.startY;
+    const isHorizontalSwipe = awardTouchState.current.axis === 'horizontal'
+      && Math.abs(distanceX) > 42
+      && Math.abs(distanceX) > Math.abs(distanceY);
+    if (isHorizontalSwipe) {
+      awardTouchState.current.suppressClickUntil = Date.now() + 450;
+      setRailTouchOffset(0, false);
+      scrollRail(distanceX < 0 ? 1 : -1);
+    } else if (awardTouchState.current.moved) {
+      awardTouchState.current.suppressClickUntil = Date.now() + 250;
+      setRailTouchOffset(0, false);
+    }
+  };
+
+  const handleRailTouchCancel = () => {
+    setRailTouchOffset(0, false);
+    awardTouchState.current = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
+  };
 
   useEffect(() => {
     const media = window.matchMedia('(max-width: 720px)');
@@ -253,7 +311,7 @@ function AwardGallery() {
     : (isMobile ? '左右浏览 · 选择作品' : '左右浏览 · 点击查看');
 
   return (
-    <div className="impact-glass impact-award-shell">
+    <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
       <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
       <p className="impact-award-description">{lang === 'en' ? 'AI creation contests with wins and finalists.' : '参与 AI 创作赛事，含获奖和入围作品。'}</p>
       <button
@@ -287,7 +345,14 @@ function AwardGallery() {
               aria-label={lang === 'en' ? `Zoom in: ${award.title.en}, ${award.meta.en}` : `放大查看：${award.title.zh}，${award.meta.zh}`}
               aria-haspopup="dialog"
               aria-controls="impact-award-lightbox"
-              onClick={(event) => open(index, event)}
+              onClick={(event) => {
+                if (awardTouchState.current.moved || Date.now() < awardTouchState.current.suppressClickUntil) {
+                  event.preventDefault();
+                  handleRailTouchCancel();
+                  return;
+                }
+                open(index, event);
+              }}
             >
               <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
               <span className="impact-award-card-caption" aria-hidden="true">
@@ -383,7 +448,7 @@ function LogoIndex() {
       </div>
       <div className="impact-platform-mobile-card">
         <div className="impact-platform-mobile-manifesto">
-          <div className="impact-platform-mobile-meta"><span>{lang === 'en' ? 'AI CREATOR INDEX' : 'AI 创作者索引'}</span><span>{lang === 'en' ? '02 / EDITORIAL' : '02 / 编辑视角'}</span></div>
+          <div className="impact-platform-mobile-meta"><span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span><span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span></div>
           <h3>{lang === 'en' ? 'AI VIDEO CREATOR' : 'AI 视频创作者'}</h3>
           <p>{lang === 'en'
             ? 'Creator partner across multiple AI video platforms.'
