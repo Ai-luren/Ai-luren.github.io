@@ -64,12 +64,26 @@ try {
     shellTouchAction: getComputedStyle(document.querySelector('.comet-archive-mobile-shell')).touchAction,
     nextTouchAction: getComputedStyle(document.querySelector('.comet-archive-page-arrow--next')).touchAction,
     dotTouchAction: getComputedStyle(document.querySelector('.comet-archive-pagination button')).touchAction,
+    pagination: (() => {
+      const wrapper = document.querySelector('.comet-archive-pagination');
+      const active = wrapper?.querySelector('button.is-active');
+      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+      const dotStyle = active ? getComputedStyle(active, '::before') : null;
+      return {
+        background: wrapperStyle?.backgroundColor,
+        border: wrapperStyle?.borderStyle,
+        activeDotWidth: dotStyle?.width,
+      };
+    })(),
   }));
   if (styles.shellTouchAction !== 'pan-y') {
     throw new Error(`作品卡片容器 touch-action 应为 pan-y，实际为 ${styles.shellTouchAction}`);
   }
   if (styles.nextTouchAction !== 'manipulation' || styles.dotTouchAction !== 'manipulation') {
     throw new Error(`分页控件 touch-action 应为 manipulation，实际为 ${JSON.stringify(styles)}`);
+  }
+  if (styles.pagination.background !== 'rgba(0, 0, 0, 0)' || styles.pagination.border !== 'none' || styles.pagination.activeDotWidth !== '20px') {
+    throw new Error(`作品分页点视觉样式异常：${JSON.stringify(styles.pagination)}`);
   }
 
   await swipe('.comet-archive-mobile-shell', { dx: -140, dy: 0 });
@@ -85,9 +99,23 @@ try {
   const careerStyles = await page.evaluate(() => ({
     stripTouchAction: getComputedStyle(document.querySelector('#profile .career-strip')).touchAction,
     tabTouchAction: getComputedStyle(document.querySelector('#career-tablist .career-tab')).touchAction,
+    pagination: (() => {
+      const wrapper = document.querySelector('#profile .career-pagination');
+      const active = wrapper?.querySelector('button.is-active');
+      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+      const dotStyle = active ? getComputedStyle(active, '::before') : null;
+      return {
+        background: wrapperStyle?.backgroundColor,
+        border: wrapperStyle?.borderStyle,
+        activeDotWidth: dotStyle?.width,
+      };
+    })(),
   }));
   if (careerStyles.stripTouchAction !== 'pan-y') {
     throw new Error(`工作经历容器 touch-action 应为 pan-y，实际为 ${careerStyles.stripTouchAction}`);
+  }
+  if (careerStyles.pagination.background !== 'rgba(0, 0, 0, 0)' || careerStyles.pagination.border !== 'none' || careerStyles.pagination.activeDotWidth !== '20px') {
+    throw new Error(`工作经历分页点视觉样式异常：${JSON.stringify(careerStyles.pagination)}`);
   }
   const activeCareer = () => page.evaluate(() => (
     [...document.querySelectorAll('#career-tablist .career-tab')]
@@ -108,12 +136,26 @@ try {
     shellTouchAction: getComputedStyle(document.querySelector('.impact-award-shell')).touchAction,
     nextTouchAction: getComputedStyle(document.querySelector('.impact-award-rail-nav--next')).touchAction,
     dotTouchAction: getComputedStyle(document.querySelector('.impact-award-pagination button')).touchAction,
+    pagination: (() => {
+      const wrapper = document.querySelector('.impact-award-pagination');
+      const active = wrapper?.querySelector('button.is-active');
+      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+      const dotStyle = active ? getComputedStyle(active, '::before') : null;
+      return {
+        background: wrapperStyle?.backgroundColor,
+        border: wrapperStyle?.borderStyle,
+        activeDotWidth: dotStyle?.width,
+      };
+    })(),
   }));
   if (awardStyles.shellTouchAction !== 'pan-y') {
     throw new Error(`获奖作品容器 touch-action 应为 pan-y，实际为 ${awardStyles.shellTouchAction}`);
   }
   if (awardStyles.nextTouchAction !== 'manipulation' || awardStyles.dotTouchAction !== 'manipulation') {
     throw new Error(`获奖作品控件 touch-action 应为 manipulation，实际为 ${JSON.stringify(awardStyles)}`);
+  }
+  if (awardStyles.pagination.background !== 'rgba(0, 0, 0, 0)' || awardStyles.pagination.border !== 'none' || awardStyles.pagination.activeDotWidth !== '20px') {
+    throw new Error(`获奖作品分页点视觉样式异常：${JSON.stringify(awardStyles.pagination)}`);
   }
   const activeAward = () => page.evaluate(() => (
     [...document.querySelectorAll('.impact-award-pagination button')]

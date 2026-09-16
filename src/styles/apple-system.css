@@ -307,7 +307,8 @@ header .nav-contact-icon:focus-visible {
 .impact-evidence-note,
 .impact-logo-head,
 .impact-reach-dossier-head { color: var(--apple-tertiary); font-family: var(--font-mono); }
-.impact-award-card { transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
+.impact-award-card { box-shadow: none !important; transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
+#recognition .impact-award-card { box-shadow: none !important; }
 .impact-award-card:hover,
 .impact-award-card:focus-visible { border-color: rgba(255, 255, 255, .5) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .28) !important; transform: translateY(-3px); }
 .impact-award-rail-nav { transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important; }
@@ -329,14 +330,14 @@ header .nav-contact-icon:focus-visible {
   .impact-reach-profile:focus-within {
     transform: translateY(-4px);
   }
-  #impact-reach .impact-reach-profile-shot--link:hover .impact-reach-profile-media,
-  #impact-reach .impact-reach-profile-shot--link:focus-visible .impact-reach-profile-media {
+  #impact-reach .impact-reach-profile:hover .impact-reach-profile-media,
+  #impact-reach .impact-reach-profile:focus-within .impact-reach-profile-media {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, .34), 0 16px 32px rgba(0, 0, 0, .28) !important;
     transform: translateY(-1px);
   }
-  .impact-reach-profile-shot--link:hover .impact-reach-profile-media img,
-  .impact-reach-profile-shot--link:focus-visible .impact-reach-profile-media img {
-    transform: scale(1.035);
+  #impact-reach .impact-reach-profile:hover .impact-reach-profile-media img,
+  #impact-reach .impact-reach-profile:focus-within .impact-reach-profile-media img {
+    transform: scale(1.05);
   }
   .impact-reach-profile:hover .impact-reach-profile-caption strong,
   .impact-reach-profile:focus-within .impact-reach-profile-caption strong {
@@ -345,11 +346,12 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (max-width: 760px) {
-  #impact-reach .impact-reach-profile-shot--link:active .impact-reach-profile-media {
+  #impact-reach .impact-reach-profile-shot:active .impact-reach-profile-media {
     box-shadow: 0 0 0 2px rgba(255, 255, 255, .3), 0 8px 18px rgba(0, 0, 0, .24) !important;
+    transform: translateY(-1px);
   }
-  .impact-reach-profile-shot--link:active .impact-reach-profile-media img {
-    transform: scale(1.02);
+  #impact-reach .impact-reach-profile-shot:active .impact-reach-profile-media img {
+    transform: scale(1.03);
   }
 }
 
@@ -400,7 +402,7 @@ header .nav-contact-icon:focus-visible {
   .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 24px 0 28px; }
   .impact-award-rail { height: 390px; }
   .impact-award-card { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 10px; padding: 10px 10px 12px; }
-  .impact-award-card img { flex: 1 1 auto; min-height: 0; width: 100%; height: auto; object-fit: contain; }
+  .impact-award-card img { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; object-fit: contain; }
   .impact-logo-shell { min-height: 0; padding: 26px 32px 30px; }
   .impact-logo-shell > .impact-logo-head,
   .impact-logo-shell > .logo-loop { display: none; }
@@ -933,6 +935,19 @@ footer {
 .comet-card:hover .comet-archive__image,
 .comet-card:focus-within .comet-archive__image { transform: none !important; }
 .impact-award-card { background: rgba(0, 0, 0, .58) !important; }
+
+/* 作品图默认保持干净的媒体边界；只有交互发生时才出现承托跳转标签的渐变，
+   避免桌面端每张图的底部都像多出一块黑色漏边。 */
+@media (min-width: 721px) {
+  .comet-archive__image::after {
+    opacity: 0;
+    transition: opacity var(--apple-duration-control) var(--apple-ease);
+  }
+  .comet-card:hover .comet-archive__image::after,
+  .comet-card:focus-within .comet-archive__image::after {
+    opacity: 1;
+  }
+}
 
 @media (max-width: 720px) {
   .impact-award-rail > li {
@@ -1815,7 +1830,7 @@ header .nav-contact-icon:focus-visible {
 
 /* Desktop award cards keep the full portrait and expose its context below. */
 @media (min-width: 761px) {
-  .impact-award-card-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; padding: 0 2px; text-align: left; }
+  .impact-award-card-caption { display: flex; flex: 0 0 28px; min-height: 28px; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; padding: 0 2px; text-align: left; }
   .impact-award-card-caption strong { flex: 1 1 0; min-width: 0; overflow: visible; color: var(--apple-text); font: 600 12px/1.3 var(--font-display); text-overflow: clip; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; }
   .impact-award-card-caption small { flex: 0 1 42%; min-width: 0; color: var(--apple-secondary); font: 400 10px/1.3 var(--font-mono); white-space: normal; text-align: right; overflow-wrap: anywhere; }
   .impact-evidence-label { grid-template-columns: minmax(0, 1fr); }
@@ -2069,8 +2084,24 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-pagination,
   #profile .career-pagination,
   .impact-award-pagination {
+    width: fit-content !important;
+    max-width: 100%;
     gap: 0 !important;
     min-height: 44px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* 分页点的定位基准必须是完整轮播壳，而不是左右箭头预留区；
+     否则精选创作和获奖作品会整体偏向左侧。 */
+  #projects .comet-archive-pagination,
+  #impact-awards .impact-award-pagination {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
   }
 
   .comet-archive-pagination button,
@@ -2100,17 +2131,18 @@ header .nav-contact-icon:focus-visible {
     border-radius: 999px;
     background: rgba(255, 255, 255, .22);
     content: '';
-    transform: scaleX(1);
+    transform: none;
     transform-origin: center;
-    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
+    transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
 
   .comet-archive-pagination button.is-active::before,
   #profile .career-pagination button.is-active::before,
   .impact-award-pagination button.is-active::before {
+    width: 20px;
     height: 7px;
     background: var(--apple-text);
-    transform: scaleX(3.43);
+    transform: none;
   }
 
   .comet-archive-pagination button:focus-visible,
@@ -2204,6 +2236,34 @@ header .nav-contact-icon:focus-visible {
 
   .impact-platform-mobile-tile img {
     height: 26px;
+  }
+}
+
+/* 桌面工作经历是一个连续的阶段索引，不是五张独立卡片：取消圆角拼接，
+   让阶段关系由间距、文字层级和当前项高亮表达，避免被截断的装饰线。 */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  #profile .career-tab {
+    position: relative;
+    z-index: 0;
+    border: 0 !important;
+    transition: background-color var(--apple-duration-control) var(--apple-ease),
+      color var(--apple-duration-control) var(--apple-ease),
+      box-shadow var(--apple-duration-control) var(--apple-ease),
+      transform var(--apple-duration-control) var(--apple-ease) !important;
+  }
+
+  #profile .career-tabs--focus .career-tab {
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  #profile .career-tab:hover:not(:focus-visible),
+  #profile .career-tab:focus-visible {
+    z-index: 1;
+    color: var(--apple-text) !important;
+    background: rgba(255, 255, 255, .075) !important;
+    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, .72), 0 6px 18px rgba(0, 0, 0, .16) !important;
+    transform: translateY(-1px);
   }
 }
 

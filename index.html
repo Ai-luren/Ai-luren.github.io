@@ -2947,11 +2947,6 @@
           mobileNavDrawer.classList.add('is-open');
           mobileNavDrawer.setAttribute('aria-hidden', 'false');
           renderMobileNavTrigger(true);
-          window.setTimeout(function () {
-            var firstLink = mobileNavDrawer.querySelector('#mobile-primary-nav a');
-            if (firstLink) firstLink.focus();
-            else if (mobileNavClose) mobileNavClose.focus();
-          }, 0);
           return;
         }
         window.clearTimeout(mobileNavCloseTimer);
