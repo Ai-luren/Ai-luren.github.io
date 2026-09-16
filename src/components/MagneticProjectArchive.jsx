@@ -132,23 +132,6 @@ export default function MagneticProjectArchive() {
     changeMobilePage(mobilePage + (event.key === 'ArrowRight' ? 1 : -1), event.key === 'ArrowRight' ? 1 : -1);
   };
 
-  const handleTouchEnd = (event) => {
-    if (!isMobile) return;
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    const distance = touch.clientX - touchState.current.startX;
-    if (Math.abs(distance) > 42) {
-      setMobilePage((page) => Math.max(0, Math.min(1, page + (distance < 0 ? 1 : -1))));
-    }
-  };
-
-  const handlePageKeyDown = (event) => {
-    if (!isMobile) return;
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    event.preventDefault();
-    setMobilePage((page) => Math.max(0, Math.min(1, page + (event.key === 'ArrowRight' ? 1 : -1))));
-  };
-
   const handlePointerDown = (event) => {
     if (event.pointerType !== 'mouse' || event.button !== 0) return;
     const archive = archiveRef.current;
