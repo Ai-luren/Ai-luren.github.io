@@ -1,56 +1,38 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="460" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="title desc">
-  <title id="title">Ai路人｜深空创作舱</title>
-  <desc id="desc">动态设计师 Ai路人的个人作品集，展示从动态设计到 AI 创意效果的创作路径。</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1220"/>
-      <stop offset="0.58" stop-color="#111b31"/>
-      <stop offset="1" stop-color="#241b4d"/>
-    </linearGradient>
-    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#72a7ff" stop-opacity="0.28"/>
-      <stop offset="0.52" stop-color="#b894ff"/>
-      <stop offset="1" stop-color="#ff91c8" stop-opacity="0.38"/>
-    </linearGradient>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">Ai路人｜AI 视频创意与视觉设计作品集</title>
+  <desc id="desc">Ai路人的个人作品集，展示动态设计、产品品牌、AI 创意效果和可复用的创作工作流。</desc>
 
-  <rect width="1200" height="460" rx="28" fill="url(#bg)"/>
-  <circle cx="1060" cy="86" r="150" fill="#6750d8" opacity="0.12"/>
-  <circle cx="1040" cy="120" r="70" fill="#8ec5ff" opacity="0.07"/>
-  <g fill="#cfe1ff" opacity="0.6">
-    <circle cx="790" cy="54" r="2"/><circle cx="930" cy="86" r="2"/><circle cx="1110" cy="148" r="2"/><circle cx="1020" cy="352" r="2"/><circle cx="156" cy="326" r="2"/>
+  <rect width="1200" height="420" rx="28" fill="#08090b"/>
+  <rect x="40" y="40" width="1120" height="340" rx="22" fill="#111214" stroke="#2b2d31"/>
+  <path d="M40 284H1160" stroke="#24262a"/>
+  <path d="M692 254C756 254 774 188 842 188S934 254 1000 218 1062 138 1124 138" fill="none" stroke="#32353a" stroke-width="16" stroke-linecap="round"/>
+  <path d="M692 254C756 254 774 188 842 188S934 254 1000 218 1062 138 1124 138" fill="none" stroke="#2997ff" stroke-opacity=".88" stroke-width="3" stroke-linecap="round"/>
+
+  <g transform="translate(82 82)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+    <text x="0" y="0" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" letter-spacing="3">AI VIDEO / CREATIVE ARCHIVE</text>
+    <text x="0" y="86" fill="#f5f5f7" font-size="68" font-weight="700" letter-spacing="-3">Ai路人</text>
+    <text x="0" y="132" fill="#d2d2d7" font-size="30" font-weight="600" letter-spacing="-1">AI 视频创意与视觉设计</text>
+    <text x="0" y="180" fill="#a1a1a6" font-size="22">从动态设计、产品品牌到 AI 创意效果与工作流。</text>
   </g>
-
-  <g transform="translate(62 50)" fill="#d9e8ff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
-    <text x="0" y="0" font-size="18" letter-spacing="3" fill="#9dbfff">PERSONAL CREATIVE ARCHIVE / 2026</text>
-    <text x="0" y="74" font-size="56" font-weight="700">Ai路人</text>
-    <text x="0" y="122" font-size="32" font-weight="600" fill="#ffffff">深空创作舱</text>
-    <text x="0" y="166" font-size="21" fill="#b8c8e5">动态设计 × AI 图像与视频 × Vibe Coding</text>
-    <text x="0" y="202" font-size="18" fill="#8fa4c8">从镜头节奏，到产品效果，再到可复用的 AI 工作流。</text>
-  </g>
-
-  <!-- The curve passes through all three node centers: (110,352), (520,276), (900,260). -->
-  <path d="M110 352C240 352 360 348 520 276S760 276 900 260S1030 236 1110 206" fill="none" stroke="#bfd7ff" stroke-opacity="0.12" stroke-width="15"/>
-  <path d="M110 352C240 352 360 348 520 276S760 276 900 260S1030 236 1110 206" fill="none" stroke="url(#line)" stroke-width="4"/>
 
   <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
-    <g transform="translate(110 352)">
-      <circle r="15" fill="#78aaff"/>
-      <text x="28" y="6" font-size="20" font-weight="600" fill="#e5efff">动态设计</text>
-      <text x="28" y="32" font-size="17" fill="#9fb1d2">镜头 / 节奏</text>
+    <g transform="translate(692 254)">
+      <circle r="12" fill="#2997ff"/>
+      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">动态设计</text>
+      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">01 / MOTION</text>
     </g>
-    <g transform="translate(520 276)">
-      <circle r="15" fill="#a795ff"/>
-      <text x="28" y="6" font-size="20" font-weight="600" fill="#e5efff">产品品牌</text>
-      <text x="28" y="32" font-size="17" fill="#9fb1d2">场景 / 质感</text>
+    <g transform="translate(842 188)">
+      <circle r="12" fill="#2997ff"/>
+      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">产品品牌</text>
+      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">02 / BRAND</text>
     </g>
-    <g transform="translate(900 260)">
-      <circle r="15" fill="#ff9ccf"/>
-      <text x="28" y="6" font-size="20" font-weight="600" fill="#e5efff">AI 创意效果</text>
-      <text x="28" y="32" font-size="17" fill="#9fb1d2">想法 / 上线</text>
+    <g transform="translate(1000 218)">
+      <circle r="12" fill="#2997ff"/>
+      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">AI 创意效果</text>
+      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">03 / AI EFFECTS</text>
     </g>
   </g>
 
-  <path d="M62 414H1138" stroke="#dbe8ff" stroke-opacity="0.12"/>
-  <text x="62" y="442" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#8fa4c8">SCROLL / SELECTED WORK / IMPACT / AI LAB</text>
+  <text x="82" y="338" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" letter-spacing="1.5">SELECTED WORK  /  IMPACT PROOF  /  AI LAB</text>
+  <circle cx="1118" cy="338" r="5" fill="#2997ff"/>
 </svg>
