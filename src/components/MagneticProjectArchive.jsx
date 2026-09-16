@@ -44,43 +44,92 @@ const renderTitle = (raw) => {
 export default function MagneticProjectArchive() {
   const archiveRef = useRef(null);
   const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
-  const touchState = useRef({ startX: 0, startY: 0, moved: false });
+  const touchState = useRef({ startX: 0, startY: 0, moved: false, axis: 'none', pageAtStart: 0, suppressClickUntil: 0 });
+  const pageTransitionTimer = useRef(null);
   const [canScroll, setCanScroll] = useState(false);
   const [isMobile, setIsMobile] = useState(() => (
     typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
   ));
   const [mobilePage, setMobilePage] = useState(0);
+  const [mobilePageTransition, setMobilePageTransition] = useState('');
   const lang = useLang();
+
+  const rubberBand = (distance, atBoundary) => (atBoundary ? distance * .35 : distance);
+
+  const resetTouchVisual = (animate = true) => {
+    const archive = archiveRef.current;
+    if (!archive) return;
+    archive.classList.toggle('is-touch-dragging', !animate);
+    archive.style.setProperty('--mobile-swipe-x', '0px');
+  };
+
+  const changeMobilePage = (nextPage, direction) => {
+    const safePage = Math.max(0, Math.min(1, nextPage));
+    if (safePage === mobilePage) return;
+    window.clearTimeout(pageTransitionTimer.current);
+    setMobilePageTransition(direction < 0 ? 'back' : 'forward');
+    setMobilePage(safePage);
+    pageTransitionTimer.current = window.setTimeout(() => setMobilePageTransition(''), 380);
+  };
 
   const handleTouchStart = (event) => {
     const touch = event.touches[0];
     if (!touch) return;
-    touchState.current = { startX: touch.clientX, startY: touch.clientY, moved: false };
+    touchState.current = { startX: touch.clientX, startY: touch.clientY, moved: false, axis: 'none', pageAtStart: mobilePage, suppressClickUntil: 0 };
   };
 
   const handleTouchMove = (event) => {
     const touch = event.touches[0];
     if (!touch) return;
-    const dx = Math.abs(touch.clientX - touchState.current.startX);
-    const dy = Math.abs(touch.clientY - touchState.current.startY);
-    if (dx > 10 || dy > 10) touchState.current.moved = true;
+    const dx = touch.clientX - touchState.current.startX;
+    const dy = touch.clientY - touchState.current.startY;
+    const distanceX = Math.abs(dx);
+    const distanceY = Math.abs(dy);
+    if (distanceX > 10 || distanceY > 10) {
+      touchState.current.moved = true;
+      if (touchState.current.axis === 'none') {
+        touchState.current.axis = distanceX > distanceY ? 'horizontal' : 'vertical';
+      }
+    }
+    if (touchState.current.axis === 'horizontal' && archiveRef.current) {
+      const atBoundary = (touchState.current.pageAtStart === 0 && dx > 0)
+        || (touchState.current.pageAtStart === 1 && dx < 0);
+      archiveRef.current.classList.add('is-touch-dragging');
+      archiveRef.current.style.setProperty('--mobile-swipe-x', `${rubberBand(dx, atBoundary)}px`);
+    }
   };
 
   const handleTouchEnd = (event) => {
     if (!isMobile) return;
     const touch = event.changedTouches[0];
     if (!touch) return;
-    const distance = touch.clientX - touchState.current.startX;
-    if (Math.abs(distance) > 42) {
-      setMobilePage((page) => Math.max(0, Math.min(1, page + (distance < 0 ? 1 : -1))));
+    const distanceX = touch.clientX - touchState.current.startX;
+    const distanceY = touch.clientY - touchState.current.startY;
+    const isHorizontalSwipe = touchState.current.axis === 'horizontal'
+      && Math.abs(distanceX) > 42
+      && Math.abs(distanceX) > Math.abs(distanceY);
+    if (isHorizontalSwipe) {
+      touchState.current.suppressClickUntil = Date.now() + 450;
+      resetTouchVisual(true);
+      changeMobilePage(touchState.current.pageAtStart + (distanceX < 0 ? 1 : -1), distanceX);
+    } else if (touchState.current.moved) {
+      touchState.current.suppressClickUntil = Date.now() + 250;
+      resetTouchVisual(true);
     }
   };
+
+  const handleTouchCancel = () => {
+    resetTouchVisual(true);
+    touchState.current = { startX: 0, startY: 0, moved: false, axis: 'none', pageAtStart: mobilePage, suppressClickUntil: 0 };
+  };
+
+  useEffect(() => () => window.clearTimeout(pageTransitionTimer.current), []);
 
   const handlePageKeyDown = (event) => {
     if (!isMobile) return;
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
-    setMobilePage((page) => Math.max(0, Math.min(1, page + (event.key === 'ArrowRight' ? 1 : -1))));
+    changeMobilePage(mobilePage + (event.key === 'ArrowRight' ? 1 : -1), event.key === 'ArrowRight' ? 1 : -1);
   };
 
   const handlePointerDown = (event) => {
@@ -116,10 +165,10 @@ export default function MagneticProjectArchive() {
 
   const handleCardClick = (event) => {
     // 滑动（鼠标拖拽或触屏位移）后松手不触发跳转；干净的点击走原生 <a> 跳转
-    if (dragState.current.moved || touchState.current.moved) {
+    if (dragState.current.moved || touchState.current.moved || Date.now() < touchState.current.suppressClickUntil) {
       event.preventDefault();
       dragState.current.moved = false;
-      touchState.current.moved = false;
+      touchState.current = { startX: 0, startY: 0, moved: false, axis: 'none', pageAtStart: mobilePage, suppressClickUntil: 0 };
       return;
     }
   };
@@ -153,11 +202,11 @@ export default function MagneticProjectArchive() {
 
   return (
     <>
-      <div className="comet-archive-mobile-shell">
-      <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={() => setMobilePage((page) => Math.max(0, page - 1))}>
+      <div className={`comet-archive-mobile-shell${mobilePageTransition ? ` is-page-${mobilePageTransition}` : ''}`} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel}>
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={() => changeMobilePage(mobilePage - 1, -1)}>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
       </button>
-      <div ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} tabIndex={isMobile ? 0 : undefined} onKeyDown={handlePageKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+      <div key={isMobile ? mobilePage : 'desktop'} ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} tabIndex={isMobile ? 0 : undefined} onKeyDown={handlePageKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging}>
       {visibleArchives.map(archive => (
         <CometCard key={archive.id} className="comet-archive__item" enableTilt={false} onClick={handleCardClick}>
           <a
@@ -178,12 +227,12 @@ export default function MagneticProjectArchive() {
         </CometCard>
       ))}
       </div>
-      <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={() => setMobilePage((page) => Math.min(1, page + 1))}>
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={() => changeMobilePage(mobilePage + 1, 1)}>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
       <div className="comet-archive-pagination" role="tablist" aria-label={lang === 'en' ? 'Select project page' : '选择作品页'}>
         {[0, 1].map((page) => (
-          <button key={page} type="button" role="tab" aria-selected={isMobile && mobilePage === page} aria-label={lang === 'en' ? `Show project page ${page + 1}` : `查看第${page + 1}页作品`} className={isMobile && mobilePage === page ? 'is-active' : ''} onClick={() => setMobilePage(page)} />
+        <button key={page} type="button" role="tab" aria-selected={isMobile && mobilePage === page} aria-label={lang === 'en' ? `Show project page ${page + 1}` : `查看第${page + 1}页作品`} className={isMobile && mobilePage === page ? 'is-active' : ''} onClick={() => changeMobilePage(page, page > mobilePage ? 1 : -1)} />
         ))}
       </div>
       </div>

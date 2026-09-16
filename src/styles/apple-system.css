@@ -313,7 +313,45 @@ header .nav-contact-icon:focus-visible {
 .impact-award-rail-nav { transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important; }
 .impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .34) !important; background: var(--apple-surface-raised) !important; }
 .impact-reach-profile-media { clip-path: inset(0 round var(--portfolio-content-radius)); }
-.impact-reach-profile-shot--link:hover .impact-reach-profile-media { box-shadow: 0 0 0 2px rgba(255, 255, 255, .24), 0 12px 28px rgba(0, 0, 0, .22); }
+.impact-reach-profile {
+  transition: transform var(--apple-duration-card) var(--apple-ease);
+}
+.impact-reach-profile-shot--link .impact-reach-profile-media {
+  transition: box-shadow var(--apple-duration-card) var(--apple-ease),
+    transform var(--apple-duration-card) var(--apple-ease);
+}
+.impact-reach-profile-shot--link .impact-reach-profile-media img {
+  transition: transform var(--apple-duration-card) var(--apple-ease);
+}
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .impact-reach-profile:hover,
+  .impact-reach-profile:focus-within {
+    transform: translateY(-4px);
+  }
+  #impact-reach .impact-reach-profile-shot--link:hover .impact-reach-profile-media,
+  #impact-reach .impact-reach-profile-shot--link:focus-visible .impact-reach-profile-media {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .34), 0 16px 32px rgba(0, 0, 0, .28) !important;
+    transform: translateY(-1px);
+  }
+  .impact-reach-profile-shot--link:hover .impact-reach-profile-media img,
+  .impact-reach-profile-shot--link:focus-visible .impact-reach-profile-media img {
+    transform: scale(1.035);
+  }
+  .impact-reach-profile:hover .impact-reach-profile-caption strong,
+  .impact-reach-profile:focus-within .impact-reach-profile-caption strong {
+    color: #fff;
+  }
+}
+
+@media (max-width: 760px) {
+  #impact-reach .impact-reach-profile-shot--link:active .impact-reach-profile-media {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .3), 0 8px 18px rgba(0, 0, 0, .24) !important;
+  }
+  .impact-reach-profile-shot--link:active .impact-reach-profile-media img {
+    transform: scale(1.02);
+  }
+}
 
 /* Desktop impact tabs: one title row and one wide content canvas at a time. */
 @media (min-width: 761px) {
@@ -370,14 +408,27 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-desktop-head { display: flex; justify-content: space-between; gap: 20px; color: var(--apple-tertiary); font: 500 10px/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
   .impact-platform-desktop-head span:last-child { color: var(--apple-secondary); }
   .impact-platform-desktop-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
-  .impact-platform-desktop-tile { display: flex; flex-direction: column; justify-content: space-between; min-height: 132px; padding: 17px; border: 1px solid var(--apple-hairline-soft); border-radius: var(--apple-radius-card); background: rgba(255, 255, 255, .045); transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease); }
-  .impact-platform-desktop-tile:hover { border-color: rgba(255, 255, 255, .28); background: rgba(255, 255, 255, .08); transform: translateY(-3px); }
-  .impact-platform-desktop-tile img { display: block; width: 48px; height: 48px; object-fit: contain; }
+  .impact-platform-desktop-tile { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 132px; padding: 17px; overflow: hidden; border: 1px solid var(--apple-hairline-soft); border-radius: var(--apple-radius-card); background: rgba(255, 255, 255, .045); transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease); }
+  .impact-platform-desktop-tile img { display: block; width: 48px; height: 48px; object-fit: contain; transition: transform var(--apple-duration-card) var(--apple-ease); }
   .impact-platform-desktop-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-desktop-tile strong { display: block; color: var(--apple-text); font: 600 15px/1.25 var(--font-display); }
   .impact-platform-desktop-tile span { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 11px/1.4 var(--font-body); }
   .impact-reach-dossier { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 26px 32px 30px; }
   .impact-reach-profile-shot { height: 220px; }
+}
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  #recognition .impact-platform-desktop-tile:hover,
+  #recognition .impact-platform-desktop-tile:focus-within {
+    border-color: rgba(255, 255, 255, .32) !important;
+    background: rgba(255, 255, 255, .1) !important;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .08);
+    transform: translateY(-4px);
+  }
+  #recognition .impact-platform-desktop-tile:hover img,
+  #recognition .impact-platform-desktop-tile:focus-within img { transform: scale(1.08); }
+  #recognition .impact-platform-desktop-tile:hover strong,
+  #recognition .impact-platform-desktop-tile:focus-within strong { color: #fff; }
 }
 
 /* QR preview is portaled to body, so it needs its own explicit Apple surface
@@ -675,16 +726,14 @@ header .nav-contact-icon:active,
   pointer-events: none !important;
 }
 
-/* The drawer and all seven links open as one composition. The final item
-   starts within 144ms, so the sequence never trails the drawer noticeably. */
+/* The drawer stays anchored; only its contents and trigger carry motion. */
 @media (max-width: 760px) {
   .mobile-nav-drawer,
   .mobile-nav-drawer.is-open {
     transition: opacity var(--apple-duration-menu) var(--apple-ease),
-      visibility 0s linear var(--apple-duration-menu),
-      transform var(--apple-duration-menu) var(--apple-ease) !important;
+      visibility 0s linear var(--apple-duration-menu) !important;
   }
-  .mobile-nav-drawer { transform: translateY(-12px) !important; }
+  .mobile-nav-drawer { transform: none !important; }
   .mobile-nav-drawer.is-open {
     transform: none !important;
     transition-delay: 0s !important;
@@ -1194,8 +1243,36 @@ header .nav-contact-icon:focus-visible {
   margin: auto;
   flex: none;
 }
+.career-arrow,
+.comet-archive-page-arrow,
+.comet-archive-pagination button,
+.impact-award-rail-nav,
+.impact-award-pagination button,
+.impact-award-lightbox-nav,
+.impact-award-lightbox-close {
+  touch-action: manipulation;
+}
 .career-pagination, .career-controls { display: none; }
 @media (max-width: 720px) {
+  #profile .career-strip,
+  #profile .career-tabs { touch-action: pan-y; }
+  #profile .career-detail {
+    --career-swipe-x: 0px;
+    transform: translate3d(var(--career-swipe-x), 0, 0);
+    transition: transform var(--apple-duration-card) var(--apple-ease);
+    will-change: transform;
+  }
+  #profile .career-detail.is-touch-dragging { transition: none; }
+  @keyframes career-swipe-forward {
+    from { opacity: .72; transform: translate3d(18px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  @keyframes career-swipe-back {
+    from { opacity: .72; transform: translate3d(-18px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  #profile .career-detail.is-swipe-forward { animation: career-swipe-forward var(--apple-duration-card) var(--apple-ease) both; }
+  #profile .career-detail.is-swipe-back { animation: career-swipe-back var(--apple-duration-card) var(--apple-ease) both; }
   #profile .career-controls { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 8px; gap: 8px; }
   #profile .career-controls .career-pagination { padding: 0 !important; }
   #profile .career-arrow {
@@ -1225,10 +1302,13 @@ header .nav-contact-icon:focus-visible {
     border-radius: 999px !important;
     background: rgba(255, 255, 255, .22) !important;
     cursor: pointer !important;
-    transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
+    transform: scaleX(1);
+    transform-origin: center;
+    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
   }
   #profile .career-pagination button.is-active {
     background: transparent !important;
+    transform: scaleX(3.43);
   }
   #profile .career-pagination button:focus-visible {
     outline: 2px solid var(--apple-text) !important;
@@ -1252,6 +1332,7 @@ header .nav-contact-icon:focus-visible {
     position: relative;
     display: block;
     overflow: hidden;
+    touch-action: pan-y;
     border: 1px solid var(--apple-hairline);
     border-radius: var(--apple-radius-panel);
     background: var(--portfolio-card-surface);
@@ -1260,6 +1341,7 @@ header .nav-contact-icon:focus-visible {
     backdrop-filter: var(--portfolio-card-blur);
   }
   .comet-archive-mobile-shell .comet-archive {
+    --mobile-swipe-x: 0px;
     display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
@@ -1271,7 +1353,33 @@ header .nav-contact-icon:focus-visible {
     padding: 22px 42px !important;
     overflow: hidden !important;
     overscroll-behavior: none !important;
+    transform: translate3d(var(--mobile-swipe-x), 0, 0);
+    transition: transform var(--apple-duration-card) var(--apple-ease);
+    will-change: transform;
   }
+  .comet-archive-mobile-shell .comet-archive.is-touch-dragging { transition: none; }
+  @keyframes comet-mobile-page-forward {
+    from { opacity: .72; transform: translate3d(18px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  @keyframes comet-mobile-page-back {
+    from { opacity: .72; transform: translate3d(-18px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item {
+    animation-duration: var(--apple-duration-card);
+    animation-timing-function: var(--apple-ease);
+    animation-fill-mode: both;
+  }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item { animation-name: comet-mobile-page-forward; }
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation-name: comet-mobile-page-back; }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(2),
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(2) { animation-delay: 18ms; }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(3),
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(3) { animation-delay: 36ms; }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(4),
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(4) { animation-delay: 54ms; }
   .comet-archive-mobile-shell .comet-archive__item {
     min-width: 0 !important;
     min-height: 0 !important;
@@ -1357,6 +1465,7 @@ header .nav-contact-icon:focus-visible {
     background: rgba(25, 25, 28, .96);
     color: var(--apple-text);
     cursor: pointer;
+    touch-action: manipulation;
     transform: translateY(-50%);
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03), 0 4px 12px rgba(0, 0, 0, .18);
     transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
@@ -1392,9 +1501,12 @@ header .nav-contact-icon:focus-visible {
     border-radius: 999px;
     background: rgba(255,255,255,.22);
     cursor: pointer;
-    transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
+    touch-action: manipulation;
+    transform: scaleX(1);
+    transform-origin: center;
+    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
-  .comet-archive-pagination button.is-active { width: 24px; background: var(--apple-text); }
+  .comet-archive-pagination button.is-active { background: var(--apple-text); transform: scaleX(3.43); }
   .comet-archive-pagination button:focus-visible { outline: 2px solid var(--apple-text); outline-offset: 4px; }
 }
 
@@ -1412,7 +1524,14 @@ header .nav-contact-icon:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .comet-archive-page-arrow,
-  .comet-archive-pagination button { transition: none !important; }
+  .comet-archive-pagination button,
+  .comet-archive-mobile-shell .comet-archive,
+  .impact-award-rail,
+  #profile .career-detail { transition: none !important; }
+  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item,
+  #profile .career-detail.is-swipe-forward,
+  #profile .career-detail.is-swipe-back { animation: none !important; }
 }
 
 /* Mobile award gallery: one complete portrait at a time, with Apple-style
@@ -1420,13 +1539,20 @@ header .nav-contact-icon:focus-visible {
 .impact-award-pagination { display: none; }
 .impact-award-card-caption { display: none; }
 @media (max-width: 720px) {
+  #impact-awards .impact-award-shell { touch-action: pan-y; }
   .impact-award-rail {
+    --mobile-swipe-x: 0px;
     height: 432px !important;
     padding: 18px 60px !important;
     overflow: hidden !important;
+    touch-action: pan-y;
     clip-path: none !important;
     scroll-snap-type: x mandatory !important;
+    transform: translate3d(var(--mobile-swipe-x), 0, 0);
+    transition: transform var(--apple-duration-card) var(--apple-ease);
+    will-change: transform;
   }
+  .impact-award-rail.is-touch-dragging { transition: none; }
   .impact-award-rail > li {
     flex: 0 0 100% !important;
     width: 100% !important;
@@ -1502,11 +1628,13 @@ header .nav-contact-icon:focus-visible {
     border-radius: 999px;
     background: rgba(255, 255, 255, .22);
     cursor: pointer;
-    transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), transform var(--apple-duration-control) var(--apple-ease);
+    transform: scaleX(1);
+    transform-origin: center;
+    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
   .impact-award-pagination button.is-active {
-    width: 24px;
     background: var(--apple-text);
+    transform: scaleX(3.43);
   }
   .impact-award-pagination button:focus-visible {
     outline: 2px solid var(--apple-text);
@@ -1656,16 +1784,40 @@ header .nav-contact-icon:focus-visible {
   html[lang="en"] .impact-platform-mobile-tile span { font-size: 8px; }
 }
 
+/* Touch surfaces answer on press instead of pretending a phone has hover. */
+@media (max-width: 760px) {
+  .impact-platform-mobile-tile {
+    touch-action: manipulation;
+    transition: transform var(--apple-duration-control) var(--apple-ease),
+      border-color var(--apple-duration-control) var(--apple-ease),
+      background-color var(--apple-duration-control) var(--apple-ease);
+  }
+  .impact-platform-mobile-tile:active {
+    border-color: rgba(255, 255, 255, .34) !important;
+    background: rgba(255, 255, 255, .09) !important;
+    transform: scale(.98);
+  }
+  .impact-platform-mobile-tile img {
+    transition: transform var(--apple-duration-control) var(--apple-ease);
+  }
+  .impact-platform-mobile-tile:active img {
+    transform: scale(1.04);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .impact-award-pagination button { transition: none !important; }
+  .impact-award-pagination button,
+  .impact-award-rail { transition: none !important; }
   .impact-award-rail > li { animation: none !important; }
+  .impact-platform-mobile-tile:active,
+  .impact-platform-mobile-tile:active img { transform: none !important; }
 }
 
 /* Desktop award cards keep the full portrait and expose its context below. */
 @media (min-width: 761px) {
   .impact-award-card-caption { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; padding: 0 2px; text-align: left; }
-  .impact-award-card-caption strong { min-width: 0; overflow: hidden; color: var(--apple-text); font: 600 12px/1.25 var(--font-display); text-overflow: ellipsis; white-space: nowrap; }
-  .impact-award-card-caption small { flex: 0 0 auto; color: var(--apple-secondary); font: 400 10px/1.25 var(--font-mono); white-space: nowrap; }
+  .impact-award-card-caption strong { flex: 1 1 0; min-width: 0; overflow: visible; color: var(--apple-text); font: 600 12px/1.3 var(--font-display); text-overflow: clip; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; }
+  .impact-award-card-caption small { flex: 0 1 42%; min-width: 0; color: var(--apple-secondary); font: 400 10px/1.3 var(--font-mono); white-space: normal; text-align: right; overflow-wrap: anywhere; }
   .impact-evidence-label { grid-template-columns: minmax(0, 1fr); }
   .impact-evidence-label h2 { grid-column: 1; }
   .impact-award-description,
@@ -1936,6 +2088,7 @@ header .nav-contact-icon:focus-visible {
     border: 0;
     border-radius: 50% !important;
     background: transparent !important;
+    transform: none !important;
   }
 
   .comet-archive-pagination button::before,
@@ -1947,14 +2100,17 @@ header .nav-contact-icon:focus-visible {
     border-radius: 999px;
     background: rgba(255, 255, 255, .22);
     content: '';
+    transform: scaleX(1);
+    transform-origin: center;
+    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
 
   .comet-archive-pagination button.is-active::before,
   #profile .career-pagination button.is-active::before,
   .impact-award-pagination button.is-active::before {
-    width: 24px;
     height: 7px;
     background: var(--apple-text);
+    transform: scaleX(3.43);
   }
 
   .comet-archive-pagination button:focus-visible,
@@ -2048,5 +2204,29 @@ header .nav-contact-icon:focus-visible {
 
   .impact-platform-mobile-tile img {
     height: 26px;
+  }
+}
+
+/* Touch devices do not have a stable hover state. Keep desktop-only lift and
+   lightbox hover feedback from sticking after a tap. Focus and :active remain
+   available for keyboard and press feedback. */
+@media (hover: none), (pointer: coarse) {
+  .impact-award-card:hover:not(:focus-visible) {
+    border-color: var(--impact-border) !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .impact-award-card:hover:not(:focus-visible) .impact-award-card-zoom {
+    opacity: 0;
+  }
+
+  .impact-award-lightbox-nav:hover:not(:focus-visible) {
+    transform: none !important;
+  }
+
+  #profile .career-tab:hover:not(:focus-visible),
+  #experiments .flip-experiment__row:hover:not(:focus-visible) {
+    transform: none !important;
   }
 }
