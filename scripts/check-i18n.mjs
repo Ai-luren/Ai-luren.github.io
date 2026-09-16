@@ -303,8 +303,9 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18、内部小卡片 12，
-  // 操作控件使用胶囊，圆形控制使用 50%；内容层不再叠加第二层模糊。
+  // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18、内部小卡片 12；
+  // 桌面工作经历是连续索引条，使用 0 圆角；操作控件使用胶囊，圆形控制使用 50%；
+  // 内容层不再叠加第二层模糊。
   surfaceHierarchy: async (page) => {
     return page.evaluate(() => {
       const visible = (selector) => [...document.querySelectorAll(selector)].filter((el) => {
@@ -321,7 +322,8 @@ const CHECKS = {
       };
       assertRadius('header, header.is-condensed, #profile .career-strip, .impact-glass, #contact .footer-contact-copy, .floating-dock-panel', '24px', '外层面板圆角');
       assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #profile .career-image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #experiments .flip-experiment__row', '18px', '内容卡片圆角');
-      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, #profile .career-tab, #profile .career-tabs--focus .career-tab, .floating-dock-item', '12px', '内部卡片圆角');
+      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item', '12px', '内部卡片圆角');
+      assertRadius('#profile .career-tab', window.innerWidth > 760 ? '0px' : '12px', '工作经历阶段圆角');
       assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
       assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a', '50%', '圆形控件圆角');
 
@@ -341,7 +343,7 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 移动端菜单必须把 7 个入口作为同一组动画打开；同时禁止 transition: all。
+  // 移动端菜单必须把 7 个入口作为同一组动画打开；抽屉本体保持锚定，只做透明度过渡，避免打开/关闭时整体位移；同时禁止 transition: all。
   motionSystem: async (page) => {
     if (page.viewportSize().width > 760) return { ok: true };
     return page.evaluate(() => {
@@ -359,7 +361,7 @@ const CHECKS = {
       const delays = itemStyles.map((style) => parseFloat(style.animationDelay) || 0);
       if (drawerStyle.transitionProperty === 'none') bad.push('菜单抽屉没有过渡');
       if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('opacity')) bad.push('菜单抽屉缺少 opacity 过渡');
-      if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('transform')) bad.push('菜单抽屉缺少 transform 过渡');
+      if (drawerStyle.transform !== 'none') bad.push('菜单抽屉不应发生整体位移');
       if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('7 个菜单项没有统一入场动画');
       if (new Set(itemStyles.map((style) => style.animationDuration)).size !== 1) bad.push('菜单项动画时长不一致');
       if (new Set(itemStyles.map((style) => style.animationTimingFunction)).size !== 1) bad.push('菜单项 easing 不一致');
