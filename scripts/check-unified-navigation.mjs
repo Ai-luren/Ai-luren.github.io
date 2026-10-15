@@ -30,7 +30,7 @@ try{
   if([393,1440].includes(width))await shot(p,`${width}-home-navigation`);
   await p.locator('#projects').scrollIntoViewIfNeeded();
   for(const index of [0,3]){
-   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(()=>document.querySelector('.cinema-player video')?.readyState>=1);await p.mouse.move(0,0);await p.waitForTimeout(220);
+   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,String(index+1).padStart(2,'0'));assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(220);
    same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
    await arrows(p,width);await p.keyboard.press('Escape');
   }

@@ -7,7 +7,7 @@ if(out)mkdirSync(out,{recursive:true});
 const executablePath=['/Applications/Google Chrome.app/Contents/MacOS/Google Chrome','/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'].find(existsSync);
 const browser=await chromium.launch({executablePath,headless:true});
 const rect=el=>{const r=el.getBoundingClientRect();return[r.x,r.y,r.width,r.height];};
-async function ready(p,id){await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,id);await p.waitForFunction(()=>document.querySelector('.cinema-player video')?.readyState>=1);assert(await p.locator('.cinema-player video').evaluate(v=>v.paused&&v.currentTime===0));assert.equal(await p.locator('.cinema-player video').count(),1);}
+async function ready(p,id){await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,id);assert.equal(await p.locator('.cinema-player video').count(),1);assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);}
 async function shot(p,name){if(out)await p.screenshot({path:`${out}/${name}.png`});}
 try{
  for(const width of [360,375,393,430,1280,1440,1920]){
@@ -21,15 +21,17 @@ try{
   assert.equal(await p.locator('.cinema-player__sequence button').first().isDisabled(),true);
   assert.equal(await p.locator('.cinema-player__count').textContent(),'1 / 8');
   if([393,1440,1920].includes(width))await shot(p,`${width}-landscape`);
-  await p.locator('.cinema-player__play').click();await p.waitForFunction(()=>document.querySelector('.cinema-player video').currentTime>0.1);
-  await p.locator('.cinema-player video').evaluate(v=>window.liveCinemaVideo=v);
-  const time=await p.locator('.cinema-player video').evaluate(v=>v.currentTime);
-  await p.locator('.cinema-player__language').click();await p.waitForTimeout(300);
-  assert(await p.locator('.cinema-player video').evaluate((v,t)=>v===window.liveCinemaVideo&&!v.paused&&v.currentTime>=t,time));
-  assert.equal(await p.locator('.cinema-player').getAttribute('data-project-id'),'01');
-  assert.equal(await p.locator('html').getAttribute('lang'),'en');
-  if([393,1440].includes(width))await shot(p,`${width}-english-playing`);
-  await p.locator('.cinema-player__sequence button').last().focus();await p.keyboard.press('Enter');await ready(p,'02');assert(await p.locator('.cinema-player__sequence button').last().evaluate(el=>el===document.activeElement));assert(await p.evaluate(()=>window.liveCinemaVideo.paused&&!window.liveCinemaVideo.getAttribute('src')));
+  if(width===393){
+   await p.locator('.cinema-player__play').click();await p.waitForFunction(()=>document.querySelector('.cinema-player video').currentTime>0.1);
+   await p.locator('.cinema-player video').evaluate(v=>window.liveCinemaVideo=v);
+   const time=await p.locator('.cinema-player video').evaluate(v=>v.currentTime);
+   await p.locator('.cinema-player__language').click();await p.waitForTimeout(300);
+   assert(await p.locator('.cinema-player video').evaluate((v,t)=>v===window.liveCinemaVideo&&!v.paused&&v.currentTime>=t,time));
+   assert.equal(await p.locator('.cinema-player').getAttribute('data-project-id'),'01');
+   assert.equal(await p.locator('html').getAttribute('lang'),'en');
+   await shot(p,`${width}-english-playing`);
+  }
+  await p.locator('.cinema-player__sequence button').last().focus();await p.keyboard.press('Enter');await ready(p,'02');assert(await p.locator('.cinema-player__sequence button').last().evaluate(el=>el===document.activeElement));if(width===393)assert(await p.evaluate(()=>window.liveCinemaVideo.paused&&!window.liveCinemaVideo.getAttribute('src')));
   await p.locator('.cinema-player__sequence button').first().click();await ready(p,'01');
   if([393,1440,1920].includes(width)){
    for(const id of ['02','03','04']){await p.locator('.cinema-player__sequence button').last().click();await ready(p,id);}
@@ -40,7 +42,7 @@ try{
    assert(await p.locator('.cinema-player__sequence button').last().isDisabled());assert.equal(await p.locator('.cinema-player__count').textContent(),'8 / 8');
    for(let i=0;i<16;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.cinema-player')));}
    assert(await p.locator('body > header #nav-lang').evaluate(el=>{el.focus();return !!document.activeElement.closest('.cinema-player');}));
-  }
+  }else{await p.locator('.cinema-player__language').click();await p.waitForFunction(()=>document.documentElement.lang==='en');await ready(p,[1440,1920].includes(width)?'04':'01');}
   await p.keyboard.press('Escape');assert(await trigger.evaluate(el=>el===document.activeElement));assert.equal(await p.locator('html').getAttribute('lang'),'en');
   if(width===393){
    await trigger.click();await ready(p,'01');

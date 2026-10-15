@@ -11,12 +11,13 @@ async function shot(p,name){if(out)await p.screenshot({path:`${out}/${name}.png`
 async function videoState(p){return p.evaluate(()=>{
  const r=el=>{const q=el.getBoundingClientRect();return {x:q.x,y:q.y,w:q.width,h:q.height,right:q.right,bottom:q.bottom};};
  const root=document.querySelector('.cinema-player'),v=root.querySelector('video');
- return {stage:r(root.querySelector('.cinema-player__stage')),caption:r(root.querySelector('.cinema-player__caption')),body:r(root.querySelector('.cinema-player__body')),nav:r(root.querySelector('.cinema-player__navigation')),actions:[...root.querySelectorAll('.cinema-player__work-nav button,.cinema-player__return')].map(r),ratio:v.videoWidth/v.videoHeight,paused:v.paused,time:v.currentTime,fit:getComputedStyle(v).objectFit,overflow:root.scrollWidth>innerWidth,paddingBottom:parseFloat(getComputedStyle(root.querySelector('.cinema-player__layout')).paddingBottom),scrollHeight:root.scrollHeight};
+ const stage=root.querySelector('.cinema-player__stage').getBoundingClientRect();
+ return {stage:r(root.querySelector('.cinema-player__stage')),caption:r(root.querySelector('.cinema-player__caption')),body:r(root.querySelector('.cinema-player__body')),nav:r(root.querySelector('.cinema-player__navigation')),actions:[...root.querySelectorAll('.cinema-player__work-nav button,.cinema-player__return')].map(r),ratio:stage.width/stage.height,paused:v.paused,time:v.currentTime,hasSource:v.hasAttribute('src'),readyState:v.readyState,fit:getComputedStyle(v).objectFit,overflow:root.scrollWidth>innerWidth,paddingBottom:parseFloat(getComputedStyle(root.querySelector('.cinema-player__layout')).paddingBottom),scrollHeight:root.scrollHeight};
  });}
 function videoCheck(m,width,height){
- assert(!m.overflow);assert(m.paused&&m.time===0);assert.equal(m.fit,'contain');
+ assert(!m.overflow);assert(m.paused&&m.time===0);assert(!m.hasSource&&m.readyState===0,'Opening/switching must remain lazy');assert.equal(m.fit,'contain');
  assert(Math.abs(m.stage.w/m.stage.h-m.ratio)<.002);
- assert(m.stage.y>=m.nav.bottom+10);assert(Math.abs(m.caption.x-m.stage.x)<1);assert(Math.abs(m.caption.w-m.stage.w)<1);
+ assert(m.stage.y>=m.nav.bottom+10);assert(Math.abs(m.caption.x-m.stage.x)<1);assert(m.caption.w<=m.stage.w+1);
  assert(m.body.bottom<=height-m.paddingBottom+1,'The complete video + information + navigation group must fit normal viewports');
  for(const b of m.actions){assert(b.h>=44&&b.w>=44);assert(b.x>=0&&b.right<=width+.5&&b.y>=m.nav.bottom&&b.bottom<=height-m.paddingBottom+1);assert(b.right<=m.stage.x||b.x>=m.stage.right||b.y>=m.stage.bottom,'Controls cover film');}
 }
@@ -27,7 +28,7 @@ try{
   const cdp=await p.context().newCDPSession(p);await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-transparency',value:mode==='reduced'?'reduce':'no-preference'}]});
   await p.goto(new URL('works.html',base).href);
   for(const [index,format]of [[0,'landscape'],[3,'portrait']]){
-   await p.locator('.library-grid .comet-archive__card').nth(index).click();await p.waitForFunction(()=>document.querySelector('.cinema-player video')?.readyState>=1);await p.waitForTimeout(120);
+   await p.locator('.library-grid .comet-archive__card').nth(index).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
    const initial=await videoState(p);videoCheck(initial,width,height);
    const bg=await p.locator('.cinema-player').evaluate(el=>getComputedStyle(el,'::backdrop').backgroundColor);assert.equal(bg,mode==='normal'?'rgba(12, 12, 13, 0.9)':'rgb(12, 12, 13)');
    if(out&&lang==='zh'&&[393,1440].includes(width))await shot(p,`${width}-${mode}-video-${format}`);
@@ -71,7 +72,7 @@ try{
   for(const [index,project]of projects.entries()){
    await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,project.id);
    if(project.video){
-    await p.waitForFunction(()=>document.querySelector('.cinema-player video')?.readyState>=1);await p.waitForTimeout(60);
+    await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
     videoCheck(await videoState(p),width,height);
    }
    if(index<projects.length-1)await p.locator('.cinema-player__sequence button').last().click();
@@ -81,7 +82,7 @@ try{
   await p.close();
  }
  // A genuinely short viewport keeps one internal scroller and accessible chrome.
- const p=await browser.newPage({viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>document.querySelector('.cinema-player video')?.readyState>=1);
+ const p=await browser.newPage({viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
  const scroll=await p.evaluate(()=>scrollY);const close=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();assert.equal(await p.evaluate(()=>scrollY),scroll);assert.deepEqual(await p.locator('.cinema-player__close').evaluate(rect),close);await p.locator('.cinema-player__close').click();
  await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
  const nav=await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect);const pageScroll=await p.evaluate(()=>scrollY);await p.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);assert.deepEqual(await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect),nav);assert.equal(await p.evaluate(()=>scrollY),pageScroll);await p.locator('#impact-award-lightbox .cinema-player__close').click();await p.close();

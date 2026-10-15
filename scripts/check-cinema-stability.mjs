@@ -9,13 +9,16 @@ const browser=await chromium.launch({executablePath,headless:true});
 const rect=()=>{const s=document.querySelector('.cinema-player__stage'),c=document.querySelector('.cinema-player__caption'),v=document.querySelector('.cinema-player video');const r=s.getBoundingClientRect(),i=c.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,cx:i.x,cy:i.y,cw:i.width,paused:v.paused,time:v.currentTime,ready:v.readyState,radius:getComputedStyle(s).borderRadius,clip:getComputedStyle(s).overflow,fit:getComputedStyle(v).objectFit};};
 function same(a,b){for(const k of ['x','y','w','h','cx','cy','cw']) assert(Math.abs(a[k]-b[k])<1,`${k}: ${a[k]} -> ${b[k]}`);}
 try {
- for(const width of [1440,1920,360,375,393,430]) {
+ // One desktop and one mobile viewport verify the real-media transition without
+ // repeatedly streaming the CDN asset at every width; layout tests cover the rest.
+ for(const width of [1440,393]) {
   const height=width>=1000?900:852;
   const page=await browser.newPage({viewport:{width,height}});
   for(const [index,label,ratio] of [[0,'16-9',16/9],[3,'9-16',9/16]]) {
    await page.goto(new URL('works.html',base).href);
    let release; const gate=new Promise(resolve=>release=resolve);
-   await page.route('**/assets/videos/works/**',async route=>{await gate;await route.continue();});
+   let requestStarted; const requestSeen=new Promise(resolve=>requestStarted=resolve);
+   await page.route('**/tr:orig-true/videos/**',async route=>{requestStarted();await gate;await route.continue();});
    // Capture geometry on the very first rendered modal frame, before metadata is available.
    await page.evaluate(()=>{window.cinemaRects=[];const sample=()=>{const s=document.querySelector('.cinema-player[open] .cinema-player__stage');if(s){const r=s.getBoundingClientRect();window.cinemaRects.push([r.x,r.y,r.width,r.height]);}window.cinemaSampler=requestAnimationFrame(sample);};window.cinemaSampler=requestAnimationFrame(sample);});
    await page.locator('.library-grid .comet-archive__card').nth(index).click();
@@ -28,10 +31,15 @@ try {
    assert(await page.locator('.cinema-player__poster').evaluate(img=>Math.abs(img.naturalWidth/img.naturalHeight-Number(img.closest('.cinema-player__stage').style.width.replace('px',''))/Number(img.closest('.cinema-player__stage').style.height.replace('px','')))<.005));
    await page.waitForTimeout(220);
    if(out && [1440,393].includes(width)) await page.screenshot({path:`${out}/${width}-${label}-before.png`});
+   assert.equal(initial.ready,0,'Opening must not load video metadata');
+   await page.locator('.cinema-player__play').click();
+   await requestSeen;
+   await page.waitForFunction(()=>document.querySelector('.cinema-player video').hasAttribute('src'));
+   same(initial,await page.evaluate(rect));
    release();
    await page.waitForFunction(()=>document.querySelector('.cinema-player video').readyState>=2);
+   await page.waitForFunction(()=>!document.querySelector('.cinema-player video').paused);
    same(initial,await page.evaluate(rect));
-   await page.locator('.cinema-player__play').click();
    await page.waitForFunction(()=>getComputedStyle(document.querySelector('.cinema-player__poster')).opacity==='0');
    same(initial,await page.evaluate(rect));
    assert.equal(await page.locator('.cinema-player__play').count(),0);
@@ -45,7 +53,7 @@ try {
    await page.locator('.cinema-player video').evaluate(v=>window.previousCinemaVideo=v);
    await page.keyboard.press('Escape');
    assert(await page.evaluate(()=>window.previousCinemaVideo.paused && !window.previousCinemaVideo.getAttribute('src')));
-   await page.unroute('**/assets/videos/works/**');
+   await page.unroute('**/tr:orig-true/videos/**');
    console.log(`${width}px ${label}: stable first paint → delayed metadata → first decoded frame; native-ratio poster, real rounding, no autoplay, close releases source (${samples.length} samples)`);
   }
   await page.close();

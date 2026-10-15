@@ -2,7 +2,7 @@
 
 ## 目标
 
-维护可部署到 GitHub Pages、Cloudflare Pages、Vercel 和 Netlify 的单页作品集，保证桌面与移动端可访问、构建稳定。
+维护可部署到 GitHub Pages、Cloudflare Pages、Vercel 和 Netlify 的 Vite 作品集，包含首页与独立作品库，保证桌面与移动端可访问、构建稳定。
 
 ## 结构
 
@@ -10,7 +10,7 @@
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
 - `src/data/projects.js`：首页精选与全部作品库共享的作品、分类及视频地址；无真实资料时保留空值。
-- `assets/videos/works/`：用户提供的原始作品视频，仅在 Vite 开发模式读取；正式构建用 ImageKit 地址，不复制本地视频。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理，重复文件只收录一次。
+- `assets/videos/works/`：本地原始作品视频；仅当作品没有 ImageKit 地址时作为 Vite 开发兜底，Git 忽略且不进入正式构建。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：当前有效的项目规范与交接说明。
@@ -51,3 +51,5 @@ git diff --check
 - `README.md`：运行、构建与目录速查。
 - `docs/设计规范.md`：当前生效的视觉和交互规则。
 - `docs/交接说明.md`：运行时结构、关键入口和维护注意事项。
+- `docs/作品库维护.md`、`docs/影院导航维护.md`、`docs/播放器媒体维护.md`：作品数据、影院交互与媒体元数据维护。
+- `docs/本地封面工作流.md`、`docs/本地封面工作台使用教程.md`：本地封面工具流程和操作说明。

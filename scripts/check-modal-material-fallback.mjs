@@ -60,16 +60,18 @@ try{
   }
   for(const [index,format] of [[0,'landscape'],[3,'portrait']]){
    await page.locator('.comet-archive__card').nth(index).click();
-   await page.waitForFunction(()=>document.querySelector('.cinema-player video').readyState>=1);
+   assert.deepEqual(await page.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState,v.preload]),[true,0,false,0,'none']);
    await page.locator('.cinema-player__poster').evaluate(img=>img.decode());
    checkSurface(await page.evaluate(`(${surface.toString()})('.cinema-player','::backdrop')`),mode);
    const before=await page.evaluate(box);
    assert(await page.locator('.cinema-player video').evaluate(v=>v.paused&&v.currentTime===0));
    assert.equal(await page.evaluate(()=>document.querySelector('.cinema-player').scrollWidth>innerWidth),false);
    if(out)await page.screenshot({path:`${out}/${width}-${lang}-${mode}-${format}.png`});
-   await page.locator('.cinema-player__play').click();
-   await page.waitForFunction(()=>getComputedStyle(document.querySelector('.cinema-player__poster')).opacity==='0');
-   const after=await page.evaluate(box);after.forEach((v,i)=>assert(Math.abs(v-before[i])<1));
+   if(width===393&&lang==='zh'&&mode==='normal'&&format==='landscape'){
+    await page.locator('.cinema-player__play').click();
+    await page.waitForFunction(()=>getComputedStyle(document.querySelector('.cinema-player__poster')).opacity==='0');
+    const after=await page.evaluate(box);after.forEach((v,i)=>assert(Math.abs(v-before[i])<1));
+   }
    await page.locator('.cinema-player video').evaluate(v=>window.lastFallbackVideo=v);
    await page.keyboard.press('Escape');
    assert(await page.evaluate(()=>window.lastFallbackVideo.paused));

@@ -12,12 +12,12 @@ try {
     for (const index of [0, 1, 0]) {
       await cards.nth(index).click();
       const video = page.locator('.cinema-player video');
-      await page.waitForFunction(() => document.querySelector('.cinema-player video')?.readyState >= 1);
-      await page.waitForTimeout(300);
       assert.deepEqual(await video.evaluate(v => [v.paused, v.currentTime, v.autoplay, v.muted, v.controls]), [true, 0, false, false, true]);
+      assert.deepEqual(await video.evaluate(v => [v.hasAttribute('src'), v.readyState, v.preload]), [false, 0, 'none']);
       assert(await page.locator('.cinema-player__poster').isVisible());
       await page.locator('.cinema-player__play').focus();
       await page.keyboard.press('Enter');
+      await page.waitForFunction(() => document.querySelector('.cinema-player video')?.readyState >= 1);
       await page.waitForFunction(() => { const v = document.querySelector('.cinema-player video'); return !v.paused && v.currentTime > 0; });
       assert.equal(await video.evaluate(v => !v.muted && v.volume > 0), true);
       await page.waitForFunction(() => getComputedStyle(document.querySelector('.cinema-player__poster')).opacity === '0');
@@ -35,9 +35,11 @@ try {
     const video = page.locator('.cinema-player video');
     await page.locator('.cinema-player__play').click();
     await page.waitForFunction(() => !document.querySelector('.cinema-player video').paused);
+    await page.waitForFunction(() => document.querySelector('.cinema-player__stage')?.dataset.playbackState === 'playing');
     await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
     assert(await video.evaluate(v => v.paused));
     await page.evaluate(() => { delete document.hidden; });
+    await page.locator('.cinema-player__play').waitFor({ state: 'visible' });
     assert(await video.evaluate(v => v.paused));
     // Simulate a browser rejecting the user-initiated play request.
     await video.evaluate(v => { v.play = () => Promise.reject(new DOMException('Blocked', 'NotAllowedError')); });

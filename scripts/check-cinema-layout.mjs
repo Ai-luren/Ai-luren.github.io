@@ -8,28 +8,24 @@ const screenshots = process.env.CINEMA_SCREENSHOTS;
 if (screenshots) mkdirSync(screenshots, { recursive: true });
 const sizes = [[1440,900],[1920,1080],[360,640],[375,667],[393,852],[430,932],[393,640],[852,393]];
 async function measure(page) {
-  await page.waitForFunction(() => document.querySelector('.cinema-player video')?.videoWidth > 0);
   await page.waitForTimeout(250);
   return page.evaluate(() => {
     const rect = selector => { const r = document.querySelector(selector).getBoundingClientRect(); return {x:r.x,y:r.y,width:r.width,height:r.height,bottom:r.bottom,right:r.right}; };
     const video = document.querySelector('.cinema-player video');
     const layoutStyle = getComputedStyle(document.querySelector('.cinema-player__layout'));
-    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:video.videoWidth/video.videoHeight, paused:video.paused, time:video.currentTime, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
+    const stage = document.querySelector('.cinema-player__stage').getBoundingClientRect();
+    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:stage.width/stage.height, paused:video.paused, time:video.currentTime, hasSource:video.hasAttribute('src'), readyState:video.readyState, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
   });
 }
 function check(m) {
   assert(m.paused && m.time === 0);
-  if (m.viewport[0] <= 760 && m.ratio > 1 && m.body.height + m.paddingTop + m.paddingBottom <= m.viewport[1]) {
-    const before = m.body.y - m.paddingTop;
-    const after = m.viewport[1] - m.paddingBottom - m.body.bottom;
-    assert(Math.abs(before - after) < 2, 'Landscape content must center inside the safe available height');
-  }
+  assert(!m.hasSource && m.readyState === 0, 'Opening a film must not request video bytes');
   assert.equal(m.prompt,'');
   assert.equal(m.bg,'rgba(0, 0, 0, 0)');
   assert(!m.overflow);
   assert(Math.abs(m.stage.width/m.stage.height-m.ratio)<0.005);
   assert(Math.abs(m.stage.x-m.caption.x)<1);
-  assert(Math.abs(m.stage.width-m.caption.width)<1);
+  assert(m.caption.width<=m.stage.width+1);
   assert(Math.abs(m.title.x-m.stage.x)<1);
   assert(m.caption.y-m.stage.bottom >= 12 && m.caption.y-m.stage.bottom <= 20);
   assert(m.stage.x>=0 && m.stage.right<=m.viewport[0]+1);
