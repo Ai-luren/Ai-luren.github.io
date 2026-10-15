@@ -8,6 +8,7 @@
   <meta name="author" content="Ai路人" />
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="./ai-luren-avatar.webp" type="image/webp" />
   <link rel="canonical" href="https://ai-luren.github.io/" />
   <title>Ai路人（宁磊）｜AI 视频创意设计师 · AIGC 内容创作作品集</title>
 
@@ -2156,7 +2157,7 @@
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="video-tuner" id="video-tuner">
     <button class="video-tuner__toggle" type="button" aria-expanded="false" aria-controls="video-tuner-panel" data-i18n="tuner.toggle">编辑背景</button>
     <div class="video-tuner__panel" id="video-tuner-panel" hidden>
@@ -2186,7 +2187,7 @@
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
   <header>
     <div class="nav-inner shell">
-      <a class="brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></a>
+      <a class="brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /><span class="nav-brand-name">AI路人</span></a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-drawer" aria-label="展开主导航" data-i18n-aria="nav.toggle.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="nav-toggle-line nav-toggle-line--top" d="M4 8h16" /><path class="nav-toggle-line nav-toggle-line--bottom" d="M4 16h16" /></svg>
       </button>
@@ -2239,7 +2240,7 @@
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><p class="section-note" data-i18n="projects.note">8 个项目 · 点击查看作品</p></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row"><p id="projects-featured-note" class="section-note"></p><div id="projects-library-link"></div></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
@@ -2909,6 +2910,7 @@
       var mobileNavClose = mobileNavDrawer ? mobileNavDrawer.querySelector('.mobile-nav-close') : null;
       var mobileNavLastFocus = mobileNavToggle;
       var mobileNavCloseTimer = null;
+      var mobileNavBackground = [];
       function mobileNavLabel(key, fallback) {
         return window.__i18n && typeof window.__i18n.t === 'function' ? window.__i18n.t(key) : fallback;
       }
@@ -2941,6 +2943,11 @@
         if (isOpen) {
           window.clearTimeout(mobileNavCloseTimer);
           mobileNavLastFocus = document.activeElement || mobileNavToggle;
+          if (!mobileNavBackground.length) {
+            mobileNavBackground = Array.from(document.body.children).filter(function (node) {
+              return node !== mobileNavDrawer && node.tagName !== 'HEADER' && !['SCRIPT', 'STYLE'].includes(node.tagName);
+            }).map(function (node) { var previous = node.inert; node.inert = true; return [node, previous]; });
+          }
           document.body.classList.add('mobile-nav-open');
           document.body.classList.remove('mobile-nav-closing');
           mobileNavDrawer.classList.remove('is-closing', 'is-closed');
@@ -2960,6 +2967,8 @@
           mobileNavDrawer.classList.add('is-closed');
           mobileNavDrawer.setAttribute('aria-hidden', 'true');
           document.body.classList.remove('mobile-nav-closing', 'mobile-nav-open');
+          mobileNavBackground.forEach(function (entry) { entry[0].inert = entry[1]; });
+          mobileNavBackground = [];
           if (restoreFocus !== false) {
             var focusTarget = mobileNavLastFocus && typeof mobileNavLastFocus.focus === 'function' ? mobileNavLastFocus : mobileNavToggle;
             focusTarget.focus();
@@ -2985,20 +2994,12 @@
             return;
           }
           if (event.key !== 'Tab') return;
-          var focusable = mobileNavFocusable();
+          var focusable = [mobileNavToggle].concat(mobileNavFocusable(), Array.from(document.querySelectorAll('header #nav-lang, header .brand')));
           if (!focusable.length) return;
-          var first = focusable[0];
-          var last = focusable[focusable.length - 1];
-          if (!mobileNavDrawer.contains(document.activeElement)) {
-            event.preventDefault();
-            (event.shiftKey ? last : first).focus();
-          } else if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
+          event.preventDefault();
+          var activeIndex = focusable.indexOf(document.activeElement);
+          var nextIndex = event.shiftKey ? (activeIndex <= 0 ? focusable.length - 1 : activeIndex - 1) : (activeIndex + 1) % focusable.length;
+          focusable[nextIndex].focus();
         });
       }
 

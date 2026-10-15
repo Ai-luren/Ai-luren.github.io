@@ -17,6 +17,10 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? './' : '/',
   plugins: [react(), copyVendorToDist],
   build: {
+    // Real static HTML entries work on Netlify and GitHub Pages without SPA rewrites.
+    rolldownOptions: {
+      input: { index: resolve('index.html'), works: resolve('works.html') }
+    },
     // ogl (WebGL) 用于视频后处理，打包体积较大，放宽 chunk 告警阈值。
     chunkSizeWarningLimit: 4096
   }

@@ -6,6 +6,7 @@ node_modules/
 滚动驱动视频提示词.pdf
 
 # Local development cache and logs
+.cover-studio/
 .vite/
 dist/
 *.log
@@ -22,9 +23,15 @@ pnpm-debug.log*
 .impeccable/
 .uploads/
 video-compare-*.png
+/local-media CDN/
+/assets/videos/works/
+/preview-assets/
+/video-modal-preview.html
 
 # Tencent Cloud EdgeOne
 .env
+.env.*
+!.env.example
 .edgeone/*
 .tef_dist/*
 

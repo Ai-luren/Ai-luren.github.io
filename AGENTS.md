@@ -9,8 +9,13 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
+- `src/data/projects.js`：首页精选与全部作品库共享的作品、分类及视频地址；无真实资料时保留空值。
+- `assets/videos/works/`：用户提供的原始作品视频，仅在 Vite 开发模式读取；正式构建用 ImageKit 地址，不复制本地视频。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理，重复文件只收录一次。
+- `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：当前有效的项目规范与交接说明。
+- `tools/cover-studio/`：独立本地封面工具，使用本机 FFmpeg 与独立环回端口，不接入正式 Vite 构建或部署。
+- `.cover-studio/`：工具导入的视频副本、候选帧、导出及关联历史，只保留在本地；不自动清理。确认关联后的新封面位于 `assets/images/project-covers/custom/`，映射在 `src/data/project-cover-overrides.json`，保留原封面文件。
 
 ## 规则
 
@@ -27,8 +32,11 @@
 ```bash
 npm run build
 npm run check:i18n
+node scripts/check-project-library.mjs
 git diff --check
 ```
+
+封面工具相关改动另运行 `node scripts/check-cover-studio.mjs`，只在隔离临时项目中验证导出与替换，不使用真实作品封面做自动验收写入。
 
 本地预览必须先启动 Vite 开发服务，再访问 `http://127.0.0.1:5174/`；不要直接打开 `index.html`，否则 React 挂载、资源路径和动态模块可能不完整。
 

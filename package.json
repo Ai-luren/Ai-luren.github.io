@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "covers": "node tools/cover-studio/server.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "check:i18n": "node scripts/check-i18n.mjs"
