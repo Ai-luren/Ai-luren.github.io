@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://ai-luren.github.io/">在线浏览</a> ·
+  <a href="https://ailuren.netlify.app/">在线浏览</a> ·
   <a href="https://ailuren.pages.dev/">国内访问</a> ·
   <a href="#本地运行">本地运行</a> ·
   <a href="./docs/交接说明.md">交接说明</a>
@@ -72,9 +72,9 @@ tools/cover-studio/
 
 ## 在线地址
 
-- [GitHub Pages](https://ai-luren.github.io/)：主站入口，中国大陆网络可能无法直连。
+- [GitHub Pages](https://ai-luren.github.io/)：备用地址，中国大陆网络可能无法直连。
 - [Cloudflare Pages](https://ailuren.pages.dev/)：国内访问优先地址。
-- [Netlify](https://ailuren.netlify.app/)：备用生产地址。
+- [Netlify](https://ailuren.netlify.app/)：正式主域名，canonical、Open Graph 和结构化数据以此为准。
 - [Vercel](https://ailuren.vercel.app/)：备用生产地址，中国大陆网络可能无法直连。
 
 站点构建命令为 `npm run build`，产物位于 `dist/`。仓库内 GitHub Pages 工作流只在 `main` 分支触发；`netlify.toml` 配置 `npm run build` 和 `dist`。Cloudflare Pages、Vercel 等平台的连接与分支设置由各自平台后台管理，不能仅凭本仓库文件确认。
@@ -153,6 +153,6 @@ git diff --check
 
 本项目以 [MIT License](./LICENSE) 发布。
 
-完整作品、联系方式和社交入口会随页面内容更新，优先从[在线作品集](https://ai-luren.github.io/)查看最新版本。
+完整作品、联系方式和社交入口会随页面内容更新，优先从[在线作品集](https://ailuren.netlify.app/)查看最新版本。
 
 Copyright (c) 2026 Ai路人

@@ -73,6 +73,9 @@
 .cinema-player__message button { min-height: 44px; padding: 0 16px; border: 1px solid #ffffff35; border-radius: var(--portfolio-control-radius); background: var(--apple-surface-solid); color: var(--apple-text); cursor: pointer; }
 @media (max-width: 760px) {
   .cinema-player__layout { align-items: flex-start; min-height: 100%; padding: calc(max(14px, env(safe-area-inset-top)) + 70px) max(4vw, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(4vw, env(safe-area-inset-left)); }
+  /* Center wide films in the space below the navigation; short views start
+     at the top and keep all information reachable through modal scrolling. */
+  .cinema-player[data-format="landscape"] .cinema-player__layout { align-items: safe center; }
   .cinema-player__close { top: max(14px, env(safe-area-inset-top)); right: max(14px, env(safe-area-inset-right)); width: 44px; height: 44px; }
   .cinema-player__caption { gap: 5px; }
   .cinema-player__caption h2 { font-size: 18px; }

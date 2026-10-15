@@ -6,7 +6,7 @@ const browser = await chromium.launch({ executablePath, headless: true });
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 const screenshots = process.env.CINEMA_SCREENSHOTS;
 if (screenshots) mkdirSync(screenshots, { recursive: true });
-const sizes = [[1440,900],[1920,1080],[360,640],[375,667],[393,852],[430,932],[393,640],[852,393]];
+const sizes = [[1440,900],[1920,1080],[360,640],[375,667],[393,852],[430,932],[393,640],[393,280],[852,393]];
 async function measure(page) {
   await page.waitForTimeout(250);
   return page.evaluate(() => {
@@ -32,6 +32,11 @@ function check(m) {
   assert(m.body.bottom<=m.viewport[1]+1 || m.scrollHeight>=m.body.bottom-1, 'Overflowing information must remain reachable by modal scrolling');
   assert(m.close.x>=0 && m.close.right<=m.viewport[0] && m.close.y>=0 && m.close.bottom<=m.viewport[1]);
   assert(m.stage.y>=m.close.bottom+8);
+  if (m.viewport[0] <= 760) {
+    const freeSpace = m.viewport[1] - m.paddingTop - m.paddingBottom - m.body.height;
+    const expectedTop = m.paddingTop + (m.ratio >= 1 ? Math.max(0, freeSpace / 2) : 0);
+    assert(Math.abs(m.body.y - expectedTop) < 1, 'Mobile wide films center in available space; portrait and overflowing groups remain top aligned');
+  }
   assert(Math.abs(m.play.x+m.play.width/2-(m.stage.x+m.stage.width/2))<1);
   assert(Math.abs(m.play.y+m.play.height/2-(m.stage.y+m.stage.height/2))<1);
 }
