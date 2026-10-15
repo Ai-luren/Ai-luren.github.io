@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
 
-const URL = 'http://127.0.0.1:5174/';
+const URL = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
 const BROWSER_CANDIDATES = [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',

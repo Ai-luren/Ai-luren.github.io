@@ -51,13 +51,29 @@ html[lang="en"] .impact-evidence-label h2 { line-height: 1.15; white-space: norm
 .impact-award-rail-nav--next { right: 10px; }
 .impact-award-nav-icon { display: block; width: 18px; height: 18px; }
 
-/* 放大预览：独立悬浮卡，不遮罩、不锁滚动，整页仍可见且不发生布局跳动。 */
-.impact-award-lightbox { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; width: auto; max-height: none; padding: max(72px, env(safe-area-inset-top)) clamp(72px, 10vw, 160px) 34px; overflow: auto; overscroll-behavior: contain; border: 0; border-radius: 0; background: rgba(0, 0, 0, .78); box-shadow: none; backdrop-filter: blur(16px) saturate(.88); -webkit-backdrop-filter: blur(16px) saturate(.88); transform: none; animation: impact-award-lightbox-in var(--motion-duration-modal) var(--motion-ease-emphasized); }
-.impact-award-lightbox figure { position: relative; display: grid; grid-template-columns: minmax(48px, 1fr) minmax(0, min(62vw, 640px)) minmax(48px, 1fr); grid-template-rows: auto auto; column-gap: clamp(18px, 3vw, 42px); align-items: center; width: min(100%, 980px); max-width: 100%; margin: 0; }
-.impact-award-lightbox img { grid-column: 2; grid-row: 1; justify-self: center; display: block; width: auto; max-width: 100%; max-height: min(82svh, 820px); border: 0; border-radius: var(--apple-radius-tile); box-shadow: 0 22px 60px rgba(0, 0, 0, .48); object-fit: contain; }
-.impact-award-lightbox figcaption { grid-column: 2; grid-row: 2; display: flex; align-items: baseline; justify-content: center; gap: 12px; margin-top: 12px; }
-.impact-award-lightbox figcaption strong { color: var(--impact-text); font: 600 15px/1.3 var(--font-display, var(--sans, sans-serif)); }
-.impact-award-lightbox figcaption span { color: var(--impact-muted); font: 500 10px/1.4 var(--tech, var(--mono, monospace)); letter-spacing: .05em; }
+/* Viewer media uses its natural ratio; list-card dimensions never apply here. */
+.impact-award-lightbox {
+  position: fixed; inset: 0; z-index: 200; width: auto; max-height: none;
+  overflow: auto; overscroll-behavior: contain; border: 0; border-radius: 0;
+  box-shadow: none; transform: none;
+  display: flex; align-items: center; align-items: safe center; justify-content: center;
+  height: 100dvh; box-sizing: border-box;
+  padding: max(92px,calc(env(safe-area-inset-top) + 80px)) max(48px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(48px,env(safe-area-inset-left));
+}
+.impact-award-lightbox figure {
+  flex-shrink: 0; display: grid; grid-template-columns: 48px minmax(0,1fr) 48px;
+  grid-template-rows: auto auto; column-gap: 20px; row-gap: 14px;
+  width: fit-content; max-width: 100%; align-items: center; margin: auto;
+}
+.impact-award-lightbox figure > img {
+  grid-column: 2; grid-row: 1; width: auto; height: auto; max-width: 100%; max-height: none;
+  min-height: 0; box-sizing: border-box; object-fit: contain;
+  border: 0 !important; border-radius: var(--portfolio-content-radius,18px) !important; background: transparent !important; box-shadow: none !important;
+}
+.impact-award-lightbox figcaption { grid-column: 2; grid-row: 2; display: grid; justify-content: start; justify-items: start; align-items: start; gap: 4px; width: 100%; min-width: 0; margin: 0; text-align: left; overflow-wrap: anywhere; }
+.impact-award-lightbox figcaption strong { color: var(--apple-text); font: 600 15px/1.4 var(--font-display,system-ui,sans-serif); }
+.impact-award-lightbox figcaption span { color: var(--apple-secondary); font: 400 12px/1.5 var(--font-body,system-ui,sans-serif); letter-spacing: 0; }
+
 .impact-award-lightbox-nav { position: static; display: grid; place-items: center; width: 48px; height: 48px; color: rgba(255, 255, 255, .96); cursor: pointer; transition: border-color var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control), background-color var(--motion-duration-control) var(--motion-ease-control), transform var(--motion-duration-control) var(--motion-ease-control); }
 .impact-award-lightbox-nav:hover { border-color: rgba(255, 255, 255, .82); background: #242426; color: #fff; }
 .impact-award-lightbox-nav:hover { transform: scale(1.04); }
@@ -170,11 +186,6 @@ html[lang="en"] .impact-evidence-label h2 { line-height: 1.15; white-space: norm
   .impact-award-shell { min-height: 0; padding-top: 20px; }
   .impact-award-description { margin: 0 14px 6px; font-size: 11px; }
   .impact-award-rail { height: 300px; }
-  /* 窄屏预览：切换按钮固定在预览卡内侧，避免被裁出屏外。 */
-  .impact-award-lightbox { padding: max(64px, env(safe-area-inset-top)) 16px 24px; }
-  .impact-award-lightbox figure { width: min(100%, 420px); grid-template-columns: 40px minmax(0, 1fr) 40px; column-gap: 6px; }
-  .impact-award-lightbox img { max-height: calc(100svh - 118px); }
-  .impact-award-lightbox-nav { width: 40px; height: 40px; }
   .impact-award-lightbox-close { top: 12px; right: 12px; }
   .impact-reach-dossier { padding: 14px; }
   .impact-reach-dossier-head { display: block; }
@@ -212,4 +223,13 @@ html[lang="en"] .impact-evidence-label h2 { line-height: 1.15; white-space: norm
 
 @media (prefers-reduced-motion: reduce) {
   .impact-reach-profile, .impact-reach-profile-shot img { transition: none; }
+}
+
+@media (max-width:760px) {
+  .impact-award-lightbox { padding: max(84px,calc(env(safe-area-inset-top) + 72px)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
+  .impact-award-lightbox figure { grid-template-columns: 48px minmax(0,1fr) 48px; grid-template-rows: auto auto 48px; column-gap: 12px; row-gap: 14px; }
+  .impact-award-lightbox figure > img { grid-column: 1 / -1; border-radius: clamp(14px,var(--portfolio-content-radius,18px),16px) !important; }
+  .impact-award-lightbox figcaption { grid-column: 1 / -1; }
+  .impact-award-lightbox-nav--prev { grid-column: 1; grid-row: 3; }
+  .impact-award-lightbox-nav--next { grid-column: 3; grid-row: 3; }
 }

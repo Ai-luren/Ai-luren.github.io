@@ -1,0 +1,130 @@
+/* Shared capsule geometry: the existing home capsule is the reference. */
+html { scrollbar-gutter: stable; }
+body > header, body > header.is-condensed, .cinema-player__navigation {
+  position: fixed !important; inset: auto !important;
+  left: 50% !important; top: max(14px, env(safe-area-inset-top)) !important;
+  transform: translateX(-50%) !important;
+  width: min(980px, calc(100% - 48px)) !important; height: 58px !important;
+  box-sizing: border-box; border: 1px solid var(--portfolio-panel-border) !important;
+  border-radius: var(--portfolio-panel-radius) !important;
+  background: var(--portfolio-panel-surface) !important;
+  -webkit-backdrop-filter: var(--portfolio-panel-blur) !important;
+  backdrop-filter: var(--portfolio-panel-blur) !important;
+  box-shadow: var(--portfolio-panel-shadow) !important;
+  transition: none !important;
+}
+body > header { z-index: 70; }
+.cinema-player__navigation { z-index: 3; }
+header .nav-inner.shell { position: relative; width: 100%; height: 100%; min-height: 0 !important; padding: 0 !important; }
+header #primary-nav, header .nav-contact-icon { display: none !important; }
+header .brand, .cinema-player__brand {
+  position: absolute !important; left: 10px; top: 10px; width: 36px; height: 36px;
+  display: block; overflow: visible !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box;
+  border: 1px solid var(--portfolio-panel-border) !important; border-radius: 50% !important;
+  background: var(--portfolio-tile-surface) !important;
+}
+header .brand img, .cinema-player__brand img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+header .nav-brand-name, .cinema-player__brand span {
+  display: block !important; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
+  color: var(--apple-text); font: 600 13px/1 var(--font-body); white-space: nowrap; letter-spacing: 0;
+}
+header #nav-lang, .cinema-player__language, header .nav-toggle, .cinema-player__navigation .cinema-player__close {
+  position: absolute !important; inset: auto !important; top: 6px !important;
+  display: grid !important; place-items: center; width: 44px !important; height: 44px !important;
+  min-width: 44px !important; min-height: 44px !important; padding: 0 !important; margin: 0 !important;
+  border: 1px solid var(--portfolio-icon-border) !important; border-radius: var(--portfolio-icon-radius) !important;
+  background: var(--portfolio-icon-surface) !important; color: var(--apple-text) !important;
+  box-shadow: none !important; cursor: pointer; touch-action: manipulation;
+  transition: background-color var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease) !important;
+}
+header #nav-lang, .cinema-player__language { right: 68px !important; }
+header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 10px !important; }
+header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; height: 18px; }
+:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button):hover { background: var(--portfolio-icon-hover-surface) !important; }
+:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button):active { background: var(--portfolio-icon-active-surface) !important; }
+:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button,.cinema-player__brand):focus-visible {
+  outline: 2px solid var(--apple-blue) !important; outline-offset: 4px !important;
+}
+body.mobile-nav-open { overflow: hidden; }
+body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .library-page-navigation { visibility: hidden !important; }
+.library-page-navigation .cinema-player__navigation { z-index: 70; }
+.library-nav-space { height: 92px; }
+.library-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--apple-secondary) !important; font-size: 12px; }
+.library-intro .library-eyebrow { margin-top: 8px; }
+.library-menu {
+  position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none;
+  margin: 0; padding: max(112px,calc(env(safe-area-inset-top) + 96px)) 24px max(28px,env(safe-area-inset-bottom));
+  border: 0; box-sizing: border-box; background: transparent; color: var(--apple-text); overflow: auto;
+}
+.library-menu::backdrop, .impact-award-lightbox::before {
+  background: var(--portfolio-modal-surface) !important;
+  -webkit-backdrop-filter: var(--portfolio-modal-blur) !important; backdrop-filter: var(--portfolio-modal-blur) !important;
+}
+.shared-menu-links { display: grid; gap: 8px; width: min(932px,100%); margin: 24px auto 0; }
+.shared-menu-links a { display: flex; align-items: center; min-height: 58px; padding: 0 14px; color: var(--apple-secondary); text-decoration: none; font: 600 clamp(1.55rem,7vw,2rem)/1 var(--font-display); letter-spacing: -.05em; }
+.shared-menu-links a:hover { color: var(--apple-text); }
+.shared-menu-links a:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+/* Keep blur on a sibling paint layer: a filtered scroll container otherwise
+   makes its fixed capsule scroll away with the award image. */
+.impact-award-lightbox, .impact-award-lightbox.is-closing { background: transparent !important; opacity: 1 !important; animation: none !important; transition: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+/* Fade the image rather than the blur ancestor, which would prevent the
+   pseudo-element from sampling the page behind it. */
+.impact-award-lightbox figure { animation: apple-modal-in var(--apple-duration-modal) var(--apple-ease) both; transition: opacity var(--apple-duration-modal) var(--apple-ease); }
+.impact-award-lightbox.is-closing figure { animation: none; opacity: 0; }
+.impact-award-lightbox::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* Both viewers use the award viewer's circular arrow language. */
+.cinema-player__sequence button, .impact-award-lightbox-nav {
+  display: grid; place-items: center; cursor: pointer; touch-action: manipulation; flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
+  border: 1px solid var(--portfolio-icon-border) !important; border-radius: var(--portfolio-icon-radius) !important;
+  background: var(--portfolio-icon-surface) !important; color: var(--apple-text);
+  transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
+}
+.cinema-player__sequence button svg { width: 20px; height: 20px; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
+.cinema-player__sequence button:disabled { opacity: .32; cursor: default; }
+@media (max-width:760px) {
+  body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }
+  header .brand, .cinema-player__brand { left: 8px; top: 5px; width: 44px; height: 44px; }
+  header #nav-lang, .cinema-player__language, header .nav-toggle, .cinema-player__navigation .cinema-player__close { top: 5px !important; }
+  header #nav-lang, .cinema-player__language { right: 60px !important; }
+  header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 8px !important; }
+  .library-nav-space { height: 76px; }
+}
+/* Extend the existing mobile menu to desktop; its links and click handlers stay
+   authoritative, rather than adding a second home navigation implementation. */
+@media (min-width:761px) {
+  #mobile-nav-drawer { position: fixed; inset: 0; z-index: 55; display: flex; flex-direction: column; padding: 112px max(24px,calc((100% - 980px)/2 + 24px)) 28px; overflow-y: auto; background: var(--portfolio-modal-surface) !important; -webkit-backdrop-filter: var(--portfolio-modal-blur) !important; backdrop-filter: var(--portfolio-modal-blur) !important; opacity: 0; visibility: hidden; pointer-events: none; transform: none; transition: opacity var(--apple-duration-menu) var(--apple-ease),visibility 0s linear var(--apple-duration-menu); }
+  #mobile-nav-drawer.is-open { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
+  #mobile-nav-drawer.is-closing { opacity: 0; visibility: visible; pointer-events: none; }
+  #mobile-nav-drawer.is-closed { visibility: hidden; }
+  .mobile-nav-drawer-head { display: none; }
+  #mobile-primary-nav { position: static; display: block !important; margin: 24px 0 0; transform: none; }
+  #mobile-primary-nav .nav-list { display: grid !important; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  #mobile-primary-nav .nav-list a { display: flex; align-items: center; min-height: 58px; padding: 0 14px; color: var(--apple-secondary); font: 600 2rem/1 var(--font-display); letter-spacing: -.05em; text-decoration: none; }
+  #mobile-primary-nav .nav-list a .nav-short { display: none !important; }
+  #mobile-primary-nav .nav-list a:hover, #mobile-primary-nav .nav-list a.is-active { color: var(--apple-text); }
+  #mobile-primary-nav .nav-list a:focus-visible { outline: 2px solid var(--apple-blue) !important; outline-offset: 2px; }
+  .nav-toggle-line { transform-box: fill-box; transform-origin: center; transition: transform var(--apple-duration-control) var(--apple-ease); }
+  body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--top { transform: translateY(4px) rotate(45deg); }
+  body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .impact-award-lightbox { animation: none !important; }
+  .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
+  #mobile-nav-drawer { transition-property: visibility !important; }
+  #mobile-nav-drawer:is(.is-open,.is-closing) { opacity: 1 !important; }
+}
+@media (prefers-reduced-transparency:reduce) {
+  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .impact-award-lightbox { animation: none !important; }
+  .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
+  #mobile-nav-drawer { transition-property: visibility !important; }
+  #mobile-nav-drawer:is(.is-open,.is-closing) { opacity: 1 !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .shared-menu-links *, .cinema-player__navigation *, .nav-toggle-line { transition: none !important; }
+  .impact-award-lightbox figure { animation: none; transition: none; }
+}

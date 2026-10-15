@@ -1,4 +1,7 @@
 import { createPortal } from 'react-dom';
+import { useState } from 'react';
+import CinemaPlayer from './components/CinemaPlayer.jsx';
+import { FEATURED_PROJECTS } from './data/projects.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
 import VideoPostProcess from './components/VideoPostProcess.jsx';
@@ -8,8 +11,10 @@ import HeroActions from './components/HeroActions.jsx';
 import HeroTitle from './components/HeroTitle.jsx';
 import './styles/card-surfaces.css';
 import './styles/apple-system.css';
+import './styles/navigation.css';
 
 export default function App() {
+  const [selectedProject, setSelectedProject] = useState(null);
   const projectArchiveRoot = document.getElementById('projects-react-root');
   const impactEvidenceRoot = document.getElementById('recognition-react-root');
   const footerDockRoot = document.getElementById('footer-dock-react-root');
@@ -20,7 +25,8 @@ export default function App() {
   return (
     <>
       <VideoPostProcess />
-      {projectArchiveRoot && createPortal(<MagneticProjectArchive />, projectArchiveRoot)}
+      {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={setSelectedProject} />, projectArchiveRoot)}
+      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       {footerDockRoot && createPortal(<FloatingDock />, footerDockRoot)}
       {experimentRoot && createPortal(<ExperimentFlip />, experimentRoot)}

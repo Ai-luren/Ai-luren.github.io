@@ -2290,3 +2290,71 @@ header .nav-contact-icon:focus-visible {
     transform: none !important;
   }
 }
+
+/* Modal-only fallback. Keep normal material tokens and unrelated surfaces intact.
+   These late rules intentionally outrank the drawer's earlier !important skin. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  #mobile-nav-drawer,
+  .cinema-player::backdrop {
+    background: var(--portfolio-modal-solid, #0c0c0d) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Fade menu items, never an opaque fallback scrim. Keep close timing intact. */
+  #mobile-nav-drawer { transition-property: visibility !important; }
+  #mobile-nav-drawer.is-open,
+  #mobile-nav-drawer.is-closing { opacity: 1 !important; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #mobile-nav-drawer,
+  .cinema-player::backdrop {
+    background: var(--portfolio-modal-solid, #0c0c0d) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  #mobile-nav-drawer { transition-property: visibility !important; }
+  #mobile-nav-drawer.is-open,
+  #mobile-nav-drawer.is-closing { opacity: 1 !important; }
+}
+
+/* Only close/play icon controls use this material contract. Legacy navigation
+   !important rules remain in the shell; this scoped final layer resolves them. */
+body.mobile-nav-open header .nav-toggle,
+.cinema-player__close,
+.cinema-player__play {
+  background: var(--portfolio-icon-surface) !important;
+  border-color: var(--portfolio-icon-border) !important;
+  color: var(--apple-text) !important;
+  border-radius: var(--portfolio-icon-radius) !important;
+  box-shadow: none !important;
+  transition: background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important;
+}
+body.mobile-nav-open header .nav-toggle:hover,
+.cinema-player__close:hover,
+.cinema-player__play:hover {
+  background: var(--portfolio-icon-hover-surface) !important;
+}
+body.mobile-nav-open header .nav-toggle:active,
+.cinema-player__close:active,
+.cinema-player__play:active {
+  background: var(--portfolio-icon-active-surface) !important;
+  transform: none !important;
+}
+body.mobile-nav-open header .nav-toggle:focus-visible,
+.cinema-player__close:focus-visible,
+.cinema-player__play:focus-visible {
+  outline: 2px solid var(--apple-blue) !important;
+  outline-offset: 4px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.mobile-nav-open header .nav-toggle,
+  .cinema-player__close,
+  .cinema-player__play { transition: none !important; }
+}
+/* Media overlays need a stable dark fill against bright footage. Reuse the
+   panel material through the same control contract; close controls stay identical. */
+.cinema-player__play {
+  --portfolio-icon-surface: var(--portfolio-panel-surface);
+  --portfolio-icon-hover-surface: var(--apple-surface-raised);
+  --portfolio-icon-active-surface: var(--apple-surface-solid);
+}

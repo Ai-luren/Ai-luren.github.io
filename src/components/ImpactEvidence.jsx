@@ -1,6 +1,7 @@
 import './ImpactEvidence.css';
 import LogoLoop from './LogoLoop.jsx';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import CinemaNavigation from './CinemaNavigation.jsx';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLang } from '../i18n/index.js';
 
@@ -141,6 +142,11 @@ function AwardGallery() {
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
   const closingRef = useRef(false);
+  const viewerCloseRef = useRef(null);
+  const viewerImageRef = useRef(null);
+  const viewerFigureRef = useRef(null);
+  const viewerCaptionRef = useRef(null);
+  const [viewerSize, setViewerSize] = useState(null);
   const isOpen = openIndex >= 0;
 
   const open = useCallback((index, event) => {
@@ -281,29 +287,89 @@ function AwardGallery() {
     return () => window.clearTimeout(closeTimerRef.current);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isOpen) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        close();
-      }
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        step(1);
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        step(-1);
+    const dialog = dialogRef.current;
+    const overflow = document.body.style.overflow;
+    const scroll = [window.scrollX, window.scrollY];
+    const background = [...document.body.children].filter(node => node !== dialog && !node.contains(dialog));
+    const inert = background.map(node => node.inert);
+    background.forEach(node => {node.inert = true;});
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('award-viewer-open');
+    viewerCloseRef.current?.focus({preventScroll:true});
+    const onKeyDown = event => {
+      if (event.key === 'Escape') {event.preventDefault();close();}
+      if (event.key === 'ArrowRight') {event.preventDefault();step(1);}
+      if (event.key === 'ArrowLeft') {event.preventDefault();step(-1);}
+      if (event.key === 'Tab') {
+        const controls = [...dialog.querySelectorAll('a[href],button:not(:disabled)')];
+        const first = controls[0], last = controls.at(-1);
+        if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {event.preventDefault();last?.focus();}
+        else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {event.preventDefault();first?.focus();}
       }
     };
-    document.addEventListener('keydown', onKeyDown);
-    requestAnimationFrame(() => dialogRef.current?.focus({ preventScroll: true }));
+    const onFocus = event => {if (!dialog.contains(event.target)) viewerCloseRef.current?.focus({preventScroll:true});};
+    document.addEventListener('keydown',onKeyDown);
+    document.addEventListener('focusin',onFocus);
+    window.addEventListener('popstate',close);
     return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
+      document.removeEventListener('keydown',onKeyDown);
+      document.removeEventListener('focusin',onFocus);
+      window.removeEventListener('popstate',close);
+      background.forEach((node,index) => {node.inert = inert[index];});
+      document.body.classList.remove('award-viewer-open');
+      document.body.style.overflow = overflow;
+      window.scrollTo(...scroll);
+      triggerRef.current?.focus({preventScroll:true});
     };
   }, [isOpen, close, step]);
+
+  useLayoutEffect(() => {
+    if (!isOpen) return undefined;
+    const image = viewerImageRef.current;
+    const figure = viewerFigureRef.current;
+    const caption = viewerCaptionRef.current;
+    const fit = () => {
+      if (!image.complete || !image.naturalWidth || !image.naturalHeight) return;
+      const viewport = window.visualViewport;
+      const width = Math.min(viewport?.width || innerWidth, document.documentElement.clientWidth);
+      const height = Math.min(viewport?.height || innerHeight, innerHeight);
+      const mobile = width <= 760;
+      const style = getComputedStyle(dialogRef.current);
+      const horizontalPadding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      const verticalPadding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+      const ratio = image.naturalWidth / image.naturalHeight;
+      const arrowSpace = mobile ? 0 : 136; // 48px controls + 20px gaps
+      const maxWidth = Math.min(960, width - horizontalPadding - arrowSpace);
+      let mediaWidth = maxWidth;
+      for (let pass = 0; pass < 4; pass++) {
+        figure.style.width = `${mediaWidth + arrowSpace}px`;
+        const informationHeight = caption.getBoundingClientRect().height + 14 + (mobile ? 62 : 0);
+        const availableHeight = height - verticalPadding - informationHeight;
+        let nextWidth = Math.min(maxWidth, Math.max(160, availableHeight) * ratio);
+        // Long images and short viewports remain readable in this one scroller.
+        if (ratio < 1) nextWidth = Math.max(nextWidth, Math.min(220, maxWidth));
+        if (Math.abs(nextWidth - mediaWidth) < .1) break;
+        mediaWidth = nextWidth;
+      }
+      figure.style.width = `${mediaWidth + arrowSpace}px`;
+      setViewerSize(previous => previous && Math.abs(previous.width - mediaWidth) < .1 && Math.abs(previous.height - mediaWidth / ratio) < .1 && previous.mobile === mobile
+        ? previous : {width: mediaWidth, height: mediaWidth / ratio, figureWidth: mediaWidth + arrowSpace, mobile});
+    };
+    fit();
+    image.addEventListener('load', fit);
+    const observer = new ResizeObserver(fit);
+    observer.observe(caption);
+    window.addEventListener('resize', fit);
+    window.visualViewport?.addEventListener('resize', fit);
+    return () => {
+      image.removeEventListener('load', fit);
+      observer.disconnect();
+      window.removeEventListener('resize', fit);
+      window.visualViewport?.removeEventListener('resize', fit);
+    };
+  }, [isOpen, openIndex, lang]);
 
   const active = isOpen ? awards[openIndex] : null;
   const galleryHint = lang === 'en'
@@ -390,9 +456,10 @@ function AwardGallery() {
           aria-describedby="impact-award-lightbox-meta"
           tabIndex={-1}
         >
-          <figure onClick={(event) => event.stopPropagation()}>
-            <img src={active.image} alt={active.title[lang]} width="1124" height="2000" />
-            <figcaption aria-live="polite">
+          <CinemaNavigation lang={lang} closeRef={viewerCloseRef} onClose={close} />
+          <figure ref={viewerFigureRef} style={viewerSize ? {width:viewerSize.figureWidth} : undefined} onClick={(event) => event.stopPropagation()}>
+            <img ref={viewerImageRef} src={active.image} alt={active.title[lang]} style={viewerSize ? {width:viewerSize.width,height:viewerSize.height} : undefined} />
+            <figcaption ref={viewerCaptionRef} aria-live="polite">
               <strong id="impact-award-lightbox-title">{active.title[lang]}</strong>
               <span id="impact-award-lightbox-meta">{active.meta[lang]}</span>
             </figcaption>
@@ -403,7 +470,7 @@ function AwardGallery() {
               <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10 5 7 7-7 7" /></svg>
             </button>
           </figure>
-          <button type="button" className="impact-award-lightbox-close" aria-label={lang === 'en' ? 'Close preview' : '关闭预览'} aria-controls="impact-award-lightbox" onClick={close}>✕</button>
+
         </div>,
         document.body
       )}

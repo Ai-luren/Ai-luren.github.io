@@ -38,6 +38,7 @@ export const DICT = {
     'tuner.reset': '恢复 16-bit 默认',
     'tuner.zero': '恢复 0 效果',
 
+    'brand.name': 'AI路人',
     'brand.aria': 'Ai路人，返回顶部',
     'nav.toggle.aria': '展开主导航',
     'nav.close.aria': '关闭主导航',
@@ -166,6 +167,7 @@ export const DICT = {
     'tuner.reset': 'Restore 16-bit defaults',
     'tuner.zero': 'Reset effects to 0',
 
+    'brand.name': 'Ai Luren',
     'brand.aria': 'Ai Luren, back to top',
     'nav.toggle.aria': 'Open main navigation',
     'nav.close.aria': 'Close main navigation',
