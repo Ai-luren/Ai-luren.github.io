@@ -71,10 +71,6 @@ export default function ExperimentFlip() {
           </article>
         ))}
       </div>
-      <div className="flip-experiment__status" aria-live="polite">
-        <span className="flip-experiment__status-dot" aria-hidden="true" />
-        {lang === 'en' ? `${experiments.length} projects · more tools can be added` : `${experiments.length} 个项目 · 可继续添加更多工具`}
-      </div>
     </div>
   );
 }

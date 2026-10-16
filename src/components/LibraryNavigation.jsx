@@ -1,7 +1,8 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CinemaNavigation from './CinemaNavigation.jsx';
-import { HOME_HREF, HOME_SECTIONS } from '../navigation/links.js';
+import { HOME_HREF, HOME_SECTIONS, WORKS_HREF } from '../navigation/links.js';
+import DesktopPrimaryNavigation from './DesktopPrimaryNavigation.jsx';
 
 export default function LibraryNavigation({ lang }) {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,9 @@ export default function LibraryNavigation({ lang }) {
   }, [open]);
   return <>
     <div className="library-page-navigation" style={open?{visibility:'hidden'}:undefined}>
-      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}/>
+      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}>
+        <DesktopPrimaryNavigation page="works" />
+      </CinemaNavigation>
     </div>
     {open && createPortal(<dialog id="library-menu" className="library-menu" ref={dialogRef} onCancel={event=>{event.preventDefault();setOpen(false);}} aria-label={lang==='en'?'Main navigation':'主导航'} onKeyDown={event=>{
         if(event.key!=='Tab')return;
@@ -29,7 +32,11 @@ export default function LibraryNavigation({ lang }) {
         else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
       }}>
       <CinemaNavigation lang={lang} closeRef={closeRef} onClose={()=>setOpen(false)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}/>
-      <div className="shared-menu-links">{HOME_SECTIONS.map(section=><a key={section.id} href={`${HOME_HREF}#${section.id}`}>{section[lang]}</a>)}</div>
+      <div className="shared-menu-links">
+        {HOME_SECTIONS.slice(0, 1).map(section=><a key={section.id} href={`${HOME_HREF}#${section.id}`}>{section[lang]}</a>)}
+        <a href={`${WORKS_HREF}${window.location.search}`}>{lang==='en'?'All Work':'全部作品'}</a>
+        {HOME_SECTIONS.slice(1).map(section=><a key={section.id} href={`${HOME_HREF}#${section.id}`}>{section[lang]}</a>)}
+      </div>
     </dialog>,document.body)}
   </>;
 }

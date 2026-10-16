@@ -33,6 +33,7 @@
 
 .floating-dock-item:hover,
 .floating-dock-item:focus-visible {
+  z-index: 2;
   border-color: rgba(245, 245, 247, .28);
   background: var(--portfolio-tile-surface-hover);
 }
@@ -47,7 +48,7 @@
   object-fit: contain;
 }
 
-.floating-dock-icon { opacity: .68; transition: opacity var(--motion-duration-control) var(--motion-ease-control); }
+.floating-dock-icon { opacity: .68; transform-origin: center; transition: opacity var(--motion-duration-control) var(--motion-ease-control); }
 .floating-dock-item:hover .floating-dock-icon,
 .floating-dock-item:focus-visible .floating-dock-icon { opacity: 1; }
 .floating-dock-icon img { filter: brightness(0) invert(1); }

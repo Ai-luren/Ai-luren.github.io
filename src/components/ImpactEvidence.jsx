@@ -374,16 +374,16 @@ function AwardGallery() {
   const active = isOpen ? awards[openIndex] : null;
   const galleryHint = lang === 'en'
     ? (isMobile ? 'BROWSE WITH ARROWS' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
-    : (isMobile ? '左右浏览 · 选择作品' : '左右浏览 · 点击查看');
+    : (isMobile ? '左右浏览 · 选择荣誉' : '左右浏览 · 点击查看');
 
   return (
     <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
       <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
-      <p className="impact-award-description">{lang === 'en' ? 'AI creation contests with wins and finalists.' : '参与 AI 创作赛事，含获奖和入围作品。'}</p>
+      <p className="impact-award-description">{lang === 'en' ? 'Awards and recognition from AI creation contests.' : 'AI 创作赛事获奖及入围荣誉。'}</p>
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
-        aria-label={lang === 'en' ? 'Scroll awards left' : '向左浏览获奖作品'}
+        aria-label={lang === 'en' ? 'Scroll awards left' : '向左浏览获奖荣誉'}
         aria-controls="impact-award-rail"
         disabled={!railState.canScrollLeft}
         onClick={() => scrollRail(-1)}
@@ -393,14 +393,14 @@ function AwardGallery() {
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--next"
-        aria-label={lang === 'en' ? 'Scroll awards right' : '向右浏览获奖作品'}
+        aria-label={lang === 'en' ? 'Scroll awards right' : '向右浏览获奖荣誉'}
         aria-controls="impact-award-rail"
         disabled={!railState.canScrollRight}
         onClick={() => scrollRail(1)}
       >
         <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
-      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Award artwork' : '获奖作品图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
+      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
         {(isMobile ? [awards[mobileAwardIndex]] : awards).map((award, visibleIndex) => {
           const index = isMobile ? mobileAwardIndex : visibleIndex;
           return (
@@ -430,7 +430,7 @@ function AwardGallery() {
           );
         })}
       </ul>
-      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award' : '选择获奖作品'}>
+      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award or recognition' : '选择获奖荣誉'}>
         {awards.map((award, index) => (
           <button
             key={award.image}
@@ -713,7 +713,7 @@ export default function ImpactEvidence() {
   return (
     <div className="impact-evidence">
       <section id="impact-awards" className={`impact-evidence-row${activeImpactId === 'impact-awards' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-awards-heading">
-        <ImpactLabel id="impact-awards-heading" index="01 / AI AWARDED WORKS" title={lang === 'en' ? 'AI Awarded Works' : 'AI 获奖作品'} />
+        <ImpactLabel id="impact-awards-heading" index="01 / AI AWARDS & RECOGNITION" title={lang === 'en' ? 'AI Awards & Recognition' : 'AI 获奖荣誉'} />
         <div><AwardGallery /></div>
       </section>
       <section id="impact-programs" className={`impact-evidence-row${activeImpactId === 'impact-programs' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-programs-heading">
