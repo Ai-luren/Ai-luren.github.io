@@ -794,8 +794,13 @@
     }
     /* 精选创作档案压暗层：透明度跟随 Hero 离场进度连续交叉淡化——左侧阅读蒙版淡出多少，压暗层就补上多少，
        滚动全程背景总暗度近似恒定，不存在「先变亮再压暗」的跳变段。 */
-    #video-dim { position: absolute; inset: 0; z-index: 5; background: rgba(0, 0, 0, .62); opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-section) var(--motion-ease-emphasized); }
+    #video-dim { position: absolute; inset: 0; z-index: 5; background: rgba(0, 0, 0, .62); opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-section) var(--motion-ease-emphasized), background-color var(--motion-duration-section) var(--motion-ease-emphasized); }
     body.is-on-hero #video-dim, body.is-on-projects #video-dim { opacity: calc(1 - var(--hero-overlay-progress, 1)); }
+    /* A little more separation for project titles and evidence text. The same
+       fixed video remains visible; chapter changes crossfade with the existing
+       mask timing instead of adding a new section-sized panel. */
+    body.is-on-projects:not(.is-on-hero) #video-dim { background-color: rgba(0, 0, 0, .68); }
+    body:is(.is-on-impact-awards, .is-on-impact-programs, .is-on-impact-reach) #video-dim { opacity: .2; }
     /* WebGL 画布只负责视频后处理；Hero 仅保留这一层局部阅读渐变。 */
     #video-webgl { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; }
     #hero-profile-mask { z-index: 2; background: linear-gradient(90deg, rgba(0, 0, 0, .42) 0%, rgba(0, 0, 0, .18) 30%, transparent 62%); }
@@ -2191,11 +2196,7 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-drawer" aria-label="展开主导航" data-i18n-aria="nav.toggle.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="nav-toggle-line nav-toggle-line--top" d="M4 8h16" /><path class="nav-toggle-line nav-toggle-line--bottom" d="M4 16h16" /></svg>
       </button>
-      <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
-        <ul class="nav-list">
-          <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">精选创作</span></a></li><li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">工作经历</span></a></li><li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li><li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li><li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li><li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">AI实验室</span></a></li><li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系我</span></a></li>
-        </ul>
-      </nav>
+      <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria"><div id="desktop-primary-nav-root"></div></nav>
       <button class="nav-lang" id="nav-lang" type="button" aria-label="切换语言 / Switch language" data-i18n-aria="nav.lang.aria"><svg class="nav-lang-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8" /><path d="M3.8 12h16.4M12 3.2c2.2 2.4 3.3 5.3 3.3 8.8S14.2 18.4 12 20.8C9.8 18.4 8.7 15.5 8.7 12S9.8 5.6 12 3.2Z" /></svg><span data-lang-part="zh">中</span><i aria-hidden="true">/</i><span data-lang-part="en">EN</span></button>
       <a class="nav-contact nav-contact-icon" href="#contact" aria-label="联系我" data-i18n-aria="nav.contact.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.5 8.5 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.1-.6L4.5 20.8l1.3-4.1a8.5 8.5 0 1 1 14.7-5.1Z" /><path d="M8.4 11.5h7.2M8.4 14.5h4.8" /></svg>
@@ -2212,7 +2213,7 @@
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
         <li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">经历</span></a></li>
-        <li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li>
+        <li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖荣誉</span><span class="nav-short" data-i18n="nav.recognition.short">获奖荣誉</span></a></li>
         <li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li>
         <li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li>
         <li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">实验室</span></a></li>
@@ -2312,7 +2313,7 @@
         <nav class="footer-nav" aria-label="页脚导航" data-i18n-aria="footer.nav.aria">
           <a href="#projects" data-i18n="nav.projects">精选创作</a>
           <a href="#profile" data-i18n="nav.profile">工作经历</a>
-          <a href="#impact-awards" data-i18n="nav.recognition">AI 获奖作品</a>
+          <a href="#impact-awards" data-i18n="nav.recognition">AI 获奖荣誉</a>
           <a href="#impact-programs" data-i18n="nav.superCreator">AI 平台超创</a>
           <a href="#impact-reach" data-i18n="nav.media">AI 自媒体</a>
           <a href="#experiments" data-i18n="nav.experiments">AI实验室</a>
@@ -3005,13 +3006,41 @@
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');
       function setNavActive(sectionId) {
-        links.forEach(function (link) {
+        document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]').forEach(function (link) {
           var target = link.getAttribute('href');
           if (target === '#footer-dock-react-root') target = '#contact';
           var isContactAction = target === '#contact';
           link.classList.toggle('is-active', !isContactAction && target === '#' + sectionId);
         });
+        var impactTrigger = document.querySelector('#primary-nav [data-impact-trigger]');
+        if (impactTrigger) impactTrigger.classList.toggle('is-active', /^impact-(awards|programs|reach)$/.test(sectionId));
       }
+      function handleDesktopNavClick(event) {
+        var link = event.target.closest('#primary-nav a[href^="#"]');
+        if (!link) return;
+        var target = link.getAttribute('href');
+        if (!target || target === '#') return;
+        event.preventDefault();
+        var sectionId = target.slice(1);
+        setNavActive(sectionId);
+        if (sectionId === 'contact') {
+          try { window.history.pushState(null, '', '#contact'); } catch (error) {}
+          scrollToContactEnd(reduced ? 'auto' : 'smooth');
+          return;
+        }
+        if (sectionId === 'projects') {
+          var archiveRail = document.querySelector('.comet-archive');
+          if (archiveRail) { archiveRail.scrollLeft = 0; archiveRail.classList.remove('is-dragging'); }
+        }
+        try { window.history.pushState(null, '', target); } catch (error) {}
+        var isDesktopImpactTab = window.innerWidth > 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
+        if (isDesktopImpactTab) window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: sectionId }));
+        else {
+          var isMobileImpactTab = window.innerWidth <= 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
+          scrollToSectionAnchor(sectionId, reduced || isMobileImpactTab ? 'auto' : 'smooth');
+        }
+      }
+      document.getElementById('primary-nav')?.addEventListener('click', handleDesktopNavClick);
       document.querySelectorAll('a[href="#contact"], a[href="#footer-dock-react-root"]').forEach(function (link) {
         link.addEventListener('click', function (event) {
           event.preventDefault();
