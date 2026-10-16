@@ -25,10 +25,17 @@ html[lang="en"] .impact-evidence-label h2 { line-height: 1.15; white-space: norm
    Keep the blue rule and wrapping consistent without changing its two-column
    desktop gallery geometry. */
 #recognition .impact-evidence-label h2 { font-size: var(--type-impact-section); line-height: 1.08; letter-spacing: -.045em; white-space: normal; text-wrap: balance; }
-#recognition .impact-evidence-label h2::after { width: 24px; height: 2px; margin-top: 20px; }
+#recognition .impact-evidence-label h2::after {
+  display: block;
+  width: var(--heading-rule-width);
+  height: var(--heading-rule-height);
+  margin-top: var(--heading-rule-gap);
+  border-radius: var(--heading-rule-radius);
+  background: var(--heading-rule-color);
+  content: '';
+}
 @media (max-width: 720px) {
   #recognition .impact-evidence-label h2 { font-size: var(--type-impact-section-mobile); }
-  #recognition .impact-evidence-label h2::after { margin-top: 18px; }
 }
 .impact-evidence-label p { max-width: 170px; margin: 15px 0 0; color: var(--impact-signal); font-size: 11px; line-height: 1.75; }
 .impact-evidence-row > div:last-child { min-width: 0; }

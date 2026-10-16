@@ -39,11 +39,9 @@
 
 .impact-glass,
 #experiments .flip-experiment__row,
-#profile .career-strip,
 #top .hero-proof-card,
-#contact .footer-contact-copy,
+#profile .closing-card,
 #projects .comet-archive-mobile-shell,
-.floating-dock-panel,
 header,
 header.is-condensed {
   border: 1px solid var(--portfolio-card-border) !important;
@@ -60,7 +58,6 @@ header.is-condensed {
 }
 
 #projects .comet-archive__image,
-#profile .career-image,
 #recognition .impact-award-card,
 #impact-reach .impact-reach-profile-media,
 .impact-award-lightbox img {
@@ -79,8 +76,6 @@ header.is-condensed {
 /* Repeated compact items use the same quiet tile treatment. */
 #recognition .impact-platform-desktop-tile,
 #recognition .impact-platform-mobile-tile,
-#profile .career-tab,
-#profile .career-tabs--focus .career-tab,
 .floating-dock-item {
   border: 1px solid var(--portfolio-tile-border);
   border-radius: var(--portfolio-tile-radius) !important;

@@ -40,7 +40,6 @@ export default function DesktopPrimaryNavigation({ page = 'home' }) {
   return <ul className="site-primary-nav" ref={rootRef} aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
     <li><a className={isLibrary ? '' : 'is-active'} href={homeLink('projects')}>{lang === 'en' ? 'Featured' : '精选作品'}</a></li>
     <li><a className={isLibrary ? 'is-active' : ''} href={workHref}>{lang === 'en' ? 'All Work' : '全部作品'}</a></li>
-    <li><a href={homeLink('profile')}>{lang === 'en' ? 'Career' : '经历'}</a></li>
     <li className="site-primary-nav__impact">
       <button type="button" ref={triggerRef} data-impact-trigger aria-expanded={open} aria-controls="desktop-impact-submenu" onClick={() => setOpen(value => !value)}>
         {lang === 'en' ? 'Impact' : '影响力'}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="m2 4 4 4 4-4" /></svg>

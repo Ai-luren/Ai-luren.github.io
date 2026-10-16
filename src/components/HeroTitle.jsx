@@ -33,7 +33,7 @@ export default function HeroTitle() {
 
   return (
     <h1 ref={titleRef} id="hero-title" className="hero-title">
-      <span className="hero-title__prefix">{lang === 'en' ? 'AI Creative' : 'AI创意'}</span>
+      <span className="hero-title__prefix">{lang === 'en' ? 'AI Creative' : 'AI 创意'}</span>
       <TextType
         key={lang}
         as="span"

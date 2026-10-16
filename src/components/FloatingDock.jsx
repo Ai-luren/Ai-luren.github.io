@@ -29,14 +29,15 @@ function DockIcon({ name }) {
 
 function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer }) {
   const ref = useRef(null);
-  const isHovered = useMotionValue(0);
   const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
   const mouseDistance = useTransform(mouseX, (value) => {
     const rect = ref.current?.getBoundingClientRect() ?? { x: 0, width: baseItemSize };
     return value - rect.x - baseItemSize / 2;
   });
-  const targetSize = useTransform(mouseDistance, [-distance, 0, distance], [baseItemSize, reducedMotion ? baseItemSize : magnification, baseItemSize]);
-  const size = useSpring(targetSize, spring);
+  const targetScale = useTransform(mouseDistance, [-distance, 0, distance], [1, reducedMotion ? 1 : magnification / baseItemSize, 1]);
+  const scale = useSpring(targetScale, spring);
+  const showLabel = hovered || focused;
 
   return (
     <motion.a
@@ -47,11 +48,11 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
       rel={item.external ? 'noopener noreferrer' : undefined}
       aria-label={item.label}
       className="floating-dock-item"
-      style={{ width: size, height: size }}
-      onMouseEnter={() => { if (hasFinePointer) { isHovered.set(1); setHovered(true); } }}
-      onMouseLeave={() => { if (hasFinePointer) { isHovered.set(0); setHovered(false); } }}
-      onFocus={() => { isHovered.set(1); setHovered(true); }}
-      onBlur={() => { isHovered.set(0); setHovered(false); }}
+      style={{ width: baseItemSize, height: baseItemSize }}
+      onMouseEnter={() => { if (hasFinePointer) setHovered(true); }}
+      onMouseLeave={() => { if (hasFinePointer) setHovered(false); }}
+      onFocus={() => { setFocused(true); setHovered(true); }}
+      onBlur={() => { setFocused(false); setHovered(false); }}
       onClick={(event) => {
         if (item.onClick) {
           event.preventDefault();
@@ -60,9 +61,9 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
         }
       }}
     >
-      <span className="floating-dock-icon">{item.icon}</span>
+      <motion.span className="floating-dock-icon" style={{ scale: focused ? (reducedMotion ? 1 : 1.18) : scale }}>{item.icon}</motion.span>
       <AnimatePresence>
-        {hovered && (
+        {showLabel && (
           <motion.span
             className="floating-dock-label"
             initial={reducedMotion ? false : { opacity: 0, y: 4, x: '-50%' }}
@@ -134,9 +135,9 @@ export default function FloatingDock() {
     { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
     { label: lang === 'en' ? 'Save WeChat QR code' : '保存微信二维码', hoverLabel: lang === 'en' ? 'Save WeChat QR' : '保存微信二维码', href: wechatQrCode, download: 'wechat-qr-code.webp', icon: <DockIcon name="wechat" /> },
     { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
-    { label: lang === 'en' ? 'Rednote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open Rednote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
-    { label: lang === 'en' ? 'TikTok profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open TikTok profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
-    { label: lang === 'en' ? 'Lark portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Lark portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
+    { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
+    { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
+    { label: lang === 'en' ? 'Feishu portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Feishu portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
   ];
 
   return (

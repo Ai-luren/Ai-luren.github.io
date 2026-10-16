@@ -176,11 +176,11 @@ body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .li
   header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 8px !important; }
   .library-nav-space { height: 76px; }
 }
-@media (min-width:761px) and (max-width:1279px) {
+@media (min-width:761px) and (max-width:1023px) {
   header #primary-nav { display: none !important; }
   header .nav-toggle { display: grid !important; }
 }
-@media (min-width:1280px) {
+@media (min-width:1024px) {
   /* The capsule clips its own rounded surface by default; desktop dropdowns
      must be allowed to paint below it. The capsule background stays rounded. */
   body > header,

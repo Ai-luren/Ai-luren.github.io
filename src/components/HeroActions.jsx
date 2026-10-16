@@ -18,7 +18,7 @@ export default function HeroActions() {
         type="button"
         onClick={() => { window.location.hash = 'profile'; }}
       >
-        {t('浏览工作经历', 'Explore Work History')}
+        {t('关于我', 'About Me')}
       </button>
     </>
   );
