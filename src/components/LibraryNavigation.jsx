@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { HOME_HREF, HOME_SECTIONS } from '../navigation/links.js';
+import DesktopPrimaryNavigation from './DesktopPrimaryNavigation.jsx';
 
 export default function LibraryNavigation({ lang }) {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,9 @@ export default function LibraryNavigation({ lang }) {
   }, [open]);
   return <>
     <div className="library-page-navigation" style={open?{visibility:'hidden'}:undefined}>
-      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}/>
+      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}>
+        <DesktopPrimaryNavigation page="works" />
+      </CinemaNavigation>
     </div>
     {open && createPortal(<dialog id="library-menu" className="library-menu" ref={dialogRef} onCancel={event=>{event.preventDefault();setOpen(false);}} aria-label={lang==='en'?'Main navigation':'主导航'} onKeyDown={event=>{
         if(event.key!=='Tab')return;

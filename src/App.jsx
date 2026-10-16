@@ -9,6 +9,7 @@ import FloatingDock from './components/FloatingDock.jsx';
 import ExperimentFlip from './components/ExperimentFlip.jsx';
 import HeroActions from './components/HeroActions.jsx';
 import HeroTitle from './components/HeroTitle.jsx';
+import DesktopPrimaryNavigation from './components/DesktopPrimaryNavigation.jsx';
 import './styles/card-surfaces.css';
 import './styles/apple-system.css';
 import './styles/navigation.css';
@@ -21,6 +22,7 @@ export default function App() {
   const experimentRoot = document.getElementById('experiments-react-root');
   const heroActionsRoot = document.getElementById('hero-actions-react-root');
   const heroTitleRoot = document.getElementById('hero-title-react-root');
+  const desktopNavRoot = document.getElementById('desktop-primary-nav-root');
 
   return (
     <>
@@ -32,6 +34,7 @@ export default function App() {
       {experimentRoot && createPortal(<ExperimentFlip />, experimentRoot)}
       {heroActionsRoot && createPortal(<HeroActions />, heroActionsRoot)}
       {heroTitleRoot && createPortal(<HeroTitle />, heroTitleRoot)}
+      {desktopNavRoot && createPortal(<DesktopPrimaryNavigation />, desktopNavRoot)}
     </>
   );
 }
