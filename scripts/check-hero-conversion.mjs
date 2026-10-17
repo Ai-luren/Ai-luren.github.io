@@ -69,6 +69,32 @@ try{
     assert(found.buttonGeometry.every(r=>r.x>=0&&r.right<=width+1&&r.height>=44),tag+': CTA out of viewport');
     assert.equal(found.overflow,0,tag+': horizontal overflow');
     assert.equal(found.navCount,4,tag+': top navigation changed');
+    // Composite the CTA's translucent surface over near-white and near-black
+    // footage, rather than assuming one favorable video frame.
+    const checkContrast = async state => {
+      const stats = await secondary.evaluate(el => {
+        const css=getComputedStyle(el);
+        const channels=color=>(color.match(/[0-9.]+/g)||[]).map(Number);
+        const fg=channels(css.color),bg=channels(css.backgroundColor);
+        const luminance=rgb=>{
+          const v=rgb.slice(0,3).map(c=>c/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);
+          return .2126*v[0]+.7152*v[1]+.0722*v[2];
+        };
+        const contrast=(a,b)=>{const x=luminance(a),y=luminance(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);};
+        const alpha=bg[3]??1;
+        return {
+          alpha,
+          border:parseFloat(css.borderTopWidth),
+          ratios:[[0,0,0],[255,255,255]].map(backdrop=>contrast(fg,backdrop.map((value,i)=>bg[i]*alpha+value*(1-alpha)))),
+        };
+      });
+      assert(stats.alpha>=.9,tag+' '+state+': contact CTA not protected from bright footage');
+      assert(stats.border>=1,tag+' '+state+': contact CTA has no visible edge');
+      assert(stats.ratios.every(r=>r>=7),tag+' '+state+': insufficient contrast '+stats.ratios.join('/'));
+    };
+    await checkContrast('normal');
+    await secondary.hover();
+    await checkContrast('hover');
     await primary.click();
     await p.waitForFunction(()=>location.hash==='#projects');
     assert(await p.locator('#projects .comet-archive__card').first().isVisible(),tag+': projects absent');

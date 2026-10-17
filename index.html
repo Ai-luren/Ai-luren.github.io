@@ -1699,7 +1699,8 @@
       .nav-toggle-label { display: none !important; }
     }
 
-    /* CTA 收敛：每个场景只保留一个蓝色主操作，次操作回到低对比文字入口。 */
+    /* CTA 层级：保留一个蓝色主操作；次操作采用稳定深色底，
+       在视频亮部/暗部均清晰可读，不依赖背景恰好足够暗。 */
     .hero-actions button {
       appearance: none;
       -webkit-appearance: none;
@@ -1731,18 +1732,21 @@
     }
     .hero-actions .hero-secondary {
       min-width: 0 !important;
-      padding: 0 8px !important;
-      color: rgba(245, 245, 247, .58) !important;
-      text-decoration: underline;
-      text-decoration-color: transparent;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 5px;
+      padding: 0 18px !important;
+      border: 1px solid rgba(255, 255, 255, .42) !important;
+      background: rgba(9, 11, 15, .94) !important;
+      color: #f9fbff !important;
+      font-weight: 600 !important;
+      text-decoration: none;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
     }
     .hero-actions .hero-secondary:hover,
     .hero-actions .hero-secondary:focus-visible {
-      background: transparent !important;
-      color: rgba(245, 245, 247, .9) !important;
-      text-decoration-color: rgba(245, 245, 247, .46);
+      border-color: rgba(255, 255, 255, .72) !important;
+      background: rgba(24, 28, 35, .98) !important;
+      color: #fff !important;
+      text-decoration: none;
     }
     .hero-actions .specular-button__fx { display: none !important; }
     @media (max-width: 560px) {
@@ -1760,6 +1764,9 @@
       .hero-actions .hero-primary {
         min-width: 132px !important;
         padding-inline: 20px !important;
+      }
+      .hero-actions .hero-secondary {
+        padding-inline: 16px !important;
       }
     }
 
