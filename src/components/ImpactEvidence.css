@@ -38,12 +38,13 @@
 .impact-award-rail { display: flex; align-items: center; gap: 14px; height: 370px; margin: 0; padding: 14px 62px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-padding-inline: 62px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; clip-path: inset(0 62px); list-style: none; }
 .impact-award-rail::-webkit-scrollbar { display: none; }
 .impact-award-rail > li { flex: 0 0 calc((100% - 42px) / 4); width: calc((100% - 42px) / 4); height: 100%; scroll-snap-align: start; }
-.impact-award-card { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; overflow: hidden; cursor: zoom-in; transition: border-color var(--motion-duration-card) var(--motion-ease-control), box-shadow var(--motion-duration-card) var(--motion-ease-control), transform var(--motion-duration-card) var(--motion-ease-control); }
+.impact-award-card { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; overflow: hidden; cursor: zoom-in; transition: border-color var(--motion-duration-card) var(--motion-ease-control), box-shadow var(--motion-duration-card) var(--motion-ease-control); }
 .impact-award-card img { display: block; width: 100%; height: 100%; border-radius: var(--portfolio-content-radius, 18px); object-fit: contain; }
 /* Desktop/tablet cards share one centered media-and-caption column. The rail
    follows the tallest real caption, so language and carousel changes add no
    artificial blank rows or fixed-height space. */
 @media (min-width: 761px) {
+  #impact-awards .impact-award-description { margin-bottom: 16px; }
   #impact-awards .impact-award-rail {
     box-sizing: border-box;
     height: auto;
@@ -119,7 +120,7 @@
     word-break: normal;
   }
   #impact-awards .impact-award-rail .impact-award-card:hover,
-  #impact-awards .impact-award-rail .impact-award-card:focus-visible { border: 0 !important; box-shadow: none !important; transform: translateY(-2px); }
+  #impact-awards .impact-award-rail .impact-award-card:focus-visible { border: 0 !important; box-shadow: none !important; }
 }
 @media (max-width: 720px) {
   /* Keep the existing mobile button flex layout: its image and caption remain
@@ -136,7 +137,7 @@
 @media (min-width: 1280px) {
   #impact-awards .impact-award-rail > li { flex: 0 0 calc((100% - 42px) / 4); width: calc((100% - 42px) / 4); }
 }
-.impact-award-card:hover, .impact-award-card:focus-visible { border-color: var(--impact-edge); box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), 0 14px 30px rgba(0, 0, 0, .35); transform: translateY(-3px); }
+.impact-award-card:hover, .impact-award-card:focus-visible { border-color: var(--impact-edge); box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), 0 14px 30px rgba(0, 0, 0, .35); }
 .impact-award-card:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
 .impact-award-card--static, .impact-award-card--static:hover, .impact-award-card--static:focus-visible { cursor: default; border-color: var(--impact-border); box-shadow: none; outline: none; transform: none; }
 .impact-award-card-zoom { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 26px; height: 26px; color: rgba(237, 244, 249, .9); font: 500 14px/1 var(--tech, var(--mono, monospace)); opacity: 0; transition: opacity var(--motion-duration-card) var(--motion-ease-control); }

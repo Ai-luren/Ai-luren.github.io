@@ -1,0 +1,17 @@
+/* Shared by both Vite HTML entry points so the browser can opt in before
+   either document paints during a same-origin page navigation. */
+::view-transition-old(root) {
+  animation: 120ms ease-out both portfolio-page-exit;
+}
+
+::view-transition-new(root) {
+  animation: 200ms ease-out both portfolio-page-enter;
+}
+
+@keyframes portfolio-page-exit { to { opacity: 0; } }
+@keyframes portfolio-page-enter { from { opacity: 0; } to { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: 1ms; }
+}

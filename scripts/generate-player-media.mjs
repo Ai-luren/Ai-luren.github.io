@@ -45,7 +45,9 @@ try {
     }
     if(!(time>=0 && time<Number(probe.format.duration))) throw new Error(`Invalid poster time for ${project.id}`);
     const webp=run('ffmpeg',['-v','error','-ss',String(time),'-i',source,'-frames:v','1','-vf',`scale=${width}:${height},setsar=1,scale=w='min(1600,iw)':h='min(1600,ih)':force_original_aspect_ratio=decrease`,'-c:v','libwebp','-quality','88','-f','image2pipe','pipe:1']);
-    const filename=`${project.id}-${createHash('sha256').update(webp).digest('hex').slice(0,12)}.webp`;
+    const title=String(project.title.zh).trim().replace(/[\\/\0<>:"|?*]/g,'-');
+    if(!title) throw new Error(`Project ${project.id}: Chinese title required for poster filename.`);
+    const filename=`${title}-${createHash('sha256').update(webp).digest('hex').slice(0,12)}.webp`;
     const path=resolve(root,'assets/images/player-posters',filename);
     if(!existsSync(path)) writeFileSync(path,webp,{flag:'wx'});
     output[project.id]={videoWidth:width,videoHeight:height,playerPoster:filename,playerPosterTime:time,playerPosterTimeSource:timeSource};

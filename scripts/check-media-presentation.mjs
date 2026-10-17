@@ -64,7 +64,8 @@ try{
    if(out&&lang==='zh'&&[393,1440].includes(width)&&[1,3,4,6].includes(index))await shot(p,`${width}-${mode}-award-${index+1}`);
    await p.locator('.impact-award-lightbox-nav--next').click();
   }
-  assert.equal(new Set(originals).size,8);assert(originals.some(src=>src.includes('pollo'))&&originals.some(src=>src.includes('meitu')));
+  const decodedOriginals=originals.map(src=>decodeURIComponent(src));
+  assert.equal(new Set(decodedOriginals).size,8);assert(decodedOriginals.some(src=>src.includes('影视级特效小赛'))&&decodedOriginals.some(src=>src.includes('未来AI设计大赛')));
   for(let i=0;i<10;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('#impact-award-lightbox')));}
   await p.keyboard.press('Escape');await p.waitForSelector('#impact-award-lightbox',{state:'detached'});assert(await p.locator('.impact-award-card').first().evaluate(el=>el===document.activeElement));assert(!await p.locator('main').evaluate(el=>el.inert));
   assert.deepEqual(errors,[]);console.log(`${width}x${height} ${lang} ${mode}: complete video controls, true image boundaries, all 8 original awards, shared materials and focus passed`);await p.close();
