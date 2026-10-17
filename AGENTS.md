@@ -16,6 +16,7 @@
 - `docs/`：当前有效的项目规范与交接说明。
 - `tools/cover-studio/`：独立本地封面工具，使用本机 FFmpeg 与独立环回端口，不接入正式 Vite 构建或部署。
 - `.cover-studio/`：工具导入的视频副本、候选帧、导出及关联历史，只保留在本地；不自动清理。确认关联后的新封面位于 `assets/images/project-covers/custom/`，映射在 `src/data/project-cover-overrides.json`，保留原封面文件。
+- 项目封面和播放器海报文件名以 `src/data/projects.js` 中的中文作品名为准；获奖图片文件名以 `src/components/ImpactEvidence.jsx` 中的中文奖项/作品名为准。作品库原始封面使用中文作品名，替换封面和播放器海报在中文名后附导出 ID 或内容哈希以保留版本区分。
 
 ## 规则
 

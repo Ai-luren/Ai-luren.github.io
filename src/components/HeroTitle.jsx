@@ -39,10 +39,10 @@ export default function HeroTitle() {
         as="span"
         className="hero-title__rotating"
         text={ROTATING_WORDS[lang]}
-        typingSpeed={125}
-        deletingSpeed={80}
-        pauseDuration={2600}
-        initialDelay={260}
+        typingSpeed={lang === 'en' ? 50 : 90}
+        deletingSpeed={lang === 'en' ? 30 : 50}
+        pauseDuration={1600}
+        initialDelay={200}
         showCursor
         cursorCharacter=""
       />

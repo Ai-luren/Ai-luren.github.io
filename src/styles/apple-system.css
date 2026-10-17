@@ -400,10 +400,10 @@ header .nav-contact-icon:focus-visible {
 .impact-evidence-note,
 .impact-logo-head,
 .impact-reach-dossier-head { color: var(--apple-tertiary); font-family: var(--font-mono); }
-.impact-award-card { box-shadow: none !important; transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
+.impact-award-card { box-shadow: none !important; transition: border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
 #recognition .impact-award-card { box-shadow: none !important; }
 .impact-award-card:hover,
-.impact-award-card:focus-visible { border-color: rgba(255, 255, 255, .5) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .28) !important; transform: translateY(-3px); }
+.impact-award-card:focus-visible { border-color: rgba(255, 255, 255, .5) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .28) !important; }
 .impact-award-rail-nav { transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important; }
 .impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .34) !important; background: var(--apple-surface-raised) !important; }
 .impact-reach-profile-media { clip-path: inset(0 round var(--portfolio-content-radius)); }
@@ -478,7 +478,7 @@ header .nav-contact-icon:focus-visible {
   }
   .impact-evidence-row > div:last-child { width: 100%; }
   .impact-evidence-row.is-desktop-active > div:last-child > .impact-glass { min-height: 0; }
-  .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 24px 0 28px; }
+  .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 24px 0 24px; }
   .impact-award-rail { height: 390px; }
   .impact-award-card { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 10px; padding: 10px 10px 12px; }
   .impact-award-card img { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; object-fit: contain; }

@@ -184,7 +184,9 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
         await fs.access(path.join(exportsDir, `${input.exportId}.json`));
         const previous = await readJSON(mappingFile, {});
         if ((previous[project.id] || null) !== (input.expectedCover || null)) throw fail('该作品封面已被其他操作更新，请刷新后再确认。', 409);
-        const file = `${project.id}-${input.exportId}.webp`, target = path.join(customDir, file);
+        const title = String(project.title || '').trim().replace(/[\\/\0<>:"|?*]/g, '-');
+        if (!title) throw fail('作品需要有中文名称才能关联封面。');
+        const file = `${title}-${input.exportId}.webp`, target = path.join(customDir, file);
         if (previous[project.id] === file) {
           respond(res, { projectId: project.id, path: target, projects: await projects(), overrides: previous }); return;
         }

@@ -7,13 +7,13 @@ import yueyangCover from '../../assets/images/project-covers/AI 文旅宣传-岳
 import riverCityCover from '../../assets/images/project-covers/AI 概念短片-人河流城市（MJ 官方优秀作品）.webp';
 import lightCover from '../../assets/images/project-covers/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.webp';
 
-import earbudsCover from '../../assets/images/project-covers/library/earbuds.webp';
-import earbuds2Cover from '../../assets/images/project-covers/library/earbuds-2.webp';
-import ugcEarbudsCover from '../../assets/images/project-covers/library/ugc-earbuds.webp';
-import cushionCover from '../../assets/images/project-covers/library/ugc-cushion.webp';
-import petLightCover from '../../assets/images/project-covers/library/ugc-pet-light.webp';
-import giantsCover from '../../assets/images/project-covers/library/chinese-giants.webp';
-import farewellCover from '../../assets/images/project-covers/library/farewell.webp';
+import earbudsCover from '../../assets/images/project-covers/library/无线耳机 AI 品牌广告.webp';
+import earbuds2Cover from '../../assets/images/project-covers/library/无线耳机 AI 品牌广告 2.webp';
+import ugcEarbudsCover from '../../assets/images/project-covers/library/耳机 UGC 广告.webp';
+import cushionCover from '../../assets/images/project-covers/library/海外坐垫 UGC 广告.webp';
+import petLightCover from '../../assets/images/project-covers/library/宠物红光疗法设备 UGC 广告.webp';
+import giantsCover from '../../assets/images/project-covers/library/中式国风巨物美学.webp';
+import farewellCover from '../../assets/images/project-covers/library/最难的告别.webp';
 import coverOverrides from './project-cover-overrides.json';
 import videoMetadata from './project-video-metadata.json';
 

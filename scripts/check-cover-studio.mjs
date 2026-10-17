@@ -12,6 +12,7 @@ import { createHash } from 'node:crypto';
 const root = process.cwd();
 const fixture = await fs.mkdtemp(path.join(os.tmpdir(), 'ailuren-cover-studio-'));
 for (const file of ['src', 'assets/images', 'works.html']) await fs.cp(path.join(root, file), path.join(fixture, file), { recursive: true });
+await fs.mkdir(path.join(fixture, 'screenshots'), { recursive: true });
 await fs.mkdir(path.join(fixture, 'assets/videos'), { recursive: true });
 await fs.symlink(path.join(root, 'assets/videos/works'), path.join(fixture, 'assets/videos/works'));
 await fs.symlink(path.join(root, 'node_modules'), path.join(fixture, 'node_modules'));
@@ -75,16 +76,17 @@ try {
       assert((await fs.stat(file)).size > 1000);
       assert.deepEqual(await mapping(), beforeMap, 'Export must not associate a project.');
       if (mode === 'contain-blur') {
-        await page.screenshot({ path: path.join(root, '..', '..', '.codex/visualizations/2026/10/15/cover-studio', `${kind}.png`), fullPage: true });
+        await page.screenshot({ path: path.join(fixture, 'screenshots', `${kind}.png`), fullPage: true });
         await page.locator('#project-select').selectOption(projectId);
         assert(await page.locator('#associate-cover').isDisabled());
         await page.locator('#replace-consent').check(); await page.locator('#associate-cover').click();
         await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('已关联作品'));
         const nextMap = await mapping(); assert(nextMap[projectId]);
+        assert(nextMap[projectId].startsWith(projectId === '09' ? '无线耳机 AI 品牌广告-' : '海外坐垫 UGC 广告-'), 'Associated cover filenames must start with the Chinese project title.');
         assert((await fs.stat(path.join(fixture, 'assets/images/project-covers/custom', nextMap[projectId]))).size > 0);
         const work = await browser.newPage(); await work.goto('http://127.0.0.1:5193/works.html'); await work.locator('.library-grid').waitFor();
         const card = work.locator('.comet-archive__card').nth(projectId === '09' ? 8 : 11);
-        assert((await card.getAttribute('style')).includes(nextMap[projectId]), 'Public library must use the newly associated cover.');
+        assert(decodeURIComponent(await card.getAttribute('style')).includes(nextMap[projectId]), 'Public library must use the newly associated cover.');
         await card.click(); await work.locator('.cinema-player__play').click(); await work.waitForFunction(() => document.querySelector('video')?.videoWidth > 0); await work.locator('.cinema-player__close').click(); await work.close();
       }
     }
@@ -92,7 +94,7 @@ try {
     console.log(`${kind}: 12 candidates, manual timestamp, drag, both modes, real WebP files, explicit association and video playback passed.`);
   }
   // Import an existing image without generating video candidates.
-  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/library/earbuds.webp'));
+  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/library/无线耳机 AI 品牌广告.webp'));
   await page.waitForFunction(() => !document.querySelector('#export-cover').disabled && document.querySelector('#frame-status').textContent.startsWith('导入图片'));
   assert.equal(await page.locator('.candidates button').count(), 0); await page.locator('#export-cover').click();
   await page.waitForFunction(() => !document.querySelector('#export-result').hidden && !document.querySelector('#export-cover').disabled);
