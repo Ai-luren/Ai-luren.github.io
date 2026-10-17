@@ -63,7 +63,7 @@ export const DICT = {
     'nav.experiments.short': '实验室',
     'nav.contact.short': '联系',
 
-    'hero.subtitle': 'AIGC 内容创作，把有趣的想法做出来',
+    'hero.subtitle': '专注 AI 视频创作与影像效果设计，探索商\u2060业\u2060广\u2060告、创意短片与动态视觉表达。',
     'hero.scrollCue.aria': '继续阅读',
     'hero.proof.aria': '创作能力方向',
     'hero.proof1.title': '创意效果',
@@ -155,7 +155,7 @@ export const DICT = {
     'nav.experiments.short': 'Lab',
     'nav.contact.short': 'Contact',
 
-    'hero.subtitle': 'AIGC content creation — bringing fun ideas to life',
+    'hero.subtitle': 'AI video creation and imaging effects, exploring commercials, short films, and motion-driven visual storytelling.',
     'hero.scrollCue.aria': 'Keep reading',
     'hero.proof.aria': 'Creative capabilities',
     'hero.proof1.title': 'Creative Effects',

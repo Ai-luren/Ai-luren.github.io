@@ -51,12 +51,14 @@
   --apple-impact-title-card-gap-desktop: 28px;
   --apple-impact-title-card-gap-mobile: 18px;
   --apple-impact-lab-edge: 48px;
-  --glass-surface: var(--apple-surface);
+  /* Legacy aliases must point to the canonical chrome glass role.
+     Nav capsules and social Dock should never diverge in saturation or fill. */
+  --glass-surface: var(--portfolio-panel-surface);
   --glass-surface-raised: var(--apple-surface-raised);
-  --glass-border: var(--apple-hairline);
+  --glass-border: var(--portfolio-panel-border);
   --glass-border-strong: rgba(255, 255, 255, .32);
-  --glass-shadow: var(--apple-shadow-panel);
-  --glass-blur: blur(22px) saturate(1.12);
+  --glass-shadow: var(--portfolio-panel-shadow);
+  --glass-blur: var(--portfolio-panel-blur);
   --body-on-dark: var(--apple-text);
   --body-text: rgba(245, 245, 247, .82);
   /* Compatibility aliases for the static index shell. Canonical values live
@@ -66,17 +68,35 @@
   --accent-blue-on-dark: var(--apple-blue);
   --body-muted: var(--apple-secondary);
   --type-hero: clamp(3.4rem, 6.4vw, 6.2rem);
-  --type-section: clamp(2.45rem, 4.8vw, 4rem);
-  --type-section-mobile: clamp(2.3rem, 10vw, 3.5rem);
-  --type-impact-section: clamp(2.25rem, 3vw, 2.7rem);
-  --type-impact-section-mobile: clamp(2.15rem, 9vw, 2.75rem);
-  --type-card: clamp(1rem, 1.45vw, 1.2rem);
+  /* Semantic heading roles. Keep the existing visual scales while giving
+     page, section, and impact headings one explicit source of truth. */
+  --page-title-size: clamp(36px, 4.8vw, 64px);
+  --page-title-weight: 600;
+  --page-title-line-height: 1.08;
+  --page-title-letter-spacing: -.05em;
+  --section-title-size: clamp(2.45rem, 4.8vw, 4rem);
+  --section-title-size-mobile: clamp(2.3rem, 10vw, 3.5rem);
+  --section-title-weight: 600;
+  --section-title-line-height: 1.02;
+  --section-title-letter-spacing: -.055em;
+  --impact-title-size: clamp(2.25rem, 3vw, 2.7rem);
+  --impact-title-size-mobile: clamp(2.15rem, 9vw, 2.75rem);
+  --impact-title-weight: 600;
+  --impact-title-line-height: 1.08;
+  --impact-title-letter-spacing: -.045em;
+  --project-card-title-size: 16px;
+  --project-card-title-weight: 600;
+  --project-card-title-line-height: 1.4;
+  --project-card-detail-size: 12px;
+  --project-card-detail-weight: 400;
+  --project-card-detail-line-height: 1.55;
+  --project-card-marker-width: 2px;
+  --project-card-marker-height: 14px;
+  --project-card-detail-inset: 10px;
+  --project-card-detail-gap: 8px;
+  --project-card-marker-color: var(--apple-blue);
   --type-body: 14px;
-  --heading-rule-width: 24px;
-  --heading-rule-height: 2px;
-  --heading-rule-gap: 20px;
   --heading-rule-radius: 2px;
-  --heading-rule-color: rgba(41, 151, 255, .86);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -90,6 +110,15 @@
   --space-11: 144px;
   --subtle-text: var(--apple-secondary);
   --quiet-text: var(--apple-tertiary);
+}
+
+@media (max-width: 760px) {
+  :root {
+    --project-card-title-size: 14px;
+    --project-card-title-weight: 500;
+    --project-card-title-line-height: 1.45;
+    --project-card-marker-height: 12px;
+  }
 }
 
 html { background: var(--apple-bg); }
@@ -178,18 +207,31 @@ header .nav-contact-icon:focus-visible {
 .section-title {
   margin-top: 12px;
   color: var(--apple-text);
-  font: 600 var(--type-section)/1.02 var(--font-display);
-  letter-spacing: -.055em;
+  font-family: var(--font-display);
+  font-size: var(--section-title-size);
+  font-weight: var(--section-title-weight);
+  line-height: var(--section-title-line-height);
+  letter-spacing: var(--section-title-letter-spacing);
   text-shadow: none;
 }
-.section-title::after {
-  display: block;
-  width: var(--heading-rule-width);
-  height: var(--heading-rule-height);
-  margin-top: var(--heading-rule-gap);
-  border-radius: var(--heading-rule-radius);
-  background: var(--heading-rule-color);
-  content: '';
+.page-title {
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--page-title-size);
+  font-weight: var(--page-title-weight);
+  line-height: var(--page-title-line-height);
+  letter-spacing: var(--page-title-letter-spacing);
+}
+.impact-title {
+  margin: 17px 0 0;
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--impact-title-size);
+  font-weight: var(--impact-title-weight);
+  line-height: var(--impact-title-line-height);
+  letter-spacing: var(--impact-title-letter-spacing);
+  white-space: normal;
+  text-wrap: balance;
 }
 .section-note {
   max-width: 34ch;
@@ -249,7 +291,48 @@ header .nav-contact-icon:focus-visible {
   border-radius: var(--portfolio-card-radius) !important;
 }
 
-/* Selected work: image-led cards with the same edge, radius and type roles. */
+/* Shared ProjectCard type and detail-marker contract for the home and library. */
+.comet-archive__title {
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--project-card-title-size);
+  font-weight: var(--project-card-title-weight);
+  line-height: var(--project-card-title-line-height);
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+.comet-archive__details {
+  display: grid;
+  grid-template-columns: var(--project-card-marker-width) minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--project-card-detail-gap);
+  box-sizing: border-box;
+  min-width: 0;
+  padding-inline-start: var(--project-card-detail-inset);
+  text-align: left;
+}
+.comet-archive__details::before {
+  content: '';
+  display: block;
+  width: var(--project-card-marker-width);
+  height: var(--project-card-marker-height);
+  border-radius: var(--heading-rule-radius);
+  background: var(--project-card-marker-color);
+}
+.comet-archive__details strong {
+  min-width: 0;
+  color: var(--apple-secondary);
+  font-family: var(--font-body);
+  font-size: var(--project-card-detail-size);
+  font-weight: var(--project-card-detail-weight);
+  line-height: var(--project-card-detail-line-height);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Selected work: image-led cards with the same edge and radius roles. */
 #projects { padding-top: clamp(104px, 12vw, 150px); }
 #projects .section-intro { margin-bottom: 28px; }
 #projects .section-note { margin-top: 10px; padding-left: 0; border-left: 0; }
@@ -258,11 +341,6 @@ header .nav-contact-icon:focus-visible {
   row-gap: 10px;
   border-radius: var(--apple-radius-card);
   background: transparent;
-}
-.comet-archive__title {
-  color: rgba(245, 245, 247, .78);
-  font: 500 clamp(13px, 1.15vw, 15px)/1.35 var(--font-body);
-  letter-spacing: -.01em;
 }
 .comet-archive__image {
   border: 1px solid rgba(255, 255, 255, .18) !important;
@@ -277,12 +355,6 @@ header .nav-contact-icon:focus-visible {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 18px 38px rgba(0, 0, 0, .34) !important;
 }
 .comet-archive__image::after { height: 28%; background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .6)); }
-.comet-archive__details { padding-left: 12px; }
-.comet-archive__details::before { width: 2px; height: 15px; border-radius: 2px; background: var(--apple-blue); }
-.comet-archive__details strong {
-  color: var(--apple-secondary);
-  font: 500 12px/1.35 var(--font-body);
-}
 .comet-archive__meta { color: rgba(245, 245, 247, .76); font-family: var(--font-body); text-decoration-color: rgba(245, 245, 247, .35); }
 
 /* Work history: one panel, one active state, no competing surfaces. */
@@ -291,7 +363,6 @@ header .nav-contact-icon:focus-visible {
 #recognition { padding-top: clamp(108px, 12vw, 152px); }
 .impact-evidence { gap: 68px; }
 .impact-evidence-row { gap: clamp(28px, 5vw, 70px); }
-.impact-evidence-label h2 { color: var(--apple-text); font: 600 clamp(1.9rem, 3.6vw, 3.45rem)/1 var(--font-display); letter-spacing: -.06em; }
 .impact-evidence-label p { color: var(--apple-secondary); font: 400 12px/1.7 var(--font-body); }
 .impact-evidence-note,
 .impact-logo-head,
@@ -350,7 +421,7 @@ header .nav-contact-icon:focus-visible {
   #recognition + #experiments { padding-top: clamp(56px, 6vw, 88px); }
   #recognition .recognition-react-root { width: 100%; }
   .impact-evidence { gap: clamp(72px, 7vw, 112px); }
-  .impact-evidence-row { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 28px; scroll-margin-top: 106px; }
+  .impact-evidence-row { display: grid; min-height: 0; align-content: start; gap: 28px; scroll-margin-top: 106px; }
   .impact-evidence-label {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(250px, .42fr);
@@ -362,11 +433,6 @@ header .nav-contact-icon:focus-visible {
   .impact-evidence-label h2 {
     grid-column: 1;
     grid-row: 1;
-    margin: 0;
-    color: var(--apple-text);
-    font: 600 clamp(3.45rem, 5.7vw, 6.3rem)/.94 var(--font-display);
-    letter-spacing: -.08em;
-    white-space: nowrap;
   }
   .impact-evidence-label p {
     grid-column: 2;
@@ -376,7 +442,6 @@ header .nav-contact-icon:focus-visible {
     color: var(--apple-secondary);
     font: 400 15px/1.65 var(--font-body);
   }
-  html[lang="en"] .impact-evidence-label h2 { white-space: nowrap; text-wrap: unset; }
   .impact-evidence-row > div:last-child { width: 100%; }
   .impact-evidence-row.is-desktop-active > div:last-child > .impact-glass { min-height: 0; }
   .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 24px 0 28px; }
@@ -396,7 +461,6 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-desktop-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-desktop-tile strong { display: block; color: var(--apple-text); font: 600 15px/1.25 var(--font-display); }
   .impact-platform-desktop-tile span { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 11px/1.4 var(--font-body); }
-  .impact-reach-dossier { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 26px 32px 30px; }
   .impact-reach-profile-shot { height: 220px; }
 }
 
@@ -479,25 +543,6 @@ header .nav-contact-icon:focus-visible {
 
 /* AI lab: a quiet list with the same neutral hierarchy as the other modules. */
 #experiments { padding-top: clamp(108px, 12vw, 150px); }
-.flip-experiment { margin-top: 28px; }
-.flip-experiment__list { gap: 10px; }
-.flip-experiment__row {
-  min-height: 124px;
-  padding: 22px 24px;
-  transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
-}
-.flip-experiment__row:hover,
-.flip-experiment__row:focus-within { border-color: rgba(255, 255, 255, .28) !important; background: rgba(44, 44, 46, .76) !important; transform: translateY(-2px); }
-.flip-experiment__row-title { border-left-color: var(--apple-hairline); }
-.flip-experiment__row-title h3 { font: 600 clamp(1.35rem, 2vw, 1.8rem)/1.05 var(--font-display); letter-spacing: -.045em; }
-.flip-experiment__row-description { color: var(--apple-secondary); font: 400 13px/1.65 var(--font-body); }
-.flip-experiment__facts span { color: var(--apple-tertiary); font: 500 11px/1.3 var(--font-mono); }
-.flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary); }
-.flip-experiment__link { color: rgba(245, 245, 247, .76); font: 500 12px/1.35 var(--font-body); transition: gap var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
-.flip-experiment__link:hover,
-.flip-experiment__link:focus-visible { color: var(--apple-text); }
-.flip-experiment__status { color: var(--apple-tertiary); font-family: var(--font-mono); }
-.flip-experiment__status-dot { background: var(--apple-secondary); box-shadow: none; }
 
 /* Footer closes the story with the same calm material and one clear ask. */
 footer { padding: 128px 0 36px !important; }
@@ -548,7 +593,7 @@ footer::before { background: transparent !important; }
   .section { padding: 96px 0 88px; }
   .shell { width: min(100% - 32px, 680px); }
   .section-intro { margin-bottom: 28px; }
-  .section-title { margin-top: 10px; font-size: var(--type-section-mobile); }
+  .section-title { margin-top: 10px; font-size: var(--section-title-size-mobile); }
   .section-note { font-size: 13px; }
   #top { padding-top: 100px; padding-bottom: 52px; }
   .hero-shell { min-height: calc(100svh - 152px); align-items: center; }
@@ -560,23 +605,13 @@ footer::before { background: transparent !important; }
   .hero-proof { display: none; }
   #projects .section-intro { margin-bottom: 22px; }
   .comet-archive { gap: 12px; padding-bottom: 14px; }
-  .comet-archive__title { font-size: 12px; }
-  .comet-archive__image { border-radius: 16px !important; }
-  .comet-archive__details strong { font-size: 11px; }
   .impact-evidence { gap: 48px; }
   .impact-evidence-row { gap: 18px; }
-  .impact-evidence-label h2 { margin-top: 12px; font-size: clamp(2rem, 10vw, 3rem); }
   .impact-award-shell { border-radius: var(--apple-radius-panel) !important; }
   .impact-award-rail { height: 304px; padding-inline: 52px; clip-path: inset(0 52px); }
   .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
   .impact-logo-shell { border-radius: var(--apple-radius-panel) !important; }
   .impact-reach-dossier { border-radius: var(--apple-radius-panel) !important; }
-  .flip-experiment { margin-top: 20px; }
-  .flip-experiment__row { min-height: 0; padding: 20px 18px 22px; border-radius: 16px !important; }
-  .flip-experiment__row:hover,
-  .flip-experiment__row:focus-within { transform: none; }
-  .flip-experiment__row-title h3 { font-size: 1.45rem; }
-  .flip-experiment__row-description { font-size: 13px; }
   footer { padding: 96px 0 28px !important; }
   .footer-topline { padding-bottom: 20px; }
   .footer-contact-copy { padding: 30px 22px; border-radius: var(--apple-radius-panel) !important; text-align: left; }
@@ -593,7 +628,7 @@ footer::before { background: transparent !important; }
   header,
   .hero-proof-card,
   .impact-glass,
-  .flip-experiment__row,
+  #experiments .flip-experiment,
   .footer-contact-copy,
   .floating-dock-panel { background: var(--apple-surface-solid) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
@@ -603,18 +638,8 @@ footer::before { background: transparent !important; }
   .reveal { transform: none; }
   .comet-card:hover .comet-archive__image,
   .comet-card:focus-within .comet-archive__image,
-  .flip-experiment__row:hover,
-  .flip-experiment__row:focus-within,
   .floating-dock-item:hover,
   .floating-dock-item:focus-visible { transform: none; }
-}
-
-/* Internal cards keep a smaller role-based radius; the outer panels stay at 24px. */
-#experiments .flip-experiment__row { border-radius: var(--apple-radius-card) !important; }
-#experiments .flip-experiment__link {
-  min-height: 44px;
-  padding: 10px 0;
-  touch-action: manipulation;
 }
 
 /* Mobile impact modules: use the same primary-heading rhythm as the other sections. */
@@ -626,11 +651,6 @@ footer::before { background: transparent !important; }
     align-content: center;
   }
   .impact-evidence-label .impact-eyebrow { display: none; }
-  .impact-evidence-label h2 {
-    margin-top: 0;
-    font: 600 clamp(2.15rem, 10vw, 3rem)/1.06 var(--font-display);
-    letter-spacing: -.045em;
-  }
   .impact-evidence-label p {
     max-width: 30ch;
     margin-top: 14px;
@@ -755,15 +775,6 @@ header .nav-contact-icon:active,
 .impact-reach-profile-media { background: rgba(0, 0, 0, .24) !important; }
 .impact-reach-profile-media img { mix-blend-mode: normal !important; }
 
-/* AI Lab uses the same quiet hierarchy as the other modules. */
-#experiments .flip-experiment__row-title { border-left-color: var(--apple-hairline) !important; }
-#experiments .flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary) !important; }
-#experiments .flip-experiment__status-dot { background: var(--apple-secondary) !important; box-shadow: none !important; }
-#experiments .flip-experiment__row:hover,
-#experiments .flip-experiment__row:focus-within {
-  background: rgba(44, 44, 46, .76) !important;
-}
-
 /* The closing About and Contact content share one glass surface; the page
    background stays untouched so the story above remains visible as designed. */
 #profile.closing-section {
@@ -803,7 +814,6 @@ header .nav-contact-icon:active,
   line-height: 1.12;
   letter-spacing: -.025em;
 }
-#profile .closing-card .section-title::after { display: none; }
 #profile .about-copy { width: min(100%, 660px); max-width: 660px; margin: 0; }
 #profile .about-role { margin: 0 0 10px; }
 #profile .about-description {
@@ -977,10 +987,6 @@ header .nav-contact-icon:active,
 #hero-title .hero-title__rotating .text-type__cursor { background: var(--apple-blue) !important; }
 .section-note { padding-left: 0; border-left: 0; }
 
-@media (max-width: 720px) {
-  :root { --heading-rule-gap: 18px; }
-}
-
 /* 最终边界层：档案图片不再放大覆盖邻卡，获奖预览在手机端保持可读尺寸。 */
 .comet-archive__image { border-color: rgba(255, 255, 255, .18) !important; }
 .comet-card:hover .comet-archive__image,
@@ -1130,7 +1136,6 @@ header .nav-contact-icon:focus-visible {
     right: 58px;
   }
   #impact-awards .impact-award-pagination button { flex-shrink: 1 !important; }
-  #impact-reach .impact-reach-dossier { padding: 18px !important; }
   #impact-reach .impact-reach-profile-grid { gap: 16px 12px !important; }
   #impact-reach .impact-reach-profile-shot { flex-direction: column; align-items: stretch; height: auto; }
   #impact-reach .impact-reach-profile-caption { margin-top: 0 !important; }
@@ -1237,14 +1242,12 @@ header .nav-contact-icon:focus-visible {
   }
   .comet-archive-mobile-shell .comet-archive__title {
     order: 2 !important;
-    height: calc(2.35em + 2px) !important;
-    min-height: calc(2.35em + 2px) !important;
+    height: auto !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 2px 1px 0 !important;
-    font-size: clamp(13px, 3.6vw, 15px) !important;
-    line-height: 1.3 !important;
     align-items: flex-start !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
   .comet-archive-mobile-shell .comet-archive__title-content--forced-break .comet-archive__title-line {
     display: block !important;
@@ -1252,7 +1255,6 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-mobile-shell .comet-archive__image {
     order: 1 !important;
     aspect-ratio: 3 / 4 !important;
-    border-radius: 13px !important;
     background-color: rgba(5, 7, 9, .78) !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -1270,29 +1272,9 @@ header .nav-contact-icon:focus-visible {
     padding: 2px 1px 0 !important;
   }
   .comet-archive-mobile-shell .comet-archive__details {
-    display: block !important;
-    height: 2.3em !important;
-    min-height: 2.3em !important;
+    height: auto !important;
+    min-height: 0 !important;
     min-width: 0 !important;
-    padding-left: 7px !important;
-  }
-  .comet-archive-mobile-shell .comet-archive__details::before {
-    width: 1px !important;
-    height: 12px !important;
-    background: var(--apple-blue) !important;
-  }
-  .comet-archive-mobile-shell .comet-archive__details strong {
-    display: block !important;
-    width: 100% !important;
-    height: 2.6em !important;
-    min-height: 2.6em !important;
-    overflow: hidden !important;
-    color: var(--apple-secondary) !important;
-    font-size: clamp(11px, 3vw, 12px) !important;
-    line-height: 1.4 !important;
-    text-overflow: clip !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
   }
   .comet-archive-page-arrow {
     position: absolute;
@@ -1442,8 +1424,8 @@ header .nav-contact-icon:focus-visible {
   }
   .impact-award-rail-nav {
     top: calc(50% + 8px) !important;
-    width: 42px !important;
-    height: 42px !important;
+    width: 44px !important;
+    height: 44px !important;
   }
   .impact-award-rail-nav--prev { left: 8px !important; }
   .impact-award-rail-nav--next { right: 8px !important; }
@@ -1532,12 +1514,6 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-mobile-tile img {
     height: 27px;
   }
-  .impact-reach-dossier {
-    padding: 20px 20px 22px;
-  }
-  .impact-reach-dossier-head {
-    margin-bottom: 22px;
-  }
   .impact-reach-profile-grid {
     gap: 26px 14px;
   }
@@ -1559,11 +1535,6 @@ header .nav-contact-icon:focus-visible {
   }
   .impact-reach-profile-caption {
     margin-top: 9px;
-  }
-  .impact-reach-dossier {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
   .impact-reach-profile-actions {
     display: flex;
@@ -1727,10 +1698,8 @@ header .nav-contact-icon:focus-visible {
 /* Typography roles: the impact modules share the same editorial hierarchy.
    This block changes only type metrics and English wrapping; media, behavior,
    content, and section order remain untouched. */
-.impact-evidence-label h2,
 #experiments .section-title,
 .impact-platform-mobile-manifesto h3,
-.flip-experiment__row-title h3,
 .impact-platform-desktop-tile strong,
 .impact-platform-mobile-tile strong,
 .impact-reach-profile-caption strong,
@@ -1744,8 +1713,7 @@ header .nav-contact-icon:focus-visible {
 .impact-platform-desktop-description,
 .impact-platform-mobile-manifesto p,
 .impact-platform-mobile-tile span,
-.impact-reach-dossier-description,
-.flip-experiment__row-description {
+.impact-reach-dossier-description {
   font-family: var(--font-body);
 }
 
@@ -1756,28 +1724,13 @@ header .nav-contact-icon:focus-visible {
 .impact-platform-mobile-signature,
 .impact-reach-dossier-head,
 .impact-reach-profile-caption span,
-.impact-award-card-caption small,
-.flip-experiment__facts span,
-.flip-experiment__status {
+.impact-award-card-caption small {
   font-family: var(--font-mono);
 }
 
 @media (min-width: 761px) {
   /* Match the AI Lab section-title scale at 1024/1280/1440 instead of
      letting the three impact labels become a separate, oversized tier. */
-  .impact-evidence-label h2 {
-    font-size: clamp(2.55rem, 5vw, 4.6rem);
-    line-height: 1.02;
-    letter-spacing: -.055em;
-    white-space: normal;
-    text-wrap: balance;
-  }
-
-  html[lang="en"] .impact-evidence-label h2 {
-    white-space: normal;
-    text-wrap: balance;
-  }
-
   /* Long English award names keep their context instead of being ellipsized. */
   html[lang="en"] .impact-award-card-caption strong {
     overflow: visible;
@@ -1789,14 +1742,7 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (max-width: 720px) {
-  /* The mobile impact labels now sit on the same display scale as AI Lab. */
-  .impact-evidence-label h2 {
-    font-size: clamp(2.45rem, 11vw, 3.8rem);
-    line-height: 1.06;
-    letter-spacing: -.045em;
-    white-space: normal;
-    text-wrap: balance;
-  }
+  .impact-title { font-size: var(--impact-title-size-mobile); }
 
   .impact-platform-mobile-manifesto h3 {
     line-height: .98;
@@ -1809,23 +1755,6 @@ header .nav-contact-icon:focus-visible {
     letter-spacing: -.055em;
   }
 
-  html[lang="en"] .flip-experiment__row-title h3 {
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.12;
-    letter-spacing: -.04em;
-  }
-}
-
-@media (min-width: 721px) {
-  /* The desktop experiment list also needs to release the English nowrap
-     rule so its titles can use the available column width naturally. */
-  html[lang="en"] .flip-experiment__row-title h3 {
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.12;
-    letter-spacing: -.04em;
-  }
 }
 
 /* Respect reduced-transparency users while keeping the same hierarchy. */
@@ -1836,7 +1765,7 @@ header .nav-contact-icon:focus-visible {
   #profile .closing-card,
   #projects .comet-archive-mobile-shell,
   #top .hero-proof-card,
-  #experiments .flip-experiment__row {
+  #experiments .flip-experiment {
     background: var(--apple-surface-solid) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -2072,9 +2001,6 @@ header .nav-contact-icon:focus-visible {
     transform: none !important;
   }
 
-  #experiments .flip-experiment__row:hover:not(:focus-visible) {
-    transform: none !important;
-  }
 }
 
 /* Modal-only fallback. Keep normal material tokens and unrelated surfaces intact.
@@ -2083,8 +2009,8 @@ header .nav-contact-icon:focus-visible {
   #mobile-nav-drawer,
   .cinema-player::backdrop {
     background: var(--portfolio-modal-solid, #0c0c0d) !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   /* Fade menu items, never an opaque fallback scrim. Keep close timing intact. */
   #mobile-nav-drawer { transition-property: visibility !important; }
@@ -2095,8 +2021,8 @@ header .nav-contact-icon:focus-visible {
   #mobile-nav-drawer,
   .cinema-player::backdrop {
     background: var(--portfolio-modal-solid, #0c0c0d) !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   #mobile-nav-drawer { transition-property: visibility !important; }
   #mobile-nav-drawer.is-open,

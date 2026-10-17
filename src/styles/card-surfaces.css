@@ -12,6 +12,10 @@
   --portfolio-panel-surface: rgba(28, 28, 30, .72);
   --portfolio-panel-border: rgba(255, 255, 255, .14);
   --portfolio-panel-blur: blur(22px) saturate(1.08);
+  /* Shared cinematic content glass: Impact, Lab, About, Hero proof and mobile archive.
+     Chrome remains lighter (.72); modal scrims remain darker (.9). */
+  --portfolio-glass-surface: rgba(26, 27, 31, .82);
+  --portfolio-glass-blur: blur(22px) saturate(1.04);
   --portfolio-panel-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
   --portfolio-card-surface: var(--portfolio-panel-surface);
   --portfolio-card-border: var(--portfolio-panel-border);
@@ -30,6 +34,7 @@
   /* Separate page, modal fallback and icon-control roles; existing roles stay unchanged. */
   --portfolio-page-surface: #0b0c0f;
   --portfolio-modal-solid: #0c0c0d;
+  --portfolio-modal-panel-surface: #191a1e;
   --portfolio-icon-surface: rgba(255, 255, 255, .1);
   --portfolio-icon-border: rgba(255, 255, 255, .34);
   --portfolio-icon-hover-surface: rgba(255, 255, 255, .14);
@@ -38,7 +43,7 @@
 }
 
 .impact-glass,
-#experiments .flip-experiment__row,
+#experiments .flip-experiment,
 #top .hero-proof-card,
 #profile .closing-card,
 #projects .comet-archive-mobile-shell,
@@ -50,6 +55,17 @@ header.is-condensed {
   box-shadow: var(--portfolio-card-shadow) !important;
   backdrop-filter: var(--portfolio-card-blur) !important;
   -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
+}
+
+/* One material role for all reading panels on video. Layout and component
+   geometry remain component-owned; only surface and blur are shared here. */
+.impact-glass,
+#experiments .flip-experiment,
+#profile .closing-card,
+#top .hero-proof-card,
+#projects .comet-archive-mobile-shell {
+  --portfolio-card-surface: var(--portfolio-glass-surface);
+  --portfolio-card-blur: var(--portfolio-glass-blur);
 }
 
 /* Content media is opaque and does not add a second blur layer. */
@@ -122,7 +138,7 @@ header .nav-contact-icon,
 .impact-qr-dialog {
   border: 1px solid var(--portfolio-card-border) !important;
   border-radius: var(--portfolio-panel-radius) !important;
-  background: var(--apple-surface-solid, #1c1c1e) !important;
+  background: var(--portfolio-modal-panel-surface) !important;
   box-shadow: var(--portfolio-panel-shadow) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;

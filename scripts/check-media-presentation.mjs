@@ -40,7 +40,14 @@ try{
    await p.keyboard.press('Escape');assert(await p.evaluate(()=>window.previousMediaVideo.paused&&!window.previousMediaVideo.getAttribute('src')));
   }
   await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-card',{state:'attached'});
-  await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
+  // The desktop navigation has no visible hamburger; the anchor already exists.
+  if(await p.locator('.nav-toggle').isVisible()){
+    await p.locator('.nav-toggle').click();
+    await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();
+  }else{
+    await p.locator('#impact-awards').scrollIntoViewIfNeeded();
+  }
+  await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
   const originals=[];
   for(let index=0;index<8;index++){
    await p.waitForFunction(()=>{const img=document.querySelector('#impact-award-lightbox figure>img');return img?.complete&&img.naturalWidth>0;});await p.waitForTimeout(80);
@@ -67,15 +74,27 @@ try{
   const p=await browser.newPage({viewport:{width,height}});
   await p.addInitScript(()=>localStorage.setItem('ailuren-lang','en'));
   await p.goto(new URL('works.html',base).href);
-  const projects=await p.evaluate(async()=>{const {PROJECTS}=await import('/src/data/projects.js');return PROJECTS.map(item=>({id:item.id,video:!!item.videoUrl}));});
+  // Read production-rendered cards, not /src/* paths available only in dev.
+  const projects=await p.locator('.library-grid .comet-archive__card').evaluateAll(cards =>
+    cards.map(card=>({video:card.querySelector('.comet-archive__meta')?.textContent.trim()==='Play'}))
+  );
+  assert.equal(projects.length,15,'All 15 projects must appear in the library');
   await p.locator('.library-grid .comet-archive__card').first().click();
+  const seen=new Set();
+  let previousId=null;
   for(const [index,project]of projects.entries()){
-   await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,project.id);
+   if(previousId!==null)await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId!==id,previousId);
+   const currentId=await p.locator('.cinema-player').getAttribute('data-project-id');
+   assert(currentId&&!seen.has(currentId),'Player must advance to a new project');
+   seen.add(currentId);
    if(project.video){
     await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
     videoCheck(await videoState(p),width,height);
    }
-   if(index<projects.length-1)await p.locator('.cinema-player__sequence button').last().click();
+   if(index<projects.length-1){
+    previousId=currentId;
+    await p.locator('.cinema-player__sequence button').last().click();
+   }
   }
   assert(await p.locator('.cinema-player__sequence button').last().isDisabled());
   console.log(`${width}x${height}: every actual library film switched in sequence with correct source ratio and visible controls`);

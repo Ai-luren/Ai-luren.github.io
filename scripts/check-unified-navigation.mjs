@@ -20,23 +20,27 @@ try{
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.goto(new URL('index.html',base).href);await p.waitForSelector('.comet-archive__card',{state:'attached'});await p.waitForTimeout(450);
   const home=await p.locator('body > header').evaluate(geometry);
-  const button=await p.locator('header .nav-toggle').evaluate(geometry);
+  const button=width<=760?await p.locator('header .nav-toggle').evaluate(geometry):null;
   const brand=await p.locator('header .brand').evaluate(geometry);
-  await p.locator('.nav-toggle').click();await p.waitForFunction(()=>document.querySelector('#mobile-nav-drawer').classList.contains('is-open'));await p.waitForTimeout(550);
-  assert(await p.locator('main').evaluate(el=>el.inert));
-  for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('header,#mobile-nav-drawer')));}
-  if([393,1440].includes(width))await shot(p,`${width}-home-menu`);
-  await p.keyboard.press('Escape');await p.waitForTimeout(450);assert(!await p.locator('main').evaluate(el=>el.inert));
+  if(width<=760){
+   await p.locator('.nav-toggle').click();await p.waitForFunction(()=>document.querySelector('#mobile-nav-drawer').classList.contains('is-open'));await p.waitForTimeout(550);
+   assert(await p.locator('main').evaluate(el=>el.inert));
+   for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('header,#mobile-nav-drawer')));}
+   if(width===393)await shot(p,`${width}-home-menu`);
+   await p.keyboard.press('Escape');await p.waitForTimeout(450);assert(!await p.locator('main').evaluate(el=>el.inert));
+  }
   if([393,1440].includes(width))await shot(p,`${width}-home-navigation`);
   await p.locator('#projects').scrollIntoViewIfNeeded();
   for(const index of [0,3]){
    await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,String(index+1).padStart(2,'0'));assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(220);
-   same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
+   same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
    await arrows(p,width);await p.keyboard.press('Escape');
   }
-  await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await p.waitForTimeout(650);
+  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();}
+  else await p.locator('#primary-nav [data-impact-nav]').click();
+  await p.waitForTimeout(650);
   await p.locator('.impact-award-card').first().click();await p.waitForSelector('#impact-award-lightbox');await p.waitForTimeout(400);await p.mouse.move(0,0);await p.waitForTimeout(220);
-  same(home,await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry));same(button,await p.locator('#impact-award-lightbox .cinema-player__close').evaluate(geometry));
+  same(home,await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('#impact-award-lightbox .cinema-player__close').evaluate(geometry));
   assert.equal(await p.locator('.impact-award-lightbox-close').count(),0);
   const image=await p.locator('#impact-award-lightbox figure > img').getAttribute('src');
   await p.locator('.impact-award-lightbox-nav--next').click();assert.notEqual(await p.locator('#impact-award-lightbox figure > img').getAttribute('src'),image);
@@ -47,21 +51,23 @@ try{
   assert(await p.locator('.impact-award-card').first().evaluate(el=>el===document.activeElement));
   assert(!await p.locator('main').evaluate(el=>el.inert));
   await p.goto(new URL('works.html?category=visual',base).href);
-  same(home,await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry));same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
+  same(home,await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
   if([393,1440].includes(width))await shot(p,`${width}-works-navigation`);
-  await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');await p.mouse.move(0,0);await p.waitForTimeout(220);
-  same(button,await p.locator('.library-menu .cinema-player__close').evaluate(geometry));
-  assert.equal(await p.locator('.shared-menu-links a').count(),7);
-  assert((await p.locator('.shared-menu-links a').first().getAttribute('href')).endsWith('index.html#projects'));
-  for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.library-menu')));}
-  await p.keyboard.press('Escape');assert.equal(await p.locator('.library-menu').count(),0);
-  assert(await p.locator('.library-page-navigation .cinema-player__close').evaluate(el=>el===document.activeElement));
+  if(width<=760){
+   await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');await p.mouse.move(0,0);await p.waitForTimeout(220);
+   same(button,await p.locator('.library-menu .cinema-player__close').evaluate(geometry));
+   assert.equal(await p.locator('.shared-menu-links a').count(),7);
+   assert((await p.locator('.shared-menu-links a').first().getAttribute('href')).endsWith('index.html#projects'));
+   for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.library-menu')));}
+   await p.keyboard.press('Escape');assert.equal(await p.locator('.library-menu').count(),0);
+   assert(await p.locator('.library-page-navigation .cinema-player__close').evaluate(el=>el===document.activeElement));
+  }
   await p.locator('.library-grid .comet-archive__card').first().click();await p.waitForSelector('.cinema-player[open]');
   assert.equal(await p.locator('.cinema-player__navigation').count(),1);
   same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));
   await p.locator('.cinema-player__return').click();assert.equal(new URL(p.url()).searchParams.get('category'),'visual');
   assert.deepEqual(errors,[]);
-  console.log(`${width}px: four capsule geometries/materials, menu inert/focus, awards navigation/language, arrow hit areas and filtered return passed`);
+  console.log(`${width}px: capsule continuity, responsive navigation, awards navigation/language, arrow hit areas and filtered return passed`);
   await p.close();
  }
  // A blurred scrolling ancestor must never carry the fixed award capsule away.
@@ -100,7 +106,9 @@ try{
    assert.equal(style.opacity,'1');
   };
   await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-card',{state:'attached'});await capability();
-  await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await p.waitForTimeout(650);
+  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();}
+  else await p.locator('#primary-nav [data-impact-nav]').click();
+  await p.waitForTimeout(650);
   await p.locator('.impact-award-card').first().click();await p.waitForTimeout(420);
   await material('#impact-award-lightbox','::before');
   if(out&&width===393)await shot(p,`${width}-award-${mode}`);
@@ -108,11 +116,13 @@ try{
   if(mode!=='normal')assert.equal(await p.locator('#impact-award-lightbox').evaluate(el=>getComputedStyle(el).opacity),'1');
   await p.waitForSelector('#impact-award-lightbox',{state:'detached'});
   await p.goto(new URL('works.html',base).href);await capability();
-  await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');
-  await material('.library-menu','::backdrop');
-  if(out&&width===393)await shot(p,`${width}-library-menu-${mode}`);
-  await p.keyboard.press('Escape');
-  console.log(`${width}px ${mode}: awards and library menu computed background, blur and opaque fallback passed`);
+  if(width<=760){
+   await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');
+   await material('.library-menu','::backdrop');
+   if(out&&width===393)await shot(p,`${width}-library-menu-${mode}`);
+   await p.keyboard.press('Escape');
+  }
+  console.log(`${width}px ${mode}: award fallback and responsive library navigation passed`);
   await p.close();
  }
 }finally{await browser.close();}

@@ -30,7 +30,7 @@ function findBrowser() {
 }
 
 function startDevServer() {
-  const proc = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], {
+  const proc = spawn('npx', ['vite', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], {
     cwd: process.cwd(),
     stdio: 'ignore',
     detached: false,
@@ -261,7 +261,10 @@ const CHECKS = {
       const mobileOverfull = mobile
         ? metrics.some((item) => item.height > window.innerHeight * .9)
         : false;
-      const ok = !mobileOverfull && maxDelta(titleGaps) <= 3 && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
+      const titleRhythmOk = mobile
+        ? maxDelta(titleGaps) <= 3
+        : titleGaps.every((gap) => gap > 0) && maxDelta(titleGaps) <= 3;
+      const ok = !mobileOverfull && titleRhythmOk && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
       return {
         ok,
         detail: `标题-卡片 ${titleGaps.map(Math.round).join('/')}px / 模块间 ${rowGaps.map(Math.round).join('/')}px / 自媒体-实验室 ${Math.round(labGap)}px / 模块高度 ${metrics.map((item) => Math.round(item.height)).join('/')}`,
@@ -325,20 +328,27 @@ const CHECKS = {
           if (actual !== expected) bad.push(`${label}: ${el.className || el.tagName}=${actual}，应为${expected}`);
         }
       };
-      assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card', '24px', '外层面板圆角');
-      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #experiments .flip-experiment__row', '18px', '内容卡片圆角');
+      assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card, #experiments .flip-experiment', '24px', '外层面板圆角');
+      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#experiments .flip-experiment__row', '0px', '编辑索引行不使用独立卡片圆角');
       assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '12px', '内部卡片圆角');
       assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
       assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a, .closing-social .floating-dock-item', '50%', '圆形控件圆角');
 
-      const panel = visible('header')[0];
-      if (panel) {
-        const reference = getComputedStyle(panel);
-        for (const el of visible('.impact-glass, #profile .closing-card')) {
+      // All content panels share one cinematic-glass material regardless of
+      // whether they render through static HTML or React portals.
+      const reference = visible('.impact-glass')[0];
+      if (reference) {
+        const base = getComputedStyle(reference);
+        for (const el of visible('.impact-glass, #experiments .flip-experiment, #profile .closing-card, #top .hero-proof-card, #projects .comet-archive-mobile-shell')) {
           const style = getComputedStyle(el);
-          if (style.backgroundColor !== reference.backgroundColor || style.backdropFilter !== reference.backdropFilter || style.boxShadow !== reference.boxShadow) {
-            bad.push(`外层材质不一致: ${el.className || el.tagName}`);
+          if (style.backgroundColor !== base.backgroundColor || style.backdropFilter !== base.backdropFilter ||
+              style.borderTopColor !== base.borderTopColor || style.boxShadow !== base.boxShadow) {
+            bad.push(`内容玻璃不一致: ${el.className || el.tagName}, background=${style.backgroundColor}, blur=${style.backdropFilter}`);
           }
+        }
+        if (base.backgroundColor !== 'rgba(26, 27, 31, 0.82)' || base.backdropFilter !== 'blur(22px) saturate(1.04)') {
+          bad.push(`内容玻璃 Token 失效: background=${base.backgroundColor}, blur=${base.backdropFilter}`);
         }
       }
       for (const el of visible('#projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item')) {

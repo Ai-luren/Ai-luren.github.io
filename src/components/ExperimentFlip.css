@@ -1,120 +1,116 @@
 .flip-experiment {
-  --flip-muted: var(--apple-secondary);
-  --flip-quiet: var(--apple-tertiary);
-  --flip-neutral: var(--apple-tertiary);
-  margin-top: 32px;
+  margin-top: 28px;
 }
 
-.flip-experiment__list {
+.flip-experiment__header,
+.flip-experiment__row {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 48px minmax(190px, .9fr) minmax(0, 1.8fr) 84px;
+  gap: clamp(14px, 2vw, 26px);
+  align-items: center;
+  padding-inline: 24px;
+}
+
+.flip-experiment__header {
+  min-height: 48px;
+  border-bottom: 1px solid var(--portfolio-panel-border);
+  color: var(--apple-tertiary);
+  font: 500 10px/1.4 var(--font-mono, monospace);
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
 .flip-experiment__row {
-  display: grid;
-  grid-template-columns: minmax(230px, .85fr) minmax(270px, 1.25fr) minmax(190px, 1fr) auto;
-  gap: 18px;
-  align-items: center;
-  min-height: 116px;
-  padding: 17px 18px;
-  color: var(--flip-muted);
-  transition: border-color var(--motion-duration-card) var(--motion-ease-control), background-color var(--motion-duration-card) var(--motion-ease-control), color var(--motion-duration-card) var(--motion-ease-control);
+  min-width: 0;
+  min-height: 108px;
+  padding-block: 18px;
+  border-bottom: 1px solid var(--portfolio-panel-border);
+  color: var(--apple-secondary);
+  transition: background-color var(--apple-duration-control) var(--apple-ease);
+}
+
+.flip-experiment__row:last-child {
+  border-bottom: 0;
 }
 
 .flip-experiment__row:hover,
 .flip-experiment__row:focus-within {
-  border-color: rgba(255, 255, 255, .32);
-  color: #f5f8fa;
+  background: rgba(255, 255, 255, .035);
 }
 
-.flip-experiment__row-title {
+.flip-experiment__index {
+  color: var(--apple-tertiary);
+  font: 500 11px/1.4 var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+
+.flip-experiment__row-title,
+.flip-experiment__meta {
   min-width: 0;
-  padding-left: 16px;
-  border-left: 1px solid var(--apple-hairline);
 }
 
 .flip-experiment__row-title h3 {
-  max-width: 100%;
   margin: 0;
-  color: #f2f6fa;
-  font: 700 clamp(19px, 1.8vw, 25px)/1.1 var(--font-display, system-ui);
-  letter-spacing: -.05em;
-  text-wrap: balance;
+  color: var(--apple-text);
+  font: 600 clamp(18px, 1.6vw, 23px)/1.2 var(--font-display, system-ui);
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+
+.flip-experiment__meta {
+  display: grid;
+  gap: 8px;
 }
 
 .flip-experiment__row-description {
-  max-width: 39ch;
+  max-width: 66ch;
   margin: 0;
-  color: var(--flip-muted);
-  font-size: 13px;
-  line-height: 1.6;
+  color: var(--apple-secondary);
+  font: 400 13px/1.55 var(--font-body, system-ui);
+  overflow-wrap: anywhere;
 }
 
 .flip-experiment__facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-}
-
-.flip-experiment__facts span {
-  color: var(--flip-quiet);
-  font: 500 11px/1.3 var(--font-mono, monospace);
-  white-space: nowrap;
+  gap: 4px 8px;
+  min-width: 0;
+  color: var(--apple-tertiary);
+  font: 500 10px/1.4 var(--font-mono, monospace);
 }
 
 .flip-experiment__facts span:not(:last-child)::after {
-  margin-left: 7px;
-  color: var(--flip-neutral);
   content: '/';
+  margin-left: 8px;
+  color: var(--apple-tertiary);
 }
 
 .flip-experiment__link {
   display: inline-flex;
+  min-width: 64px;
+  min-height: 44px;
   align-items: center;
   justify-self: end;
-  gap: 7px;
-  width: fit-content;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(237, 244, 249, .36);
-  color: rgba(237, 244, 249, .84);
-  font-size: 12px;
-  line-height: 1.35;
+  gap: 6px;
+  padding: 0 2px;
+  border-bottom: 1px solid rgba(237, 244, 249, .32);
+  color: var(--apple-secondary);
+  font: 500 12px/1.35 var(--font-body, system-ui);
   text-decoration: none;
   white-space: nowrap;
-  transition: gap var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control), border-color var(--motion-duration-control) var(--motion-ease-control);
+  transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), gap var(--apple-duration-control) var(--apple-ease);
 }
 
 .flip-experiment__link:hover,
 .flip-experiment__link:focus-visible {
-  gap: 11px;
-  border-color: #fff;
-  color: #fff;
-  outline: none;
+  gap: 9px;
+  border-color: var(--apple-text);
+  color: var(--apple-text);
 }
 
-@media (max-width: 980px) {
-  .flip-experiment__row {
-    grid-template-columns: minmax(190px, .82fr) minmax(180px, 1fr) auto;
-  }
-
-  .flip-experiment__row-description {
-    max-width: 31ch;
-  }
-
-  .flip-experiment__facts {
-    grid-column: 1 / 3;
-    grid-row: 2;
-  }
-
-  .flip-experiment__link {
-    grid-row: 1 / 3;
-  }
-}
-
-html[lang="en"] .flip-experiment__row-title h3 {
-  max-width: none;
-  font-size: clamp(18px, 1.55vw, 23px);
-  white-space: nowrap;
+.flip-experiment__link:focus-visible {
+  outline: 2px solid var(--accent-blue-focus, rgba(41, 151, 255, .88));
+  outline-offset: 3px;
 }
 
 @media (max-width: 720px) {
@@ -122,49 +118,49 @@ html[lang="en"] .flip-experiment__row-title h3 {
     margin-top: 24px;
   }
 
+  .flip-experiment__header {
+    display: none;
+  }
+
   .flip-experiment__row {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 10px;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px 10px;
     min-height: 0;
-    padding: 16px 12px 18px;
+    align-items: start;
+    padding: 16px;
+  }
+
+  .flip-experiment__index {
+    padding-top: 3px;
   }
 
   .flip-experiment__row-title h3 {
-    max-width: none;
-    font-size: 19px;
+    font-size: 18px;
+    line-height: 1.25;
   }
 
-  .flip-experiment__row-description,
-  .flip-experiment__facts,
+  .flip-experiment__meta,
   .flip-experiment__link {
-    grid-column: 1;
+    grid-column: 1 / -1;
+  }
+
+  .flip-experiment__meta {
+    gap: 6px;
   }
 
   .flip-experiment__row-description {
-    max-width: none;
     font-size: 12px;
     line-height: 1.55;
   }
 
   .flip-experiment__facts {
-    grid-row: auto;
-    gap: 6px;
-  }
-
-  .flip-experiment__facts span {
     font-size: 10px;
   }
 
   .flip-experiment__link {
-    grid-row: auto;
     justify-self: start;
-    margin-top: 2px;
-    min-height: 44px;
-    align-items: center;
-    padding: 8px 0;
-    font-size: 12px;
+    margin-top: -2px;
   }
-
 }
 
 @media (prefers-reduced-motion: reduce) {

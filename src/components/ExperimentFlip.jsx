@@ -50,15 +50,22 @@ export default function ExperimentFlip() {
 
   return (
     <div className="flip-experiment flip-experiment--editorial" aria-label={lang === 'en' ? 'AI lab projects' : 'AI 实验项目'}>
+      <div className="flip-experiment__header" aria-hidden="true">
+        <span>{lang === 'en' ? 'No.' : '序号'}</span>
+        <span>{lang === 'en' ? 'Project' : '项目名称'}</span>
+        <span>{lang === 'en' ? 'Description / Stack' : '描述 / 技术标签'}</span>
+        <span>GitHub</span>
+      </div>
       <div className="flip-experiment__list">
         {experiments.map((item) => (
           <article className="flip-experiment__row" key={item.id} data-experiment-id={item.id}>
-            <div className="flip-experiment__row-title">
-              <h3>{pick(item.title, lang)}</h3>
-            </div>
-            <p className="flip-experiment__row-description">{pick(item.description, lang)}</p>
-            <div className="flip-experiment__facts" aria-label={lang === 'en' ? 'Project capability tags' : '项目能力标签'}>
-              {item.facts.map((fact) => <span key={pick(fact, lang)}>{pick(fact, lang)}</span>)}
+            <span className="flip-experiment__index" aria-hidden="true">{item.index}</span>
+            <div className="flip-experiment__row-title"><h3>{pick(item.title, lang)}</h3></div>
+            <div className="flip-experiment__meta">
+              <p className="flip-experiment__row-description">{pick(item.description, lang)}</p>
+              <div className="flip-experiment__facts" aria-label={lang === 'en' ? 'Project capability tags' : '项目能力标签'}>
+                {item.facts.map((fact) => <span key={pick(fact, lang)}>{pick(fact, lang)}</span>)}
+              </div>
             </div>
             <a
               className="flip-experiment__link"

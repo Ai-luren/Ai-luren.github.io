@@ -17,6 +17,10 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? './' : '/',
   plugins: [react(), copyVendorToDist],
   build: {
+    // Preserve standards-based backdrop-filter declarations in production.
+    // The default CSS minifier currently drops them in favor of a -webkit-
+    // prefixed declaration that Edge does not apply. No extra dependency.
+    cssMinify: false,
     // Real static HTML entries work on Netlify and GitHub Pages without SPA rewrites.
     rolldownOptions: {
       input: { index: resolve('index.html'), works: resolve('works.html') }
