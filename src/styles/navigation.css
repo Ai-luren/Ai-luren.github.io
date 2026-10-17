@@ -16,7 +16,8 @@ body > header, body > header.is-condensed, .cinema-player__navigation {
 body > header { z-index: 70; }
 .cinema-player__navigation { z-index: 3; }
 header .nav-inner.shell { position: relative; width: 100%; height: 100%; min-height: 0 !important; padding: 0 !important; }
-header #primary-nav, header .nav-contact-icon { display: none !important; }
+header #primary-nav { display: none !important; }
+header .nav-contact-icon { display: none !important; }
 header .brand, .cinema-player__brand {
   position: absolute !important; left: 10px; top: 10px; width: 36px; height: 36px;
   display: block; overflow: visible !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box;
@@ -46,11 +47,62 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
   outline: 2px solid var(--apple-blue) !important; outline-offset: 4px !important;
 }
 body.mobile-nav-open { overflow: hidden; }
-body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .library-page-navigation { visibility: hidden !important; }
+/* All viewers hide the source-page navigation, showing only CinemaNavigation. */
+body.cinema-open > header, body.award-viewer-open > header, body.profile-viewer-open > header,
+body.cinema-open .library-page-navigation, body.profile-viewer-open .library-page-navigation { visibility: hidden !important; }
 .library-page-navigation .cinema-player__navigation { z-index: 70; }
+.site-primary-nav {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, .45vw, 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-primary-nav > li { flex: 0 0 auto; }
+.site-primary-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 38px;
+  padding: 0 clamp(7px, .7vw, 11px);
+  border: 0;
+  background: transparent;
+  color: rgba(245,245,247,.68);
+  font: 500 clamp(11px, .9vw, 13px)/1.2 var(--font-body);
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: color var(--apple-duration-control) var(--apple-ease);
+}
+.site-primary-nav a:hover,
+.site-primary-nav a.is-active { color: var(--apple-text); }
+.site-primary-nav a::after {
+  position: absolute;
+  right: 50%;
+  bottom: 1px;
+  left: 50%;
+  height: 1px;
+  background: rgba(245,245,247,.72);
+  content: '';
+  transition: left var(--apple-duration-control) var(--apple-ease), right var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
+  opacity: 0;
+}
+.site-primary-nav a.is-active::after {
+  right: 11px;
+  left: 11px;
+  opacity: 1;
+}
+.site-primary-nav a:not(.is-active):hover::after { right: 11px; left: 11px; opacity: .42; }
+.site-primary-nav a:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
+.library-page-navigation .cinema-player__navigation > .site-primary-nav { display: none; }
+.library-page-navigation .cinema-player__navigation > .cinema-player__close { display: grid; }
 .library-nav-space { height: 92px; }
 .library-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--apple-secondary) !important; font-size: 12px; }
-.library-intro .library-eyebrow { margin-top: 8px; }
 .library-menu {
   position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none;
   margin: 0; padding: max(112px,calc(env(safe-area-inset-top) + 96px)) 24px max(28px,env(safe-area-inset-bottom));
@@ -72,6 +124,15 @@ body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .li
 .impact-award-lightbox figure { animation: apple-modal-in var(--apple-duration-modal) var(--apple-ease) both; transition: opacity var(--apple-duration-modal) var(--apple-ease); }
 .impact-award-lightbox.is-closing figure { animation: none; opacity: 0; }
 .impact-award-lightbox::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* Keyboard focus uses one functional blue across evidence cards, account
+   actions and the shared viewer; hover styling remains component-owned. */
+:is(#impact-awards .impact-award-card,
+    #impact-reach .impact-reach-action,
+    .impact-profile-dialog-action):focus-visible {
+  outline: 2px solid var(--apple-blue) !important;
+  outline-offset: 3px !important;
+}
+
 /* Both viewers use the award viewer's circular arrow language. */
 .cinema-player__sequence button, .impact-award-lightbox-nav {
   display: grid; place-items: center; cursor: pointer; touch-action: manipulation; flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
@@ -80,10 +141,11 @@ body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .li
   transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
 }
 .cinema-player__sequence button svg { width: 20px; height: 20px; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
 .cinema-player__sequence button:disabled { opacity: .32; cursor: default; }
+.impact-award-rail-nav:disabled { opacity: .32; cursor: default; }
 @media (max-width:760px) {
   body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }
   header .brand, .cinema-player__brand { left: 8px; top: 5px; width: 44px; height: 44px; }
@@ -91,6 +153,36 @@ body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .li
   header #nav-lang, .cinema-player__language { right: 60px !important; }
   header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 8px !important; }
   .library-nav-space { height: 76px; }
+}
+@media (min-width:761px) and (max-width:1023px) {
+  header #primary-nav { display: none !important; }
+  header .nav-toggle { display: grid !important; }
+}
+@media (min-width:1024px) {
+  header #primary-nav {
+    position: absolute !important;
+    inset: 0 auto 0 50% !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    min-width: 0;
+    transform: translateX(-50%) !important;
+  }
+  header #primary-nav > #desktop-primary-nav-root { width: max-content; min-width: 0; }
+  header #primary-nav .site-primary-nav { display: flex; }
+  header .nav-toggle { display: none !important; }
+  header #nav-lang { right: 10px !important; }
+  .library-page-navigation .cinema-player__navigation > .site-primary-nav {
+    position: absolute;
+    inset: 0 auto 0 50%;
+    display: flex;
+    width: max-content;
+    min-width: 0;
+    transform: translateX(-50%);
+  }
+  .library-page-navigation .cinema-player__navigation > .cinema-player__close { display: none !important; }
+  .library-page-navigation .cinema-player__language { right: 10px !important; }
 }
 /* Extend the existing mobile menu to desktop; its links and click handlers stay
    authoritative, rather than adding a second home navigation implementation. */
@@ -111,14 +203,16 @@ body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .li
   body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
-  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  body > header, .cinema-player__navigation { background: var(--portfolio-panel-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   .impact-award-lightbox { animation: none !important; }
   .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
   #mobile-nav-drawer { transition-property: visibility !important; }
   #mobile-nav-drawer:is(.is-open,.is-closing) { opacity: 1 !important; }
 }
 @media (prefers-reduced-transparency:reduce) {
-  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  body > header, .cinema-player__navigation { background: var(--portfolio-panel-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   .impact-award-lightbox { animation: none !important; }
   .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
   #mobile-nav-drawer { transition-property: visibility !important; }

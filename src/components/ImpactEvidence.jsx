@@ -3,7 +3,7 @@ import LogoLoop from './LogoLoop.jsx';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useLang } from '../i18n/index.js';
+import { useLang, useT } from '../i18n/index.js';
 
 import hailuoLogo from '../../assets/images/platform-logos/hailuo-color.webp';
 import jimengLogo from '../../assets/images/platform-logos/jimeng-color.webp';
@@ -27,7 +27,6 @@ import xiaohongshuScreenshot from '../../assets/images/social-profiles/小红书
 import kuaishouScreenshot from '../../assets/images/social-profiles/快手主页.webp';
 import wechatChannelScreenshot from '../../assets/images/social-profiles/视频号主页.webp';
 import wechatChannelQrCode from '../../assets/images/social-profiles/视频号二维码.webp';
-import wechatQrCode from '../../assets/images/social-profiles/微信二维码.webp';
 import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.webp';
 import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
 import kuaishouQrCode from '../../assets/images/social-profiles/快手二维码.webp';
@@ -57,31 +56,31 @@ const creatorLogos = [
 const reachCards = [
   {
     id: 'douyin',
-    platform: { zh: '抖音', en: 'TikTok' },
+    platform: { zh: '抖音', en: 'Douyin' },
     screenshot: douyinScreenshot,
-    stats: { zh: '1.7w粉丝 144.6w赞', en: '17K followers · 1.45M likes' },
+    primary: { zh: { value: '144.6w', unit: '获赞' }, en: { value: '1.45M', unit: 'likes' } },
+    secondary: { zh: '1.7w粉丝', en: '17K followers' },
     link: 'https://v.douyin.com/idVkRoxL/',
-    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
-    qrNote: { zh: '使用 抖音 扫码访问 @Ai路人 主页', en: 'Scan with TikTok to visit @Ai路人 profile' },
+    qrNote: { zh: '使用 抖音 扫码访问 @Ai路人 主页', en: 'Scan with Douyin to visit @Ai路人 profile' },
     qrCode: douyinQrCode,
   },
   {
     id: 'xiaohongshu',
-    platform: { zh: '小红书', en: 'Rednote' },
+    platform: { zh: '小红书', en: 'REDnote' },
     screenshot: xiaohongshuScreenshot,
-    stats: { zh: '3494粉丝 5.6w赞', en: '3.5K followers · 56K likes' },
+    primary: { zh: { value: '5.6w', unit: '获赞与收藏' }, en: { value: '56K', unit: 'likes & saves' } },
+    secondary: { zh: '3494粉丝', en: '3.5K followers' },
     link: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470',
-    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
-    qrNote: { zh: '使用 微信/小红书 扫码访问 @Ai路人 主页', en: 'Scan with WeChat or Rednote to visit @Ai路人 profile' },
+    qrNote: { zh: '使用 微信/小红书 扫码访问 @Ai路人 主页', en: 'Scan with WeChat or REDnote to visit @Ai路人 profile' },
     qrCode: xiaohongshuQrCode,
   },
   {
     id: 'kuaishou',
     platform: { zh: '快手', en: 'Kuaishou' },
     screenshot: kuaishouScreenshot,
-    stats: { zh: '4475粉丝 9938赞', en: '4.5K followers · 9.9K likes' },
+    primary: { zh: { value: '9938', unit: '获赞' }, en: { value: '9.9K', unit: 'likes' } },
+    secondary: { zh: '4475粉丝', en: '4.5K followers' },
     link: 'https://v.kuaishou.com/K75e2i3A',
-    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
     qrNote: { zh: '使用 微信/快手 扫码访问 @Ai路人 主页', en: 'Scan with WeChat or Kuaishou to visit @Ai路人 profile' },
     qrCode: kuaishouQrCode,
   },
@@ -89,8 +88,8 @@ const reachCards = [
     id: 'wechat-channel',
     platform: { zh: '视频号', en: 'WeChat Channels' },
     screenshot: wechatChannelScreenshot,
-    stats: { zh: '9087赞 4237喜爱', en: '9.1K likes · 4.2K favorites' },
-    hoverLabel: { zh: '跳转 ↗', en: 'JUMP ↗' },
+    primary: { zh: { value: '9087', unit: '赞' }, en: { value: '9.1K', unit: 'likes' } },
+    secondary: { zh: '4237喜爱', en: '4.2K favorites' },
     qrNote: { zh: '使用 微信 扫码访问 @Ai路人- 主页', en: 'Scan with WeChat to visit @Ai路人- profile' },
     qrCode: wechatChannelQrCode,
   },
@@ -122,7 +121,7 @@ function ImpactLabel({ id, index, title }) {
   return (
     <div className="impact-evidence-label">
       <span className="impact-eyebrow">{index.split(' / ')[0]}</span>
-      <h2 id={id}>{title}</h2>
+      <h2 id={id} className="impact-title">{title}</h2>
     </div>
   );
 }
@@ -374,16 +373,16 @@ function AwardGallery() {
   const active = isOpen ? awards[openIndex] : null;
   const galleryHint = lang === 'en'
     ? (isMobile ? 'BROWSE WITH ARROWS' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
-    : (isMobile ? '左右浏览 · 选择作品' : '左右浏览 · 点击查看');
+    : (isMobile ? '左右浏览 · 选择荣誉' : '左右浏览 · 点击查看');
 
   return (
     <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
       <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
-      <p className="impact-award-description">{lang === 'en' ? 'AI creation contests with wins and finalists.' : '参与 AI 创作赛事，含获奖和入围作品。'}</p>
+      <p className="impact-award-description">{lang === 'en' ? 'Awards and recognition from AI creation contests.' : 'AI 创作赛事获奖及入围荣誉。'}</p>
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
-        aria-label={lang === 'en' ? 'Scroll awards left' : '向左浏览获奖作品'}
+        aria-label={lang === 'en' ? 'Scroll awards left' : '向左浏览获奖荣誉'}
         aria-controls="impact-award-rail"
         disabled={!railState.canScrollLeft}
         onClick={() => scrollRail(-1)}
@@ -393,14 +392,14 @@ function AwardGallery() {
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--next"
-        aria-label={lang === 'en' ? 'Scroll awards right' : '向右浏览获奖作品'}
+        aria-label={lang === 'en' ? 'Scroll awards right' : '向右浏览获奖荣誉'}
         aria-controls="impact-award-rail"
         disabled={!railState.canScrollRight}
         onClick={() => scrollRail(1)}
       >
         <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
-      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Award artwork' : '获奖作品图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
+      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
         {(isMobile ? [awards[mobileAwardIndex]] : awards).map((award, visibleIndex) => {
           const index = isMobile ? mobileAwardIndex : visibleIndex;
           return (
@@ -420,17 +419,19 @@ function AwardGallery() {
                 open(index, event);
               }}
             >
-              <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
-              <span className="impact-award-card-caption" aria-hidden="true">
-                <strong>{award.title[lang]}</strong>
-                <small>{award.meta[lang]}</small>
+              <span className="impact-award-card-content">
+                <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
+                <span className="impact-award-card-caption" aria-hidden="true">
+                  <strong>{award.title[lang]}</strong>
+                  <small>{award.meta[lang]}</small>
+                </span>
               </span>
             </button>
           </li>
           );
         })}
       </ul>
-      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award' : '选择获奖作品'}>
+      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award or recognition' : '选择获奖荣誉'}>
         {awards.map((award, index) => (
           <button
             key={award.image}
@@ -540,120 +541,206 @@ function LogoIndex() {
 
 function ReachDossier() {
   const lang = useLang();
-  const [activeQr, setActiveQr] = useState(null);
-  const [isQrClosing, setIsQrClosing] = useState(false);
-  const qrDialogRef = useRef(null);
-  const qrTriggerRef = useRef(null);
-  const qrCloseTimerRef = useRef(null);
-  const qrClosingRef = useRef(false);
+  const t = useT();
+  const [activeProfile, setActiveProfile] = useState(null);
+  const [profileImageFailed, setProfileImageFailed] = useState({ screenshot: false, qr: false });
+  const [isProfileClosing, setIsProfileClosing] = useState(false);
+  const profileDialogRef = useRef(null);
+  const profileViewerRef = useRef(null);
+  const profileCloseRef = useRef(null);
+  const profileTriggerRef = useRef(null);
+  const profileFocusIdRef = useRef(null);
+  const profileCloseTimerRef = useRef(null);
+  const profileClosingRef = useRef(false);
 
-  const closeQr = useCallback(() => {
-    if (!activeQr || qrClosingRef.current) return;
-    qrClosingRef.current = true;
+  const openProfile = (card, event) => {
+    profileTriggerRef.current = event.currentTarget;
+    window.clearTimeout(profileCloseTimerRef.current);
+    profileClosingRef.current = false;
+    setProfileImageFailed({ screenshot: false, qr: false });
+    setIsProfileClosing(false);
+    setActiveProfile(card);
+  };
+
+  const closeProfile = useCallback(() => {
+    if (!activeProfile || profileClosingRef.current) return;
+    profileClosingRef.current = true;
     const finish = () => {
-      setActiveQr(null);
-      setIsQrClosing(false);
-      qrClosingRef.current = false;
-      requestAnimationFrame(() => qrTriggerRef.current?.focus({ preventScroll: true }));
+      profileFocusIdRef.current = activeProfile.id;
+      setActiveProfile(null);
+      setIsProfileClosing(false);
+      profileClosingRef.current = false;
     };
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       finish();
       return;
     }
-    setIsQrClosing(true);
-    qrCloseTimerRef.current = window.setTimeout(finish, 240);
-  }, [activeQr]);
+    setIsProfileClosing(true);
+    profileCloseTimerRef.current = window.setTimeout(finish, 240);
+  }, [activeProfile]);
 
-  useEffect(() => () => window.clearTimeout(qrCloseTimerRef.current), []);
+  useEffect(() => () => window.clearTimeout(profileCloseTimerRef.current), []);
 
-  useEffect(() => {
-    if (!activeQr) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeQr();
+  // Restore keyboard focus only after modal unmount restores the page's inert state.
+  useLayoutEffect(() => {
+    if (activeProfile || !profileFocusIdRef.current) return;
+    const focusId = profileFocusIdRef.current;
+    const trigger = document.querySelector('[data-social-profile-trigger="' + focusId + '"]');
+    (trigger || profileTriggerRef.current)?.focus({ preventScroll: true });
+    profileFocusIdRef.current = null;
+  }, [activeProfile]);
+
+  // Viewer navigation is shared with award and work detail viewers.
+  // Keep exactly one modal capsule; the source page remains inert.
+  useLayoutEffect(() => {
+    if (!activeProfile) return undefined;
+    const viewer = profileViewerRef.current;
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    const background = [...body.children].filter(node => node !== viewer && !node.contains(viewer));
+    const previousInert = background.map(node => node.inert);
+    background.forEach(node => { node.inert = true; });
+    body.style.overflow = 'hidden';
+    body.classList.add('profile-viewer-open');
+    profileCloseRef.current?.focus({ preventScroll: true });
+
+    const onKeyDown = event => {
+      if (event.key === 'Escape') { event.preventDefault(); closeProfile(); }
+      if (event.key !== 'Tab') return;
+      const controls = [...viewer.querySelectorAll('a[href],button:not(:disabled)')].filter(node => node.getClientRects().length);
+      const first = controls[0], last = controls.at(-1);
+      if (!first) { event.preventDefault(); profileCloseRef.current?.focus({ preventScroll: true }); }
+      else if (event.shiftKey && (document.activeElement === first || !viewer.contains(document.activeElement))) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !viewer.contains(document.activeElement))) {
+        event.preventDefault(); first.focus();
       }
     };
+    const onFocus = event => {
+      if (!viewer.contains(event.target)) profileCloseRef.current?.focus({ preventScroll: true });
+    };
     document.addEventListener('keydown', onKeyDown);
-    requestAnimationFrame(() => qrDialogRef.current?.focus({ preventScroll: true }));
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [activeQr, closeQr]);
+    document.addEventListener('focusin', onFocus);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('focusin', onFocus);
+      background.forEach((node, index) => { node.inert = previousInert[index]; });
+      body.style.overflow = previousOverflow;
+      body.classList.remove('profile-viewer-open');
+    };
+  }, [activeProfile, closeProfile]);
+
+  const formatMetric = (value) => (lang === 'zh' ? value.replace(/w$/i, '万') : value);
+  const featureCard = reachCards[0];
+  const profileRecords = reachCards.slice(1);
 
   return (
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
-        <span>{lang === 'en' ? 'CONTENT REACH' : '多平台分享 AI 内容'}</span>
-        {lang === 'en' && <span>AI SOCIAL MEDIA</span>}
+        <span>{t('多平台账号', 'SOCIAL CHANNELS')}</span>
       </div>
-      <p className="impact-reach-dossier-description">{lang === 'en' ? 'AI content shared across TikTok, Rednote, Kuaishou, and WeChat Channels.' : '抖音、小红书、快手、视频号均有 AI 内容分享。'}</p>
-      <div className="impact-reach-profile-grid">
-        {reachCards.map((card) => {
-          const hasLink = !!card.link;
-          const hasQr = !!card.qrCode;
-          const Tag = hasLink ? 'a' : 'div';
-          const hoverLabel = card.hoverLabel?.[lang];
-          const tagProps = hasLink
-            ? { href: card.link, target: '_blank', rel: 'noopener noreferrer', 'aria-label': lang === 'en' ? `Visit ${card.platform.en} profile` : `访问${card.platform.zh}主页` }
-            : {};
-          const shotClass = `impact-reach-profile-shot${hasLink ? ' impact-reach-profile-shot--link' : ''}`;
-          return (
-            <article className="impact-reach-profile" key={card.id}>
-              <Tag className={shotClass} {...tagProps}>
-                <div className="impact-reach-profile-media">
-                  <img src={card.screenshot} alt={lang === 'en' ? `${card.platform.en} profile screenshot` : `${card.platform.zh} 主页截图`} width="1179" height="938" loading="lazy" decoding="async" />
-                  {hoverLabel && <span className="impact-reach-profile-hover-label" aria-hidden="true">{hoverLabel}</span>}
+      <div className="impact-reach-layout">
+        <article className="impact-reach-feature">
+          <div className="impact-reach-feature-main">
+            <h3 className="impact-reach-account-name">{featureCard.platform[lang]}</h3>
+            <div className="impact-reach-feature-metrics">
+              <strong className="impact-reach-feature-primary">
+                <span>{formatMetric(featureCard.primary[lang].value)}</span>
+                <small>{featureCard.primary[lang].unit}</small>
+              </strong>
+              <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
+            </div>
+          </div>
+          <div className="impact-reach-feature-actions">
+            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
+              {t('查看账号资料', 'View account details')}
+            </button>
+            <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
+              {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <div className="impact-reach-account-list">
+          {profileRecords.map((card) => (
+            <article className="impact-reach-account-record" key={card.id}>
+              <div className="impact-reach-record-main">
+                <h3 className="impact-reach-account-name">{card.platform[lang]}</h3>
+                <div className="impact-reach-record-metrics">
+                  <strong>{formatMetric(card.primary[lang].value)} <small>{card.primary[lang].unit}</small></strong>
+                  <span>{formatMetric(card.secondary[lang])}</span>
                 </div>
-                {hoverLabel && <span className="impact-reach-mobile-link" aria-hidden="true">{lang === 'en' ? 'Visit ↗' : '跳转 ↗'}</span>}
-              </Tag>
-              <div className="impact-reach-profile-caption"><strong>{card.platform[lang]}</strong><span>{card.stats[lang]}</span></div>
-              <div className="impact-reach-profile-actions">
-                {hasQr && (
-                  <button
-                    type="button"
-                    className="impact-reach-profile-qr"
-                    aria-haspopup="dialog"
-                    aria-label={lang === 'en' ? `View ${card.platform.en} QR code` : `查看${card.platform.zh}二维码`}
-                    onClick={(event) => {
-                      qrTriggerRef.current = event.currentTarget;
-                      window.clearTimeout(qrCloseTimerRef.current);
-                      qrClosingRef.current = false;
-                      setIsQrClosing(false);
-                      setActiveQr(card);
-                    }}
-                  >
-                    <svg className="impact-qr-icon" viewBox="0 0 18 18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M2.5 2.5h5v5h-5zM10.5 2.5h5v5h-5zM2.5 10.5h5v5h-5z" />
-                      <path d="M12 11v2M10.5 15.5h2M15.5 11v4.5h-2M10.5 9.5h5" />
-                    </svg>
-                    {lang === 'en' ? 'VIEW QR' : '查看二维码'}
-                  </button>
+              </div>
+              <div className="impact-reach-record-actions">
+                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
+                  {t('查看账号资料', 'View account details')}
+                </button>
+                {card.link && (
+                  <a className="impact-reach-action" href={card.link} target="_blank" rel="noopener noreferrer">
+                    {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
+                  </a>
                 )}
               </div>
             </article>
-          );
-        })}
+          ))}
+        </div>
       </div>
-      {activeQr && createPortal(
-        <div className={`impact-qr-lightbox${isQrClosing ? ' is-closing' : ''}`} role="presentation" onClick={closeQr}>
+      {activeProfile && createPortal(
+        <div
+          ref={profileViewerRef}
+          className={`impact-profile-lightbox${isProfileClosing ? ' is-closing' : ''}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="impact-profile-dialog-title"
+          tabIndex={-1}
+          onClick={event => { if (event.target === event.currentTarget) closeProfile(); }}
+        >
+          <CinemaNavigation lang={lang} closeRef={profileCloseRef} onClose={closeProfile} />
           <div
-            ref={qrDialogRef}
-            className="impact-qr-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="impact-qr-dialog-title"
-            aria-describedby="impact-qr-dialog-note"
-            tabIndex={-1}
+            ref={profileDialogRef}
+            className="impact-profile-dialog"
             onClick={(event) => event.stopPropagation()}
           >
-            <button type="button" className="impact-qr-dialog-close" aria-label={lang === 'en' ? 'Close QR code' : '关闭二维码'} onClick={closeQr}>×</button>
-            <p className="impact-qr-dialog-kicker">{lang === 'en' ? 'SOCIAL PROFILE' : '自媒体主页'}</p>
-            <h3 id="impact-qr-dialog-title">{activeQr.platform[lang]}</h3>
-            <img src={activeQr.qrCode} alt={lang === 'en' ? `${activeQr.platform.en} QR code` : `${activeQr.platform.zh}二维码`} width="630" height="632" />
-            <p id="impact-qr-dialog-note">{activeQr.qrNote[lang]}</p>
-            <div className="impact-qr-dialog-actions">
-              <a href={activeQr.qrCode} download={`${activeQr.id}-qr-code.webp`}>
-                {lang === 'en' ? 'SAVE QR' : '保存二维码'}
-              </a>
+            <h2 id="impact-profile-dialog-title">{activeProfile.platform[lang]}</h2>
+            <div className="impact-profile-dialog-content">
+              <figure className="impact-profile-proof">
+                <figcaption>{t('账号主页', 'Account profile')}</figcaption>
+                {profileImageFailed.screenshot ? (
+                  <p className="impact-profile-dialog-error" role="status">
+                    {t('账号截图暂时无法加载。', 'Account screenshot is unavailable.')}
+                  </p>
+                ) : (
+                  <img
+                    className="impact-profile-dialog-image"
+                    src={activeProfile.screenshot}
+                    alt={lang === 'en' ? `${activeProfile.platform.en} account screenshot` : `${activeProfile.platform.zh}账号主页截图`}
+                    decoding="async"
+                    onError={() => setProfileImageFailed(previous => ({ ...previous, screenshot: true }))}
+                  />
+                )}
+              </figure>
+              <aside className="impact-profile-qr-panel">
+                <div className="impact-profile-qr-heading">{t('扫码访问', 'Scan to visit')}</div>
+                {profileImageFailed.qr ? (
+                  <p className="impact-profile-dialog-error" role="status">
+                    {t('二维码暂时无法加载。', 'QR code is unavailable.')}
+                  </p>
+                ) : (
+                  <img
+                    className="impact-profile-dialog-image is-qr"
+                    src={activeProfile.qrCode}
+                    alt={lang === 'en' ? `${activeProfile.platform.en} QR code` : `${activeProfile.platform.zh}二维码`}
+                    decoding="async"
+                    onError={() => setProfileImageFailed(previous => ({ ...previous, qr: true }))}
+                  />
+                )}
+                <p className="impact-profile-dialog-qr-note">{activeProfile.qrNote[lang]}</p>
+                {!profileImageFailed.qr && (
+                  <a className="impact-profile-dialog-action" href={activeProfile.qrCode} download={activeProfile.id + '-qr-code.webp'}>
+                    {t('保存二维码', 'Save QR code')}
+                  </a>
+                )}
+              </aside>
             </div>
           </div>
         </div>,
@@ -713,7 +800,7 @@ export default function ImpactEvidence() {
   return (
     <div className="impact-evidence">
       <section id="impact-awards" className={`impact-evidence-row${activeImpactId === 'impact-awards' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-awards-heading">
-        <ImpactLabel id="impact-awards-heading" index="01 / AI AWARDED WORKS" title={lang === 'en' ? 'AI Awarded Works' : 'AI 获奖作品'} />
+        <ImpactLabel id="impact-awards-heading" index="01 / AI AWARDS & RECOGNITION" title={lang === 'en' ? 'AI Awards & Recognition' : 'AI 获奖荣誉'} />
         <div><AwardGallery /></div>
       </section>
       <section id="impact-programs" className={`impact-evidence-row${activeImpactId === 'impact-programs' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-programs-heading">

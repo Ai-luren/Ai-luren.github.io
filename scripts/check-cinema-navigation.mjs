@@ -15,7 +15,9 @@ try{
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.goto(new URL('index.html#projects',base).href);await p.waitForSelector('.comet-archive__card',{state:'attached'});await p.locator('#projects').scrollIntoViewIfNeeded();
   if(width===393){await p.locator('.nav-toggle').click();await p.waitForTimeout(600);await shot(p,'393-menu');await p.locator('.nav-toggle').click();await p.waitForTimeout(500);}
-  const original=await p.locator('header .nav-toggle').evaluate(rect);
+  // Desktop (>=1024px) has no toggle: compare the shared right control slot
+  // with the visible header language button instead.
+  const original=await p.locator(width>=1024?'header #nav-lang':'header .nav-toggle').evaluate(rect);
   const trigger=p.locator('.comet-archive__card').first();await trigger.click();await ready(p,'01');
   const close=await p.locator('.cinema-player__close').evaluate(rect);close.forEach((v,i)=>assert(Math.abs(v-original[i])<1,`Header close geometry changed ${original} -> ${close}`));
   assert.equal(await p.locator('.cinema-player__sequence button').first().isDisabled(),true);

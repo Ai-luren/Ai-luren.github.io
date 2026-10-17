@@ -95,40 +95,46 @@ try {
   if (await activePage() !== 0) throw new Error('纵向滑动错误地切换了作品页');
 
   await page.locator('#profile').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(350);
+  const aboutState = await page.evaluate(() => {
+    const section = document.querySelector('#profile');
+    const description = section?.querySelector('.about-description');
+    const role = section?.querySelector('.about-role');
+    const text = description?.textContent.trim() || '';
+    return {
+      title: section?.querySelector('#profile-title')?.textContent.trim(),
+      role: role?.textContent.trim(),
+      description: text,
+      previousSection: section?.previousElementSibling?.id,
+      lastExpertiseSection: section?.previousElementSibling?.lastElementChild?.id,
+      contactWithinSection: Boolean(section?.querySelector('#contact')),
+      oldCareerElements: section?.querySelectorAll('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction], [data-career-pagination-index]').length ?? -1,
+      textOverflow: description ? description.scrollWidth > description.clientWidth + 1 : true,
+      boundsOverflow: description ? description.getBoundingClientRect().right > innerWidth + 1 : true,
+    };
+  });
+  if (aboutState.title !== '关于我' || aboutState.role !== 'AI 影像创作者') {
+    throw new Error(`关于我标题或职业定位异常：${JSON.stringify(aboutState)}`);
+  }
+  if (aboutState.description !== '从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。') {
+    throw new Error('关于我中文正文与确认文案不一致');
+  }
+  if (aboutState.previousSection !== 'expertise-group' || aboutState.lastExpertiseSection !== 'experiments' || !aboutState.contactWithinSection) {
+    throw new Error(`关于我没有位于 AI 实验室与联系我之间：${JSON.stringify(aboutState)}`);
+  }
+  if (aboutState.oldCareerElements !== 0 || aboutState.textOverflow || aboutState.boundsOverflow) {
+    throw new Error(`关于我内容溢出或仍残留旧经历组件：${JSON.stringify(aboutState)}`);
+  }
+  await page.locator('.hero-secondary').click();
+  await page.waitForFunction(() => location.hash === '#profile');
   await page.waitForTimeout(250);
-  const careerStyles = await page.evaluate(() => ({
-    stripTouchAction: getComputedStyle(document.querySelector('#profile .career-strip')).touchAction,
-    tabTouchAction: getComputedStyle(document.querySelector('#career-tablist .career-tab')).touchAction,
-    pagination: (() => {
-      const wrapper = document.querySelector('#profile .career-pagination');
-      const active = wrapper?.querySelector('button.is-active');
-      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
-      const dotStyle = active ? getComputedStyle(active, '::before') : null;
-      return {
-        background: wrapperStyle?.backgroundColor,
-        border: wrapperStyle?.borderStyle,
-        activeDotWidth: dotStyle?.width,
-      };
-    })(),
-  }));
-  if (careerStyles.stripTouchAction !== 'pan-y') {
-    throw new Error(`工作经历容器 touch-action 应为 pan-y，实际为 ${careerStyles.stripTouchAction}`);
+  if (!(await page.locator('#profile-title').isVisible())) throw new Error('Hero 关于我入口未定位到章节标题');
+  await page.locator('#nav-lang').click();
+  await page.waitForFunction(() => document.documentElement.lang === 'en');
+  const aboutEnglish = await page.locator('#profile').innerText();
+  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Visual Creator') || !aboutEnglish.includes('I now focus on AI video creation')) {
+    throw new Error('关于我英文标题、职业定位或正文未按字典切换');
   }
-  if (careerStyles.pagination.background !== 'rgba(0, 0, 0, 0)' || careerStyles.pagination.border !== 'none' || careerStyles.pagination.activeDotWidth !== '20px') {
-    throw new Error(`工作经历分页点视觉样式异常：${JSON.stringify(careerStyles.pagination)}`);
-  }
-  const activeCareer = () => page.evaluate(() => (
-    [...document.querySelectorAll('#career-tablist .career-tab')]
-      .findIndex((tab) => tab.classList.contains('is-active'))
-  ));
-  await swipe('#profile .career-detail', { dx: -140, dy: 0 });
-  if (await activeCareer() !== 1) throw new Error('工作经历详情卡片横向左滑没有切换到第 2 段');
-
-  await page.waitForTimeout(500);
-  await page.locator('#career-tablist .career-tab').first().click();
-  await page.waitForTimeout(100);
-  await swipe('#profile .career-detail', { dx: 12, dy: 140 });
-  if (await activeCareer() !== 0) throw new Error('工作经历纵向滑动错误地切换了经历');
 
   await page.locator('#impact-awards').scrollIntoViewIfNeeded();
   await page.waitForTimeout(350);

@@ -41,7 +41,7 @@ export default function WorksLibrary() {
       {!selected && <LibraryNavigation lang={lang} />}
       <div className="library-nav-space" />
       <main id="library-main">
-        <div className="library-intro"><a className="library-back" href={`${HOME_HREF}#projects`}>{lang==='en'?'← Selected work':'← 返回精选作品'}</a><p className="library-eyebrow">AI路人 / SELECTED & MORE</p><h1>{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} projects · AI moving image & creative work` : `${PROJECTS.length} 个项目 · AI 影像与创意作品`}</p></div>
+        <div className="library-intro"><a className="library-back" href={`${HOME_HREF}#projects`}>{lang==='en'?'← Selected work':'← 返回精选作品'}</a><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} projects · AI moving image & creative work` : `${PROJECTS.length} 个项目 · AI 影像与创意作品库`}</p></div>
         <div className="library-filters" role="group" aria-label={lang === 'en' ? 'Filter work by category' : '按作品类别筛选'}>
           {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{item.id === 'all' ? PROJECTS.length : PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>
@@ -49,7 +49,6 @@ export default function WorksLibrary() {
         {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map(project => <ProjectCard key={project.id} project={project} lang={lang} onClick={(_event, item) => setSelected(item)} />)}</div>
           : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory('all')}>{lang === 'en' ? 'View all work' : '查看全部作品'}</button></div>}
       </main>
-      <div className="library-bottom"><span>AI路人 / AI VIDEO & CREATIVE</span><a href="./index.html#projects">{lang === 'en' ? 'Back to portfolio ↑' : '返回作品集 ↑'}</a></div>
     </div>
     <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} onSelect={setSelected} context="library" onClose={() => setSelected(null)} />
   </div>;

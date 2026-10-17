@@ -10,8 +10,14 @@
   --portfolio-tile-radius: 12px;
   --portfolio-control-radius: 999px;
   --portfolio-panel-surface: rgba(28, 28, 30, .72);
+  --portfolio-panel-solid: #1c1c1e;
   --portfolio-panel-border: rgba(255, 255, 255, .14);
   --portfolio-panel-blur: blur(22px) saturate(1.08);
+  /* Shared cinematic content glass: Impact, Lab, About, Hero proof and mobile archive.
+     Chrome remains lighter (.72); modal scrims remain darker (.9). */
+  --portfolio-glass-surface: rgba(26, 27, 31, .82);
+  --portfolio-glass-solid: var(--portfolio-panel-solid);
+  --portfolio-glass-blur: blur(22px) saturate(1.04);
   --portfolio-panel-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
   --portfolio-card-surface: var(--portfolio-panel-surface);
   --portfolio-card-border: var(--portfolio-panel-border);
@@ -21,6 +27,13 @@
   --portfolio-content-surface: rgba(0, 0, 0, .58);
   --portfolio-content-border: rgba(255, 255, 255, .18);
   --portfolio-content-shadow: 0 14px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
+  /* Shared editorial artwork geometry for Featured and All Work.
+     Keep the home and library grids independent; standardize their cards. */
+  --portfolio-work-cover-ratio: 3 / 4;
+  --portfolio-work-title-gap: 10px;
+  --portfolio-work-caption-gap: 5px;
+  --portfolio-work-title-gap-mobile: 8px;
+  --portfolio-work-caption-gap-mobile: 4px;
   --portfolio-tile-surface: rgba(255, 255, 255, .05);
   --portfolio-tile-border: rgba(255, 255, 255, .09);
   --portfolio-tile-shadow: none;
@@ -30,6 +43,7 @@
   /* Separate page, modal fallback and icon-control roles; existing roles stay unchanged. */
   --portfolio-page-surface: #0b0c0f;
   --portfolio-modal-solid: #0c0c0d;
+  --portfolio-modal-panel-surface: #191a1e;
   --portfolio-icon-surface: rgba(255, 255, 255, .1);
   --portfolio-icon-border: rgba(255, 255, 255, .34);
   --portfolio-icon-hover-surface: rgba(255, 255, 255, .14);
@@ -38,12 +52,10 @@
 }
 
 .impact-glass,
-#experiments .flip-experiment__row,
-#profile .career-strip,
+#experiments .flip-experiment,
 #top .hero-proof-card,
-#contact .footer-contact-copy,
+#profile .closing-card,
 #projects .comet-archive-mobile-shell,
-.floating-dock-panel,
 header,
 header.is-condensed {
   border: 1px solid var(--portfolio-card-border) !important;
@@ -54,15 +66,24 @@ header.is-condensed {
   -webkit-backdrop-filter: var(--portfolio-card-blur) !important;
 }
 
+/* One material role for all reading panels on video. Layout and component
+   geometry remain component-owned; only surface and blur are shared here. */
+.impact-glass,
+#experiments .flip-experiment,
+#profile .closing-card,
+#top .hero-proof-card,
+#projects .comet-archive-mobile-shell {
+  --portfolio-card-surface: var(--portfolio-glass-surface);
+  --portfolio-card-blur: var(--portfolio-glass-blur);
+}
+
 /* Content media is opaque and does not add a second blur layer. */
 #top .hero-proof-card {
   border-radius: var(--portfolio-content-radius) !important;
 }
 
 #projects .comet-archive__image,
-#profile .career-image,
 #recognition .impact-award-card,
-#impact-reach .impact-reach-profile-media,
 .impact-award-lightbox img {
   border: 1px solid var(--portfolio-content-border) !important;
   border-radius: var(--portfolio-content-radius) !important;
@@ -72,15 +93,9 @@ header.is-condensed {
   -webkit-backdrop-filter: none !important;
 }
 
-#impact-reach .impact-reach-profile-shot--link {
-  border-radius: var(--portfolio-content-radius) !important;
-}
-
 /* Repeated compact items use the same quiet tile treatment. */
 #recognition .impact-platform-desktop-tile,
 #recognition .impact-platform-mobile-tile,
-#profile .career-tab,
-#profile .career-tabs--focus .career-tab,
 .floating-dock-item {
   border: 1px solid var(--portfolio-tile-border);
   border-radius: var(--portfolio-tile-radius) !important;
@@ -101,9 +116,7 @@ header.is-condensed {
 /* Action-shaped controls share a pill; navigation and close controls are true
    circles and keep their geometry independent from content cards. */
 .hero-actions button,
-.impact-qr-dialog-actions a,
 .comet-archive__meta,
-.impact-reach-profile-hover-label,
 .video-tuner__toggle {
   border-radius: var(--portfolio-control-radius) !important;
 }
@@ -123,18 +136,6 @@ header .nav-contact-icon,
   border-radius: 50% !important;
 }
 
-/* The QR dialog is a solid modal card. Only the scrim carries blur. */
-.impact-qr-dialog {
-  border: 1px solid var(--portfolio-card-border) !important;
-  border-radius: var(--portfolio-panel-radius) !important;
-  background: var(--apple-surface-solid, #1c1c1e) !important;
-  box-shadow: var(--portfolio-panel-shadow) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-.impact-qr-dialog img { border-radius: var(--portfolio-tile-radius) !important; }
-
 /* Small media controls are part of the content surface contract; their
    opacity and interaction state remain component-owned. */
 .impact-award-card-zoom {
@@ -144,13 +145,6 @@ header .nav-contact-icon,
   box-shadow: none;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-}
-
-.impact-reach-profile-hover-label {
-  border: 1px solid rgba(255, 255, 255, .28);
-  border-radius: var(--portfolio-control-radius);
-  background: rgba(20, 20, 22, .78);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
 }
 
 .impact-award-rail-nav,
@@ -165,4 +159,30 @@ header .nav-contact-icon,
 .impact-award-lightbox-close {
   border-color: rgba(255, 255, 255, .42);
   background: rgba(255, 255, 255, .06);
+}
+
+/* Glass fallback is owned by the same layer as its normal material.
+   Do not replace the modal scrim here: navigation and viewers own that role. */
+@media (prefers-reduced-transparency: reduce) {
+  .impact-glass,
+  #experiments .flip-experiment,
+  #top .hero-proof-card,
+  #profile .closing-card,
+  #projects .comet-archive-mobile-shell {
+    background: var(--portfolio-glass-solid) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .impact-glass,
+  #experiments .flip-experiment,
+  #top .hero-proof-card,
+  #profile .closing-card,
+  #projects .comet-archive-mobile-shell {
+    background: var(--portfolio-glass-solid) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
 }

@@ -8,12 +8,30 @@
 :root {
   --apple-bg: #000;
   --apple-surface: rgba(28, 28, 30, .78);
-  --apple-surface-solid: #1c1c1e;
+  --apple-surface-solid: var(--portfolio-panel-solid);
   --apple-surface-raised: rgba(44, 44, 46, .88);
   --apple-text: #f5f5f7;
   --apple-secondary: #a1a1a6;
   --apple-tertiary: #86868b;
   --apple-blue: #2997ff;
+  /* Hero CTA semantic tokens. Button geometry and states live only in
+     HeroActions.css; keep the secondary legible over both bright and dark
+     video footage without adding a second primary-blue action. */
+  --hero-cta-height: 48px;
+  --hero-cta-height-mobile: 46px;
+  --hero-cta-radius: var(--portfolio-control-radius);
+  --hero-cta-gap: 12px;
+  --hero-cta-font-size: 16px;
+  --hero-cta-font-size-mobile: 15px;
+  --hero-cta-font-weight: 600;
+  --hero-primary-bg: var(--apple-blue);
+  --hero-primary-hover-bg: #4aa8ff;
+  --hero-secondary-bg: rgba(30, 33, 40, .92);
+  --hero-secondary-border: rgba(255, 255, 255, .3);
+  --hero-secondary-color: #f5f5f7;
+  --hero-secondary-hover-bg: rgba(39, 43, 50, .96);
+  --hero-secondary-hover-border: rgba(255, 255, 255, .44);
+  --hero-subtitle-color: rgba(245, 245, 247, .88);
   --apple-hairline: rgba(255, 255, 255, .14);
   --apple-hairline-soft: rgba(255, 255, 255, .09);
   /* Geometry and shadows are owned by card-surfaces.css. */
@@ -47,16 +65,18 @@
   --radius-panel: var(--apple-radius-panel);
   --radius-tile: var(--apple-radius-tile);
   --apple-impact-row-gap-desktop: clamp(64px, 5vw, 80px);
-  --apple-impact-row-gap-mobile: 32px;
+  --apple-impact-row-gap-mobile: 28px;
   --apple-impact-title-card-gap-desktop: 28px;
   --apple-impact-title-card-gap-mobile: 18px;
   --apple-impact-lab-edge: 48px;
-  --glass-surface: var(--apple-surface);
+  /* Legacy aliases must point to the canonical chrome glass role.
+     Nav capsules and social Dock should never diverge in saturation or fill. */
+  --glass-surface: var(--portfolio-panel-surface);
   --glass-surface-raised: var(--apple-surface-raised);
-  --glass-border: var(--apple-hairline);
+  --glass-border: var(--portfolio-panel-border);
   --glass-border-strong: rgba(255, 255, 255, .32);
-  --glass-shadow: var(--apple-shadow-panel);
-  --glass-blur: blur(22px) saturate(1.12);
+  --glass-shadow: var(--portfolio-panel-shadow);
+  --glass-blur: var(--portfolio-panel-blur);
   --body-on-dark: var(--apple-text);
   --body-text: rgba(245, 245, 247, .82);
   /* Compatibility aliases for the static index shell. Canonical values live
@@ -66,9 +86,47 @@
   --accent-blue-on-dark: var(--apple-blue);
   --body-muted: var(--apple-secondary);
   --type-hero: clamp(3.4rem, 6.4vw, 6.2rem);
-  --type-section: clamp(2.25rem, 4vw, 3.35rem);
-  --type-card: clamp(1rem, 1.45vw, 1.2rem);
+  /* Semantic heading roles. Keep the existing visual scales while giving
+     page, section, and impact headings one explicit source of truth. */
+  --page-title-size: var(--section-title-size);
+  --page-title-weight: 600;
+  --page-title-line-height: 1.08;
+  --page-title-letter-spacing: -.05em;
+  --section-title-size: clamp(2.45rem, 4.8vw, 4rem);
+  /* Avoid the old 56px -> 39px heading jump at the 760/761px boundary.
+     Both home sections and the Works title share this responsive scale. */
+  --section-title-size-mobile: clamp(37px, 10vw, 41px);
+  --section-title-weight: 600;
+  --section-title-line-height: 1.02;
+  --section-title-letter-spacing: -.055em;
+  --impact-title-size: clamp(2.25rem, 3vw, 2.7rem);
+  --impact-title-size-mobile: clamp(28px, 8vw, 34px);
+  --impact-title-weight: 600;
+  --impact-title-line-height: 1.08;
+  --impact-title-letter-spacing: -.045em;
+  --project-card-title-size: 16px;
+  --project-card-title-weight: 600;
+  --project-card-title-line-height: 1.4;
+  --project-card-detail-size: 12px;
+  --project-card-detail-weight: 400;
+  --project-card-detail-line-height: 1.55;
+  --project-card-marker-width: 2px;
+  --project-card-marker-height: 14px;
+  --project-card-detail-inset: 10px;
+  --project-card-detail-gap: 8px;
+  --project-card-marker-color: var(--apple-blue);
   --type-body: 14px;
+  /* Semantic reading roles shared by home and the separate Works page.
+     Micro copy is reserved for labels; normal descriptive text is not micro. */
+  --type-supporting: 14px;
+  --type-supporting-mobile: 13px;
+  --type-caption: 13px;
+  --type-caption-mobile: 12px;
+  --type-meta: 11px;
+  --type-meta-mobile: 10px;
+  --type-platform-name-mobile: 12px;
+  --type-platform-role-mobile: 11px;
+  --heading-rule-radius: 2px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -82,6 +140,16 @@
   --space-11: 144px;
   --subtle-text: var(--apple-secondary);
   --quiet-text: var(--apple-tertiary);
+}
+
+@media (max-width: 760px) {
+  :root {
+    --page-title-size: var(--section-title-size-mobile);
+    --project-card-title-size: 14px;
+    --project-card-title-weight: 500;
+    --project-card-title-line-height: 1.45;
+    --project-card-marker-height: 12px;
+  }
 }
 
 html { background: var(--apple-bg); }
@@ -170,30 +238,66 @@ header .nav-contact-icon:focus-visible {
 .section-title {
   margin-top: 12px;
   color: var(--apple-text);
-  font: 600 clamp(2.55rem, 5vw, 4.6rem)/1.02 var(--font-display);
-  letter-spacing: -.055em;
+  font-family: var(--font-display);
+  font-size: var(--section-title-size);
+  font-weight: var(--section-title-weight);
+  line-height: var(--section-title-line-height);
+  letter-spacing: var(--section-title-letter-spacing);
   text-shadow: none;
 }
-.section-title::after {
-  width: 28px;
-  height: 2px;
-  margin-top: 22px;
-  border-radius: 2px;
-  background: var(--apple-blue);
+.page-title {
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--page-title-size);
+  font-weight: var(--page-title-weight);
+  line-height: var(--page-title-line-height);
+  letter-spacing: var(--page-title-letter-spacing);
+}
+.impact-title {
+  margin: 17px 0 0;
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--impact-title-size);
+  font-weight: var(--impact-title-weight);
+  line-height: var(--impact-title-line-height);
+  letter-spacing: var(--impact-title-letter-spacing);
+  white-space: normal;
+  text-wrap: balance;
 }
 .section-note {
   max-width: 34ch;
   padding-left: 18px;
   border-left-color: var(--apple-hairline);
   color: var(--apple-secondary);
-  font: 400 14px/1.65 var(--font-body);
+  font: 400 var(--type-supporting)/1.65 var(--font-body);
 }
 .reveal {
   transform: translateY(14px);
   transition: opacity var(--apple-duration-section) var(--apple-ease), transform var(--apple-duration-section) var(--apple-ease);
 }
 
-/* Hero: one thesis, one action, one quiet secondary route. */
+/* Hero: one thesis, one action, one quiet secondary route.
+   Positioning uses the existing type and color tokens, and must not
+   replace or animate the real React typing headline. */
+#top .hero-positioning {
+  margin: 0;
+  padding: 0;
+  color: rgba(245, 245, 247, .88);
+  font: 650 13px/1.5 var(--font-body);
+  letter-spacing: .035em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, .94), 0 0 14px rgba(0, 0, 0, .72);
+  overflow-wrap: normal;
+}
+#top .hero-positioning + #hero-title-react-root .hero-title {
+  margin-top: 15px;
+}
+@media (max-width: 720px) {
+  #top .hero-positioning {
+    font-size: 12px;
+    line-height: 1.55;
+    letter-spacing: .015em;
+  }
+}
 #top { padding-top: 116px; padding-bottom: 76px; }
 .hero-shell { min-height: calc(100svh - 192px); }
 .hero-copy { max-width: 720px; margin-top: 0; padding-right: 0; }
@@ -208,30 +312,11 @@ header .nav-contact-icon:focus-visible {
 .hero-subtitle {
   max-width: 33ch;
   margin-top: 28px;
-  color: rgba(245, 245, 247, .82);
+  color: var(--hero-subtitle-color);
   font: 400 clamp(15px, 1.4vw, 18px)/1.65 var(--font-body);
   text-shadow: none;
 }
-.hero-actions { margin-top: 30px; gap: 12px; }
-.hero-actions .hero-primary {
-  min-width: 152px !important;
-  min-height: 48px !important;
-  padding-inline: 24px !important;
-  background: var(--apple-blue) !important;
-  box-shadow: 0 8px 22px rgba(41, 151, 255, .18) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
-}
-.hero-actions .hero-primary:hover,
-.hero-actions .hero-primary:focus-visible {
-  background: #4aa8ff !important;
-  box-shadow: 0 10px 28px rgba(41, 151, 255, .28) !important;
-  transform: translateY(-1px);
-}
-.hero-actions .hero-secondary { color: var(--apple-secondary) !important; }
-.hero-actions .hero-secondary:hover,
-.hero-actions .hero-secondary:focus-visible { color: var(--apple-text) !important; }
+/* Hero CTA geometry, interaction and finish belong to HeroActions.css. */
 .hero-proof { gap: 12px; }
 .hero-proof-card {
   min-height: 112px;
@@ -239,7 +324,48 @@ header .nav-contact-icon:focus-visible {
   border-radius: var(--portfolio-card-radius) !important;
 }
 
-/* Selected work: image-led cards with the same edge, radius and type roles. */
+/* Shared ProjectCard type and detail-marker contract for the home and library. */
+.comet-archive__title {
+  color: var(--apple-text);
+  font-family: var(--font-display);
+  font-size: var(--project-card-title-size);
+  font-weight: var(--project-card-title-weight);
+  line-height: var(--project-card-title-line-height);
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+.comet-archive__details {
+  display: grid;
+  grid-template-columns: var(--project-card-marker-width) minmax(0, 1fr);
+  align-items: start;
+  column-gap: var(--project-card-detail-gap);
+  box-sizing: border-box;
+  min-width: 0;
+  padding-inline-start: var(--project-card-detail-inset);
+  text-align: left;
+}
+.comet-archive__details::before {
+  content: '';
+  display: block;
+  width: var(--project-card-marker-width);
+  height: var(--project-card-marker-height);
+  border-radius: var(--heading-rule-radius);
+  background: var(--project-card-marker-color);
+}
+.comet-archive__details strong {
+  min-width: 0;
+  color: var(--apple-secondary);
+  font-family: var(--font-body);
+  font-size: var(--project-card-detail-size);
+  font-weight: var(--project-card-detail-weight);
+  line-height: var(--project-card-detail-line-height);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Selected work: image-led cards with the same edge and radius roles. */
 #projects { padding-top: clamp(104px, 12vw, 150px); }
 #projects .section-intro { margin-bottom: 28px; }
 #projects .section-note { margin-top: 10px; padding-left: 0; border-left: 0; }
@@ -249,16 +375,11 @@ header .nav-contact-icon:focus-visible {
   border-radius: var(--apple-radius-card);
   background: transparent;
 }
-.comet-archive__title {
-  color: rgba(245, 245, 247, .78);
-  font: 500 clamp(13px, 1.15vw, 15px)/1.35 var(--font-body);
-  letter-spacing: -.01em;
-}
 .comet-archive__image {
   border: 1px solid rgba(255, 255, 255, .18) !important;
   border-radius: var(--apple-radius-card) !important;
   background: var(--comet-cover) center / cover no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04), var(--apple-shadow-card) !important;
+  box-shadow: var(--portfolio-content-shadow) !important;
   transition: border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
 }
 .comet-card:hover .comet-archive__image,
@@ -267,42 +388,14 @@ header .nav-contact-icon:focus-visible {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 18px 38px rgba(0, 0, 0, .34) !important;
 }
 .comet-archive__image::after { height: 28%; background: linear-gradient(180deg, transparent, rgba(0, 0, 0, .6)); }
-.comet-archive__details { padding-left: 12px; }
-.comet-archive__details::before { width: 2px; height: 15px; border-radius: 2px; background: var(--apple-blue); }
-.comet-archive__details strong {
-  color: var(--apple-secondary);
-  font: 500 12px/1.35 var(--font-body);
-}
 .comet-archive__meta { color: rgba(245, 245, 247, .76); font-family: var(--font-body); text-decoration-color: rgba(245, 245, 247, .35); }
 
 /* Work history: one panel, one active state, no competing surfaces. */
-#profile { padding-top: clamp(96px, 11vw, 136px); }
-#profile .career-summary { padding: 28px 30px 24px; }
-#profile .career-summary h3 { margin-top: 10px; font: 600 clamp(2rem, 3.2vw, 3.1rem)/1 var(--font-display); letter-spacing: -.055em; }
-#profile .career-summary p { color: var(--apple-secondary); font: 400 14px/1.55 var(--font-body); }
-#profile .career-summary-note { color: var(--apple-tertiary); font: 400 12px/1.5 var(--font-body); }
-#profile .career-tabs { border-top-color: var(--apple-hairline-soft) !important; border-bottom-color: var(--apple-hairline-soft) !important; }
-#profile .career-tab { min-height: 118px; padding: 18px 16px; border-right-color: var(--apple-hairline-soft) !important; transition: background-color var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease); }
-#profile .career-tab:hover,
-#profile .career-tab:focus-visible { background: rgba(255, 255, 255, .05); }
-#profile .career-tab.is-active { background: rgba(255, 255, 255, .05) !important; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82) !important; }
-#profile .career-tab small,
-#profile .career-meta { color: var(--apple-tertiary) !important; font-family: var(--font-mono); }
-#profile .career-tab strong { font: 600 15px/1.3 var(--font-display); }
-#profile .career-tab span { color: var(--apple-tertiary); font: 400 11px/1.4 var(--font-body); }
-#profile .career-detail { min-height: 286px; padding: 28px 30px 30px; gap: 34px; }
-#profile .career-detail h3 { font: 600 clamp(2.25rem, 4vw, 4rem)/.98 var(--font-display); letter-spacing: -.065em; }
-#profile .career-role { color: var(--apple-secondary); font: 400 15px/1.5 var(--font-body); }
-#profile .career-description { color: rgba(245, 245, 247, .82); font: 400 14px/1.75 var(--font-body); }
-#profile .career-honor { color: var(--apple-secondary); font: 500 11px/1.5 var(--font-mono); }
-#profile .career-honor::before { background: var(--apple-secondary); }
-#profile .career-image { border-color: var(--apple-hairline-soft) !important; border-radius: var(--apple-radius-card) !important; }
 
 /* Impact proof: keep the editorial two-column reading order, but share materials. */
 #recognition { padding-top: clamp(108px, 12vw, 152px); }
 .impact-evidence { gap: 68px; }
 .impact-evidence-row { gap: clamp(28px, 5vw, 70px); }
-.impact-evidence-label h2 { color: var(--apple-text); font: 600 clamp(1.9rem, 3.6vw, 3.45rem)/1 var(--font-display); letter-spacing: -.06em; }
 .impact-evidence-label p { color: var(--apple-secondary); font: 400 12px/1.7 var(--font-body); }
 .impact-evidence-note,
 .impact-logo-head,
@@ -361,32 +454,19 @@ header .nav-contact-icon:focus-visible {
   #recognition + #experiments { padding-top: clamp(56px, 6vw, 88px); }
   #recognition .recognition-react-root { width: 100%; }
   .impact-evidence { gap: clamp(72px, 7vw, 112px); }
-  .impact-evidence-row { display: grid; min-height: 0; grid-template-columns: minmax(0, 1fr); align-content: start; gap: 28px; scroll-margin-top: 106px; }
+  .impact-evidence-row { display: grid; min-height: 0; align-content: start; gap: 28px; scroll-margin-top: 106px; }
   .impact-evidence-label {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(250px, .42fr);
     align-items: end;
     column-gap: 42px;
-    padding: 0 4px;
+    /* Align award, creator and media H2s with the parent section and Lab. */
+    padding: 0;
   }
   .impact-evidence-label .impact-eyebrow { display: none; }
   .impact-evidence-label h2 {
     grid-column: 1;
     grid-row: 1;
-    margin: 0;
-    color: var(--apple-text);
-    font: 600 clamp(3.45rem, 5.7vw, 6.3rem)/.94 var(--font-display);
-    letter-spacing: -.08em;
-    white-space: nowrap;
-  }
-  .impact-evidence-label h2::after {
-    display: block;
-    width: 38px;
-    height: 3px;
-    margin-top: 25px;
-    border-radius: 3px;
-    background: var(--apple-blue);
-    content: '';
   }
   .impact-evidence-label p {
     grid-column: 2;
@@ -396,7 +476,6 @@ header .nav-contact-icon:focus-visible {
     color: var(--apple-secondary);
     font: 400 15px/1.65 var(--font-body);
   }
-  html[lang="en"] .impact-evidence-label h2 { white-space: nowrap; text-wrap: unset; }
   .impact-evidence-row > div:last-child { width: 100%; }
   .impact-evidence-row.is-desktop-active > div:last-child > .impact-glass { min-height: 0; }
   .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 24px 0 28px; }
@@ -406,7 +485,8 @@ header .nav-contact-icon:focus-visible {
   .impact-logo-shell { min-height: 0; padding: 26px 32px 30px; }
   .impact-logo-shell > .impact-logo-head,
   .impact-logo-shell > .logo-loop { display: none; }
-  .impact-platform-desktop-card { display: block; }
+  /* Keep desktop visibility above the component default after CSS chunk extraction. */
+  .impact-logo-shell > .impact-platform-desktop-card { display: block; }
   .impact-platform-desktop-head { display: flex; justify-content: space-between; gap: 20px; color: var(--apple-tertiary); font: 500 10px/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
   .impact-platform-desktop-head span:last-child { color: var(--apple-secondary); }
   .impact-platform-desktop-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
@@ -415,7 +495,6 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-desktop-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-desktop-tile strong { display: block; color: var(--apple-text); font: 600 15px/1.25 var(--font-display); }
   .impact-platform-desktop-tile span { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 11px/1.4 var(--font-body); }
-  .impact-reach-dossier { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding: 26px 32px 30px; }
   .impact-reach-profile-shot { height: 220px; }
 }
 
@@ -498,25 +577,6 @@ header .nav-contact-icon:focus-visible {
 
 /* AI lab: a quiet list with the same neutral hierarchy as the other modules. */
 #experiments { padding-top: clamp(108px, 12vw, 150px); }
-.flip-experiment { margin-top: 28px; }
-.flip-experiment__list { gap: 10px; }
-.flip-experiment__row {
-  min-height: 124px;
-  padding: 22px 24px;
-  transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
-}
-.flip-experiment__row:hover,
-.flip-experiment__row:focus-within { border-color: rgba(255, 255, 255, .28) !important; background: rgba(44, 44, 46, .76) !important; transform: translateY(-2px); }
-.flip-experiment__row-title { border-left-color: var(--apple-hairline); }
-.flip-experiment__row-title h3 { font: 600 clamp(1.35rem, 2vw, 1.8rem)/1.05 var(--font-display); letter-spacing: -.045em; }
-.flip-experiment__row-description { color: var(--apple-secondary); font: 400 13px/1.65 var(--font-body); }
-.flip-experiment__facts span { color: var(--apple-tertiary); font: 500 11px/1.3 var(--font-mono); }
-.flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary); }
-.flip-experiment__link { color: rgba(245, 245, 247, .76); font: 500 12px/1.35 var(--font-body); transition: gap var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
-.flip-experiment__link:hover,
-.flip-experiment__link:focus-visible { color: var(--apple-text); }
-.flip-experiment__status { color: var(--apple-tertiary); font-family: var(--font-mono); }
-.flip-experiment__status-dot { background: var(--apple-secondary); box-shadow: none; }
 
 /* Footer closes the story with the same calm material and one clear ask. */
 footer { padding: 128px 0 36px !important; }
@@ -567,42 +627,23 @@ footer::before { background: transparent !important; }
   .section { padding: 96px 0 88px; }
   .shell { width: min(100% - 32px, 680px); }
   .section-intro { margin-bottom: 28px; }
-  .section-title { margin-top: 10px; font-size: clamp(2.45rem, 11vw, 3.8rem); }
-  .section-title::after { margin-top: 18px; }
-  .section-note { font-size: 13px; }
+  .section-title { margin-top: 10px; font-size: var(--section-title-size-mobile); }
+  .section-note { font-size: var(--type-supporting-mobile); }
   #top { padding-top: 100px; padding-bottom: 52px; }
   .hero-shell { min-height: calc(100svh - 152px); align-items: center; }
   .hero-copy { width: 100%; margin-top: 6vh; }
   .hero-title { margin-top: 18px; font-size: clamp(3.4rem, 15vw, 5rem); line-height: .96; }
   .hero-subtitle { max-width: 28ch; margin-top: 24px; font-size: 15px; }
-  .hero-actions { margin-top: 26px; gap: 10px; }
-  .hero-actions .hero-primary { min-width: 142px !important; min-height: 46px !important; padding-inline: 20px !important; }
   .hero-proof { display: none; }
   #projects .section-intro { margin-bottom: 22px; }
   .comet-archive { gap: 12px; padding-bottom: 14px; }
-  .comet-archive__title { font-size: 12px; }
-  .comet-archive__image { border-radius: 16px !important; }
-  .comet-archive__details strong { font-size: 11px; }
-  #profile .career-summary { padding: 22px 20px 20px; }
-  #profile .career-tabs { gap: 8px; padding: 8px; }
-  #profile .career-tab { min-height: 106px; padding: 14px; border: 1px solid var(--apple-hairline-soft) !important; border-radius: 14px; }
-  #profile .career-tab.is-active { border-color: rgba(255, 255, 255, .18) !important; background: rgba(255, 255, 255, .05) !important; box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82) !important; }
-  #profile .career-detail { gap: 20px; padding: 20px; }
-  #profile .career-detail h3 { font-size: clamp(2.2rem, 11vw, 3.2rem); }
   .impact-evidence { gap: 48px; }
   .impact-evidence-row { gap: 18px; }
-  .impact-evidence-label h2 { margin-top: 12px; font-size: clamp(2rem, 10vw, 3rem); }
   .impact-award-shell { border-radius: var(--apple-radius-panel) !important; }
   .impact-award-rail { height: 304px; padding-inline: 52px; clip-path: inset(0 52px); }
   .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
   .impact-logo-shell { border-radius: var(--apple-radius-panel) !important; }
   .impact-reach-dossier { border-radius: var(--apple-radius-panel) !important; }
-  .flip-experiment { margin-top: 20px; }
-  .flip-experiment__row { min-height: 0; padding: 20px 18px 22px; border-radius: 16px !important; }
-  .flip-experiment__row:hover,
-  .flip-experiment__row:focus-within { transform: none; }
-  .flip-experiment__row-title h3 { font-size: 1.45rem; }
-  .flip-experiment__row-description { font-size: 13px; }
   footer { padding: 96px 0 28px !important; }
   .footer-topline { padding-bottom: 20px; }
   .footer-contact-copy { padding: 30px 22px; border-radius: var(--apple-radius-panel) !important; text-align: left; }
@@ -615,12 +656,9 @@ footer::before { background: transparent !important; }
   .footer-bottom-copy { text-align: left; }
 }
 
+/* Supporting legacy footer surfaces keep their own reduced-transparency
+   fallback. Main glass and header are owned by their respective contracts. */
 @media (prefers-reduced-transparency: reduce) {
-  header,
-  .hero-proof-card,
-  #profile .career-strip,
-  .impact-glass,
-  .flip-experiment__row,
   .footer-contact-copy,
   .floating-dock-panel { background: var(--apple-surface-solid) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
@@ -630,18 +668,8 @@ footer::before { background: transparent !important; }
   .reveal { transform: none; }
   .comet-card:hover .comet-archive__image,
   .comet-card:focus-within .comet-archive__image,
-  .flip-experiment__row:hover,
-  .flip-experiment__row:focus-within,
   .floating-dock-item:hover,
   .floating-dock-item:focus-visible { transform: none; }
-}
-
-/* Internal cards keep a smaller role-based radius; the outer panels stay at 24px. */
-#experiments .flip-experiment__row { border-radius: var(--apple-radius-card) !important; }
-#experiments .flip-experiment__link {
-  min-height: 44px;
-  padding: 10px 0;
-  touch-action: manipulation;
 }
 
 /* Mobile impact modules: use the same primary-heading rhythm as the other sections. */
@@ -653,19 +681,6 @@ footer::before { background: transparent !important; }
     align-content: center;
   }
   .impact-evidence-label .impact-eyebrow { display: none; }
-  .impact-evidence-label h2 {
-    margin-top: 0;
-    font: 600 clamp(2.15rem, 10vw, 3rem)/1.06 var(--font-display);
-    letter-spacing: -.045em;
-  }
-  .impact-evidence-label h2::after {
-    display: block;
-    width: 32px;
-    height: 2px;
-    margin-top: 18px;
-    background: var(--apple-blue);
-    content: '';
-  }
   .impact-evidence-label p {
     max-width: 30ch;
     margin-top: 14px;
@@ -698,7 +713,6 @@ footer::before { background: transparent !important; }
 .impact-award-card:active,
 .impact-reach-profile-shot--link:active,
 .impact-reach-profile-qr:active,
-#profile .career-tab:active,
 .flip-experiment__link:active,
 .floating-dock-item:active,
 header .nav-lang:active,
@@ -752,6 +766,7 @@ header .nav-contact-icon:active,
   body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(5) { animation-delay: 96ms !important; }
   body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(6) { animation-delay: 120ms !important; }
   body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(7) { animation-delay: 144ms !important; }
+  body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(8) { animation-delay: 168ms !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -771,7 +786,6 @@ header .nav-contact-icon:active,
   .impact-award-card:active,
   .impact-reach-profile-shot--link:active,
   .impact-reach-profile-qr:active,
-  #profile .career-tab:active,
   .flip-experiment__link:active,
   .floating-dock-item:active,
   header .nav-lang:active,
@@ -791,121 +805,195 @@ header .nav-contact-icon:active,
 .impact-reach-profile-media { background: rgba(0, 0, 0, .24) !important; }
 .impact-reach-profile-media img { mix-blend-mode: normal !important; }
 
-/* AI Lab uses the same quiet hierarchy as the other modules. */
-#experiments .flip-experiment__row-title { border-left-color: var(--apple-hairline) !important; }
-#experiments .flip-experiment__facts span:not(:last-child)::after { color: var(--apple-tertiary) !important; }
-#experiments .flip-experiment__status-dot { background: var(--apple-secondary) !important; box-shadow: none !important; }
-#experiments .flip-experiment__row:hover,
-#experiments .flip-experiment__row:focus-within {
-  background: rgba(44, 44, 46, .76) !important;
+/* The closing About and Contact content share one glass surface; the page
+   background stays untouched so the story above remains visible as designed. */
+#profile.closing-section {
+  padding: 64px 0 24px;
+  background: transparent;
 }
-
-/* Footer editorial lockup: one reading grid, one floating surface. */
-footer {
-  padding: clamp(82px, 9vw, 120px) 0 32px !important;
+#profile .closing-card {
+  padding: clamp(24px, 3vw, 40px);
+  border: 1px solid var(--portfolio-panel-border);
+  border-radius: var(--portfolio-panel-radius);
+  background: var(--portfolio-panel-surface);
+  box-shadow: var(--portfolio-panel-shadow);
+  -webkit-backdrop-filter: var(--portfolio-panel-blur);
+  backdrop-filter: var(--portfolio-panel-blur);
 }
-.footer-topline {
-  padding-bottom: 20px !important;
-  border-bottom-color: var(--apple-hairline-soft) !important;
+.closing-card-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+  align-items: start;
+  gap: clamp(28px, 4vw, 56px);
 }
-.footer-bottom {
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-areas: 'contact dock' 'copyright copyright' !important;
-  align-items: end !important;
-  column-gap: clamp(24px, 5vw, 80px) !important;
-  row-gap: 24px !important;
-  padding-top: 28px !important;
+#profile .closing-about .section-intro { display: block; margin-bottom: 16px; }
+#profile .closing-column-kicker,
+#profile .footer-contact-kicker {
+  margin: 0 0 10px;
+  color: var(--apple-tertiary);
+  font: 500 10px/1.5 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
 }
-.footer-contact-copy {
-  grid-area: contact !important;
-  width: min(100%, 600px) !important;
-  max-width: 600px !important;
-  margin: 0 !important;
-  /* Keep the footer copy aligned to the shared grid while giving the text
-     enough air to read as a deliberate contact block on desktop. */
-  padding: var(--space-6) var(--space-6) var(--space-6) !important;
+#profile .closing-card .section-title,
+#profile .footer-contact-copy h2 {
+  margin: 0;
+  color: var(--apple-label);
+  font-size: clamp(30px, 2.4vw, 36px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -.025em;
+}
+#profile .about-copy { width: min(100%, 660px); max-width: 660px; margin: 0; }
+#profile .about-role { margin: 0 0 10px; }
+#profile .about-description {
+  max-width: 66ch;
+  color: rgba(245, 245, 247, .78);
+  font-size: clamp(16px, 1.15vw, 17px);
+  line-height: 1.72;
+  overflow-wrap: anywhere;
+}
+#profile .closing-contact { min-width: 0; padding-top: 0; }
+#profile .footer-contact-copy {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  text-align: left;
+}
+#profile .footer-contact-copy > p:not(.footer-contact-kicker) {
+  max-width: 34ch;
+  margin: 12px 0 0;
+  color: rgba(245, 245, 247, .78);
+  line-height: 1.7;
+}
+#profile .footer-contact-direct {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 12px 20px;
+  margin-top: 18px;
+}
+#profile .footer-contact-direct a { min-width: 0; margin: 0; padding: 0; border: 0; }
+.closing-social {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: clamp(22px, 2.6vw, 32px);
+  padding-top: 16px;
+  border-top: 1px solid var(--apple-hairline-soft);
+}
+.closing-social-label {
+  flex: 0 0 auto;
+  color: var(--apple-tertiary);
+  font: 500 10px/1.5 var(--font-mono);
+  letter-spacing: .1em;
+}
+.closing-social #footer-dock-react-root { width: auto; display: flex; justify-content: flex-end; }
+.closing-social .floating-dock-shell {
+  position: relative;
+  width: fit-content;
+  min-height: 44px;
+  align-items: center;
+  padding: 0;
+  transform: none;
+}
+.closing-social .floating-dock-panel {
+  gap: 10px;
+  padding: 0;
   border: 0 !important;
-  border-radius: 0 !important;
+  border-radius: 0;
   background: transparent !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  align-self: end !important;
-  text-align: left !important;
+  backdrop-filter: none !important;
 }
-.footer-contact-kicker { margin-bottom: 12px !important; }
-.footer-contact-copy h2 {
-  font-size: clamp(2.2rem, 3.2vw, 3.25rem) !important;
-  line-height: 1 !important;
+.closing-social .floating-dock-item {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50% !important;
 }
-.footer-contact-copy > p:not(.footer-contact-kicker) {
-  max-width: 34ch !important;
-  margin: 16px 0 0 !important;
+.closing-social .floating-dock-icon,
+.closing-social .floating-dock-icon img { width: 20px; height: 20px; }
+.closing-social .floating-dock-label {
+  top: auto;
+  bottom: calc(100% + 8px);
 }
-.footer-contact-direct {
-  justify-content: flex-start !important;
-  gap: 0 !important;
-  margin-top: 24px !important;
+.closing-social .floating-dock-status {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-height: 0;
+  margin: 0;
+  transform: none;
+  white-space: normal;
 }
-.footer-contact-direct a {
-  min-width: 180px !important;
-  padding-right: 24px !important;
-  margin-right: 24px !important;
-}
-.footer-contact-panel {
-  grid-area: dock !important;
-  align-self: end !important;
-  justify-self: end !important;
-  width: auto !important;
-  padding: 0 !important;
-  border: 0 !important;
+.closing-footer {
+  padding: 16px 0 max(32px, env(safe-area-inset-bottom)) !important;
   background: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
-.footer-bottom-copy {
-  grid-area: copyright !important;
-  margin: 0 !important;
-  padding-top: 18px !important;
-  border-top: 1px solid var(--apple-hairline-soft) !important;
+.closing-footer::before { background: transparent !important; }
+.closing-footer .footer-stack {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
 }
+.closing-footer .footer-topline { margin: 0; padding: 0 !important; border: 0 !important; }
+.closing-footer .footer-bottom { width: auto; margin: 0; padding: 0 !important; border: 0 !important; }
+.closing-footer .footer-copyright-row .footer-bottom-copy { width: auto; padding: 0 !important; border: 0 !important; }
 
 @media (max-width: 720px) {
-  footer { padding: 72px 0 30px !important; }
-  .footer-topline { width: 100%; }
-  .footer-topline { padding-bottom: 18px !important; }
-  .footer-brand { justify-content: flex-start !important; }
-  .footer-bottom {
-    grid-template-columns: 1fr !important;
-    grid-template-areas: 'contact' 'dock' 'copyright' !important;
-    row-gap: 28px !important;
-    padding-top: 24px !important;
+  #profile.closing-section { padding: 48px 0 18px; }
+  #profile .closing-card { padding: 22px 20px 16px; border-radius: 20px; }
+  .closing-card-main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  #profile .closing-about .section-intro { margin-bottom: 14px; }
+  #profile .closing-column-kicker,
+  #profile .footer-contact-kicker { margin-bottom: 8px; }
+  #profile .closing-card .section-title,
+  #profile .footer-contact-copy h2 { font-size: clamp(30px, 8vw, 34px); }
+  #profile .about-copy { width: 100%; max-width: none; }
+  #profile .about-description { font-size: 16px; line-height: 1.75; }
+  #profile .closing-contact { padding-top: 0; }
+  #profile .footer-contact-copy { width: 100%; max-width: none; }
+  #profile .footer-contact-direct { display: grid; gap: 0; margin-top: 14px; }
+  #profile .footer-contact-direct a,
+  #profile .footer-contact-direct a:last-child {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 0;
+    border-top: 1px solid var(--apple-hairline-soft);
   }
-  .footer-contact-copy {
-    width: 100% !important;
-    max-width: none !important;
-    padding: 0 !important;
+  #profile .footer-contact-direct strong { overflow-wrap: anywhere; }
+  .closing-social { align-items: flex-start; flex-direction: column; gap: 8px; margin-top: 18px; padding-top: 12px; }
+  .closing-social #footer-dock-react-root { width: 100%; justify-content: flex-start; }
+  .closing-social .floating-dock-shell { max-width: 100%; }
+  .closing-social .floating-dock-panel { gap: clamp(2px, 1.2vw, 4px); }
+  .closing-social .floating-dock-icon,
+  .closing-social .floating-dock-icon img { width: 18px; height: 18px; }
+  .closing-footer { padding: 12px 0 max(26px, env(safe-area-inset-bottom)) !important; }
+  .closing-footer .footer-stack { flex-direction: column; gap: 12px; }
+  .closing-footer .footer-brand { justify-content: center; }
+  .closing-footer .footer-bottom-copy { text-align: center; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  #profile .closing-card {
+    background: var(--apple-surface-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
-  .footer-contact-copy h2 { font-size: clamp(2rem, 9vw, 2.6rem) !important; }
-  .footer-contact-direct { margin-top: 22px !important; }
-  .footer-contact-direct a,
-  .footer-contact-direct a:last-child {
-    width: 100% !important;
-    min-width: 0 !important;
-    padding: 12px 0 !important;
-    margin: 0 !important;
-    border-right: 0 !important;
-    border-top: 1px solid var(--apple-hairline-soft) !important;
-  }
-  .footer-contact-panel {
-    width: 100% !important;
-    justify-self: start !important;
-    justify-items: start !important;
-  }
-  .footer-contact-panel #footer-dock-react-root,
-  .floating-dock-shell,
-  .floating-dock-panel { max-width: 100% !important; }
 }
 
 /* Apple-like composition pass: hierarchy comes from type and spacing, not pills
@@ -927,7 +1015,6 @@ footer {
 
 #hero-title .hero-title__rotating { color: var(--apple-text) !important; }
 #hero-title .hero-title__rotating .text-type__cursor { background: var(--apple-blue) !important; }
-.section-title::after { width: 24px; margin-top: 20px; background: rgba(41, 151, 255, .86); }
 .section-note { padding-left: 0; border-left: 0; }
 
 /* 最终边界层：档案图片不再放大覆盖邻卡，获奖预览在手机端保持可读尺寸。 */
@@ -1013,172 +1100,11 @@ header .nav-contact-icon:focus-visible {
 /* Work history uses option A: five compact stage labels above one focused
    detail card. Mobile keeps all five labels visible and removes carousel peek. */
 @media (max-width: 760px) {
-  #profile .career-summary {
-    padding: 16px 20px 14px !important;
-  }
-  #profile .career-summary h3 {
-    margin-top: 6px !important;
-    font-size: clamp(1.75rem, 8.6vw, 2.1rem) !important;
-  }
-  #profile .career-summary-note {
-    margin-top: 7px !important;
-  }
-  #profile .career-tabs--focus {
-    display: grid !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
-    gap: 4px !important;
-    overflow: hidden !important;
-    padding: 8px 12px !important;
-    border-top: 1px solid var(--apple-hairline-soft) !important;
-    border-bottom: 1px solid var(--apple-hairline-soft) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    scroll-snap-type: none !important;
-  }
-
-  #profile .career-tabs--focus .career-tab {
-    display: flex !important;
-    flex-direction: column !important;
-    min-width: 0 !important;
-    min-height: 64px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 7px 2px !important;
-    border: 1px solid transparent !important;
-    border-radius: var(--portfolio-tile-radius) !important;
-    text-align: center !important;
-  }
-
-  #profile .career-tabs--focus .career-tab.is-active {
-    border-color: rgba(255, 255, 255, .28) !important;
-    background: rgba(255, 255, 255, .08) !important;
-    box-shadow: none !important;
-  }
-  #profile .career-tabs--focus .career-tab small {
-    min-height: 0 !important;
-    margin: 0 0 5px !important;
-    color: var(--apple-tertiary) !important;
-    font-size: 7px !important;
-    line-height: 1.2 !important;
-    white-space: nowrap !important;
-  }
-  #profile .career-tabs--focus .career-tab strong {
-    min-height: 2.5em !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: var(--apple-secondary) !important;
-    font: 600 10px/1.25 var(--font-display) !important;
-    text-align: center !important;
-    overflow-wrap: normal !important;
-    word-break: keep-all !important;
-  }
-  #profile .career-tabs--focus .career-tab.is-active strong { color: var(--apple-text) !important; }
-  #profile .career-tabs--focus .career-tab span { display: none !important; }
-
-  #profile .career-detail {
-    grid-template-columns: 1fr !important;
-    align-content: start !important;
-    gap: 8px !important;
-    min-height: 0 !important;
-    padding: 10px 18px 6px !important;
-  }
-  #profile .career-detail-copy { grid-row: 1 !important; }
-  #profile .career-detail h3 {
-    margin-top: 5px !important;
-    margin-bottom: 4px !important;
-    font-size: clamp(1.85rem, 9vw, 2.35rem) !important;
-  }
-  #profile .career-description { margin-top: 10px !important; }
-  #profile .career-honor { margin-top: 10px !important; line-height: 1.35 !important; }
-  #profile .career-image {
-    grid-row: 2 !important;
-    aspect-ratio: 16 / 8.4 !important;
-  }
 
   /* Keep the English history panels on one shared mobile rhythm. The shorter
      copy above brings every stage inside the 2018–2019 baseline; this height
      scales with the viewport so the image and its surrounding padding remain
      fully visible at the supported phone widths. */
-  html[lang="en"] #profile .career-detail {
-    height: clamp(374px, calc(66vw + 138px), 397px) !important;
-    min-height: clamp(374px, calc(66vw + 138px), 397px) !important;
-    box-sizing: border-box !important;
-  }
-}
-
-/* Contact mobile adopts preview B: one high-contrast bottom sheet, with the
-   video kept as atmosphere and the two contact routes mapped in one grid. */
-@media (max-width: 760px) {
-  .footer-contact-copy {
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 28px 22px 22px !important;
-    border: 1px solid rgba(255, 255, 255, .22) !important;
-    border-radius: var(--apple-radius-panel) !important;
-    background: rgba(21, 23, 27, .74) !important;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(255, 255, 255, .12) !important;
-    -webkit-backdrop-filter: blur(22px) saturate(1.25) !important;
-    backdrop-filter: blur(22px) saturate(1.25) !important;
-    text-align: left !important;
-  }
-
-  .footer-contact-kicker { margin-bottom: 14px !important; }
-  .footer-contact-copy h2 {
-    font-size: clamp(2.15rem, 10vw, 2.5rem) !important;
-    line-height: 1 !important;
-  }
-  .footer-contact-copy > p:not(.footer-contact-kicker) {
-    max-width: 30ch !important;
-    margin: 14px 0 0 !important;
-    color: var(--apple-secondary) !important;
-    font-size: 16px !important;
-    line-height: 1.55 !important;
-  }
-  .footer-contact-direct {
-    display: grid !important;
-    width: 100% !important;
-    gap: 0 !important;
-    margin-top: 24px !important;
-  }
-  .footer-contact-direct a,
-  .footer-contact-direct a:last-child {
-    display: grid !important;
-    grid-template-columns: 58px minmax(0, 1fr) !important;
-    align-items: center !important;
-    gap: 12px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    padding: 14px 0 !important;
-    margin: 0 !important;
-    border-top: 1px solid rgba(255, 255, 255, .18) !important;
-    border-right: 0 !important;
-    text-align: left !important;
-  }
-  .footer-contact-direct a:last-child { border-bottom: 0 !important; padding-bottom: 4px !important; }
-  .footer-contact-direct span {
-    color: var(--apple-tertiary) !important;
-    font: 400 12px/1.3 var(--font-body) !important;
-    letter-spacing: 0 !important;
-    text-transform: none !important;
-  }
-  .footer-contact-direct strong {
-    min-width: 0 !important;
-    overflow-wrap: anywhere !important;
-    color: var(--apple-text) !important;
-    font: 500 15px/1.35 var(--font-body) !important;
-    letter-spacing: -.01em !important;
-  }
-  .footer-contact-panel { margin-top: 0 !important; }
-}
-
-@media (prefers-reduced-transparency: reduce) and (max-width: 760px) {
-  .footer-contact-copy {
-    background: var(--apple-surface-solid) !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
 }
 
 /* Mobile work history mirrors the award gallery's paging language. The
@@ -1195,7 +1121,7 @@ header .nav-contact-icon:focus-visible {
   #projects .comet-archive-mobile-shell .comet-archive__title {
     height: auto !important;
     min-height: 0 !important;
-    padding-top: 6px !important;
+    padding-top: var(--portfolio-work-title-gap-mobile) !important;
   }
   #projects .comet-archive-mobile-shell .comet-archive__details,
   #projects .comet-archive-mobile-shell .comet-archive__details strong {
@@ -1240,7 +1166,6 @@ header .nav-contact-icon:focus-visible {
     right: 58px;
   }
   #impact-awards .impact-award-pagination button { flex-shrink: 1 !important; }
-  #impact-reach .impact-reach-dossier { padding: 18px !important; }
   #impact-reach .impact-reach-profile-grid { gap: 16px 12px !important; }
   #impact-reach .impact-reach-profile-shot { flex-direction: column; align-items: stretch; height: auto; }
   #impact-reach .impact-reach-profile-caption { margin-top: 0 !important; }
@@ -1249,7 +1174,6 @@ header .nav-contact-icon:focus-visible {
 
 .comet-archive__mobile-link,
 .impact-reach-mobile-link { display: none; }
-.career-arrow svg,
 .comet-archive-page-arrow svg,
 .impact-award-rail-nav svg {
   display: block;
@@ -1258,7 +1182,6 @@ header .nav-contact-icon:focus-visible {
   margin: auto;
   flex: none;
 }
-.career-arrow,
 .comet-archive-page-arrow,
 .comet-archive-pagination button,
 .impact-award-rail-nav,
@@ -1267,72 +1190,12 @@ header .nav-contact-icon:focus-visible {
 .impact-award-lightbox-close {
   touch-action: manipulation;
 }
-.career-pagination, .career-controls { display: none; }
 @media (max-width: 720px) {
-  #profile .career-strip,
-  #profile .career-tabs { touch-action: pan-y; }
-  #profile .career-detail {
-    --career-swipe-x: 0px;
-    transform: translate3d(var(--career-swipe-x), 0, 0);
-    transition: transform var(--apple-duration-card) var(--apple-ease);
-    will-change: transform;
-  }
-  #profile .career-detail.is-touch-dragging { transition: none; }
-  @keyframes career-swipe-forward {
-    from { opacity: .72; transform: translate3d(18px, 0, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
-  }
-  @keyframes career-swipe-back {
-    from { opacity: .72; transform: translate3d(-18px, 0, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
-  }
-  #profile .career-detail.is-swipe-forward { animation: career-swipe-forward var(--apple-duration-card) var(--apple-ease) both; }
-  #profile .career-detail.is-swipe-back { animation: career-swipe-back var(--apple-duration-card) var(--apple-ease) both; }
-  #profile .career-controls { display: flex; align-items: center; justify-content: space-between; padding: 0 12px 8px; gap: 8px; }
-  #profile .career-controls .career-pagination { padding: 0 !important; }
-  #profile .career-arrow {
-    display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px;
-    padding: 0; border: 1px solid rgba(255,255,255,.38); border-radius: 50%;
-    background: rgba(25,25,28,.96); color: var(--apple-text); font: 300 26px/1 var(--font-body); cursor: pointer;
-  }
-  #profile .career-arrow:disabled { opacity: .28; cursor: default; }
-  #profile .career-arrow:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
-  #profile .career-arrow:active:not(:disabled) { background: var(--apple-surface-raised); }
 }
 @media (max-width: 760px) {
-  #profile .career-pagination {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 7px !important;
-    min-height: 24px !important;
-    padding: 0 0 8px !important;
-  }
-  #profile .career-pagination button {
-    width: 7px !important;
-    height: 7px !important;
-    flex: 0 0 auto !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 999px !important;
-    background: rgba(255, 255, 255, .22) !important;
-    cursor: pointer !important;
-    transform: scaleX(1);
-    transform-origin: center;
-    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease) !important;
-  }
-  #profile .career-pagination button.is-active {
-    background: transparent !important;
-    transform: scaleX(3.43);
-  }
-  #profile .career-pagination button:focus-visible {
-    outline: 2px solid var(--apple-text) !important;
-    outline-offset: 4px !important;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #profile .career-pagination button { transition: none !important; }
 }
 
 /* Selected work mobile B: one controlled carousel, four complete cards per
@@ -1409,14 +1272,12 @@ header .nav-contact-icon:focus-visible {
   }
   .comet-archive-mobile-shell .comet-archive__title {
     order: 2 !important;
-    height: calc(2.35em + 2px) !important;
-    min-height: calc(2.35em + 2px) !important;
+    height: auto !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 2px 1px 0 !important;
-    font-size: clamp(12px, 3.25vw, 14px) !important;
-    line-height: 1.2 !important;
     align-items: flex-start !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
   .comet-archive-mobile-shell .comet-archive__title-content--forced-break .comet-archive__title-line {
     display: block !important;
@@ -1424,8 +1285,7 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-mobile-shell .comet-archive__image {
     order: 1 !important;
     aspect-ratio: 3 / 4 !important;
-    border-radius: 13px !important;
-    background-color: rgba(5, 7, 9, .78) !important;
+    background-color: var(--portfolio-content-surface) !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-size: cover !important;
@@ -1439,32 +1299,12 @@ header .nav-contact-icon:focus-visible {
     order: 3 !important;
     gap: 2px !important;
     min-height: 0 !important;
-    padding: 2px 1px 0 !important;
+    padding: var(--portfolio-work-caption-gap-mobile) 1px 0 !important;
   }
   .comet-archive-mobile-shell .comet-archive__details {
-    display: block !important;
-    height: 2.3em !important;
-    min-height: 2.3em !important;
+    height: auto !important;
+    min-height: 0 !important;
     min-width: 0 !important;
-    padding-left: 7px !important;
-  }
-  .comet-archive-mobile-shell .comet-archive__details::before {
-    width: 1px !important;
-    height: 12px !important;
-    background: var(--apple-blue) !important;
-  }
-  .comet-archive-mobile-shell .comet-archive__details strong {
-    display: block !important;
-    width: 100% !important;
-    height: 2.6em !important;
-    min-height: 2.6em !important;
-    overflow: hidden !important;
-    color: var(--apple-secondary) !important;
-    font-size: clamp(10px, 2.8vw, 12px) !important;
-    line-height: 1.3 !important;
-    text-overflow: clip !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere !important;
   }
   .comet-archive-page-arrow {
     position: absolute;
@@ -1541,12 +1381,9 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-page-arrow,
   .comet-archive-pagination button,
   .comet-archive-mobile-shell .comet-archive,
-  .impact-award-rail,
-  #profile .career-detail { transition: none !important; }
+  .impact-award-rail { transition: none !important; }
   .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item,
-  #profile .career-detail.is-swipe-forward,
-  #profile .career-detail.is-swipe-back { animation: none !important; }
+  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation: none !important; }
 }
 
 /* Mobile award gallery: one complete portrait at a time, with Apple-style
@@ -1603,22 +1440,22 @@ header .nav-contact-icon:focus-visible {
     min-width: 0 !important;
     overflow: hidden !important;
     color: var(--apple-text) !important;
-    font: 600 13px/1.25 var(--font-display) !important;
+    font: 600 var(--type-supporting)/1.3 var(--font-display) !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
   .impact-award-card-caption small {
     flex: 0 0 auto !important;
     color: var(--apple-secondary) !important;
-    font: 400 10px/1.25 var(--font-mono) !important;
+    font: 400 var(--type-meta)/1.3 var(--font-mono) !important;
     white-space: normal !important;
     overflow-wrap: break-word;
     min-width: 0;
   }
   .impact-award-rail-nav {
     top: calc(50% + 8px) !important;
-    width: 42px !important;
-    height: 42px !important;
+    width: 44px !important;
+    height: 44px !important;
   }
   .impact-award-rail-nav--prev { left: 8px !important; }
   .impact-award-rail-nav--next { right: 8px !important; }
@@ -1707,12 +1544,6 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-mobile-tile img {
     height: 27px;
   }
-  .impact-reach-dossier {
-    padding: 20px 20px 22px;
-  }
-  .impact-reach-dossier-head {
-    margin-bottom: 22px;
-  }
   .impact-reach-profile-grid {
     gap: 26px 14px;
   }
@@ -1734,11 +1565,6 @@ header .nav-contact-icon:focus-visible {
   }
   .impact-reach-profile-caption {
     margin-top: 9px;
-  }
-  .impact-reach-dossier {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
   .impact-reach-profile-actions {
     display: flex;
@@ -1786,17 +1612,16 @@ header .nav-contact-icon:focus-visible {
   .impact-qr-dialog img { width: min(100%, 220px); }
   .impact-qr-dialog-actions a { min-height: 42px; padding-inline: 13px; }
   .impact-qr-dialog > p:not(.impact-qr-dialog-kicker) { max-width: 100%; text-align: center; }
-  html[lang="en"] .impact-platform-mobile-meta { font-size: 8px; letter-spacing: .05em; }
+  html[lang="en"] .impact-platform-mobile-meta { letter-spacing: .05em; }
   html[lang="en"] .impact-platform-mobile-manifesto { padding: 20px 22px 12px; }
   html[lang="en"] .impact-platform-mobile-network { padding: 20px 22px 16px; }
   html[lang="en"] .impact-platform-mobile-manifesto h3 { max-width: 11ch; margin-top: 17px; margin-bottom: 11px; font-size: clamp(1.8rem, 8.5vw, 2.6rem); line-height: .9; text-wrap: balance; }
-  html[lang="en"] .impact-platform-mobile-manifesto p { max-width: 30ch; font-size: 10px; line-height: 1.4; }
-  html[lang="en"] .impact-platform-mobile-signature { margin-top: 12px; font-size: 7px; letter-spacing: .03em; }
-  html[lang="en"] .impact-platform-mobile-network-head { font-size: 8px; letter-spacing: .04em; }
+  html[lang="en"] .impact-platform-mobile-manifesto p { max-width: 38ch; line-height: 1.5; }
+  html[lang="en"] .impact-platform-mobile-signature { margin-top: 12px; letter-spacing: .03em; }
+  html[lang="en"] .impact-platform-mobile-network-head { letter-spacing: .04em; }
   html[lang="en"] .impact-platform-mobile-grid { row-gap: 10px; margin-top: 15px; }
   html[lang="en"] .impact-platform-mobile-tile { min-height: 78px; }
-  html[lang="en"] .impact-platform-mobile-tile strong { font-size: 9px; }
-  html[lang="en"] .impact-platform-mobile-tile span { font-size: 8px; }
+
 }
 
 /* Touch surfaces answer on press instead of pretending a phone has hover. */
@@ -1830,14 +1655,11 @@ header .nav-contact-icon:focus-visible {
 
 /* Desktop award cards keep the full portrait and expose its context below. */
 @media (min-width: 761px) {
-  .impact-award-card-caption { display: flex; flex: 0 0 28px; min-height: 28px; align-items: baseline; justify-content: space-between; gap: 10px; min-width: 0; padding: 0 2px; text-align: left; }
-  .impact-award-card-caption strong { flex: 1 1 0; min-width: 0; overflow: visible; color: var(--apple-text); font: 600 12px/1.3 var(--font-display); text-overflow: clip; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; }
-  .impact-award-card-caption small { flex: 0 1 42%; min-width: 0; color: var(--apple-secondary); font: 400 10px/1.3 var(--font-mono); white-space: normal; text-align: right; overflow-wrap: anywhere; }
   .impact-evidence-label { grid-template-columns: minmax(0, 1fr); }
   .impact-evidence-label h2 { grid-column: 1; }
   .impact-award-description,
   .impact-platform-desktop-description,
-  .impact-reach-dossier-description { color: var(--apple-secondary); font: 400 13px/1.55 var(--font-body); }
+  .impact-reach-dossier-description { color: var(--apple-secondary); font: 400 var(--type-caption)/1.55 var(--font-body); }
   .impact-award-description { margin: 0 24px 8px; }
   .impact-platform-desktop-description { max-width: 48ch; margin-top: 14px; }
   .impact-reach-dossier-description { margin: -8px 0 20px; }
@@ -1868,9 +1690,8 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
-/* Impact rhythm: separate module spacing from the content inside each panel.
-   This keeps the three impact sections predictable and brings AI Lab closer
-   without changing the information architecture or navigation behavior. */
+/* Expertise rhythm: align the three recognition modules and the nested Lab
+   without changing their media layouts or interaction behavior. */
 @media (min-width: 761px) {
   #recognition {
     padding-top: clamp(96px, 8vw, 115px);
@@ -1905,10 +1726,8 @@ header .nav-contact-icon:focus-visible {
 /* Typography roles: the impact modules share the same editorial hierarchy.
    This block changes only type metrics and English wrapping; media, behavior,
    content, and section order remain untouched. */
-.impact-evidence-label h2,
 #experiments .section-title,
 .impact-platform-mobile-manifesto h3,
-.flip-experiment__row-title h3,
 .impact-platform-desktop-tile strong,
 .impact-platform-mobile-tile strong,
 .impact-reach-profile-caption strong,
@@ -1922,8 +1741,7 @@ header .nav-contact-icon:focus-visible {
 .impact-platform-desktop-description,
 .impact-platform-mobile-manifesto p,
 .impact-platform-mobile-tile span,
-.impact-reach-dossier-description,
-.flip-experiment__row-description {
+.impact-reach-dossier-description {
   font-family: var(--font-body);
 }
 
@@ -1934,28 +1752,13 @@ header .nav-contact-icon:focus-visible {
 .impact-platform-mobile-signature,
 .impact-reach-dossier-head,
 .impact-reach-profile-caption span,
-.impact-award-card-caption small,
-.flip-experiment__facts span,
-.flip-experiment__status {
+.impact-award-card-caption small {
   font-family: var(--font-mono);
 }
 
 @media (min-width: 761px) {
   /* Match the AI Lab section-title scale at 1024/1280/1440 instead of
      letting the three impact labels become a separate, oversized tier. */
-  .impact-evidence-label h2 {
-    font-size: clamp(2.55rem, 5vw, 4.6rem);
-    line-height: 1.02;
-    letter-spacing: -.055em;
-    white-space: normal;
-    text-wrap: balance;
-  }
-
-  html[lang="en"] .impact-evidence-label h2 {
-    white-space: normal;
-    text-wrap: balance;
-  }
-
   /* Long English award names keep their context instead of being ellipsized. */
   html[lang="en"] .impact-award-card-caption strong {
     overflow: visible;
@@ -1967,14 +1770,7 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (max-width: 720px) {
-  /* The mobile impact labels now sit on the same display scale as AI Lab. */
-  .impact-evidence-label h2 {
-    font-size: clamp(2.45rem, 11vw, 3.8rem);
-    line-height: 1.06;
-    letter-spacing: -.045em;
-    white-space: normal;
-    text-wrap: balance;
-  }
+  .impact-title { font-size: var(--impact-title-size-mobile); }
 
   .impact-platform-mobile-manifesto h3 {
     line-height: .98;
@@ -1987,40 +1783,6 @@ header .nav-contact-icon:focus-visible {
     letter-spacing: -.055em;
   }
 
-  html[lang="en"] .flip-experiment__row-title h3 {
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.12;
-    letter-spacing: -.04em;
-  }
-}
-
-@media (min-width: 721px) {
-  /* The desktop experiment list also needs to release the English nowrap
-     rule so its titles can use the available column width naturally. */
-  html[lang="en"] .flip-experiment__row-title h3 {
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.12;
-    letter-spacing: -.04em;
-  }
-}
-
-/* Respect reduced-transparency users while keeping the same hierarchy. */
-@media (prefers-reduced-transparency: reduce) {
-  header,
-  header.is-condensed,
-  #profile .career-strip,
-  .impact-glass,
-  #contact .footer-contact-copy,
-  #projects .comet-archive-mobile-shell,
-  .floating-dock-panel,
-  #top .hero-proof-card,
-  #experiments .flip-experiment__row {
-    background: var(--apple-surface-solid) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
 }
 
 /* Round 1: keep the Hero title inside its reading column in every language.
@@ -2082,7 +1844,6 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-page-arrow span { position: relative; z-index: 1; }
 
   .comet-archive-pagination,
-  #profile .career-pagination,
   .impact-award-pagination {
     width: fit-content !important;
     max-width: 100%;
@@ -2105,7 +1866,6 @@ header .nav-contact-icon:focus-visible {
   }
 
   .comet-archive-pagination button,
-  #profile .career-pagination button,
   .impact-award-pagination button {
     position: relative;
     display: grid;
@@ -2123,7 +1883,6 @@ header .nav-contact-icon:focus-visible {
   }
 
   .comet-archive-pagination button::before,
-  #profile .career-pagination button::before,
   .impact-award-pagination button::before {
     display: block;
     width: 7px;
@@ -2137,7 +1896,6 @@ header .nav-contact-icon:focus-visible {
   }
 
   .comet-archive-pagination button.is-active::before,
-  #profile .career-pagination button.is-active::before,
   .impact-award-pagination button.is-active::before {
     width: 20px;
     height: 7px;
@@ -2146,7 +1904,6 @@ header .nav-contact-icon:focus-visible {
   }
 
   .comet-archive-pagination button:focus-visible,
-  #profile .career-pagination button:focus-visible,
   .impact-award-pagination button:focus-visible {
     outline: 2px solid var(--apple-blue) !important;
     outline-offset: -1px;
@@ -2239,34 +1996,6 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
-/* 桌面工作经历是一个连续的阶段索引，不是五张独立卡片：取消圆角拼接，
-   让阶段关系由间距、文字层级和当前项高亮表达，避免被截断的装饰线。 */
-@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
-  #profile .career-tab {
-    position: relative;
-    z-index: 0;
-    border: 0 !important;
-    transition: background-color var(--apple-duration-control) var(--apple-ease),
-      color var(--apple-duration-control) var(--apple-ease),
-      box-shadow var(--apple-duration-control) var(--apple-ease),
-      transform var(--apple-duration-control) var(--apple-ease) !important;
-  }
-
-  #profile .career-tabs--focus .career-tab {
-    border: 0 !important;
-    border-radius: 0 !important;
-  }
-
-  #profile .career-tab:hover:not(:focus-visible),
-  #profile .career-tab:focus-visible {
-    z-index: 1;
-    color: var(--apple-text) !important;
-    background: rgba(255, 255, 255, .075) !important;
-    box-shadow: inset 0 -2px 0 rgba(255, 255, 255, .72), 0 6px 18px rgba(0, 0, 0, .16) !important;
-    transform: translateY(-1px);
-  }
-}
-
 /* Touch devices do not have a stable hover state. Keep desktop-only lift and
    lightbox hover feedback from sticking after a tap. Focus and :active remain
    available for keyboard and press feedback. */
@@ -2285,10 +2014,6 @@ header .nav-contact-icon:focus-visible {
     transform: none !important;
   }
 
-  #profile .career-tab:hover:not(:focus-visible),
-  #experiments .flip-experiment__row:hover:not(:focus-visible) {
-    transform: none !important;
-  }
 }
 
 /* Modal-only fallback. Keep normal material tokens and unrelated surfaces intact.
@@ -2297,8 +2022,8 @@ header .nav-contact-icon:focus-visible {
   #mobile-nav-drawer,
   .cinema-player::backdrop {
     background: var(--portfolio-modal-solid, #0c0c0d) !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   /* Fade menu items, never an opaque fallback scrim. Keep close timing intact. */
   #mobile-nav-drawer { transition-property: visibility !important; }
@@ -2309,8 +2034,8 @@ header .nav-contact-icon:focus-visible {
   #mobile-nav-drawer,
   .cinema-player::backdrop {
     background: var(--portfolio-modal-solid, #0c0c0d) !important;
-    backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
   }
   #mobile-nav-drawer { transition-property: visibility !important; }
   #mobile-nav-drawer.is-open,
@@ -2357,4 +2082,60 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
   --portfolio-icon-surface: var(--portfolio-panel-surface);
   --portfolio-icon-hover-surface: var(--apple-surface-raised);
   --portfolio-icon-active-surface: var(--apple-surface-solid);
+}
+
+/* Expertise typography and spacing contract.
+   H2: main section > four equally ranked child headings.
+   The former Impact row gap (5vw / up to 72px), native heading margins,
+   and Lab list margin combined into inconsistent title-to-panel distances.
+   Own those distances here without changing cards, content or animations. */
+:root {
+  --expertise-subheading-size: var(--impact-title-size);
+  --expertise-title-panel-gap: 28px;
+  --expertise-main-subheading-gap: 44px;
+}
+#expertise-group > section[id] { scroll-margin-top: var(--anchor-offset); }
+#recognition .section-intro {
+  display: block;
+  margin-bottom: var(--expertise-main-subheading-gap);
+}
+#recognition .section-intro .section-title { margin: 0; }
+#recognition .impact-evidence-row {
+  row-gap: var(--expertise-title-panel-gap);
+}
+#recognition .impact-evidence-label { padding-top: 0; }
+#recognition .impact-evidence-label h2,
+#experiments .section-title {
+  margin: 0;
+  font-size: var(--expertise-subheading-size);
+  font-weight: var(--impact-title-weight);
+  line-height: var(--impact-title-line-height);
+  letter-spacing: var(--impact-title-letter-spacing);
+}
+/* The Lab heading and list are siblings. Do not stack both their old margins. */
+#experiments > .shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--expertise-title-panel-gap);
+}
+#experiments .section-intro {
+  display: block;
+  margin: 0;
+}
+#experiments .flip-experiment { margin-top: 0; }
+@media (max-width: 760px) {
+  :root {
+    --expertise-subheading-size: var(--impact-title-size-mobile);
+    --expertise-title-panel-gap: 20px;
+    --expertise-main-subheading-gap: 36px;
+    --expertise-card-heading-size: clamp(24px, 6.8vw, 28px);
+  }
+  /* Creator headline is a card heading, never larger than its section H2.
+     English has its own older clamp; override both with one shared role. */
+  #recognition .impact-platform-mobile-manifesto h3,
+  html[lang="en"] #recognition .impact-platform-mobile-manifesto h3 {
+    font-size: var(--expertise-card-heading-size);
+    line-height: 1.12;
+    letter-spacing: -.045em;
+  }
 }

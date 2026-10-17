@@ -50,11 +50,11 @@ const OVERLAP_FN = `(() => {
   // 文字元素 vs 图片/卡片边界的互相重叠（非父子关系）
   const issues = [];
   const texts = [];
-  for (const el of document.querySelectorAll('.comet-archive__copy strong, .comet-archive__award, .comet-archive__meta, .hero-subtitle, .hero-title, .footer-tagline, .career-tab strong, .career-tab span')) {
+  for (const el of document.querySelectorAll('.comet-archive__copy strong, .comet-archive__award, .comet-archive__meta, .hero-subtitle, .hero-title, .footer-tagline')) {
     const r = el.getBoundingClientRect();
     if (r.width > 0 && r.height > 0) texts.push({ el, r, cls: (el.className || '').toString() });
   }
-  for (const img of document.querySelectorAll('.comet-archive__image, .career-image img, .hero-proof-card img')) {
+  for (const img of document.querySelectorAll('.comet-archive__image, .hero-proof-card img')) {
     const ir = img.getBoundingClientRect();
     if (ir.width === 0) continue;
     for (const t of texts) {

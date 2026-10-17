@@ -29,6 +29,16 @@
 #projects .archive-more a:hover { color: var(--apple-text); }
 #projects .archive-more a:hover .archive-more__arrow { transform: translate(1px, -1px); }
 #projects .archive-more a:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 4px; }
+/* The shared card markup reads artwork, project name and award/category in
+   that order. Desktop home cards use the library's compact information rhythm. */
+@media (min-width: 721px) {
+  #projects .comet-archive__card > .comet-archive__title {
+    min-width: 0;
+    margin-top: calc(var(--portfolio-work-title-gap) - var(--portfolio-work-caption-gap));
+    overflow: visible;
+  }
+  #projects .comet-archive__card { row-gap: var(--portfolio-work-caption-gap); }
+}
 @media (max-width: 720px) {
   #projects .section-intro { margin-bottom: 22px; }
   #projects .section-intro > .projects-meta-row { display: none; }

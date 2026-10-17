@@ -11,14 +11,14 @@ export default function HeroActions() {
         type="button"
         onClick={() => { window.location.hash = 'projects'; }}
       >
-        {t('查看创作档案', 'View Selected Work')}
+        {t('查看作品', 'View Work')}
       </button>
       <button
         className="hero-secondary"
         type="button"
-        onClick={() => { window.location.hash = 'profile'; }}
+        onClick={() => { window.location.hash = 'contact'; }}
       >
-        {t('浏览工作经历', 'Explore Work History')}
+        {t('合作联系', 'Get in Touch')}
       </button>
     </>
   );

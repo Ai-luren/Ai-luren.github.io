@@ -8,7 +8,19 @@
     "covers": "node tools/cover-studio/server.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "check:i18n": "node scripts/check-i18n.mjs"
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "check:impact-platform": "node scripts/check-impact-platform-breakpoints.mjs",
+    "check:typography": "node scripts/check-typography-system.mjs",
+    "check:work-cards": "node scripts/check-work-card-system.mjs",
+    "check:work-media": "node scripts/check-work-media-consistency.mjs",
+    "check:interaction": "node scripts/check-interaction-contract.mjs",
+    "check:nav-scroll": "node scripts/check-navigation-scroll-intent.mjs",
+    "check:design-system": "node scripts/check-design-system-foundation.mjs",
+    "check:responsive": "node scripts/check-final-responsive.mjs",
+    "check:hero-conversion": "node scripts/check-hero-conversion.mjs",
+    "check:glass-material": "node scripts/check-glass-material-system.mjs",
+    "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
+    "check:social-media": "node scripts/check-social-media-system.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

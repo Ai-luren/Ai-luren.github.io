@@ -121,8 +121,6 @@
     #top::after, #profile::after, #projects::after, #recognition::after { display: block; }
     .section-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); align-items: end; gap: 48px; margin-bottom: 48px; }
     .section-intro > div { min-width: 0; }
-    .section-title { position: relative; margin: 8px 0 0; color: var(--mist); font: 700 clamp(2rem, 3.4vw, 3rem)/1.12 var(--display); letter-spacing: -.025em; text-shadow: 0 2px 12px rgba(1,8,17,.7); text-wrap: balance; }
-    .section-title::after { display: block; width: 42px; height: 1px; margin-top: 18px; background: var(--accent-blue); content: ''; }
     .section-note { max-width: 320px; margin: 0; padding: 0 0 0 18px; border-left: 1px solid var(--line); color: var(--signal); font-size: 14px; line-height: 1.7; text-wrap: pretty; }
     .reveal { opacity: 0; transform: translateY(10px); transition: opacity var(--motion-duration-section) var(--motion-ease-emphasized), transform var(--motion-duration-section) var(--motion-ease-emphasized); }
     .reveal.is-visible { opacity: 1; transform: none; }
@@ -144,7 +142,7 @@
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(255,255,255,.25); transform: translateY(-50%); pointer-events: none; }
     .scroll-rail span { display: block; width: 3px; height: 100%; margin-left: -1px; background: var(--accent-blue-on-dark); box-shadow: 0 0 14px rgba(41,151,255,.42); transform: scaleY(0); transform-origin: top; }
 
-    #profile { padding-top: 96px; padding-bottom: 120px; }
+    #profile { padding: 72px 0 80px; }
     #projects { padding-top: 112px; padding-bottom: 120px; }
     #projects .section-intro, #experiments .section-intro { display: block; max-width: 640px; }
     #projects .section-note, #experiments .section-note { max-width: 420px; margin-top: 16px; }
@@ -155,16 +153,15 @@
     .comet-archive__card { position: relative; display: grid; grid-template-rows: auto auto auto; row-gap: 12px; align-content: start; width: 100%; height: 100%; padding: 0; border: 0; border-radius: 12px; background: transparent; box-shadow: none; color: #fff; cursor: pointer; touch-action: manipulation; text-align: left; transform-style: preserve-3d; }
     .comet-archive__card:focus-visible { outline: 2px solid rgba(255,255,255,.88); outline-offset: 4px; }
     .comet-archive__award { position: relative; z-index: 1; max-width: 100%; overflow: hidden; color: rgba(232,240,245,.72); font: 600 11px/1.2 var(--sans); letter-spacing: .02em; white-space: nowrap; text-overflow: ellipsis; }
-    .comet-archive__image { position: relative; z-index: 1; display: block; width: 100%; aspect-ratio: 3 / 4; overflow: hidden; border: 1px solid rgba(224,224,224,.18); border-radius: 12px; background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 18px 34px rgba(0,0,0,.38); pointer-events: none; transition: transform var(--motion-duration-card) var(--motion-ease-emphasized), border-color var(--motion-duration-card) var(--motion-ease-emphasized), box-shadow var(--motion-duration-card) var(--motion-ease-emphasized); }
+    .comet-archive__image { position: relative; z-index: 1; display: block; width: 100%; aspect-ratio: 3 / 4; overflow: hidden; border: 1px solid rgba(224,224,224,.18); border-radius: var(--portfolio-content-radius); background: var(--comet-cover) center / cover no-repeat; box-shadow: 0 18px 34px rgba(0,0,0,.38); pointer-events: none; transition: transform var(--motion-duration-card) var(--motion-ease-emphasized), border-color var(--motion-duration-card) var(--motion-ease-emphasized), box-shadow var(--motion-duration-card) var(--motion-ease-emphasized); }
     .comet-archive__copy { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 6px; min-width: 0; transform-style: preserve-3d; }
     /* 作品标题行（品牌 + 类型），让客户扫卡时第一眼看到品牌名。 */
-    .comet-archive__title { display: block; overflow: hidden; color: #f0f4f6; font: 600 clamp(14px, 1.3vw, 16px)/1.22 var(--display); letter-spacing: -.01em; white-space: nowrap; text-overflow: ellipsis; }
+    .comet-archive__title { display: block; }
     .comet-archive__row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; min-width: 0; }
     /* 平台入口在图片左下角，奖项在图片下方；标题是唯一的强识别层级。 */
     .comet-archive__meta { display: inline-block; flex-shrink: 0; color: rgba(232,240,245,.55); font: 500 11px/1.4 var(--sans); letter-spacing: 0; white-space: nowrap; transition: color var(--motion-duration-card) ease; }
-    .comet-archive__details { display: block; flex: 0 1 auto; max-width: calc(100% - 110px); min-width: 0; overflow: hidden; text-align: right; }
+    .comet-archive__details { min-width: 0; }
     /* 英文长奖项允许换行（中文单行足够），换行不算截断，check:i18n 只查横向溢出。 */
-    .comet-archive__details strong { display: block; color: rgba(232,240,245,.82); font: 500 clamp(12px, 1.1vw, 13px)/1.35 var(--sans); letter-spacing: 0; text-align: right; white-space: normal; }
     .comet-card:hover { z-index: 2; }
     .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { transform: scale(1.02); border-color: rgba(224,224,224,.4); box-shadow: 0 26px 44px rgba(0,0,0,.46); }
     .comet-card:hover .comet-archive__meta, .comet-card:focus-within .comet-archive__meta { color: rgba(232,240,245,.8); }
@@ -178,13 +175,12 @@
       .comet-archive__award { font-size: 10px; letter-spacing: 0; }
       .comet-archive__copy { row-gap: 5px; }
       /* 标题在 JSX 里按 " AI " 拆成两段 span；手机端两段各占一行，标题块恒为 2 行，同排卡片完全对齐。 */
-      .comet-archive__title { display: block; overflow: hidden; font-size: clamp(14px, 3.9vw, 15px); line-height: 1.28; white-space: normal; }
+      .comet-archive__title { display: block; white-space: normal; }
       .comet-archive__title-line { display: block; }
       /* 观看入口与奖项上下堆叠：半栏宽度放不下英文长奖项与入口同行，堆叠后换行不截断。 */
       .comet-archive__row { display: contents; }
       .comet-archive__meta { font-size: 10px; }
       .comet-archive__details { max-width: 100%; text-align: left; }
-      .comet-archive__details strong { font-size: clamp(11px, 3vw, 12px); line-height: 1.35; text-align: left; }
       .comet-card:hover .comet-archive__image, .comet-card:focus-within .comet-archive__image { transform: none; }
       .comet-archive__scroll-hint { display: none !important; }
     }
@@ -273,7 +269,7 @@
       .section-intro .section-note, #projects .section-note, #experiments .section-note { max-width: 36ch; margin-top: var(--space-4); }
       #top { padding: var(--space-7) 0 var(--space-5); }
       .hero-shell { min-height: calc(100svh - 164px); }
-      #profile { padding: var(--space-7) 0 var(--space-9); }
+      #profile { padding: 56px 0 64px; }
       #projects { padding: var(--space-9) 0 var(--space-8); }
       footer { padding: var(--space-9) 0 var(--space-6); }
     }
@@ -285,7 +281,7 @@
       .section-intro .section-note, #projects .section-note, #experiments .section-note { max-width: 30ch; margin-top: var(--space-3); }
       #top { padding: var(--space-6) 0 var(--space-4); }
       .hero-shell { min-height: calc(100svh - 148px); }
-      #profile { padding: var(--space-6) 0 var(--space-8); }
+      #profile { padding: 44px 0 52px; }
       #projects { padding: var(--space-8) 0 var(--space-7); }
       footer { padding: var(--space-8) 0 var(--space-5); }
     }
@@ -310,7 +306,7 @@
     .section::before { background: linear-gradient(180deg, rgba(0,0,0,.008), rgba(0,0,0,.02)); }
     .section::after { border-bottom-color: var(--hairline); }
 
-    .hero-title, .section-title { text-shadow: none; }
+    .hero-title { text-shadow: none; }
     .hero-subtitle { color: var(--body-text); }
     .hero-readout, .footer-note { color: var(--subtle-text); }
     .section-note { color: var(--body-text); }
@@ -332,13 +328,12 @@
         rgba(0,0,0,.08);
     }
     #video-vignette { box-shadow: inset 0 0 12vw rgba(0,0,0,.1); }
-    .section-title,
     .hero-title,
     .hero-subtitle,
     .section-note {
       text-shadow: 0 2px 10px rgba(0,0,0,.92), 0 0 2px rgba(0,0,0,.82);
     }
-    .section-title, .hero-title { color: #f0f4f6; }
+    .hero-title { color: #f0f4f6; }
     .hero-subtitle, .section-note { color: #d2dce2; }
 
     .hero-title { display: grid; justify-items: start; gap: 0; white-space: nowrap; line-height: .98; }
@@ -430,7 +425,6 @@
 
     /* 页脚沿用章节结构：英文是定位标签，中文主标题负责收束页面。 */
     .footer-title { margin-top: var(--section-title-gap); }
-    .footer-title::after { width: 32px; height: 2px; margin-top: 20px; background: var(--accent-blue); }
     .footer-tagline { margin-top: 18px; }
     .footer-social a { border: 1px solid rgba(232,240,245,.22); background: rgba(5,13,23,.22); color: rgba(232,240,245,.82); }
     .footer-social a::before { display: none; }
@@ -483,7 +477,7 @@
     .nav-toggle:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 3px; }
 
     /* 统一强调色：蓝色只用于主按钮、当前状态和焦点提示。 */
-    .loading-line, .section-title::after, .scroll-rail span { background: var(--accent-blue); }
+    .loading-line, .scroll-rail span { background: var(--accent-blue); }
     .nav-list a.is-active { background: transparent; box-shadow: none; }
     .nav-list a.nav-contact.is-active { background: transparent; color: rgba(255,255,255,.98); }
     .hero-actions .hero-primary { min-height: 64px; padding: 0 34px; border-color: transparent; border-radius: 999px; background: var(--accent-blue); color: #f8fbff; font-size: 16px; font-weight: 700; letter-spacing: -.01em; box-shadow: 0 10px 26px rgba(0, 113, 227, .22); }
@@ -603,7 +597,7 @@
     @media (min-width: 721px) {
       html[lang="en"] .hero-actions .specular-button { flex: 0 0 auto; width: auto; padding: 0 26px; white-space: nowrap; }
     }
-    html[lang="en"] .comet-archive__details strong { max-width: 100%; white-space: normal; text-overflow: clip; line-height: 1.25; }
+    html[lang="en"] .comet-archive__details strong { max-width: 100%; white-space: normal; text-overflow: clip; }
     /* 英文奖项换行行数不一（1~2 行）会让 space-between 卡片各行间隙不同，图片与文字纵向错位；统一按 2 行占位。只作用于奖项，避免误伤标题行。 */
     html[lang="en"] .comet-archive__details strong { min-height: 2.5em; }
     @media (max-width: 520px) {
@@ -704,14 +698,6 @@
       letter-spacing: .08em;
       text-transform: uppercase;
     }
-    .section-title {
-      margin-top: var(--section-title-gap);
-      color: var(--body-on-dark);
-      font: 600 var(--type-section)/1.12 var(--font-display);
-      letter-spacing: -.03em;
-      text-shadow: none;
-    }
-    .section-title::after { width: 32px; height: 2px; margin-top: 20px; background: var(--accent-blue); }
     .hero-title {
       font-size: var(--type-hero);
       line-height: 1.02;
@@ -746,8 +732,6 @@
     .comet-archive__card { border-radius: var(--radius-card); }
     .comet-archive__award { color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-mono); letter-spacing: .05em; text-transform: uppercase; }
     .comet-archive__meta { color: var(--subtle-text); font: 500 10px/1.4 var(--font-mono); letter-spacing: .05em; }
-    .comet-archive__details { display: grid; gap: 5px; min-width: 0; justify-items: end; }
-    .comet-archive__details strong { max-width: 210px; color: var(--body-on-dark); font: 600 15px/1.2 var(--font-display); letter-spacing: -.025em; }
     .comet-archive__copy small { display: block; color: var(--accent-blue-on-dark); font: 500 10px/1.4 var(--font-body); letter-spacing: 0; }
     .footer-eyebrow { margin-bottom: 0; }
 
@@ -758,7 +742,6 @@
       letter-spacing: .08em;
       text-transform: uppercase;
     }
-    .section-title::after,
     .loading-line,
     .scroll-rail span { background: var(--accent-blue); }
     .hero-title span:last-child { color: var(--body-on-dark); }
@@ -794,8 +777,13 @@
     }
     /* 精选创作档案压暗层：透明度跟随 Hero 离场进度连续交叉淡化——左侧阅读蒙版淡出多少，压暗层就补上多少，
        滚动全程背景总暗度近似恒定，不存在「先变亮再压暗」的跳变段。 */
-    #video-dim { position: absolute; inset: 0; z-index: 5; background: rgba(0, 0, 0, .62); opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-section) var(--motion-ease-emphasized); }
+    #video-dim { position: absolute; inset: 0; z-index: 5; background: rgba(0, 0, 0, .62); opacity: 0; pointer-events: none; transition: opacity var(--motion-duration-section) var(--motion-ease-emphasized), background-color var(--motion-duration-section) var(--motion-ease-emphasized); }
     body.is-on-hero #video-dim, body.is-on-projects #video-dim { opacity: calc(1 - var(--hero-overlay-progress, 1)); }
+    /* A little more separation for project titles and evidence text. The same
+       fixed video remains visible; chapter changes crossfade with the existing
+       mask timing instead of adding a new section-sized panel. */
+    body.is-on-projects:not(.is-on-hero) #video-dim { background-color: rgba(0, 0, 0, .68); }
+    body:is(.is-on-impact-awards, .is-on-impact-programs, .is-on-impact-reach) #video-dim { opacity: .2; }
     /* WebGL 画布只负责视频后处理；Hero 仅保留这一层局部阅读渐变。 */
     #video-webgl { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; }
     #hero-profile-mask { z-index: 2; background: linear-gradient(90deg, rgba(0, 0, 0, .42) 0%, rgba(0, 0, 0, .18) 30%, transparent 62%); }
@@ -807,7 +795,6 @@
     footer .footer-eyebrow { display: none !important; }
     .section-intro { margin-bottom: 38px; }
     .section-title { margin-top: 0; }
-    .section-title::after { margin-top: 14px; }
 
     @media (max-width: 720px) {
       #hero-profile-mask { background: linear-gradient(90deg, rgba(0, 0, 0, .42) 0%, rgba(0, 0, 0, .18) 30%, transparent 62%); }
@@ -880,11 +867,11 @@
       border-color: var(--edge-highlight) !important;
     }
 
-    /* 区块节奏：统一章节之间的呼吸感，保留工作经历的叙事空间。 */
+    /* 区块节奏：统一章节之间的呼吸感，为阅读内容保留合理空间。 */
     @media (min-width: 901px) {
       .section-intro { margin-bottom: 32px; }
       #projects { padding: 96px 0 80px; }
-      #profile { padding: 64px 0 96px; }
+      #profile { padding: 64px 0 80px; }
       #recognition { padding: 80px 0 88px; }
       #experiments { padding: 80px 0 88px; }
       footer { padding: 64px 0 24px; }
@@ -893,7 +880,7 @@
     @media (max-width: 900px) {
       .section-intro { margin-bottom: 24px; }
       #projects { padding: 64px 0 56px; }
-      #profile { padding: 48px 0 64px; }
+      #profile { padding: 48px 0 60px; }
       #recognition { padding: 56px 0 64px; }
       #experiments { padding: 56px 0 72px; }
       footer { padding: 56px 0 24px; }
@@ -901,175 +888,42 @@
     @media (max-width: 560px) {
       .section-intro { margin-bottom: 20px; }
       #projects { padding: 56px 0 48px; }
-      #profile { padding: 40px 0 56px; }
+      #profile { padding: 40px 0 48px; }
       #recognition { padding: 48px 0 56px; }
       #experiments { padding: 48px 0 64px; }
       footer { padding: 48px 0 24px; }
     }
 
-    /* 工作经历整体收短：减少滚动叙事的每段停留，避免区块在页面中占据过长的纵向空间。 */
+    /* 关于我：沿用章节标题体系，以受限行宽和无卡片正文收束页面。 */
     @media (min-width: 721px) {
       #profile { padding-bottom: 48px; }
       #profile .section-intro { margin-bottom: 24px; }
     }
-
-    /* 工作经历新版：信息索引优先，取消滚动接管，让客户和 HR 一次扫完。 */
-    .career-strip {
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, .18);
-      border-radius: 18px;
-      background: rgba(12, 12, 13, .62);
-      box-shadow: 0 14px 30px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .06);
-    }
-    .career-summary {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 24px;
-      padding: 22px 24px 20px;
-    }
-    .career-kicker,
-    .career-meta {
-      color: var(--subtle-text);
-      font: 500 10px/1.5 var(--tech);
-      letter-spacing: .08em;
-    }
-    .career-summary h3 {
-      margin: 8px 0 5px;
-      color: var(--body-on-dark);
-      font: 600 clamp(1.8rem, 3.2vw, 3rem)/1.02 var(--display);
-      letter-spacing: -.06em;
-    }
-    .career-summary p {
+    .about-copy { max-width: 760px; }
+    .about-role {
       margin: 0;
-      color: var(--body-text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .career-summary-note {
-      flex: 0 0 auto;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-    .career-tabs {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      border-top: 1px solid rgba(255, 255, 255, .14);
-      border-bottom: 1px solid rgba(255, 255, 255, .14);
-    }
-    .career-tab {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: flex-start;
-      min-width: 0;
-      min-height: 112px;
-      padding: 16px 14px;
-      border: 0;
-      border-right: 1px solid rgba(255, 255, 255, .14);
-      color: var(--muted);
-      background: transparent;
-      cursor: pointer;
-      touch-action: manipulation;
-      text-align: left;
-      transition: background var(--motion-duration-control) ease, color var(--motion-duration-control) ease, box-shadow var(--motion-duration-control) ease;
-    }
-    .career-tab:last-child { border-right: 0; }
-    .career-tab:hover,
-    .career-tab:focus-visible { color: var(--body-on-dark); background: rgba(255, 255, 255, .04); outline: none; }
-    .career-tab:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: -3px; }
-    .career-tab.is-active {
       color: var(--body-on-dark);
-      background: rgba(255, 255, 255, .05);
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82);
+      font: 550 clamp(1.25rem, 1.9vw, 1.75rem)/1.25 var(--display);
+      letter-spacing: -.025em;
+      text-wrap: balance;
     }
-    .career-tab small {
-      display: block;
-      margin-bottom: 20px;
-      color: var(--subtle-text);
-      font: 500 10px/1.3 var(--tech);
-      letter-spacing: .03em;
-    }
-    .career-tab strong {
-      display: block;
-      color: inherit;
-      font: 600 14px/1.35 var(--display);
-      overflow-wrap: anywhere;
-    }
-    .career-tab span {
-      display: block;
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
-    .career-detail {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
-      gap: 28px;
-      align-items: center;
-      min-height: 268px;
-      padding: 22px 24px 24px;
-    }
-    .career-detail-copy { min-width: 0; }
-    .career-detail h3 {
-      max-width: 14ch;
-      margin: 9px 0 6px;
-      color: var(--body-on-dark);
-      font: 600 clamp(2rem, 3.4vw, 3.2rem)/1.04 var(--display);
-      letter-spacing: -.06em;
-      overflow-wrap: anywhere;
-    }
-    .career-role {
-      max-width: 38ch;
-      margin: 0;
-      color: var(--signal);
-      font-size: 14px;
-      line-height: 1.55;
-      overflow-wrap: anywhere;
-    }
-    .career-description {
-      max-width: 38ch;
-      margin: 16px 0 0;
+    .about-description {
+      max-width: 66ch;
+      margin: 14px 0 0;
       color: var(--body-text);
-      font-size: 14px;
-      line-height: 1.7;
-      overflow-wrap: anywhere;
+      font-size: clamp(15px, 1.1vw, 17px);
+      line-height: 1.75;
+      text-wrap: pretty;
     }
-    .career-honor {
-      margin: 18px 0 0;
-      color: var(--signal);
-      font: 500 11px/1.5 var(--tech);
-      letter-spacing: .03em;
-      overflow-wrap: anywhere;
+    @media (max-width: 720px) {
+      #profile .section-intro { margin-bottom: 16px; }
+      .about-copy { max-width: 38ch; }
+      .about-role { font-size: 20px; line-height: 1.3; }
+      .about-description { margin-top: 10px; font-size: 15px; line-height: 1.7; }
     }
-    .career-honor::before {
-      display: inline-block;
-      width: 24px;
-      height: 1px;
-      margin: 0 10px 3px 0;
-      background: var(--accent-blue);
-      content: '';
-    }
-    .career-image {
-      min-width: 0;
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, .16);
-      border-radius: 12px;
-      background: rgba(12, 12, 13, .42);
-    }
-    .career-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    html[lang="en"] .career-tab small { white-space: normal; }
-    html[lang="en"] .career-detail h3,
-    html[lang="en"] .career-role,
-    html[lang="en"] .career-description,
-    html[lang="en"] .career-honor { max-width: 100%; word-break: normal; }
 
     /* 精选创作档案：外链入口明确，减少两端纵向占用。 */
-    .comet-archive__image { aspect-ratio: 4 / 5; }
+    .comet-archive__image { aspect-ratio: var(--portfolio-work-cover-ratio); }
     .comet-archive__meta {
       display: inline-flex;
       align-items: center;
@@ -1144,16 +998,7 @@
       min-height: 1.5em;
       padding: 0;
     }
-    .comet-archive__title {
-      display: flex;
-      align-items: flex-end;
-      min-height: 2em;
-      overflow: visible;
-      text-overflow: clip;
-      white-space: normal;
-      text-wrap: balance;
-      text-align: left;
-    }
+    .comet-archive__title { display: flex; align-items: flex-end; min-height: 0; text-align: left; }
     .comet-archive__title-content {
       display: block;
       width: 100%;
@@ -1180,37 +1025,11 @@
       text-shadow: 0 1px 8px rgba(0,0,0,.54);
       text-align: right;
     }
-    .comet-archive__details {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      width: 100%;
-      max-width: 100%;
-      min-width: 0;
-      overflow: visible;
-      position: relative;
-      padding-left: 10px;
-      text-align: left;
-    }
-    .comet-archive__details::before {
-      position: absolute;
-      top: 2px;
-      left: 0;
-      width: 2px;
-      height: 14px;
-      background: var(--accent-blue);
-      content: '';
-    }
+    .comet-archive__details { width: 100%; max-width: 100%; min-width: 0; overflow: visible; }
     .comet-archive__details strong {
       display: block;
       width: auto;
       min-height: 0;
-      color: var(--body-on-dark);
-      font: 650 clamp(12px, 1.1vw, 14px)/1.3 var(--font-body);
-      letter-spacing: 0;
-      text-align: left;
-      white-space: normal;
-      overflow-wrap: anywhere;
     }
     @media (min-width: 721px) {
       /* 卡片边界保持固定，桌面端交互只提升对比度，不让放大后的图片覆盖邻卡边缘。 */
@@ -1231,9 +1050,6 @@
       .comet-archive__title { min-height: 2.05em; }
       .comet-archive__title-line { display: inline; }
       .comet-archive__image > .comet-archive__meta { right: 8px; bottom: 8px; font-size: 10px; }
-      .comet-archive__details { padding-left: 7px; }
-      .comet-archive__details::before { width: 1px; height: 12px; }
-      .comet-archive__details strong { font-size: clamp(11px, 3vw, 12px); line-height: 1.3; }
     }
 
     /* 作品集卡片里的平台只是去向提示，不做成厚重按钮，保留轻量的阅读节奏。 */
@@ -1255,20 +1071,6 @@
     }
 
     @media (max-width: 720px) {
-      .career-summary { display: block; padding: 16px 14px 14px; background: rgba(12, 12, 13, .72); }
-      .career-summary h3 { margin-top: 7px; font-size: 1.9rem; }
-      .career-summary-note { display: block; margin-top: 10px; font-size: 11px; }
-      .career-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); background: rgba(18, 18, 19, .78); }
-      .career-tab { align-items: center; min-height: 116px; padding: 12px 8px; color: rgba(237, 244, 249, .78); text-align: center; }
-      .career-tab small { min-height: 13px; margin-bottom: 10px; font-size: 9px; }
-      .career-tab strong { min-height: 2.6em; font-size: 12px; line-height: 1.3; white-space: normal; overflow: visible; text-overflow: clip; }
-      .career-tab span { display: block; min-height: 2.7em; margin-top: 4px; color: rgba(237, 244, 249, .66); font-size: 10px; line-height: 1.35; }
-      .career-detail { grid-template-columns: 1fr; gap: 14px; min-height: 0; padding: 14px; background: rgba(12, 12, 13, .78); }
-      .career-image { grid-row: 1; aspect-ratio: 16 / 8.6; }
-      .career-detail-copy { grid-row: 2; }
-      .career-detail h3 { max-width: none; margin-top: 7px; font-size: 2rem; }
-      .career-description { margin-top: 12px; }
-      .career-honor { margin-top: 14px; }
     }
 
     /* 移动端主导航：03 的胶囊入口 + 01 的清晰菜单行为。 */
@@ -1285,7 +1087,7 @@
       .nav-toggle-code { display: inline; color: var(--subtle-text); font-size: 9px; }
       .nav-toggle:hover, .nav-toggle:focus-visible, body.mobile-nav-open .nav-toggle { border-color: rgba(255,255,255,.56); background: rgba(255,255,255,.06); outline: 2px solid rgba(255,255,255,.18); outline-offset: 2px; }
 
-      .mobile-nav-drawer { position: fixed; inset: 0; z-index: 55; display: flex; flex-direction: column; padding: calc(88px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom)); overflow-y: auto; background: var(--portfolio-card-surface); -webkit-backdrop-filter: var(--portfolio-card-blur); backdrop-filter: var(--portfolio-card-blur); opacity: 0; visibility: hidden; pointer-events: none; transform: none; transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal); }
+      .mobile-nav-drawer { position: fixed; inset: 0; z-index: 55; display: flex; flex-direction: column; padding: calc(88px + env(safe-area-inset-top)) 24px calc(28px + env(safe-area-inset-bottom)); overflow-y: auto; background: var(--portfolio-modal-surface); -webkit-backdrop-filter: var(--portfolio-modal-blur); backdrop-filter: var(--portfolio-modal-blur); opacity: 0; visibility: hidden; pointer-events: none; transform: none; transition: opacity var(--motion-duration-modal) var(--motion-ease-emphasized), visibility 0s linear var(--motion-duration-modal); }
       .mobile-nav-drawer.is-open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition-delay: 0s; }
       .mobile-nav-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
       .mobile-nav-drawer-brand { color: rgba(237,244,249,.76); font: 500 10px var(--tech); letter-spacing: .12em; }
@@ -1308,15 +1110,7 @@
       .mobile-nav-drawer-foot a span:last-child { color: var(--subtle-text); font: 500 9px var(--tech); }
       .mobile-nav-drawer-foot a:focus-visible, .mobile-nav-drawer-foot a:hover { color: #fff; outline: none; }
       .mobile-nav-drawer-lang { white-space: nowrap; }
-      #profile .career-tabs { display: flex; gap: 0; overflow-x: auto; overscroll-behavior-inline: contain; scroll-snap-type: x mandatory; scrollbar-width: none; }
-      #profile .career-tabs::-webkit-scrollbar { display: none; }
       /* 移动端只呈现一个完整经历卡片，下一张只留出提示性的 peek，避免把桌面时间轴压成小字表格。 */
-      #profile .career-tabs { gap: 8px; padding: 8px; scroll-padding-inline: 8px; }
-      #profile .career-tab { flex: 0 0 min(72vw, 280px); min-height: 104px; align-items: flex-start; padding: 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 12px; text-align: left; scroll-snap-align: center; }
-      #profile .career-tab.is-active { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.05); box-shadow: inset 0 -1px 0 rgba(255,255,255,.82); }
-      #profile .career-tab small { min-height: 0; margin-bottom: 8px; font-size: 9px; }
-      #profile .career-tab strong { min-height: 0; font-size: 14px; }
-      #profile .career-tab span { display: none; }
     }
 
     #profile::before,
@@ -1342,13 +1136,8 @@
 
     /* 文字层级只做收敛：标题承担叙事，元数据和说明退到第二层。 */
     body, button, input, textarea, select { font-optical-sizing: auto; }
-    .section-title, .career-summary h3, .career-detail h3 { text-wrap: balance; }
+    .about-role { text-wrap: balance; }
     @media (max-width: 720px) {
-      .section-title { font-size: clamp(2rem, 9vw, 2.6rem); line-height: 1.08; letter-spacing: -.04em; }
-      .career-summary h3 { font-size: clamp(1.8rem, 8.8vw, 2.25rem); line-height: 1.08; letter-spacing: -.045em; }
-      .career-detail h3 { font-size: clamp(1.9rem, 9.5vw, 2.6rem); line-height: 1.08; letter-spacing: -.045em; }
-      .career-role, .career-description { font-size: 13px; line-height: 1.65; }
-      .career-summary-note { max-width: 24ch; color: var(--subtle-text); line-height: 1.55; }
     }
 
     /* 让系统的可读性偏好优先于玻璃和视频质感。 */
@@ -1356,10 +1145,6 @@
       header,
       header.is-condensed,
       .mobile-nav-drawer,
-      .career-summary,
-      .career-tabs,
-      .career-detail,
-      .career-tab.is-active,
       .hero-proof-card,
       .footer-contact-copy,
       .footer-social a {
@@ -1378,7 +1163,6 @@
         --hairline: rgba(232, 240, 245, .38);
         --line: rgba(232, 240, 245, .54);
       }
-      .career-strip, .career-tab, .career-detail,
       .mobile-nav-drawer, .footer-contact-copy {
         border-color: rgba(255, 255, 255, .54) !important;
       }
@@ -1460,12 +1244,8 @@
     h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-optical-sizing: auto; }
     .mono,
     .eyebrow,
-    .career-meta,
-    .career-tab small,
     .comet-archive__meta,
     .comet-archive__award { font-family: var(--font-mono); }
-    .career-kicker { display: none; }
-    .career-summary h3 { margin-top: 0; }
     .comet-archive__award,
     .rail-label { text-transform: none; }
     #profile .section-intro .eyebrow,
@@ -1668,12 +1448,9 @@
         will-change: opacity, transform;
       }
       body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(1) { animation-delay: 0ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(2) { animation-delay: 28ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(3) { animation-delay: 56ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(4) { animation-delay: 84ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(5) { animation-delay: 112ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(6) { animation-delay: 140ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(7) { animation-delay: 168ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(2) { animation-delay: 24ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(3) { animation-delay: 48ms; }
+      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(4) { animation-delay: 72ms; }
       body.mobile-nav-closing #mobile-primary-nav .nav-list li { animation-play-state: paused; }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1794,8 +1571,7 @@
       letter-spacing: .08em;
     }
     footer .footer-eyebrow { display: none !important; }
-    .hero-proof-card .card-kicker,
-    .flip-experiment__row-title > span { display: none !important; }
+    .hero-proof-card .card-kicker { display: none !important; }
     .hero-proof-card strong {
       margin-top: 0;
       font-size: clamp(1.25rem, 2vw, 1.6rem);
@@ -1813,21 +1589,9 @@
       line-height: .95;
       letter-spacing: -.06em;
     }
-    .section-title {
-      font-size: clamp(2.3rem, 4.4vw, 3.6rem);
-      line-height: 1.05;
-      letter-spacing: -.045em;
-    }
     .section-note,
-    .hero-subtitle,
-    .flip-experiment__row-description {
+    .hero-subtitle {
       line-height: 1.82;
-    }
-    .flip-experiment__row-title h3 {
-      margin: 0;
-      font-size: clamp(1.25rem, 1.8vw, 1.65rem);
-      line-height: 1.08;
-      letter-spacing: -.04em;
     }
     .impact-eyebrow {
       color: var(--subtle-text) !important;
@@ -1840,17 +1604,10 @@
         line-height: .98;
         letter-spacing: -.055em;
       }
-      .section-title {
-        font-size: clamp(2.15rem, 10vw, 3rem);
-        line-height: 1.06;
-        letter-spacing: -.045em;
-      }
       .hero-subtitle,
-      .section-note,
-      .flip-experiment__row-description {
+      .section-note {
         line-height: 1.75;
       }
-      .flip-experiment__row-title h3 { font-size: 1.3rem; }
     }
 
     /* 导航收敛：桌面端只保留低对比白字和 1px 当前状态线；移动端入口仍只有图标。 */
@@ -1942,69 +1699,8 @@
       .nav-toggle-label { display: none !important; }
     }
 
-    /* CTA 收敛：每个场景只保留一个蓝色主操作，次操作回到低对比文字入口。 */
-    .hero-actions button {
-      appearance: none;
-      -webkit-appearance: none;
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-height: 44px !important;
-      border: 0 !important;
-      border-radius: 999px !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      color: rgba(245, 245, 247, .62) !important;
-      font: 500 14px/1 var(--font-body) !important;
-      letter-spacing: 0 !important;
-      text-shadow: none !important;
-      transition: background-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease !important;
-    }
-    .hero-actions .hero-primary {
-      min-width: 140px !important;
-      padding: 0 24px !important;
-      background: var(--accent-blue) !important;
-      color: #fff !important;
-      font-weight: 600 !important;
-    }
-    .hero-actions .hero-primary:hover,
-    .hero-actions .hero-primary:focus-visible {
-      background: var(--accent-blue-focus) !important;
-      color: #fff !important;
-      box-shadow: none !important;
-    }
-    .hero-actions .hero-secondary {
-      min-width: 0 !important;
-      padding: 0 8px !important;
-      color: rgba(245, 245, 247, .58) !important;
-      text-decoration: underline;
-      text-decoration-color: transparent;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 5px;
-    }
-    .hero-actions .hero-secondary:hover,
-    .hero-actions .hero-secondary:focus-visible {
-      background: transparent !important;
-      color: rgba(245, 245, 247, .9) !important;
-      text-decoration-color: rgba(245, 245, 247, .46);
-    }
-    .hero-actions .specular-button__fx { display: none !important; }
-    @media (max-width: 560px) {
-      .hero-actions {
-        display: flex !important;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 12px !important;
-      }
-      .hero-actions button {
-        width: auto !important;
-        min-height: 44px !important;
-        padding-inline: 8px !important;
-      }
-      .hero-actions .hero-primary {
-        min-width: 132px !important;
-        padding-inline: 20px !important;
-      }
-    }
+    /* Hero CTA 的材质、尺寸及交互完全由 HeroActions.css 管理。
+       不在 HTML 内写高优先级覆盖，避免再次出现主次按钮失衡。 */
 
     /* 页脚中性底色：视频保留氛围，页脚只用轻量黑色层保证阅读，不再叠加蓝黑遮罩。 */
     footer::before {
@@ -2032,39 +1728,10 @@
       --surface-shadow: var(--apple-shadow-card);
     }
 
-    /* 主要内容面板：保留视频作为环境层，面板本身回到稳定的中性深黑。 */
-    #profile .career-strip,
-    .impact-glass,
+    /* Hero proof shares the reading-panel glass. Keep its tighter content-card
+       radius; material, edge and shadow come from card-surfaces.css only. */
     .hero-proof-card {
-      border: 1px solid var(--surface-edge) !important;
-      border-radius: var(--radius-card) !important;
-      background: var(--surface-card) !important;
-      box-shadow: var(--surface-shadow), var(--surface-highlight) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-
-    /* 工作经历只保留一个外层面，摘要、标签和详情靠留白与分隔线区分。 */
-    #profile .career-summary,
-    #profile .career-tabs,
-    #profile .career-detail {
-      background: transparent !important;
-      box-shadow: none !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-    }
-    #profile .career-tabs {
-      border-top-color: rgba(255, 255, 255, .12) !important;
-      border-bottom-color: rgba(255, 255, 255, .12) !important;
-    }
-    #profile .career-tab {
-      border-right-color: rgba(255, 255, 255, .1) !important;
-    }
-    #profile .career-image {
-      border-radius: var(--radius-card) !important;
-      border-color: rgba(255, 255, 255, .12) !important;
-      background: var(--surface-card-inset) !important;
-      box-shadow: none !important;
+      border-radius: var(--portfolio-content-radius) !important;
     }
 
     /* 影响力模块：外层面板承担层级，奖项与截图只保留轻边框，不再发光。 */
@@ -2094,21 +1761,6 @@
     .comet-card:focus-within .comet-archive__image {
       border-color: rgba(255, 255, 255, .32) !important;
       box-shadow: 0 12px 28px rgba(0, 0, 0, .32) !important;
-    }
-
-    /* 工作经历状态收敛：当前阶段只用白色层级表达。 */
-    #profile .career-kicker,
-    #profile .career-meta,
-    #profile .career-tab small {
-      color: var(--subtle-text) !important;
-    }
-      #profile .career-tab.is-active {
-        border-color: rgba(255, 255, 255, .18) !important;
-        background: rgba(255, 255, 255, .05) !important;
-        box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .82) !important;
-      }
-    #profile .career-honor::before {
-      background: rgba(255, 255, 255, .68) !important;
     }
 
     /* 章节过渡保持连续：不再用整段 section 遮罩切断滚动视频。
@@ -2191,11 +1843,7 @@
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav-drawer" aria-label="展开主导航" data-i18n-aria="nav.toggle.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="nav-toggle-line nav-toggle-line--top" d="M4 8h16" /><path class="nav-toggle-line nav-toggle-line--bottom" d="M4 16h16" /></svg>
       </button>
-      <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
-        <ul class="nav-list">
-          <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">精选创作</span></a></li><li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">工作经历</span></a></li><li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li><li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li><li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li><li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">AI实验室</span></a></li><li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系我</span></a></li>
-        </ul>
-      </nav>
+      <nav id="primary-nav" aria-label="主导航" data-i18n-aria="nav.aria"><div id="desktop-primary-nav-root"></div></nav>
       <button class="nav-lang" id="nav-lang" type="button" aria-label="切换语言 / Switch language" data-i18n-aria="nav.lang.aria"><svg class="nav-lang-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.8" /><path d="M3.8 12h16.4M12 3.2c2.2 2.4 3.3 5.3 3.3 8.8S14.2 18.4 12 20.8C9.8 18.4 8.7 15.5 8.7 12S9.8 5.6 12 3.2Z" /></svg><span data-lang-part="zh">中</span><i aria-hidden="true">/</i><span data-lang-part="en">EN</span></button>
       <a class="nav-contact nav-contact-icon" href="#contact" aria-label="联系我" data-i18n-aria="nav.contact.aria">
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.6a8.5 8.5 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.1-.6L4.5 20.8l1.3-4.1a8.5 8.5 0 1 1 14.7-5.1Z" /><path d="M8.4 11.5h7.2M8.4 14.5h4.8" /></svg>
@@ -2211,11 +1859,8 @@
     <nav id="mobile-primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
-        <li><a href="#profile"><span data-i18n="nav.profile">工作经历</span><span class="nav-short" data-i18n="nav.profile.short">经历</span></a></li>
-        <li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖作品</span><span class="nav-short" data-i18n="nav.recognition.short">获奖作品</span></a></li>
-        <li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li>
-        <li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li>
-        <li><a href="#experiments"><span data-i18n="nav.experiments">AI实验室</span><span class="nav-short" data-i18n="nav.experiments.short">实验室</span></a></li>
+        <li><a href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
+        <li><a href="#recognition"><span data-i18n="nav.expertise">专业实力</span><span class="nav-short" data-i18n="nav.expertise.short">实力</span></a></li>
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
       </ul>
     </nav>
@@ -2225,16 +1870,17 @@
     <section id="top" aria-labelledby="hero-title">
       <div class="hero-shell shell">
         <div class="hero-copy">
+          <p class="hero-positioning" data-i18n="hero.positioning">AI 视频创意 · 影像效果设计</p>
           <div id="hero-title-react-root"></div>
-          <p class="hero-subtitle reveal" data-i18n="hero.subtitle">AIGC 内容创作，把有趣的想法做出来</p>
+          <p class="hero-subtitle reveal" data-i18n="hero.subtitle">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</p>
           <div class="hero-actions reveal">
             <div id="hero-actions-react-root"></div>
           </div>
           <a class="scroll-cue reveal" href="#projects" aria-label="继续阅读" data-i18n-aria="hero.scrollCue.aria"><span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-proof reveal" aria-label="创作能力方向" data-i18n-aria="hero.proof.aria">
-          <div class="hero-proof-card"><strong data-i18n="hero.proof1.title">创意效果</strong><span data-i18n="hero.proof1.desc">从想法做到能用</span></div>
-          <div class="hero-proof-card"><strong data-i18n="hero.proof2.title">网页工具</strong><span data-i18n="hero.proof2.desc">把常用流程做成工具</span></div>
+          <div class="hero-proof-card"><strong data-i18n="hero.proof1.title">AI 视频制作</strong><span data-i18n="hero.proof1.desc">品牌广告 · 创意短片</span></div>
+          <div class="hero-proof-card"><strong data-i18n="hero.proof2.title">AI 影像效果</strong><span data-i18n="hero.proof2.desc">视觉评测 · 创作工作流</span></div>
         </div>
       </div>
     </section>
@@ -2245,92 +1891,65 @@
       </div>
     </section>
 
-    <section id="profile" class="section" aria-labelledby="profile-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03 / WORK HISTORY</p><h2 id="profile-title" class="section-title" data-i18n="profile.title">工作经历</h2></div></div>
-        <div class="career-strip" aria-label="工作经历摘要" data-i18n-aria="profile.list.aria">
-          <div class="career-summary">
-            <div>
-              <small class="career-kicker">WORK HISTORY</small>
-              <h3 data-i18n="profile.summary">AI 内容创作</h3>
-              <p data-i18n="profile.summaryDesc">从创意到成片 · 视频 / 视觉 / 动效</p>
-            </div>
-            <span class="career-summary-note" data-i18n="profile.summaryNote">点击阶段，快速查看对应经历</span>
-          </div>
-          <div class="career-tabs career-tabs--focus" id="career-tablist" role="tablist" aria-orientation="horizontal" aria-label="能力阶段">
-            <button class="career-tab is-active" id="career-tab-0" type="button" role="tab" aria-selected="true" aria-controls="career-panel" tabindex="0" data-career-index="0"><small>2026-NOW</small><strong data-i18n="profile.step5.title">AIGC</strong><span data-i18n="profile.step5.desc">AI 内容创作</span></button>
-            <button class="career-tab" id="career-tab-1" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="1"><small>2024-2026</small><strong data-i18n="profile.step4.title">AI效果</strong><span data-i18n="profile.step4.desc">AI 图片与视频效果</span></button>
-            <button class="career-tab" id="career-tab-2" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="2"><small>2019-2024</small><strong data-i18n="profile.step3.title">特效玩法</strong><span data-i18n="profile.step3.desc">AI 玩法 · 动态设计</span></button>
-            <button class="career-tab" id="career-tab-3" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="3"><small>2018-2019</small><strong data-i18n="profile.step2.title">三维与品牌</strong><span data-i18n="profile.step2.desc">产品渲染 · 品牌动态</span></button>
-            <button class="career-tab" id="career-tab-4" type="button" role="tab" aria-selected="false" aria-controls="career-panel" tabindex="-1" data-career-index="4"><small>2017-2018</small><strong data-i18n="profile.step1.title">动态设计</strong><span data-i18n="profile.step1.desc">视频 · 动态海报</span></button>
-          </div>
-          <article class="career-detail" id="career-panel" role="tabpanel" aria-labelledby="career-tab-0" tabindex="0">
-            <div class="career-detail-copy">
-              <small class="career-meta">01 · 2026-NOW</small>
-              <h3 data-i18n="profile.panel5.title">挖掘AI 无限可能</h3>
-              <p class="career-role" data-i18n="profile.panel5.role">AIGC 内容创作</p>
-              <p class="career-description" data-i18n="profile.panel5.desc">AI 视频从创意到成片</p>
-              <p class="career-honor" data-i18n="profile.panel5.honor">AI 创作作品获得平台官方推荐与行业奖项认可</p>
-            </div>
-            <div class="career-image"><img src="./assets/work-history-illustrations/05-ai-workflow.webp" alt="宇航员整理可复用的 AI 工作流模块" data-i18n-alt="profile.panel5.alt" width="1672" height="941" loading="eager" fetchpriority="high" decoding="async"></div>
-          </article>
-          <div class="career-controls">
-          <button type="button" class="career-arrow" data-career-direction="-1" aria-label="上一段经历 / Previous experience"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 5-7 7 7 7" /></svg></button>
-          <div class="career-pagination" role="tablist" aria-label="选择工作经历" data-i18n-aria="profile.pagination.aria">
-            <button type="button" role="tab" aria-selected="true" aria-label="AIGC" data-i18n-aria="profile.step5.title" data-career-pagination-index="0" class="is-active"></button>
-            <button type="button" role="tab" aria-selected="false" aria-label="AI效果" data-i18n-aria="profile.step4.title" data-career-pagination-index="1"></button>
-            <button type="button" role="tab" aria-selected="false" aria-label="特效玩法" data-i18n-aria="profile.step3.title" data-career-pagination-index="2"></button>
-            <button type="button" role="tab" aria-selected="false" aria-label="三维与品牌" data-i18n-aria="profile.step2.title" data-career-pagination-index="3"></button>
-            <button type="button" role="tab" aria-selected="false" aria-label="动态设计" data-i18n-aria="profile.step1.title" data-career-pagination-index="4"></button>
-          </div>
-          <button type="button" class="career-arrow" data-career-direction="1" aria-label="下一段经历 / Next experience"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m8.5 5 7 7-7 7" /></svg></button>
-          </div>
-        </div>
-      </div>
-    </section>
-
+    <div id="expertise-group" class="expertise-group" role="group" aria-labelledby="recognition-title">
     <section id="recognition" class="section" aria-labelledby="recognition-title">
       <div class="shell">
-        <h2 id="recognition-title" class="sr-only" data-i18n="recognition.title">AI影响力</h2>
-        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI影响力" data-i18n-aria="recognition.root.aria"></div>
+        <div class="section-intro reveal"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="专业实力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
     <section id="experiments" class="section" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI实验室</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
         <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
+      </div>
+    </section>
+    </div>
+
+    <section id="profile" class="section closing-section" aria-labelledby="profile-title">
+      <div class="shell">
+        <div class="closing-card">
+          <div class="closing-card-main">
+            <div class="closing-about">
+              <div class="section-intro reveal">
+                <p class="closing-column-kicker" data-i18n="about.kicker">个人简介</p>
+                <div><h2 id="profile-title" class="section-title" data-i18n="about.title">关于我</h2></div>
+              </div>
+              <div class="about-copy reveal">
+                <h3 class="about-role" data-i18n="about.role">AI 影像创作者</h3>
+                <p class="about-description" data-i18n="about.description">从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。</p>
+              </div>
+            </div>
+            <section id="contact" class="closing-contact" aria-labelledby="contact-title">
+              <div class="footer-contact-copy">
+                <p class="footer-contact-kicker" data-i18n="footer.contact.kicker">合作联系</p>
+                <h2 id="contact-title" data-i18n="footer.contact.title">开始合作</h2>
+                <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
+                <div class="footer-contact-direct">
+                  <a href="mailto:1746850550@qq.com"><span data-i18n="footer.contact.emailLabel">邮箱</span><strong>1746850550@qq.com</strong></a>
+                  <a class="copy-link" href="#copy-wechat" data-copy="15580714085" data-i18n-aria="footer.contact.copyWechat" aria-label="点击复制微信号"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>
+                </div>
+              </div>
+            </section>
+          </div>
+          <div class="closing-social" aria-label="社交媒体与作品链接">
+            <span class="closing-social-label" data-i18n="footer.social.kicker">社交平台</span>
+            <div id="footer-dock-react-root"></div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer id="contact" aria-labelledby="contact-title">
+  <footer class="closing-footer">
     <div class="shell footer-stack">
       <div class="footer-topline">
         <a class="footer-brand" href="#top" aria-label="Ai路人，返回顶部" data-i18n-aria="brand.aria">
           <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></span>
-          <span class="footer-brand-copy"><strong id="contact-title">Ai路人</strong></span>
+          <span class="footer-brand-copy"><strong>Ai路人</strong></span>
         </a>
-        <nav class="footer-nav" aria-label="页脚导航" data-i18n-aria="footer.nav.aria">
-          <a href="#projects" data-i18n="nav.projects">精选创作</a>
-          <a href="#profile" data-i18n="nav.profile">工作经历</a>
-          <a href="#impact-awards" data-i18n="nav.recognition">AI 获奖作品</a>
-          <a href="#impact-programs" data-i18n="nav.superCreator">AI 平台超创</a>
-          <a href="#impact-reach" data-i18n="nav.media">AI 自媒体</a>
-          <a href="#experiments" data-i18n="nav.experiments">AI实验室</a>
-        </nav>
       </div>
-      <div class="footer-bottom">
-        <div class="footer-contact-copy">
-          <p class="footer-contact-kicker" data-i18n="footer.contact.kicker">CONTACT / 合作</p>
-          <h2 data-i18n="footer.contact.title">开始合作</h2>
-          <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
-          <div class="footer-contact-direct">
-            <a href="mailto:1746850550@qq.com"><span data-i18n="footer.contact.emailLabel">邮箱</span><strong>1746850550@qq.com</strong></a>
-            <a class="copy-link" href="#copy-wechat" data-copy="15580714085" data-i18n-aria="footer.contact.copyWechat" aria-label="点击复制微信号"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>
-          </div>
-        </div>
-        <div class="footer-contact-panel">
-          <div id="footer-dock-react-root"></div>
-        </div>
+      <div class="footer-bottom footer-copyright-row">
         <p class="footer-bottom-copy" data-i18n="footer.copyright">© 2024-2026 Ai路人 · 保留所有权利</p>
       </div>
     </div>
@@ -2462,172 +2081,6 @@
       }
       showReveals();
 
-      /* 工作经历新版：点击阶段切换摘要，不再通过滚动锁定页面。 */
-      var careerTabs = Array.prototype.slice.call(document.querySelectorAll('.career-tab[data-career-index]'));
-      var careerPagination = Array.prototype.slice.call(document.querySelectorAll('[data-career-pagination-index]'));
-      var careerDetail = document.querySelector('.career-detail');
-      if (careerTabs.length && careerDetail) {
-        var careerImage = careerDetail.querySelector('.career-image img');
-        var careerMeta = careerDetail.querySelector('.career-meta');
-        var careerTitle = careerDetail.querySelector('h3');
-        var careerRole = careerDetail.querySelector('.career-role');
-        var careerDescription = careerDetail.querySelector('.career-description');
-        var careerHonor = careerDetail.querySelector('.career-honor');
-        var careerTablist = document.getElementById('career-tablist');
-        var careerTouchTarget = document.querySelector('.career-strip');
-        var careerTouchState = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
-        var careerTransitionTimer = null;
-        var careerItems = [
-          { meta: '01 · 2026-NOW', image: './assets/work-history-illustrations/05-ai-workflow.webp', alt: 'profile.panel5.alt', title: 'profile.panel5.title', role: 'profile.panel5.role', description: 'profile.panel5.desc', honor: 'profile.panel5.honor' },
-          { meta: '02 · 2024-2026', image: './assets/work-history-illustrations/04-ai-effect-delivery.webp', alt: 'profile.panel4.alt', title: 'profile.panel4.title', role: 'profile.panel4.role', description: 'profile.panel4.desc', honor: 'profile.panel4.honor' },
-          { meta: '03 · 2019-2024', image: './assets/work-history-illustrations/03-effect-play.webp', alt: 'profile.panel3.alt', title: 'profile.panel3.title', role: 'profile.panel3.role', description: 'profile.panel3.desc', honor: 'profile.panel3.honor' },
-          { meta: '04 · 2018-2019', image: './assets/work-history-illustrations/02-product-brand.webp', alt: 'profile.panel2.alt', title: 'profile.panel2.title', role: 'profile.panel2.role', description: 'profile.panel2.desc', honor: 'profile.panel2.honor' },
-          { meta: '05 · 2017-2018', image: './assets/work-history-illustrations/01-motion-design.webp', alt: 'profile.panel1.alt', title: 'profile.panel1.title', role: 'profile.panel1.role', description: 'profile.panel1.desc', honor: 'profile.panel1.honor' }
-        ];
-        function careerText(key) {
-          return window.__i18n && typeof window.__i18n.t === 'function' ? window.__i18n.t(key) : '';
-        }
-        function resetCareerTouchState() {
-          careerTouchState = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
-        }
-        function setCareerTouchOffset(offset, dragging) {
-          if (!careerDetail) return;
-          careerDetail.classList.toggle('is-touch-dragging', dragging);
-          careerDetail.style.setProperty('--career-swipe-x', offset + 'px');
-        }
-        function animateCareerChange(direction) {
-          if (!careerDetail || reduced) return;
-          window.clearTimeout(careerTransitionTimer);
-          careerDetail.classList.remove('is-swipe-forward', 'is-swipe-back');
-          void careerDetail.offsetWidth;
-          careerDetail.classList.add(direction < 0 ? 'is-swipe-back' : 'is-swipe-forward');
-          careerTransitionTimer = window.setTimeout(function () {
-            careerDetail.classList.remove('is-swipe-forward', 'is-swipe-back');
-          }, 380);
-        }
-        function handleCareerTouchStart(event) {
-          var touch = event.touches[0];
-          if (!touch) return;
-          careerTouchState = { startX: touch.clientX, startY: touch.clientY, moved: false, axis: 'none', suppressClickUntil: 0 };
-        }
-        function handleCareerTouchMove(event) {
-          var touch = event.touches[0];
-          if (!touch) return;
-          var dx = touch.clientX - careerTouchState.startX;
-          var dy = touch.clientY - careerTouchState.startY;
-          var distanceX = Math.abs(dx);
-          var distanceY = Math.abs(dy);
-          if (distanceX > 10 || distanceY > 10) {
-            careerTouchState.moved = true;
-            if (careerTouchState.axis === 'none') careerTouchState.axis = distanceX > distanceY ? 'horizontal' : 'vertical';
-          }
-          if (careerTouchState.axis === 'horizontal') {
-            var currentIndex = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
-            var atBoundary = (currentIndex === 0 && dx > 0) || (currentIndex === careerTabs.length - 1 && dx < 0);
-            setCareerTouchOffset(atBoundary ? dx * .35 : dx, true);
-          }
-        }
-        function handleCareerTouchEnd(event) {
-          if (!window.matchMedia || !window.matchMedia('(max-width: 720px)').matches) return;
-          var touch = event.changedTouches[0];
-          if (!touch) return;
-          var distanceX = touch.clientX - careerTouchState.startX;
-          var distanceY = touch.clientY - careerTouchState.startY;
-          var isHorizontalSwipe = careerTouchState.axis === 'horizontal' && Math.abs(distanceX) > 42 && Math.abs(distanceX) > Math.abs(distanceY);
-          if (isHorizontalSwipe) {
-            careerTouchState.suppressClickUntil = Date.now() + 450;
-            var activeIndex = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
-            var nextIndex = Math.max(0, Math.min(careerTabs.length - 1, activeIndex + (distanceX < 0 ? 1 : -1)));
-            setCareerTouchOffset(0, false);
-            if (nextIndex !== activeIndex) setCareerActive(nextIndex, true, false, true, distanceX < 0 ? 1 : -1);
-          } else if (careerTouchState.moved) {
-            careerTouchState.suppressClickUntil = Date.now() + 250;
-            setCareerTouchOffset(0, false);
-          }
-        }
-        function setCareerActive(index, shouldReveal, shouldFocus, forceCenter, swipeDirection) {
-          var item = careerItems[index];
-          if (!item) return;
-          document.querySelectorAll('[data-career-direction]').forEach(function (button) {
-            button.disabled = Number(button.dataset.careerDirection) < 0 ? index === 0 : index === careerItems.length - 1;
-          });
-          careerTabs.forEach(function (tab, tabIndex) {
-            var active = tabIndex === index;
-            tab.classList.toggle('is-active', active);
-            tab.setAttribute('aria-selected', String(active));
-            tab.setAttribute('tabindex', active ? '0' : '-1');
-          });
-          careerPagination.forEach(function (dot, dotIndex) {
-            var active = dotIndex === index;
-            dot.classList.toggle('is-active', active);
-            dot.setAttribute('aria-selected', String(active));
-          });
-          careerDetail.setAttribute('aria-labelledby', careerTabs[index].id);
-          careerMeta.textContent = item.meta;
-          careerImage.src = item.image;
-          careerImage.setAttribute('data-i18n-alt', item.alt);
-          careerImage.alt = careerText(item.alt) || careerImage.alt;
-          [[careerTitle, item.title], [careerRole, item.role], [careerDescription, item.description], [careerHonor, item.honor]].forEach(function (pair) {
-            var node = pair[0];
-            var key = pair[1];
-            if (!node) return;
-            node.setAttribute('data-i18n', key);
-            node.textContent = careerText(key) || node.textContent;
-          });
-          if (swipeDirection) animateCareerChange(swipeDirection);
-          if (shouldReveal && window.matchMedia && window.matchMedia('(max-width: 720px)').matches && (forceCenter || !(careerTablist && careerTablist.classList.contains('career-tabs--focus')))) {
-            var activeTab = careerTabs[index];
-            if (activeTab) activeTab.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
-          }
-          if (shouldFocus) {
-            var focusTarget = careerTabs[index];
-            if (focusTarget) {
-              try { focusTarget.focus({ preventScroll: true }); } catch (error) { focusTarget.focus(); }
-            }
-          }
-        }
-        careerTabs.forEach(function (tab, tabIndex) {
-          tab.addEventListener('click', function (event) {
-            if (Date.now() < careerTouchState.suppressClickUntil) {
-              event.preventDefault();
-              resetCareerTouchState();
-              return;
-            }
-            resetCareerTouchState();
-            setCareerActive(tabIndex, true, false);
-          });
-          tab.addEventListener('keydown', function (event) {
-            var nextIndex = tabIndex;
-            if (event.key === 'ArrowRight' || event.key === 'ArrowDown') nextIndex = (tabIndex + 1) % careerTabs.length;
-            else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') nextIndex = (tabIndex - 1 + careerTabs.length) % careerTabs.length;
-            else if (event.key === 'Home') nextIndex = 0;
-            else if (event.key === 'End') nextIndex = careerTabs.length - 1;
-            else return;
-            event.preventDefault();
-            setCareerActive(nextIndex, true, true);
-          });
-        });
-        if (careerTouchTarget) {
-          careerTouchTarget.addEventListener('touchstart', handleCareerTouchStart, { passive: true });
-          careerTouchTarget.addEventListener('touchmove', handleCareerTouchMove, { passive: true });
-          careerTouchTarget.addEventListener('touchend', handleCareerTouchEnd, { passive: true });
-          careerTouchTarget.addEventListener('touchcancel', function () {
-            setCareerTouchOffset(0, false);
-            resetCareerTouchState();
-          }, { passive: true });
-        }
-        careerPagination.forEach(function (dot, dotIndex) {
-          dot.addEventListener('click', function () { setCareerActive(dotIndex, true, false); });
-        });
-        setCareerActive(0);
-        document.querySelectorAll('[data-career-direction]').forEach(function (button) {
-          button.addEventListener('click', function () {
-            var index = careerTabs.findIndex(function (tab) { return tab.classList.contains('is-active'); });
-            setCareerActive(index + Number(button.dataset.careerDirection), false, false);
-          });
-        });
-      }
-
       var floatingHeader = document.querySelector('header');
       var initialHashAligned = false;
       function getAnchorOffset() {
@@ -2660,8 +2113,11 @@
         }
         return true;
       }
-      function scrollToContactEnd(behavior) {
-        window.scrollTo({ top: Math.max(0, document.documentElement.scrollHeight - window.innerHeight), behavior: behavior || 'auto' });
+      function scrollToContactCard(behavior) {
+        var target = document.querySelector('#profile .closing-card') || document.getElementById('profile') || document.getElementById('contact');
+        if (!target) return false;
+        var targetTop = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0) - getAnchorOffset();
+        window.scrollTo({ top: Math.max(0, targetTop), behavior: behavior || 'auto' });
         return true;
       }
       function alignInitialHash() {
@@ -2669,7 +2125,7 @@
         var sectionId = decodeURIComponent(window.location.hash.slice(1));
         if (!sectionId || sectionId === 'top') return;
         if (sectionId === 'contact') {
-          scrollToContactEnd('auto');
+          scrollToContactCard('auto');
           initialHashAligned = true;
           return;
         }
@@ -2724,12 +2180,13 @@
         }
         entrance('#top .hero-copy .reveal', { autoAlpha: 0, y: ANIM.hero.y }, { y: 0 }, '#top', { duration: ANIM.hero.duration, stagger: ANIM.hero.stagger });
         entrance('#profile .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#profile', { duration: ANIM.intro.duration });
+        entrance('#profile .about-copy', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#profile', { duration: ANIM.stage.duration, start: 'top 78%' });
         entrance('#projects .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#projects', { duration: ANIM.intro.duration });
         entrance('#projects .motion-stage', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#projects .motion-stage', { duration: ANIM.stage.duration, start: 'top 78%' });
         entrance('#recognition .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#recognition', { duration: ANIM.intro.duration });
         entrance('#recognition .recognition-react-root', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#recognition .recognition-react-root', { duration: ANIM.stage.duration, start: 'top 78%' });
         entrance('#experiments .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#experiments', { duration: ANIM.intro.duration });
-        entrance('#contact .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration });
+        entrance('.closing-footer .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#profile', { duration: ANIM.footer.duration });
         entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration, delay: .08 });
       }
 
@@ -3004,27 +2461,100 @@
       }
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');
+      function primaryNavSection(sectionId) {
+        if (sectionId === 'top' || sectionId === 'projects') return 'projects';
+        if (sectionId === 'recognition' || sectionId === 'experiments' || /^impact-(awards|programs|reach)$/.test(sectionId)) return 'recognition';
+        if (sectionId === 'contact' || sectionId === 'profile' || sectionId === 'footer') return 'contact';
+        return null;
+      }
+      // A navigation click is an explicit destination. While its smooth scroll
+      // passes other sections, IntersectionObserver may update visual backgrounds
+      // but must not steal the selected underline from that destination.
+      var navScrollIntent = null;
+      function releaseNavScrollIntent(intent) {
+        if (!intent || navScrollIntent !== intent) return;
+        navScrollIntent = null;
+        window.clearTimeout(intent.timeout);
+        window.removeEventListener('scrollend', intent.onEnd);
+        window.removeEventListener('wheel', intent.onInterrupt);
+        window.removeEventListener('touchstart', intent.onInterrupt);
+        window.removeEventListener('keydown', intent.onKeyDown);
+      }
+      function beginNavScroll(sectionId, behavior) {
+        if (navScrollIntent) releaseNavScrollIntent(navScrollIntent);
+        setNavActive(sectionId);
+        if (behavior !== 'smooth') return;
+        var intent = { section: primaryNavSection(sectionId) };
+        intent.onEnd = function () {
+          if (navScrollIntent !== intent) return;
+          releaseNavScrollIntent(intent);
+          setNavActive(sectionId);
+        };
+        intent.onInterrupt = function () { releaseNavScrollIntent(intent); };
+        intent.onKeyDown = function (event) {
+          if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','Spacebar'].includes(event.key)) intent.onInterrupt();
+        };
+        navScrollIntent = intent;
+        window.addEventListener('scrollend', intent.onEnd);
+        window.addEventListener('wheel', intent.onInterrupt, { passive: true });
+        window.addEventListener('touchstart', intent.onInterrupt, { passive: true });
+        window.addEventListener('keydown', intent.onKeyDown);
+        // No-op target scrolls may not dispatch scrollend. Never keep a stale lock.
+        intent.timeout = window.setTimeout(intent.onEnd, 2200);
+      }
       function setNavActive(sectionId) {
-        links.forEach(function (link) {
+        var activeSection = primaryNavSection(sectionId);
+        if (navScrollIntent && activeSection !== navScrollIntent.section) return;
+        document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]').forEach(function (link) {
           var target = link.getAttribute('href');
           if (target === '#footer-dock-react-root') target = '#contact';
-          var isContactAction = target === '#contact';
-          link.classList.toggle('is-active', !isContactAction && target === '#' + sectionId);
+          link.classList.toggle('is-active', Boolean(activeSection) && target === '#' + activeSection);
+          if (link.closest('#primary-nav, #mobile-primary-nav')) {
+            if (Boolean(activeSection) && target === '#' + activeSection) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+          }
         });
       }
+      function handleDesktopNavClick(event) {
+        var link = event.target.closest('#primary-nav a[href^="#"]');
+        if (!link) return;
+        var target = link.getAttribute('href');
+        if (!target || target === '#') return;
+        event.preventDefault();
+        var sectionId = target.slice(1);
+        var scrollBehavior = reduced ? 'auto' : 'smooth';
+        beginNavScroll(sectionId, scrollBehavior);
+        if (sectionId === 'contact') {
+          try { window.history.pushState(null, '', '#contact'); } catch (error) {}
+          scrollToContactCard(scrollBehavior);
+          return;
+        }
+        if (sectionId === 'projects') {
+          var archiveRail = document.querySelector('.comet-archive');
+          if (archiveRail) { archiveRail.scrollLeft = 0; archiveRail.classList.remove('is-dragging'); }
+        }
+        try { window.history.pushState(null, '', target); } catch (error) {}
+        var isDesktopImpactTab = window.innerWidth > 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
+        if (isDesktopImpactTab) window.dispatchEvent(new CustomEvent('portfolio:navigate', { detail: sectionId }));
+        else {
+          var isMobileImpactTab = window.innerWidth <= 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
+          scrollToSectionAnchor(sectionId, reduced || isMobileImpactTab ? 'auto' : 'smooth');
+        }
+      }
+      document.getElementById('primary-nav')?.addEventListener('click', handleDesktopNavClick);
       document.querySelectorAll('a[href="#contact"], a[href="#footer-dock-react-root"]').forEach(function (link) {
         link.addEventListener('click', function (event) {
           event.preventDefault();
-          setNavActive('contact');
+          beginNavScroll('contact', reduced ? 'auto' : 'smooth');
           try { window.history.pushState(null, '', '#contact'); } catch (error) {}
-          scrollToContactEnd(reduced ? 'auto' : 'smooth');
+          scrollToContactCard(reduced ? 'auto' : 'smooth');
         });
       });
       links.forEach(function (link) {
         var target = link.getAttribute('href');
         if (!target || target === '#contact' || target === '#footer-dock-react-root') return;
         link.addEventListener('click', function (event) {
-          setNavActive(target.slice(1));
+          beginNavScroll(target.slice(1), reduced ? 'auto' : 'smooth');
           if (target === '#projects') {
             var archiveRail = document.querySelector('.comet-archive');
             if (archiveRail) {
@@ -3042,7 +2572,6 @@
           }
         });
       });
-      var sections = document.querySelectorAll('main section, footer');
       if ('IntersectionObserver' in window) {
       // is-on-hero 由 Hero 占比观察器独立管理；导航观察器换章时不能顺带抹掉它，
       // 否则 Hero 离场途中蒙版会瞬间消失又在下个阈值恢复（01→02 背景闪跳的根源）。

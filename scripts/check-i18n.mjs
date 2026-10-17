@@ -30,7 +30,7 @@ function findBrowser() {
 }
 
 function startDevServer() {
-  const proc = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], {
+  const proc = spawn('npx', ['vite', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], {
     cwd: process.cwd(),
     stdio: 'ignore',
     detached: false,
@@ -128,16 +128,22 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.map(b => b.textContent.slice(0, 16)).join(' | ') };
     });
   },
-  careerTabAligned: async (page) => {
-    if (page.viewportSize().width < 721) return { ok: true };
-    const list = await page.$('.career-tabs');
-    const tab = await page.$('.career-tab');
-    if (!list || !tab) return { ok: true };
-    return page.evaluate(([l, s]) => {
-      const lr = l.getBoundingClientRect();
-      const sr = s.getBoundingClientRect();
-      return { ok: sr.right <= lr.right + 1, detail: `标签右缘 ${Math.round(sr.right)} / 标签栏右缘 ${Math.round(lr.right)}` };
-    }, [list, tab]);
+  aboutCopyWithinReadingWidth: async (page) => {
+    return page.evaluate(() => {
+      const section = document.querySelector('#profile');
+      const copy = section?.querySelector('.about-copy');
+      const description = copy?.querySelector('.about-description');
+      if (!section || !copy || !description) return { ok: false, detail: '关于我章节缺少标题、职业定位或正文' };
+      const rect = description.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
+      const oldCareer = section.querySelector('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction]');
+      const tooWide = window.innerWidth >= 901 && rect.width > window.innerWidth * .65;
+      const overflow = rect.right > sectionRect.right + 1 || description.scrollWidth > description.clientWidth + 1;
+      return {
+        ok: !oldCareer && !tooWide && !overflow,
+        detail: oldCareer ? '检测到旧工作经历组件残留' : tooWide ? `关于我正文过宽：${Math.round(rect.width)}px` : overflow ? '关于我正文发生溢出' : '',
+      };
+    });
   },
   cardsNoOverlap: async (page) => {
     const cards = await page.$$('.comet-archive__card');
@@ -255,7 +261,10 @@ const CHECKS = {
       const mobileOverfull = mobile
         ? metrics.some((item) => item.height > window.innerHeight * .9)
         : false;
-      const ok = !mobileOverfull && maxDelta(titleGaps) <= 3 && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
+      const titleRhythmOk = mobile
+        ? maxDelta(titleGaps) <= 3
+        : titleGaps.every((gap) => gap > 0) && maxDelta(titleGaps) <= 3;
+      const ok = !mobileOverfull && titleRhythmOk && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
       return {
         ok,
         detail: `标题-卡片 ${titleGaps.map(Math.round).join('/')}px / 模块间 ${rowGaps.map(Math.round).join('/')}px / 自媒体-实验室 ${Math.round(labGap)}px / 模块高度 ${metrics.map((item) => Math.round(item.height)).join('/')}`,
@@ -304,8 +313,7 @@ const CHECKS = {
     });
   },
   // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18、内部小卡片 12；
-  // 桌面工作经历是连续索引条，使用 0 圆角；操作控件使用胶囊，圆形控制使用 50%；
-  // 内容层不再叠加第二层模糊。
+  // 操作控件使用胶囊，圆形控制使用 50%；内容层不叠加第二层模糊。
   surfaceHierarchy: async (page) => {
     return page.evaluate(() => {
       const visible = (selector) => [...document.querySelectorAll(selector)].filter((el) => {
@@ -320,37 +328,43 @@ const CHECKS = {
           if (actual !== expected) bad.push(`${label}: ${el.className || el.tagName}=${actual}，应为${expected}`);
         }
       };
-      assertRadius('header, header.is-condensed, #profile .career-strip, .impact-glass, #contact .footer-contact-copy, .floating-dock-panel', '24px', '外层面板圆角');
-      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #profile .career-image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #experiments .flip-experiment__row', '18px', '内容卡片圆角');
-      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item', '12px', '内部卡片圆角');
-      assertRadius('#profile .career-tab', window.innerWidth > 760 ? '0px' : '12px', '工作经历阶段圆角');
+      assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card, #experiments .flip-experiment', '24px', '外层面板圆角');
+      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#experiments .flip-experiment__row', '0px', '编辑索引行不使用独立卡片圆角');
+      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '12px', '内部卡片圆角');
       assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
-      assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a', '50%', '圆形控件圆角');
+      assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a, .closing-social .floating-dock-item', '50%', '圆形控件圆角');
 
-      const panel = visible('header')[0];
-      if (panel) {
-        const reference = getComputedStyle(panel);
-        for (const el of visible('#profile .career-strip, .impact-glass, #contact .footer-contact-copy, .floating-dock-panel')) {
+      // All content panels share one cinematic-glass material regardless of
+      // whether they render through static HTML or React portals.
+      const reference = visible('.impact-glass')[0];
+      if (reference) {
+        const base = getComputedStyle(reference);
+        for (const el of visible('.impact-glass, #experiments .flip-experiment, #profile .closing-card, #top .hero-proof-card, #projects .comet-archive-mobile-shell')) {
           const style = getComputedStyle(el);
-          if (style.backgroundColor !== reference.backgroundColor || style.backdropFilter !== reference.backdropFilter || style.boxShadow !== reference.boxShadow) {
-            bad.push(`外层材质不一致: ${el.className || el.tagName}`);
+          if (style.backgroundColor !== base.backgroundColor || style.backdropFilter !== base.backdropFilter ||
+              style.borderTopColor !== base.borderTopColor || style.boxShadow !== base.boxShadow) {
+            bad.push(`内容玻璃不一致: ${el.className || el.tagName}, background=${style.backgroundColor}, blur=${style.backdropFilter}`);
           }
         }
+        if (base.backgroundColor !== 'rgba(26, 27, 31, 0.82)' || base.backdropFilter !== 'blur(22px) saturate(1.04)') {
+          bad.push(`内容玻璃 Token 失效: background=${base.backgroundColor}, blur=${base.backdropFilter}`);
+        }
       }
-      for (const el of visible('#projects .comet-archive__image, #profile .career-image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, #profile .career-tab, .floating-dock-item')) {
+      for (const el of visible('#projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item')) {
         if (getComputedStyle(el).backdropFilter !== 'none') bad.push(`内容层仍有模糊: ${el.className || el.tagName}`);
       }
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 移动端菜单必须把 7 个入口作为同一组动画打开；抽屉本体保持锚定，只做透明度过渡，避免打开/关闭时整体位移；同时禁止 transition: all。
+  // 移动端菜单必须把 4 个一级入口作为同一组动画打开；抽屉本体保持锚定，只做透明度过渡，避免打开/关闭时整体位移；同时禁止 transition: all。
   motionSystem: async (page) => {
     if (page.viewportSize().width > 760) return { ok: true };
     return page.evaluate(() => {
       const bad = [];
       const drawer = document.querySelector('#mobile-nav-drawer');
       const items = [...document.querySelectorAll('#mobile-primary-nav .nav-list li')];
-      if (!drawer || items.length !== 7) return { ok: false, detail: `移动菜单项目数 ${items.length}，应为 7` };
+      if (!drawer || items.length !== 4) return { ok: false, detail: `移动菜单项目数 ${items.length}，应为 4` };
 
       const wasOpen = document.body.classList.contains('mobile-nav-open');
       const wasDrawerOpen = drawer.classList.contains('is-open');
@@ -362,7 +376,7 @@ const CHECKS = {
       if (drawerStyle.transitionProperty === 'none') bad.push('菜单抽屉没有过渡');
       if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('opacity')) bad.push('菜单抽屉缺少 opacity 过渡');
       if (drawerStyle.transform !== 'none') bad.push('菜单抽屉不应发生整体位移');
-      if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('7 个菜单项没有统一入场动画');
+      if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('4 个菜单项没有统一入场动画');
       if (new Set(itemStyles.map((style) => style.animationDuration)).size !== 1) bad.push('菜单项动画时长不一致');
       if (new Set(itemStyles.map((style) => style.animationTimingFunction)).size !== 1) bad.push('菜单项 easing 不一致');
       if (delays.some((delay, index) => index > 0 && delay <= delays[index - 1])) bad.push('菜单项延迟没有递增');
@@ -394,13 +408,22 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 当前工作经历只有一个可见详情面板，检查动态切换后的内容是否被容器裁剪。
-  careerPanelNoOverflow: async (page) => {
+  // 关于我保持无卡片的正文结构，文本在中英文和响应式视口下均完整可读。
+  aboutCopyNoOverflow: async (page) => {
     return page.evaluate(() => {
-      const panel = document.querySelector('.career-detail');
-      if (!panel) return { ok: true };
-      const overflow = panel.scrollHeight - panel.clientHeight;
-      return { ok: overflow <= 1, detail: `详情面板内容 ${panel.scrollHeight}px / 容器 ${panel.clientHeight}px` };
+      const section = document.querySelector('#profile');
+      const copy = section?.querySelector('.about-copy');
+      const description = copy?.querySelector('.about-description');
+      if (!section || !copy || !description) return { ok: false, detail: '关于我正文结构缺失' };
+      const rect = description.getBoundingClientRect();
+      const sectionRect = section.getBoundingClientRect();
+      const oldCareerCount = section.querySelectorAll('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction], [data-career-pagination-index]').length;
+      const isCard = getComputedStyle(copy).borderWidth !== '0px' || getComputedStyle(copy).backdropFilter !== 'none';
+      const overflow = description.scrollWidth > description.clientWidth + 1 || rect.right > sectionRect.right + 1;
+      return {
+        ok: !oldCareerCount && !isCard && !overflow,
+        detail: oldCareerCount ? '旧工作经历组件仍存在' : isCard ? '关于我出现了额外卡片材质' : overflow ? `正文宽度 ${Math.round(rect.width)}px，章节宽度 ${Math.round(sectionRect.width)}px` : '',
+      };
     });
   },
 };

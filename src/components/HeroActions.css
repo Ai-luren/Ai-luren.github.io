@@ -1,63 +1,125 @@
+/* Hero CTA is one component-owned contract. Semantic colors / geometry
+   originate in apple-system.css, surface roles stay compatible with the
+   portfolio's deep-gray glass system and single-blue primary action. */
 #hero-actions-react-root { display: contents; }
 
-.hero-actions button {
+#top .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--hero-cta-gap);
+  margin-top: 30px;
+}
+
+#top .hero-actions button {
   appearance: none;
   -webkit-appearance: none;
+  box-sizing: border-box;
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 8px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: rgba(245, 245, 247, .64);
-  font: 500 14px/1 var(--font-body, system-ui);
+  width: auto;
+  height: var(--hero-cta-height);
+  min-height: var(--hero-cta-height);
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: var(--hero-cta-radius);
+  color: #fff;
+  font: var(--hero-cta-font-weight) var(--hero-cta-font-size)/1 var(--font-body, system-ui);
   letter-spacing: 0;
-  box-shadow: none;
+  text-decoration: none;
+  text-shadow: none;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background-color var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control);
+  touch-action: manipulation;
+  transition:
+    background-color var(--apple-duration-control) var(--apple-ease),
+    border-color var(--apple-duration-control) var(--apple-ease),
+    box-shadow var(--apple-duration-control) var(--apple-ease),
+    color var(--apple-duration-control) var(--apple-ease),
+    transform var(--apple-duration-control) var(--apple-ease);
 }
 
-.hero-actions button:active { transform: scale(.98); }
-.hero-actions button:focus-visible { outline: 2px solid var(--accent-blue-focus, #2997ff); outline-offset: 4px; }
-
-.hero-actions .hero-primary {
-  min-width: 140px;
+#top .hero-actions .hero-primary {
+  min-width: 152px;
   padding-inline: 24px;
-  background: var(--accent-blue, #0071e3);
+  border-color: transparent;
+  background: var(--hero-primary-bg);
   color: #fff;
-  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(41, 151, 255, .18);
 }
 
-.hero-actions .hero-primary:hover,
-.hero-actions .hero-primary:focus-visible {
-  background: var(--accent-blue-focus, #2997ff);
+#top .hero-actions .hero-primary:hover {
+  background: var(--hero-primary-hover-bg);
+  box-shadow: 0 10px 28px rgba(41, 151, 255, .28);
+}
+
+#top .hero-actions .hero-secondary {
+  min-width: 136px;
+  padding-inline: 20px;
+  border-color: var(--hero-secondary-border);
+  background: var(--hero-secondary-bg);
+  color: var(--hero-secondary-color);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .05);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+#top .hero-actions .hero-secondary:hover {
+  border-color: var(--hero-secondary-hover-border);
+  background: var(--hero-secondary-hover-bg);
   color: #fff;
 }
 
-.hero-actions .hero-secondary {
-  min-width: 0;
-  color: rgba(245, 245, 247, .58);
-  text-decoration: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 5px;
+#top .hero-actions button:hover { transform: translateY(-1px); }
+#top .hero-actions button:active { transform: scale(.98); }
+#top .hero-actions button:focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 3px;
 }
-
-.hero-actions .hero-secondary:hover,
-.hero-actions .hero-secondary:focus-visible {
-  background: transparent;
-  color: rgba(245, 245, 247, .9);
-  text-decoration-color: rgba(245, 245, 247, .46);
-}
-
-@media (min-width: 721px) {
-  .hero-actions button { flex: 0 0 auto; width: auto; min-height: 46px; }
+#top .hero-actions .hero-secondary:focus-visible {
+  border-color: var(--hero-secondary-hover-border);
+  background: var(--hero-secondary-hover-bg);
+  color: #fff;
 }
 
 @media (max-width: 720px) {
-  .hero-actions { display: flex; align-items: center; justify-content: flex-start; gap: 12px; }
-  .hero-actions button { width: auto; min-height: 44px; padding-inline: 8px; font-size: 14px; }
-  .hero-actions .hero-primary { min-width: 132px; padding-inline: 20px; }
+  #top .hero-actions {
+    margin-top: 26px;
+    gap: 10px;
+  }
+  #top .hero-actions button {
+    height: var(--hero-cta-height-mobile);
+    min-height: var(--hero-cta-height-mobile);
+    padding-inline: 18px;
+    font-size: var(--hero-cta-font-size-mobile);
+  }
+  #top .hero-actions .hero-primary {
+    min-width: 138px;
+    padding-inline: 18px;
+  }
+  #top .hero-actions .hero-secondary {
+    min-width: 130px;
+    padding-inline: 18px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  #top .hero-actions .hero-secondary {
+    background: var(--portfolio-panel-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  #top .hero-actions .hero-secondary:hover,
+  #top .hero-actions .hero-secondary:focus-visible {
+    background: #292b30;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #top .hero-actions button { transition: none; }
+  #top .hero-actions button:hover,
+  #top .hero-actions button:active { transform: none; }
 }
