@@ -2527,8 +2527,44 @@
         if (sectionId === 'contact' || sectionId === 'profile' || sectionId === 'footer') return 'contact';
         return null;
       }
+      // A navigation click is an explicit destination. While its smooth scroll
+      // passes other sections, IntersectionObserver may update visual backgrounds
+      // but must not steal the selected underline from that destination.
+      var navScrollIntent = null;
+      function releaseNavScrollIntent(intent) {
+        if (!intent || navScrollIntent !== intent) return;
+        navScrollIntent = null;
+        window.clearTimeout(intent.timeout);
+        window.removeEventListener('scrollend', intent.onEnd);
+        window.removeEventListener('wheel', intent.onInterrupt);
+        window.removeEventListener('touchstart', intent.onInterrupt);
+        window.removeEventListener('keydown', intent.onKeyDown);
+      }
+      function beginNavScroll(sectionId, behavior) {
+        if (navScrollIntent) releaseNavScrollIntent(navScrollIntent);
+        setNavActive(sectionId);
+        if (behavior !== 'smooth') return;
+        var intent = { section: primaryNavSection(sectionId) };
+        intent.onEnd = function () {
+          if (navScrollIntent !== intent) return;
+          releaseNavScrollIntent(intent);
+          setNavActive(sectionId);
+        };
+        intent.onInterrupt = function () { releaseNavScrollIntent(intent); };
+        intent.onKeyDown = function (event) {
+          if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','Spacebar'].includes(event.key)) intent.onInterrupt();
+        };
+        navScrollIntent = intent;
+        window.addEventListener('scrollend', intent.onEnd);
+        window.addEventListener('wheel', intent.onInterrupt, { passive: true });
+        window.addEventListener('touchstart', intent.onInterrupt, { passive: true });
+        window.addEventListener('keydown', intent.onKeyDown);
+        // No-op target scrolls may not dispatch scrollend. Never keep a stale lock.
+        intent.timeout = window.setTimeout(intent.onEnd, 2200);
+      }
       function setNavActive(sectionId) {
         var activeSection = primaryNavSection(sectionId);
+        if (navScrollIntent && activeSection !== navScrollIntent.section) return;
         document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]').forEach(function (link) {
           var target = link.getAttribute('href');
           if (target === '#footer-dock-react-root') target = '#contact';
@@ -2546,10 +2582,11 @@
         if (!target || target === '#') return;
         event.preventDefault();
         var sectionId = target.slice(1);
-        setNavActive(sectionId);
+        var scrollBehavior = reduced ? 'auto' : 'smooth';
+        beginNavScroll(sectionId, scrollBehavior);
         if (sectionId === 'contact') {
           try { window.history.pushState(null, '', '#contact'); } catch (error) {}
-          scrollToContactCard(reduced ? 'auto' : 'smooth');
+          scrollToContactCard(scrollBehavior);
           return;
         }
         if (sectionId === 'projects') {
@@ -2568,7 +2605,7 @@
       document.querySelectorAll('a[href="#contact"], a[href="#footer-dock-react-root"]').forEach(function (link) {
         link.addEventListener('click', function (event) {
           event.preventDefault();
-          setNavActive('contact');
+          beginNavScroll('contact', reduced ? 'auto' : 'smooth');
           try { window.history.pushState(null, '', '#contact'); } catch (error) {}
           scrollToContactCard(reduced ? 'auto' : 'smooth');
         });
@@ -2577,7 +2614,7 @@
         var target = link.getAttribute('href');
         if (!target || target === '#contact' || target === '#footer-dock-react-root') return;
         link.addEventListener('click', function (event) {
-          setNavActive(target.slice(1));
+          beginNavScroll(target.slice(1), reduced ? 'auto' : 'smooth');
           if (target === '#projects') {
             var archiveRail = document.querySelector('.comet-archive');
             if (archiveRail) {

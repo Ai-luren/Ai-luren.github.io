@@ -14,6 +14,7 @@
     "check:work-cards": "node scripts/check-work-card-system.mjs",
     "check:work-media": "node scripts/check-work-media-consistency.mjs",
     "check:interaction": "node scripts/check-interaction-contract.mjs",
+    "check:nav-scroll": "node scripts/check-navigation-scroll-intent.mjs",
     "check:design-system": "node scripts/check-design-system-foundation.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
     "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
