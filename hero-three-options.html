@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI路人｜首屏三方案对比</title>
+<meta name="description" content="真实滚动视频、动态标题与现有设计系统的独立首屏对比页。">
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:#f4f6f8;background:#0b0d10;font-size:14px}
+*{box-sizing:border-box}body{margin:0;line-height:1.6}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #2997ff;outline-offset:3px}
+.wrap{max-width:1720px;margin:0 auto;padding:28px clamp(14px,2.3vw,36px) 48px}
+header.top{display:flex;justify-content:space-between;gap:24px;align-items:center;border-bottom:1px solid #282b32;padding-bottom:23px}
+.eyebrow{font-size:11px;letter-spacing:.11em;color:#8ec3fc;font-weight:650}.eyebrow:before{content:"●";font-size:8px;margin-right:9px}
+h1{font-size:clamp(25px,2.6vw,38px);line-height:1.24;letter-spacing:-.04em;margin:9px 0}
+.intro{font-size:13px;color:#aeb5c0;max-width:700px;margin:5px 0}
+.protected{padding:9px 13px;color:#b1d6bb;background:#16231a;border:1px solid #2b5139;border-radius:99px;font-size:12px;white-space:nowrap}
+.workspace{display:grid;grid-template-columns:302px minmax(0,1fr);gap:20px;margin-top:22px;align-items:start}
+aside{display:grid;gap:10px}aside h2{font-size:12px;margin:0 0 2px;color:#969eaa}
+.variant{width:100%;text-align:left;padding:18px;border:1px solid #34373f;background:#15171c;border-radius:16px;color:#f4f6f8;transition:background .2s,border-color .2s}
+.variant:hover{background:#20232a}.variant[aria-pressed="true"]{border-color:#5799d6;background:#182433;box-shadow:inset 0 0 0 1px #29567d}
+.variant strong{font-size:17px;letter-spacing:-.025em}.variant small{font-size:11px;color:#87b9e8;margin-right:8px;font-weight:700}
+.variant p{font-size:12px;color:#b4bcc9;margin:7px 0 0;line-height:1.75}
+.why{padding:18px;border-radius:16px;border:1px solid #30343d;background:#111419}
+.why h3{margin:0 0 9px;font-size:13px}.why p{margin:0;font-size:12px;color:#afb6c2;line-height:1.8}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}.tags span{background:#22272f;border-radius:20px;padding:4px 9px;color:#c7d1df;font-size:11px}
+.viewer{overflow:hidden;min-width:0;border:1px solid #33363e;border-radius:18px;background:#14161b}
+.viewer-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid #30343c;flex-wrap:wrap}
+.viewer-title{display:flex;gap:8px;align-items:center;font-weight:620;font-size:13px}.dot{width:6px;height:6px;border-radius:100%;background:#83d9a1}
+.buttons{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.device{display:flex;gap:3px;padding:3px;border:1px solid #3a3d46;border-radius:10px;background:#22252d}
+.device button{border:none;background:none;color:#aeb5c2;border-radius:7px;padding:7px 12px;font-size:12px}
+.device button[aria-pressed="true"]{background:#434955;color:white}
+.plain{border:1px solid #454953;background:#262a33;color:#dbe2ea;border-radius:9px;padding:9px 12px;font-size:12px}
+.screen-pad{display:flex;align-items:flex-start;justify-content:center;padding:20px 14px;overflow:hidden;min-height:480px;background:radial-gradient(ellipse at 50% 10%,#20252e,#0c0e11 64%)}
+.screen{position:relative;flex-shrink:0;border:1px solid #58606d;border-radius:12px;overflow:hidden;background:black;box-shadow:0 24px 60px #0008}
+.screen iframe{position:absolute;inset:0;border:0;background:#000;transform-origin:top left}
+.screen-label{position:absolute;bottom:12px;right:12px;z-index:10;font-size:10px;border-radius:20px;padding:5px 10px;background:#10141ad9;color:#eff3f9;border:1px solid #fff3;pointer-events:none}
+.viewer-foot{display:flex;justify-content:space-between;gap:10px;padding:10px 16px;color:#a0a8b6;font-size:11px;border-top:1px solid #30343c;flex-wrap:wrap}
+.progress{display:flex;align-items:center;gap:12px;padding:15px 16px;border-top:1px solid #30343c;font-size:12px;color:#c3cad5}
+.progress input{flex:1;min-width:45px;accent-color:#2997ff}.progress output{width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.detail{padding:19px;border-radius:16px;border:1px solid #30343c;background:#15181d}
+.detail h3{margin:0 0 8px;font-size:14px}.detail p{font-size:12px;color:#b9c1cd;margin:0;line-height:1.85}
+ul.points{list-style:none;padding:0;margin:0;display:grid;gap:10px}ul.points li{font-size:12px;color:#c9d0d9;line-height:1.7}ul.points li:before{content:"↗";color:#8ac5ff;font-weight:bold;margin-right:10px}
+.bottom{margin-top:17px;background:#17212c;border:1px solid #35475c;border-radius:16px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.bottom b{font-size:14px}.bottom p{font-size:12px;margin:4px 0;color:#afbfd1}
+.copy{padding:11px 16px;background:#2997ff;color:white;border:none;border-radius:9px;font-weight:600;font-size:12px}
+.disclaimer{color:#8993a0;margin-top:22px;padding-top:16px;border-top:1px solid #30343c;font-size:11px;line-height:1.8}
+@media(max-width:980px){.workspace{grid-template-columns:240px minmax(0,1fr)}.variant{padding:13px}.details{grid-template-columns:1fr}}
+@media(max-width:720px){header.top{display:block}.protected{display:inline-block;margin-top:15px}.workspace{display:block}aside{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:15px}aside h2,.why{grid-column:1/-1}.variant{padding:12px}.variant strong{font-size:13px}.variant p{display:none}.variant small{display:block}.screen-pad{padding:15px 5px}.viewer-head{padding:12px}.wrap{padding:20px 12px 36px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top">
+ <div><div class="eyebrow">实际网站驱动 · 独立对比实验</div><h1>AI路人 · 首屏三方案</h1><p class="intro">保留真实打字轮播、整站滚动驱动视频、复古影像后处理。三种方向只比较首屏职业表达、局部可读性和手机排版。</p></div>
+ <div class="protected">● 原网站导航栏完全不动</div>
+</header>
+<section class="workspace">
+<aside aria-label="切换方案">
+ <h2>选择你更喜欢的方向</h2>
+ <button class="variant" type="button" data-mode="a" aria-pressed="true"><small>方案 A</small><strong>专业定位</strong><p>优先建立 AI 视频与影像效果的职业识别，适合招聘方快速判断能力方向。</p></button>
+ <button class="variant" type="button" data-mode="b" aria-pressed="false"><small>方案 B</small><strong>电影视觉</strong><p>最大程度保留当前电影感，只加强原有蒙版、文字清晰度和矮屏布局。</p></button>
+ <button class="variant" type="button" data-mode="c" aria-pressed="false"><small>方案 C</small><strong>商业合作</strong><p>更突出品牌广告、产品影像和创意短片，让客户更快理解制作服务。</p></button>
+ <div class="why"><h3 id="target-heading"></h3><p id="target-reason"></p><div class="tags" id="target-tags"></div></div>
+</aside>
+<div class="viewer">
+ <div class="viewer-head"><div class="viewer-title"><span class="dot"></span><span id="mode-title"></span></div><div class="buttons">
+  <div class="device" aria-label="模拟设备尺寸">
+   <button type="button" data-device="desktop" aria-pressed="false">桌面</button>
+   <button type="button" data-device="mobile" aria-pressed="true">手机</button>
+   <button type="button" data-device="short" aria-pressed="false">矮屏手机</button>
+  </div>
+  <button type="button" class="plain" id="back-top">回到首屏</button>
+ </div></div>
+ <div id="screen-pad" class="screen-pad"><div class="screen" id="screen"><div id="screen-label" class="screen-label">正在载入真实网页…</div><iframe id="preview" src="./index.html#top" title="网站原始标题与滚动视频的实时预览" loading="eager"></iframe></div></div>
+ <div class="viewer-foot"><span>内部保留原网站全部导航、打字动画、视频与滚动行为。</span><span id="typing-status">等待标题动画…</span></div>
+ <div class="progress"><label for="scroll-range">网页滚动进度</label><input id="scroll-range" type="range" min="0" max="100" step="1" value="0"><output id="scroll-output">0%</output></div>
+</div>
+</section>
+<section class="details">
+ <div class="detail"><h3 id="reason-title">修改理由</h3><p id="reason-text"></p></div>
+ <div class="detail"><h3>改动后的提升点</h3><ul class="points" id="points"></ul></div>
+</section>
+<div class="bottom"><div><b id="selected">当前选择：方案 A</b><p>选择只保存在此对比页，不会修改正式网站。</p></div><button class="copy" type="button" id="copy">复制该方案的完整修改要求</button><span id="copy-status" role="status" style="color:#aebed0;font-size:11px">选择后将方案发送给我即可实施</span></div>
+<p class="disclaimer">共同约束：固定标题「AI 创意」不变；第二行保留「图像设计 → 视频设计 → 氛围编程」完整打字、停顿、删除与光标效果；背景使用网站本身的桌面和手机视频，根据网页滚动位置定位视频时间，沿用现有后处理与蒙版。整个对比页不会修改原导航、作品、弹窗、网站代码或线上版本。</p>
+</main>
+<script>
+(() => {
+ const variants={
+  a:{name:'方案 A · 专业定位',tags:['招聘方','猎头','设计总监'],audience:'主要面向 AI 公司招聘方',summary:'把职业方向固定在动态标题上方，即使访客只看到了「图像设计」或「氛围编程」，也能明确你专注 AI 视频与影像效果。',kicker:'AI 视频创意 · 影像效果设计',subtitle:'专注 AI 视频创意与影像效果设计，从镜头语言到生成式制作，兼顾视觉品质与创作流程。',reason:'动态标题会轮播三种方向，但招聘方可能只停留数秒。在标题前提供精简的职业定位，不改变任何打字动画，让关键能力在每个动画时刻都可见。',points:['更快识别 AI 视频相关岗位定位','增强视觉设计与技术实践之间的关联','保留原有动态标题和电影画面'],css:'#top #compare-kicker{display:block}#top .hero-subtitle{max-width:36ch!important;line-height:1.72!important;text-shadow:0 2px 14px rgba(0,0,0,.67)!important}html{--hero-mask-strength:.70!important}@media(max-width:720px){#top .hero-copy{translate:0 -14px}}'},
+  b:{name:'方案 B · 电影视觉',tags:['设计总监','普通访客','影像氛围'],audience:'主要面向 AI 设计总监和普通观众',summary:'尽量不改变目前的首屏样子，只优化视频亮部的文字阅读与矮屏手机的视觉中心。',kicker:'',subtitle:'AI 视频创意与影像效果设计，聚焦品牌广告、创意短片与视觉表达，从创意到成片。',reason:'当前首页最大的特色是大字与像素化电影影像。不增加新卡片或宣传标语，只调整既有文字和 Hero 蒙版参数，以及更矮手机屏幕的整体位置。',points:['原有视觉识别度损失最小','明亮视频画面下副标题更容易看清','对正式设计系统的影响范围最小'],css:'#top #compare-kicker{display:none}#top .hero-subtitle{max-width:34ch!important;line-height:1.76!important;color:rgba(255,255,255,.96)!important;text-shadow:0 2px 17px rgba(0,0,0,.78)!important}html{--hero-mask-strength:.65!important}@media(max-width:720px) and (max-height:740px){#top .hero-copy{translate:0 -28px}}'},
+  c:{name:'方案 C · 商业合作',tags:['品牌客户','产品广告','视频制作'],audience:'主要面向品牌方和商业视频客户',summary:'先说明可以制作什么，再用三段动态能力标签展示创作广度，引导客户浏览作品并建立联系。',kicker:'品牌广告 · 产品影像 · 创意短片',subtitle:'面向品牌与产品的 AI 视频创作，从创意构思、镜头设计到视频成片，形成完整的视觉表达。',reason:'商业合作方通常首先判断可提供的内容类型。增加品牌广告、产品影像和创意短片的简短提示，保持原有双按钮和视频叙事，不夸大商业成绩。',points:['客户更快理解作品适用场景','突出从创意到成片的服务范围','保留原有作品与联系路径'],css:'#top #compare-kicker{display:block}#top .hero-subtitle{max-width:36ch!important;line-height:1.72!important;text-shadow:0 2px 15px rgba(0,0,0,.70)!important}html{--hero-mask-strength:.72!important}@media(max-width:720px){#top .hero-copy{translate:0 -23px}}'}
+ };
+ const sizes={desktop:{w:1440,h:900,label:'桌面 1440 × 900'},mobile:{w:390,h:844,label:'手机 390 × 844'},short:{w:390,h:667,label:'矮屏手机 390 × 667'}};
+ const preview=document.getElementById('preview'),screen=document.getElementById('screen'),pad=document.getElementById('screen-pad'),progress=document.getElementById('scroll-range');
+ let mode='a',device='mobile',ready=false,typingObserver,hasScrubStarted=false;
+ function getDoc(){try{return preview.contentDocument}catch{return null}}
+ function size(){
+  const s=sizes[device],width=Math.max(260,pad.clientWidth-20),scale=Math.min(1,width/s.w);
+  screen.style.width=s.w*scale+'px';screen.style.height=s.h*scale+'px';
+  preview.style.width=s.w+'px';preview.style.height=s.h+'px';preview.style.transform='scale('+scale+')';
+  document.getElementById('screen-label').textContent=s.label+' · 真实网页';
+ }
+ function apply(){
+  if(!ready)return;
+  const doc=getDoc(),v=variants[mode],copy=doc&&doc.querySelector('#top .hero-copy'),sub=doc&&doc.querySelector('#top .hero-subtitle');
+  if(!copy||!sub)return;
+  let st=doc.getElementById('compare-css');
+  if(!st){st=doc.createElement('style');st.id='compare-css';doc.head.appendChild(st)}
+  st.textContent='#top #compare-kicker{margin:0 0 13px;font:600 12px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;letter-spacing:.055em;color:rgba(235,241,252,.89);text-shadow:0 2px 12px #0008}@media(max-width:720px){#top #compare-kicker{font-size:10px;margin-bottom:10px}}'+v.css;
+  let kicker=doc.getElementById('compare-kicker');
+  if(!kicker){kicker=doc.createElement('p');kicker.id='compare-kicker';copy.insertBefore(kicker,copy.firstChild)}
+  kicker.textContent=v.kicker;sub.textContent=v.subtitle;
+ }
+ function details(){
+  const v=variants[mode];
+  document.getElementById('mode-title').textContent=v.name;
+  document.getElementById('target-heading').textContent=v.audience;
+  document.getElementById('target-reason').textContent=v.summary;
+  const tags=document.getElementById('target-tags');
+  tags.replaceChildren(...v.tags.map(t=>{const e=document.createElement('span');e.textContent=t;return e}));
+  document.getElementById('reason-title').textContent=v.name+' · 修改理由';
+  document.getElementById('reason-text').textContent=v.reason;
+  document.getElementById('points').replaceChildren(...v.points.map(t=>{const e=document.createElement('li');e.textContent=t;return e}));
+  document.getElementById('selected').textContent='当前选择：'+v.name;
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));
+ }
+ function updateProgress(){
+  if(!ready)return;
+  try{
+   const w=preview.contentWindow,max=Math.max(1,w.document.documentElement.scrollHeight-w.innerHeight),v=Math.max(0,Math.min(100,Math.round(w.scrollY/max*100)));
+   progress.value=v;document.getElementById('scroll-output').textContent=v+'%';
+   // Some browsers throttle requestAnimationFrame in a scaled iframe.
+   // Keep the identical native scroll-to-time mapping available in the
+   // comparison frame without touching the actual site's seekLoop.
+   const video=w.document.getElementById('hero-video');
+   if(video && Number.isFinite(video.duration) && video.duration>0 && !w.matchMedia('(prefers-reduced-motion:reduce)').matches){
+     const target=(w.scrollY/max)*video.duration;
+     if(!video.seeking && Math.abs(video.currentTime-target)>.08){try{video.currentTime=target}catch{}}
+   }
+  }catch{}
+ }
+ function watchTitle(){
+  if(!ready)return;
+  const n=getDoc()?.querySelector('#hero-title .text-type__content');
+  if(!n)return;
+  const status=document.getElementById('typing-status');
+  const update=()=>{status.textContent='动态标题：'+(n.textContent||'打字中…')};
+  if(typingObserver)typingObserver.disconnect();
+  typingObserver=new MutationObserver(update);typingObserver.observe(n,{subtree:true,childList:true,characterData:true});update();
+ }
+ function loaded(){
+  const doc=getDoc();if(!doc)return;
+  if(doc.documentElement.lang==='en')doc.getElementById('nav-lang')?.click();
+  const check=()=>{
+   if(!doc.querySelector('#hero-title .text-type__content')||!doc.querySelector('#top .hero-subtitle')){setTimeout(check,120);return}
+   ready=true;apply();watchTitle();updateProgress();
+   preview.contentWindow.addEventListener('scroll',updateProgress,{passive:true});
+  };check();
+ }
+ document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{
+  mode=b.dataset.mode;details();apply();try{sessionStorage.setItem('hero-prototype-choice',mode)}catch{}
+ }));
+ document.querySelectorAll('[data-device]').forEach(b=>b.addEventListener('click',()=>{
+  device=b.dataset.device;
+  document.querySelectorAll('[data-device]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.device===device)));
+  size();
+  try{preview.contentWindow.dispatchEvent(new Event('resize'))}catch{}
+  // <source media> is only reselected on load(), not when resizing an iframe.
+  // Re-evaluate the genuine mobile/desktop sources; title and website stay mounted.
+  if(ready)setTimeout(()=>{
+    try{
+      const video=getDoc()?.getElementById('hero-video');
+      const expected=sizes[device].w<=720?'hero-mobile.mp4':'hero.mp4';
+      if(video && !video.currentSrc.endsWith('/'+expected))video.load();
+    }catch{}
+  },75);
+ }));
+ document.getElementById('back-top').addEventListener('click',()=>{try{preview.contentWindow.scrollTo({top:0,behavior:'smooth'})}catch{}});
+ progress.addEventListener('input',()=>{
+  const v=Number(progress.value);document.getElementById('scroll-output').textContent=v+'%';
+  try{
+   const w=preview.contentWindow,max=Math.max(1,w.document.documentElement.scrollHeight-w.innerHeight),top=max*v/100;
+   w.scrollTo({top,behavior:'instant'});
+   // First scrub can arrive before the original video controller has latched
+   // a decoded duration. One tiny additional scroll refreshes its targetTime.
+   if(!hasScrubStarted && v>0){
+     hasScrubStarted=true;
+     setTimeout(()=>{
+       const extra=Math.max(12,max*.004);
+       w.scrollTo({top:Math.min(max,top+extra),behavior:'instant'});
+       setTimeout(()=>w.scrollTo({top,behavior:'instant'}),100);
+     },120);
+   }
+  }catch{}
+ });
+ document.getElementById('copy').addEventListener('click',async()=>{
+  const v=variants[mode],text=['我选择 '+v.name,'导航栏不能改；固定「AI 创意」，保留「图像设计、视频设计、氛围编程」三段真实打字动画。','保留原视频素材、滚动驱动视频与视觉后处理。','方案前置信息：'+(v.kicker||'不新增'),'副标题：'+v.subtitle,'修改理由：'+v.reason,'提升点：'+v.points.join('；')].join('\n');
+  try{await navigator.clipboard.writeText(text);document.getElementById('copy-status').textContent='方案说明已复制，可以直接发给我。'}
+  catch{document.getElementById('copy-status').textContent='复制不可用，请直接告诉我选择了哪一个方案。'}
+ });
+ try{let saved=sessionStorage.getItem('hero-prototype-choice');if(variants[saved])mode=saved}catch{}
+ preview.addEventListener('load',loaded);
+ details();size();
+ if(window.ResizeObserver)new ResizeObserver(size).observe(pad);else window.addEventListener('resize',size);
+ if(preview.contentDocument?.readyState==='complete')loaded();
+})();
+</script>
+</body>
+</html>
