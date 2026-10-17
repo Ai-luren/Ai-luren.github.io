@@ -336,6 +336,12 @@
   .impact-award-rail { height: 300px; }
   .impact-award-lightbox-close { top: 12px; right: 12px; }
   .impact-reach-dossier { padding: 16px; }
+}
+
+/* The desktop 4x2 grid begins at 761px. Keep the mobile platform dossier
+   visible through 760px so the tablet range never has two hidden variants.
+   Award and social small-phone adjustments above intentionally stay <=500px. */
+@media (max-width: 760px) {
   .impact-logo-shell { padding: 0; overflow: hidden; }
   .impact-logo-shell > .impact-logo-head, .impact-logo-shell > .logo-loop { display: none; }
   .impact-platform-mobile-card { display: block; }
