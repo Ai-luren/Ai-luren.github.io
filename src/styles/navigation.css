@@ -194,14 +194,16 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   body.mobile-nav-open:not(.mobile-nav-closing) .nav-toggle-line--bottom { transform: translateY(-4px) rotate(-45deg); }
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
-  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  body > header, .cinema-player__navigation { background: var(--portfolio-panel-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   .impact-award-lightbox { animation: none !important; }
   .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
   #mobile-nav-drawer { transition-property: visibility !important; }
   #mobile-nav-drawer:is(.is-open,.is-closing) { opacity: 1 !important; }
 }
 @media (prefers-reduced-transparency:reduce) {
-  body > header, .cinema-player__navigation, #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  body > header, .cinema-player__navigation { background: var(--portfolio-panel-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  #mobile-nav-drawer, .library-menu::backdrop, .impact-award-lightbox::before { background: var(--portfolio-modal-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
   .impact-award-lightbox { animation: none !important; }
   .impact-award-lightbox.is-closing { opacity: 1 !important; transition: none !important; }
   #mobile-nav-drawer { transition-property: visibility !important; }

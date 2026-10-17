@@ -411,9 +411,9 @@
   min-width: 44px;
   min-height: 44px;
   padding: 0 18px;
-  border: 1px solid var(--impact-hairline);
+  border: 1px solid var(--portfolio-tile-border);
   border-radius: var(--portfolio-tile-radius, 12px);
-  background: rgba(255, 255, 255, .06);
+  background: var(--portfolio-tile-surface);
   color: var(--apple-text);
   font: 500 13px/1.4 var(--font-body, var(--sans, sans-serif));
   text-decoration: none;
@@ -421,7 +421,7 @@
 }
 .impact-profile-dialog-action:hover, .impact-profile-dialog-action:focus-visible {
   border-color: var(--impact-edge);
-  background: rgba(255, 255, 255, .1);
+  background: var(--portfolio-tile-surface-hover);
 }
 .impact-profile-dialog-action:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

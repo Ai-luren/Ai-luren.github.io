@@ -8,7 +8,7 @@
 :root {
   --apple-bg: #000;
   --apple-surface: rgba(28, 28, 30, .78);
-  --apple-surface-solid: #1c1c1e;
+  --apple-surface-solid: var(--portfolio-panel-solid);
   --apple-surface-raised: rgba(44, 44, 46, .88);
   --apple-text: #f5f5f7;
   --apple-secondary: #a1a1a6;
@@ -637,11 +637,9 @@ footer::before { background: transparent !important; }
   .footer-bottom-copy { text-align: left; }
 }
 
+/* Supporting legacy footer surfaces keep their own reduced-transparency
+   fallback. Main glass and header are owned by their respective contracts. */
 @media (prefers-reduced-transparency: reduce) {
-  header,
-  .hero-proof-card,
-  .impact-glass,
-  #experiments .flip-experiment,
   .footer-contact-copy,
   .floating-dock-panel { background: var(--apple-surface-solid) !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 }
@@ -1767,21 +1765,6 @@ header .nav-contact-icon:focus-visible {
     letter-spacing: -.055em;
   }
 
-}
-
-/* Respect reduced-transparency users while keeping the same hierarchy. */
-@media (prefers-reduced-transparency: reduce) {
-  header,
-  header.is-condensed,
-  .impact-glass,
-  #profile .closing-card,
-  #projects .comet-archive-mobile-shell,
-  #top .hero-proof-card,
-  #experiments .flip-experiment {
-    background: var(--apple-surface-solid) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
 }
 
 /* Round 1: keep the Hero title inside its reading column in every language.
