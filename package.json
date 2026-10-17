@@ -16,6 +16,7 @@
     "check:interaction": "node scripts/check-interaction-contract.mjs",
     "check:nav-scroll": "node scripts/check-navigation-scroll-intent.mjs",
     "check:design-system": "node scripts/check-design-system-foundation.mjs",
+    "check:responsive": "node scripts/check-final-responsive.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
     "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
     "check:social-media": "node scripts/check-social-media-system.mjs"

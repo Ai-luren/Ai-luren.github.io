@@ -440,7 +440,8 @@ header .nav-contact-icon:focus-visible {
     grid-template-columns: minmax(0, 1fr) minmax(250px, .42fr);
     align-items: end;
     column-gap: 42px;
-    padding: 0 4px;
+    /* Align award, creator and media H2s with the parent section and Lab. */
+    padding: 0;
   }
   .impact-evidence-label .impact-eyebrow { display: none; }
   .impact-evidence-label h2 {

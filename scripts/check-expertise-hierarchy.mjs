@@ -39,7 +39,7 @@ try{
             const el=document.querySelector(selector);
             if(!el)return null;
             const c=getComputedStyle(el),r=el.getBoundingClientRect();
-            return {size:parseFloat(c.fontSize),top:r.top,bottom:r.bottom,visible:r.width>0&&r.height>0,overflow:el.scrollWidth>el.clientWidth+2};
+            return {size:parseFloat(c.fontSize),x:r.left,top:r.top,bottom:r.bottom,visible:r.width>0&&r.height>0,overflow:el.scrollWidth>el.clientWidth+2};
           };
           const main=measure('#recognition .section-title');
           const project=measure('#projects .section-title');
@@ -66,6 +66,7 @@ try{
         const sub=result.children[0].size;
         assert(result.main.size>sub+2,tag+': primary title too small');
         assert(result.children.every(t=>Math.abs(t.size-sub)<.5),tag+': uneven subheadings');
+        assert(result.children.every(t=>Math.abs(t.x-result.main.x)<=1.5),tag+': H2 left edges must align with Expertise: '+result.children.map(t=>t.x).join('/')+' vs '+result.main.x);
         assert(!result.children.some(t=>t.overflow),tag+': clipped child title');
         if(width<=760)assert(result.cardTitle.size<=sub-3,tag+': card H3 larger than H2');
         const target=width<=760?20:28;
