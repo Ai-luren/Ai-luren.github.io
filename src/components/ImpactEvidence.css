@@ -44,7 +44,7 @@
    follows the tallest real caption, so language and carousel changes add no
    artificial blank rows or fixed-height space. */
 @media (min-width: 761px) {
-  #impact-awards .impact-award-description { margin-bottom: 16px; }
+  #impact-awards .impact-award-shell { padding: 24px 0 20px; }
   #impact-awards .impact-award-rail {
     box-sizing: border-box;
     height: auto;

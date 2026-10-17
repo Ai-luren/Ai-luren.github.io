@@ -209,7 +209,41 @@ function AwardGallery() {
       moveToMobileAward(mobileAwardIndex + direction);
       return;
     }
-    rail.scrollBy({ left: direction * rail.clientWidth * .82, behavior: 'smooth' });
+    const cards = [...rail.querySelectorAll(':scope > li')];
+    if (!cards.length) return;
+
+    const railStyle = window.getComputedStyle(rail);
+    const clipInsets = railStyle.clipPath.match(/inset\(([^)]+)\)/)?.[1]
+      .split(/\s+/)
+      .map((value) => Number.parseFloat(value) || 0) ?? [0];
+    const clipLeft = clipInsets.length === 4 ? clipInsets[3] : clipInsets.length === 2 ? clipInsets[1] : clipInsets[0];
+    const clipRight = clipInsets.length >= 2 ? clipInsets[1] : clipInsets[0];
+    const gap = Number.parseFloat(railStyle.columnGap || railStyle.gap) || 0;
+    const cardWidth = cards[0].getBoundingClientRect().width;
+    const visibleWidth = rail.clientWidth - clipLeft - clipRight;
+    const pageSize = Math.max(1, Math.floor((visibleWidth + gap + 1) / (cardWidth + gap)));
+    const visibleStart = rail.scrollLeft + clipLeft;
+    const visibleEnd = rail.scrollLeft + rail.clientWidth - clipRight;
+    const currentStart = cards.findIndex((card) => {
+      const left = card.offsetLeft;
+      return left >= visibleStart - 1 && left + cardWidth <= visibleEnd + 1;
+    });
+    const startIndex = currentStart >= 0 ? currentStart : cards.findIndex((card) => card.offsetLeft + cardWidth > visibleStart);
+    const lastStart = Math.max(0, cards.length - pageSize);
+    const previousAlignedStart = Math.floor(lastStart / pageSize) * pageSize;
+    const targetIndex = direction > 0
+      ? Math.min(lastStart, Math.max(0, startIndex) + pageSize)
+      : (startIndex === lastStart && lastStart % pageSize !== 0
+        ? previousAlignedStart
+        : Math.max(0, startIndex - pageSize));
+    const target = cards[targetIndex];
+    const current = cards[Math.max(0, startIndex)];
+    if (!target || !current) return;
+
+    rail.scrollTo({
+      left: rail.scrollLeft + target.offsetLeft - current.offsetLeft,
+      behavior: 'smooth',
+    });
   }, [isMobile, mobileAwardIndex, moveToMobileAward]);
 
   const handleRailTouchStart = (event) => {
