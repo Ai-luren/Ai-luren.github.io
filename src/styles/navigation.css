@@ -47,7 +47,9 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
   outline: 2px solid var(--apple-blue) !important; outline-offset: 4px !important;
 }
 body.mobile-nav-open { overflow: hidden; }
-body.cinema-open > header, body.award-viewer-open > header, body.cinema-open .library-page-navigation { visibility: hidden !important; }
+/* All viewers hide the source-page navigation, showing only CinemaNavigation. */
+body.cinema-open > header, body.award-viewer-open > header, body.profile-viewer-open > header,
+body.cinema-open .library-page-navigation, body.profile-viewer-open .library-page-navigation { visibility: hidden !important; }
 .library-page-navigation .cinema-player__navigation { z-index: 70; }
 .site-primary-nav {
   display: none;

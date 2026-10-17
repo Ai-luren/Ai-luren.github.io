@@ -193,75 +193,245 @@
 .impact-platform-desktop-description { margin: var(--space-3) 0 0; color: var(--impact-muted); font: 400 var(--type-caption)/1.55 var(--font-body, var(--sans, sans-serif)); }
 .impact-platform-mobile-card { display: none; }
 
-/* Social reach: one featured Douyin metric with three compact account records. */
+/* AI Media: a consistent type scale and scan-first actions across all accounts. */
 .impact-reach-dossier {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  --reach-type-platform: 17px;
-  --reach-type-feature-value: 52px;
-  --reach-type-account-value: 24px;
-  --reach-type-unit: 13px;
-  --reach-type-secondary: 13px;
+  --reach-type-platform: 16px;
+  --reach-type-feature-value: clamp(36px, 3.5vw, 46px);
+  --reach-type-account-value: 25px;
+  --reach-type-unit: 12px;
+  --reach-type-secondary: 12px;
   --reach-type-action: 13px;
-  --reach-type-label: 12px;
-  padding: 22px 24px 20px;
+  --reach-type-label: 11px;
+  padding: 24px 28px 22px;
 }
-.impact-reach-dossier-head { margin-bottom: 16px; color: var(--impact-muted); font-size: var(--reach-type-label); font-weight: 500; line-height: 1.6; letter-spacing: .08em; }
-.impact-reach-layout { display: grid; grid-template-columns: minmax(0, .45fr) minmax(0, .55fr); gap: clamp(24px, 3vw, 42px); align-items: start; }
-.impact-reach-feature { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; padding: 0; }
-.impact-reach-account-name { min-width: 0; margin: 0; color: var(--impact-text); font: 600 var(--reach-type-platform)/1.4 var(--font-display, var(--sans, sans-serif)); overflow-wrap: anywhere; }
-.impact-reach-feature-metrics { margin-top: clamp(24px, 3vw, 38px); }
-.impact-reach-feature-primary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--impact-text); font-variant-numeric: tabular-nums; }
-.impact-reach-feature-primary > span { font: 600 var(--reach-type-feature-value)/1.05 var(--font-display, var(--sans, sans-serif)); letter-spacing: -.055em; white-space: nowrap; }
-.impact-reach-feature-primary small { color: var(--apple-secondary); font: 400 var(--reach-type-unit)/1.4 var(--font-body, var(--sans, sans-serif)); }
-.impact-reach-feature-secondary { display: block; margin-top: 10px; }
-.impact-reach-feature-actions, .impact-reach-record-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
-.impact-reach-feature-actions { margin-top: 12px; padding-top: 0; }
-.impact-reach-dossier .impact-reach-action { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--apple-secondary); font: 500 var(--reach-type-action)/1.4 var(--font-body, var(--sans, sans-serif)); text-align: left; text-decoration: none; overflow-wrap: anywhere; cursor: pointer; }
-.impact-reach-action:hover { color: var(--apple-text); }
-.impact-reach-action:focus-visible { border-radius: 4px; outline: 2px solid var(--impact-edge); outline-offset: 3px; color: var(--apple-text); }
+.impact-reach-dossier-head {
+  margin-bottom: 20px;
+  color: var(--impact-muted);
+  font: 500 var(--reach-type-label)/1.5 var(--font-body, var(--sans, sans-serif));
+  letter-spacing: .06em;
+}
+.impact-reach-layout {
+  display: grid;
+  grid-template-columns: minmax(0, .42fr) minmax(0, .58fr);
+  align-items: stretch;
+  gap: clamp(28px, 4vw, 56px);
+}
+.impact-reach-feature {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-width: 0;
+}
+.impact-reach-feature-main { min-width: 0; }
+.impact-reach-account-name {
+  min-width: 0;
+  margin: 0;
+  color: var(--impact-text);
+  font: 600 var(--reach-type-platform)/1.45 var(--font-display, var(--sans, sans-serif));
+  overflow-wrap: anywhere;
+}
+.impact-reach-feature-metrics { min-width: 0; margin-top: 26px; }
+.impact-reach-feature-primary,
+.impact-reach-record-metrics strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 7px;
+  color: var(--impact-text);
+  font-variant-numeric: tabular-nums;
+}
+.impact-reach-feature-primary > span {
+  font: 600 var(--reach-type-feature-value)/1.15 var(--font-display, var(--sans, sans-serif));
+  letter-spacing: -.05em;
+  white-space: nowrap;
+}
+.impact-reach-feature-primary small,
+.impact-reach-record-metrics small {
+  color: var(--apple-secondary);
+  font: 400 var(--reach-type-unit)/1.4 var(--font-body, var(--sans, sans-serif));
+  letter-spacing: 0;
+}
+.impact-reach-feature-secondary,
+.impact-reach-record-metrics > span {
+  display: block;
+  margin-top: 5px;
+  color: var(--apple-secondary);
+  font: 400 var(--reach-type-secondary)/1.5 var(--font-body, var(--sans, sans-serif));
+  overflow-wrap: anywhere;
+}
+.impact-reach-feature-actions,
+.impact-reach-record-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+}
+.impact-reach-feature-actions { margin-top: 18px; }
+.impact-reach-dossier .impact-reach-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--apple-secondary);
+  font: 500 var(--reach-type-action)/1.45 var(--font-body, var(--sans, sans-serif));
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.impact-reach-dossier button.impact-reach-action { color: var(--impact-text); }
+.impact-reach-dossier .impact-reach-action:hover { color: var(--apple-text); }
+.impact-reach-dossier .impact-reach-action:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--impact-edge);
+  outline-offset: 3px;
+}
 .impact-reach-account-list { min-width: 0; }
-.impact-reach-account-record { padding: 8px 0; border-top: 1px solid var(--impact-hairline); }
+.impact-reach-account-record {
+  padding: 12px 0 13px;
+  border-top: 1px solid var(--impact-hairline);
+}
 .impact-reach-account-record:first-child { padding-top: 0; border-top: 0; }
-.impact-reach-record-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, .9fr); align-items: center; gap: 14px; min-width: 0; }
-.impact-reach-record-metrics { min-width: 0; color: var(--impact-text); font-variant-numeric: tabular-nums; }
-.impact-reach-record-metrics strong { display: block; font: 600 var(--reach-type-account-value)/1.2 var(--font-display, var(--sans, sans-serif)); overflow-wrap: anywhere; }
-.impact-reach-record-metrics small { color: var(--apple-secondary); font: 400 var(--reach-type-unit)/1.4 var(--font-body, var(--sans, sans-serif)); }
-.impact-reach-feature-secondary, .impact-reach-record-metrics > span { color: var(--apple-secondary); font: 400 var(--reach-type-secondary)/1.4 var(--font-body, var(--sans, sans-serif)); }
-.impact-reach-record-metrics > span { display: block; margin-top: 3px; overflow-wrap: anywhere; }
-.impact-reach-record-actions { gap: 4px 16px; margin-top: 4px; }
-
+.impact-reach-account-record:last-child { padding-bottom: 0; }
+.impact-reach-record-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: start;
+  gap: 16px;
+}
+.impact-reach-record-metrics { min-width: 0; }
+.impact-reach-record-metrics strong {
+  margin: 0;
+  font: 600 var(--reach-type-account-value)/1.2 var(--font-display, var(--sans, sans-serif));
+  letter-spacing: -.04em;
+}
+.impact-reach-record-actions { margin-top: 3px; }
 /* Keep all three impact chapters on the same desktop title-over-panel layout. */
 @media (min-width: 821px) {
   #impact-awards.impact-evidence-row,
   #impact-programs.impact-evidence-row,
   #impact-reach.impact-evidence-row { grid-template-columns: minmax(0, 1fr); }
 }
-.impact-profile-lightbox { position: fixed; inset: 0; z-index: 210; display: grid; place-items: center; overflow: hidden; padding: 24px; background: var(--portfolio-modal-surface); overscroll-behavior: contain; backdrop-filter: var(--portfolio-modal-blur); -webkit-backdrop-filter: var(--portfolio-modal-blur); }
-.impact-profile-dialog { position: relative; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; width: min(100%, 760px); max-height: min(90dvh, 850px); overflow: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 20px 24px; border: 1px solid var(--portfolio-card-border); border-radius: var(--portfolio-card-radius, 24px); background: var(--portfolio-modal-panel-surface); color: var(--impact-text); }
-.impact-profile-dialog:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 4px; }
-.impact-profile-dialog-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; margin-bottom: 16px; }
-.impact-profile-dialog h3 { min-width: 0; margin: 0; color: var(--impact-text); font: 600 24px/1.2 var(--font-display, var(--sans, sans-serif)); letter-spacing: -.04em; overflow-wrap: anywhere; }
-.impact-profile-dialog-close { position: static; flex: 0 0 44px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--impact-hairline); border-radius: 50%; background: transparent; color: var(--impact-muted); cursor: pointer; font: 300 22px/1 var(--font-body, sans-serif); }
-.impact-profile-dialog-close:hover, .impact-profile-dialog-close:focus-visible { color: var(--apple-text); border-color: var(--impact-edge); }
-.impact-profile-dialog-close:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 3px; }
-.impact-profile-dialog-image { display: block; align-self: center; flex: 0 0 auto; width: auto; height: auto; max-width: 100%; max-height: min(54vh, 640px); object-fit: contain; border-radius: var(--portfolio-tile-radius, 12px); }
-.impact-profile-dialog-image.is-qr { width: min(100%, 240px); height: auto; aspect-ratio: 1; background: #fff; }
-.impact-profile-dialog-qr-note { margin: 10px 0 0; color: var(--apple-secondary); font: 400 12px/1.45 var(--font-body, sans-serif); text-align: center; }
-.impact-profile-dialog-error { align-self: center; margin: 24px 0; color: var(--apple-secondary); font: 400 13px/1.5 var(--font-body, sans-serif); text-align: center; }
-.impact-profile-dialog-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 12px; width: 100%; margin-top: 14px; }
-.impact-profile-dialog-action { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0 16px; border: 1px solid var(--impact-hairline); border-radius: var(--portfolio-tile-radius, 12px); background: rgba(255, 255, 255, .06); color: var(--apple-text); font: 500 13px/1.4 var(--font-body, var(--sans, sans-serif)); text-decoration: none; cursor: pointer; }
-.impact-profile-dialog-action:hover, .impact-profile-dialog-action:focus-visible { border-color: var(--impact-edge); background: rgba(255, 255, 255, .1); }
+/* Media account details use the same fixed CinemaNavigation as awards and work.
+   Put the blur on a sibling paint layer, never the fixed capsule's ancestor. */
+.impact-profile-lightbox {
+  position: fixed; inset: 0; z-index: 210;
+  display: flex; align-items: safe center; justify-content: center;
+  overflow: auto; box-sizing: border-box; overscroll-behavior: contain;
+  padding: max(94px,calc(env(safe-area-inset-top) + 80px)) max(24px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));
+  background: transparent;
+}
+.impact-profile-lightbox::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--portfolio-modal-surface);
+  backdrop-filter: var(--portfolio-modal-blur);
+  -webkit-backdrop-filter: var(--portfolio-modal-blur);
+}
+/* One open shows both proof images; no additional view or navigation. */
+.impact-profile-dialog {
+  position: relative;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: min(100%, 880px);
+  min-width: 0;
+  max-width: 100%;
+  margin: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--impact-text);
+}
+.impact-profile-dialog:focus-visible { outline: none; }
+.impact-profile-dialog h2 {
+  margin: 0 0 20px;
+  color: var(--impact-text);
+  font: 600 22px/1.35 var(--font-display, var(--sans, sans-serif));
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+.impact-profile-dialog-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(195px, .42fr);
+  gap: clamp(18px, 3vw, 36px);
+  align-items: center;
+}
+.impact-profile-proof { min-width: 0; margin: 0; }
+.impact-profile-proof figcaption,
+.impact-profile-qr-heading {
+  margin: 0 0 12px;
+  color: var(--apple-secondary);
+  font: 500 12px/1.5 var(--font-body, var(--sans, sans-serif));
+  letter-spacing: .03em;
+}
+.impact-profile-dialog-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: min(56dvh, 600px);
+  object-fit: contain;
+  border-radius: var(--portfolio-content-radius, 18px);
+}
+.impact-profile-qr-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  min-width: 0;
+}
+.impact-profile-dialog-image.is-qr {
+  width: 100%;
+  max-width: 248px;
+  height: auto;
+  aspect-ratio: 630/632;
+  border-radius: 10px;
+  background: #fff;
+}
+.impact-profile-dialog-qr-note {
+  margin: 14px 0 12px;
+  color: var(--apple-secondary);
+  font: 400 12px/1.55 var(--font-body, var(--sans, sans-serif));
+  overflow-wrap: anywhere;
+}
+.impact-profile-dialog-error {
+  margin: 16px 0;
+  color: var(--apple-secondary);
+  font: 400 13px/1.5 var(--font-body, sans-serif);
+}
+.impact-profile-dialog-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--impact-hairline);
+  border-radius: var(--portfolio-tile-radius, 12px);
+  background: rgba(255, 255, 255, .06);
+  color: var(--apple-text);
+  font: 500 13px/1.4 var(--font-body, var(--sans, sans-serif));
+  text-decoration: none;
+  cursor: pointer;
+}
+.impact-profile-dialog-action:hover, .impact-profile-dialog-action:focus-visible {
+  border-color: var(--impact-edge);
+  background: rgba(255, 255, 255, .1);
+}
 .impact-profile-dialog-action:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 /* Keep account-proof modal readable when transparency is reduced or unavailable. */
 @media (prefers-reduced-transparency: reduce) {
-  .impact-profile-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .impact-profile-lightbox::before { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .impact-profile-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .impact-profile-lightbox::before { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 @media (max-width: 820px) {
   .impact-evidence { gap: 62px; }
@@ -275,53 +445,78 @@
   .impact-reach-dossier { padding: 20px; }
 }
 
-@media (min-width: 900px) {
-  .impact-reach-layout { grid-template-columns: minmax(0, .4fr) minmax(0, .6fr); align-items: stretch; }
-  /* Balance the shorter featured account against the three-row account list. */
-  .impact-reach-feature { justify-content: space-between; }
-  .impact-reach-feature-metrics, .impact-reach-feature-actions { margin-top: 0; }
-  .impact-reach-record-main { align-items: start; }
-}
-
 @media (min-width: 900px) and (max-width: 1100px) {
-  .impact-reach-layout { grid-template-columns: minmax(0, .4fr) minmax(0, .6fr); gap: 22px; }
+  .impact-reach-layout { grid-template-columns: minmax(0, .4fr) minmax(0, .6fr); gap: 24px; }
+  .impact-reach-record-main { gap: 10px; }
 }
-
 /* A 721px-wide viewport cannot comfortably support a two-column dossier.
    Keep the text-first single column until 900px without affecting navigation. */
 @media (min-width: 721px) and (max-width: 899px) {
   .impact-reach-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .impact-reach-feature { padding-bottom: 16px; border-bottom: 1px solid var(--impact-hairline); }
-  .impact-reach-feature-metrics { margin-top: 16px; }
-  .impact-reach-account-list { padding-top: 8px; }
-  .impact-reach-record-main { align-items: center; }
+  .impact-reach-feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: 13px;
+    border-bottom: 1px solid var(--impact-hairline);
+  }
+  .impact-reach-feature-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; }
+  .impact-reach-feature-metrics { margin-top: 0; }
+  .impact-reach-feature-primary > span { font-size: 29px; }
+  .impact-reach-feature-actions { margin-top: 4px; }
+  .impact-reach-account-record:first-child { padding-top: 12px; }
 }
-
 @media (max-width: 720px) {
   .impact-reach-dossier {
     --reach-type-platform: 16px;
-    --reach-type-feature-value: 48px;
-    --reach-type-account-value: 22px;
+    --reach-type-feature-value: 28px;
+    --reach-type-account-value: 25px;
     --reach-type-unit: 12px;
     --reach-type-secondary: 12px;
     --reach-type-label: 11px;
+    --reach-type-action: 13px;
   }
+  .impact-reach-dossier-head { margin-bottom: 18px; }
   .impact-reach-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .impact-reach-feature { padding: 0 0 20px; border-bottom: 1px solid var(--impact-hairline); }
-  .impact-reach-feature-metrics { margin-top: 18px; }
-  .impact-reach-feature-primary { column-gap: 8px; }
-  .impact-reach-feature-actions { margin-top: 14px; padding-top: 0; }
-  .impact-reach-account-list { padding-top: 6px; }
-  .impact-reach-record-main { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: 10px; }
-  .impact-reach-account-record { padding: 12px 0 10px; }
-  .impact-reach-account-record:first-child { padding-top: 8px; }
-  .impact-reach-record-actions { gap: 0 14px; margin-top: 2px; }
-  .impact-profile-lightbox { padding: max(16px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
-  .impact-profile-dialog { max-height: 92dvh; padding: 16px; }
-  .impact-profile-dialog h3 { font-size: 22px; }
-  .impact-profile-dialog-header { margin-bottom: 12px; }
-  .impact-profile-dialog-image { max-height: 42dvh; }
-  .impact-profile-dialog-image.is-qr { width: min(100%, 210px); max-height: 34dvh; }
+  .impact-reach-feature {
+    display: block;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--impact-hairline);
+  }
+  .impact-reach-feature-main,
+  .impact-reach-record-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    align-items: start;
+    gap: 10px;
+  }
+  .impact-reach-feature-metrics { margin-top: 0; }
+  .impact-reach-feature-secondary { margin-top: 5px; }
+  .impact-reach-feature-actions,
+  .impact-reach-record-actions { gap: 0 18px; margin-top: 4px; }
+  .impact-reach-dossier .impact-reach-action { min-height: 44px; }
+  .impact-reach-account-record { padding: 12px 0; }
+  .impact-reach-account-record:first-child { padding-top: 12px; }
+  .impact-profile-lightbox { padding: max(90px,calc(env(safe-area-inset-top) + 78px)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
+  .impact-profile-dialog h2 { margin-bottom: 16px; font-size: 19px; }
+  .impact-profile-dialog-content { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .impact-profile-proof figcaption, .impact-profile-qr-heading { margin-bottom: 8px; }
+  .impact-profile-dialog-image { max-height: none; }
+  .impact-profile-qr-panel {
+    display: grid;
+    grid-template-columns: minmax(136px, 180px) minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    align-items: start;
+    column-gap: 18px;
+  }
+  .impact-profile-qr-heading { grid-column: 1 / -1; }
+  .impact-profile-dialog-image.is-qr { grid-column: 1; grid-row: 2 / 4; width: 100%; max-width: 180px; }
+  .impact-profile-dialog-qr-note { grid-column: 2; grid-row: 2; margin: 0 0 8px; }
+  .impact-profile-dialog-action { grid-column: 2; grid-row: 3; padding-inline: 12px; }
+
+}
+@media (max-width: 350px) {
+  .impact-profile-qr-panel { grid-template-columns: minmax(0, 145px) minmax(0, 1fr); column-gap: 12px; }
+  .impact-profile-dialog-image.is-qr { max-width: 145px; }
 }
 
 @media (max-width: 720px) {

@@ -359,7 +359,7 @@ header .nav-contact-icon:focus-visible {
   border: 1px solid rgba(255, 255, 255, .18) !important;
   border-radius: var(--apple-radius-card) !important;
   background: var(--comet-cover) center / cover no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .04), var(--apple-shadow-card) !important;
+  box-shadow: var(--portfolio-content-shadow) !important;
   transition: border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
 }
 .comet-card:hover .comet-archive__image,
@@ -1104,7 +1104,7 @@ header .nav-contact-icon:focus-visible {
   #projects .comet-archive-mobile-shell .comet-archive__title {
     height: auto !important;
     min-height: 0 !important;
-    padding-top: 6px !important;
+    padding-top: var(--portfolio-work-title-gap-mobile) !important;
   }
   #projects .comet-archive-mobile-shell .comet-archive__details,
   #projects .comet-archive-mobile-shell .comet-archive__details strong {
@@ -1282,7 +1282,7 @@ header .nav-contact-icon:focus-visible {
     order: 3 !important;
     gap: 2px !important;
     min-height: 0 !important;
-    padding: 2px 1px 0 !important;
+    padding: var(--portfolio-work-caption-gap-mobile) 1px 0 !important;
   }
   .comet-archive-mobile-shell .comet-archive__details {
     height: auto !important;

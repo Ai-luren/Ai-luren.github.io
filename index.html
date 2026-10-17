@@ -923,7 +923,7 @@
     }
 
     /* 精选创作档案：外链入口明确，减少两端纵向占用。 */
-    .comet-archive__image { aspect-ratio: 4 / 5; }
+    .comet-archive__image { aspect-ratio: var(--portfolio-work-cover-ratio); }
     .comet-archive__meta {
       display: inline-flex;
       align-items: center;
@@ -998,7 +998,7 @@
       min-height: 1.5em;
       padding: 0;
     }
-    .comet-archive__title { display: flex; align-items: flex-end; min-height: 2em; text-align: left; }
+    .comet-archive__title { display: flex; align-items: flex-end; min-height: 0; text-align: left; }
     .comet-archive__title-content {
       display: block;
       width: 100%;

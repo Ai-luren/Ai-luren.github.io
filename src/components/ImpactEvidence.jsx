@@ -543,11 +543,13 @@ function ReachDossier() {
   const lang = useLang();
   const t = useT();
   const [activeProfile, setActiveProfile] = useState(null);
-  const [profileView, setProfileView] = useState('screenshot');
-  const [profileImageFailed, setProfileImageFailed] = useState(false);
+  const [profileImageFailed, setProfileImageFailed] = useState({ screenshot: false, qr: false });
   const [isProfileClosing, setIsProfileClosing] = useState(false);
   const profileDialogRef = useRef(null);
+  const profileViewerRef = useRef(null);
+  const profileCloseRef = useRef(null);
   const profileTriggerRef = useRef(null);
+  const profileFocusIdRef = useRef(null);
   const profileCloseTimerRef = useRef(null);
   const profileClosingRef = useRef(false);
 
@@ -555,8 +557,7 @@ function ReachDossier() {
     profileTriggerRef.current = event.currentTarget;
     window.clearTimeout(profileCloseTimerRef.current);
     profileClosingRef.current = false;
-    setProfileView('screenshot');
-    setProfileImageFailed(false);
+    setProfileImageFailed({ screenshot: false, qr: false });
     setIsProfileClosing(false);
     setActiveProfile(card);
   };
@@ -565,10 +566,10 @@ function ReachDossier() {
     if (!activeProfile || profileClosingRef.current) return;
     profileClosingRef.current = true;
     const finish = () => {
+      profileFocusIdRef.current = activeProfile.id;
       setActiveProfile(null);
       setIsProfileClosing(false);
       profileClosingRef.current = false;
-      requestAnimationFrame(() => profileTriggerRef.current?.focus({ preventScroll: true }));
     };
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       finish();
@@ -580,60 +581,58 @@ function ReachDossier() {
 
   useEffect(() => () => window.clearTimeout(profileCloseTimerRef.current), []);
 
-  useEffect(() => {
-    if (!activeProfile) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        closeProfile();
-      }
-    };
-    document.addEventListener('keydown', onKeyDown);
-    requestAnimationFrame(() => profileDialogRef.current?.focus({ preventScroll: true }));
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [activeProfile, closeProfile]);
-
-  useEffect(() => {
-    if (!activeProfile) return undefined;
-    const body = document.body;
-    const root = document.documentElement;
-    const previousBodyOverflow = body.style.overflow;
-    const previousRootOverflow = root.style.overflow;
-    body.style.overflow = 'hidden';
-    root.style.overflow = 'hidden';
-    return () => {
-      body.style.overflow = previousBodyOverflow;
-      root.style.overflow = previousRootOverflow;
-    };
+  // Restore keyboard focus only after modal unmount restores the page's inert state.
+  useLayoutEffect(() => {
+    if (activeProfile || !profileFocusIdRef.current) return;
+    const focusId = profileFocusIdRef.current;
+    const trigger = document.querySelector('[data-social-profile-trigger="' + focusId + '"]');
+    (trigger || profileTriggerRef.current)?.focus({ preventScroll: true });
+    profileFocusIdRef.current = null;
   }, [activeProfile]);
 
-  const trapProfileDialogTab = (event) => {
-    if (event.key !== 'Tab') return;
-    const dialog = profileDialogRef.current;
-    if (!dialog) return;
-    const focusable = [...dialog.querySelectorAll('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')]
-      .filter((element) => !element.hidden && element.getAttribute('aria-hidden') !== 'true');
-    if (!focusable.length) {
-      event.preventDefault();
-      dialog.focus({ preventScroll: true });
-      return;
-    }
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    const active = document.activeElement;
-    if (event.shiftKey && (active === first || active === dialog)) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && (active === last || active === dialog)) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
+  // Viewer navigation is shared with award and work detail viewers.
+  // Keep exactly one modal capsule; the source page remains inert.
+  useLayoutEffect(() => {
+    if (!activeProfile) return undefined;
+    const viewer = profileViewerRef.current;
+    const body = document.body;
+    const previousOverflow = body.style.overflow;
+    const background = [...body.children].filter(node => node !== viewer && !node.contains(viewer));
+    const previousInert = background.map(node => node.inert);
+    background.forEach(node => { node.inert = true; });
+    body.style.overflow = 'hidden';
+    body.classList.add('profile-viewer-open');
+    profileCloseRef.current?.focus({ preventScroll: true });
+
+    const onKeyDown = event => {
+      if (event.key === 'Escape') { event.preventDefault(); closeProfile(); }
+      if (event.key !== 'Tab') return;
+      const controls = [...viewer.querySelectorAll('a[href],button:not(:disabled)')].filter(node => node.getClientRects().length);
+      const first = controls[0], last = controls.at(-1);
+      if (!first) { event.preventDefault(); profileCloseRef.current?.focus({ preventScroll: true }); }
+      else if (event.shiftKey && (document.activeElement === first || !viewer.contains(document.activeElement))) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !viewer.contains(document.activeElement))) {
+        event.preventDefault(); first.focus();
+      }
+    };
+    const onFocus = event => {
+      if (!viewer.contains(event.target)) profileCloseRef.current?.focus({ preventScroll: true });
+    };
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('focusin', onFocus);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('focusin', onFocus);
+      background.forEach((node, index) => { node.inert = previousInert[index]; });
+      body.style.overflow = previousOverflow;
+      body.classList.remove('profile-viewer-open');
+    };
+  }, [activeProfile, closeProfile]);
 
   const formatMetric = (value) => (lang === 'zh' ? value.replace(/w$/i, '万') : value);
   const featureCard = reachCards[0];
   const profileRecords = reachCards.slice(1);
-  const activeImage = activeProfile && (profileView === 'qr' ? activeProfile.qrCode : activeProfile.screenshot);
 
   return (
     <div className="impact-glass impact-reach-dossier">
@@ -642,16 +641,18 @@ function ReachDossier() {
       </div>
       <div className="impact-reach-layout">
         <article className="impact-reach-feature">
-          <h3 className="impact-reach-account-name">{featureCard.platform[lang]}</h3>
-          <div className="impact-reach-feature-metrics">
-            <strong className="impact-reach-feature-primary">
-              <span>{formatMetric(featureCard.primary[lang].value)}</span>
-              <small>{featureCard.primary[lang].unit}</small>
-            </strong>
-            <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
+          <div className="impact-reach-feature-main">
+            <h3 className="impact-reach-account-name">{featureCard.platform[lang]}</h3>
+            <div className="impact-reach-feature-metrics">
+              <strong className="impact-reach-feature-primary">
+                <span>{formatMetric(featureCard.primary[lang].value)}</span>
+                <small>{featureCard.primary[lang].unit}</small>
+              </strong>
+              <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
+            </div>
           </div>
           <div className="impact-reach-feature-actions">
-            <button className="impact-reach-action" type="button" aria-haspopup="dialog" onClick={(event) => openProfile(featureCard, event)}>
+            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
               {t('查看账号资料', 'View account details')}
             </button>
             <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
@@ -671,7 +672,7 @@ function ReachDossier() {
                 </div>
               </div>
               <div className="impact-reach-record-actions">
-                <button className="impact-reach-action" type="button" aria-haspopup="dialog" onClick={(event) => openProfile(card, event)}>
+                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
                   {t('查看账号资料', 'View account details')}
                 </button>
                 {card.link && (
@@ -685,7 +686,13 @@ function ReachDossier() {
         </div>
       </div>
       {activeProfile && createPortal(
-        <div className={`impact-profile-lightbox${isProfileClosing ? ' is-closing' : ''}`} role="presentation" onClick={closeProfile}>
+        <div
+          ref={profileViewerRef}
+          className={`impact-profile-lightbox${isProfileClosing ? ' is-closing' : ''}`}
+          role="presentation"
+          onClick={event => { if (event.target === event.currentTarget) closeProfile(); }}
+        >
+          <CinemaNavigation lang={lang} closeRef={profileCloseRef} onClose={closeProfile} />
           <div
             ref={profileDialogRef}
             className="impact-profile-dialog"
@@ -694,49 +701,48 @@ function ReachDossier() {
             aria-labelledby="impact-profile-dialog-title"
             tabIndex={-1}
             onClick={(event) => event.stopPropagation()}
-            onKeyDown={trapProfileDialogTab}
           >
-            <header className="impact-profile-dialog-header">
-              <h3 id="impact-profile-dialog-title">{activeProfile.platform[lang]}</h3>
-              <button type="button" className="impact-profile-dialog-close" aria-label={t('关闭账号资料', 'Close account details')} onClick={closeProfile}>×</button>
-            </header>
-            {profileImageFailed ? (
-              <p className="impact-profile-dialog-error" role="status">
-                {t('账号图片暂时无法加载，请稍后重试。', 'This account image could not be loaded. Please try again later.')}
-              </p>
-            ) : (
-              <img
-                className={profileView === 'qr' ? 'impact-profile-dialog-image is-qr' : 'impact-profile-dialog-image'}
-                src={activeImage}
-                alt={profileView === 'qr'
-                  ? (lang === 'en' ? `${activeProfile.platform.en} QR code` : `${activeProfile.platform.zh}二维码`)
-                  : (lang === 'en' ? `${activeProfile.platform.en} account screenshot` : `${activeProfile.platform.zh}账号主页截图`)}
-                decoding="async"
-                onError={() => setProfileImageFailed(true)}
-              />
-            )}
-            {profileView === 'qr' && !profileImageFailed && (
-              <p className="impact-profile-dialog-qr-note">{activeProfile.qrNote[lang]}</p>
-            )}
-            {activeProfile.qrCode && (
-              <div className="impact-profile-dialog-actions">
-              {profileView === 'screenshot' && (
-                <button className="impact-profile-dialog-action" type="button" onClick={() => { setProfileImageFailed(false); setProfileView('qr'); }}>
-                  {t('查看二维码', 'View QR code')}
-                </button>
-              )}
-              {profileView === 'qr' && !profileImageFailed && (
-                <a className="impact-profile-dialog-action" href={activeProfile.qrCode} download={`${activeProfile.id}-qr-code.webp`}>
-                  {t('保存二维码', 'Save QR code')}
-                </a>
-              )}
-              {profileView === 'qr' && (
-                <button className="impact-profile-dialog-action" type="button" onClick={() => { setProfileImageFailed(false); setProfileView('screenshot'); }}>
-                  {t('返回主页截图', 'Back to profile')}
-                </button>
-              )}
-              </div>
-            )}
+            <h2 id="impact-profile-dialog-title">{activeProfile.platform[lang]}</h2>
+            <div className="impact-profile-dialog-content">
+              <figure className="impact-profile-proof">
+                <figcaption>{t('账号主页', 'Account profile')}</figcaption>
+                {profileImageFailed.screenshot ? (
+                  <p className="impact-profile-dialog-error" role="status">
+                    {t('账号截图暂时无法加载。', 'Account screenshot is unavailable.')}
+                  </p>
+                ) : (
+                  <img
+                    className="impact-profile-dialog-image"
+                    src={activeProfile.screenshot}
+                    alt={lang === 'en' ? `${activeProfile.platform.en} account screenshot` : `${activeProfile.platform.zh}账号主页截图`}
+                    decoding="async"
+                    onError={() => setProfileImageFailed(previous => ({ ...previous, screenshot: true }))}
+                  />
+                )}
+              </figure>
+              <aside className="impact-profile-qr-panel">
+                <div className="impact-profile-qr-heading">{t('扫码访问', 'Scan to visit')}</div>
+                {profileImageFailed.qr ? (
+                  <p className="impact-profile-dialog-error" role="status">
+                    {t('二维码暂时无法加载。', 'QR code is unavailable.')}
+                  </p>
+                ) : (
+                  <img
+                    className="impact-profile-dialog-image is-qr"
+                    src={activeProfile.qrCode}
+                    alt={lang === 'en' ? `${activeProfile.platform.en} QR code` : `${activeProfile.platform.zh}二维码`}
+                    decoding="async"
+                    onError={() => setProfileImageFailed(previous => ({ ...previous, qr: true }))}
+                  />
+                )}
+                <p className="impact-profile-dialog-qr-note">{activeProfile.qrNote[lang]}</p>
+                {!profileImageFailed.qr && (
+                  <a className="impact-profile-dialog-action" href={activeProfile.qrCode} download={activeProfile.id + '-qr-code.webp'}>
+                    {t('保存二维码', 'Save QR code')}
+                  </a>
+                )}
+              </aside>
+            </div>
           </div>
         </div>,
         document.body

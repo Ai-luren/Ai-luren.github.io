@@ -25,6 +25,13 @@
   --portfolio-content-surface: rgba(0, 0, 0, .58);
   --portfolio-content-border: rgba(255, 255, 255, .18);
   --portfolio-content-shadow: 0 14px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
+  /* Shared editorial artwork geometry for Featured and All Work.
+     Keep the home and library grids independent; standardize their cards. */
+  --portfolio-work-cover-ratio: 3 / 4;
+  --portfolio-work-title-gap: 10px;
+  --portfolio-work-caption-gap: 5px;
+  --portfolio-work-title-gap-mobile: 8px;
+  --portfolio-work-caption-gap-mobile: 4px;
   --portfolio-tile-surface: rgba(255, 255, 255, .05);
   --portfolio-tile-border: rgba(255, 255, 255, .09);
   --portfolio-tile-shadow: none;

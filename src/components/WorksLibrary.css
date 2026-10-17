@@ -27,13 +27,13 @@ html:has(#works-root) { background: var(--library-bg); }
 .library-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 24px; margin-top: 28px; }
 .work-library .comet-archive__item { min-width: 0; }
 .work-library .comet-archive__card { display: grid; width: 100%; height: 100%; min-width: 0; align-content: start; gap: 0; padding: 0; border: 0; background: transparent; color: var(--apple-text); text-align: left; }
-.work-library .comet-archive__title { grid-row: 2; display: block; min-width: 0; min-height: 0; margin-top: 12px; }
-.work-library .comet-archive__image { position: relative; display: block; width: 100%; aspect-ratio: 3/4; overflow: hidden; border: 1px solid var(--portfolio-content-border); border-radius: var(--portfolio-content-radius); background: var(--comet-cover) center/cover no-repeat; box-shadow: var(--portfolio-content-shadow); }
+.work-library .comet-archive__title { grid-row: 2; display: block; min-width: 0; min-height: 0; margin-top: var(--portfolio-work-title-gap); }
+.work-library .comet-archive__image { position: relative; display: block; width: 100%; aspect-ratio: var(--portfolio-work-cover-ratio); overflow: hidden; border: 1px solid var(--portfolio-content-border); border-radius: var(--portfolio-content-radius); background: var(--comet-cover) center/cover no-repeat; box-shadow: var(--portfolio-content-shadow); }
 .work-library .comet-archive__image::after { display: none; }
 .work-library .comet-archive__image { grid-row: 1; background-size: var(--comet-cover-fit, cover); background-color: #080808; }
 .work-library .comet-archive__image > .comet-archive__meta { position: absolute; right: 12px; bottom: 12px; z-index: 1; padding: 5px 9px; border: 1px solid rgba(255,255,255,.16); border-radius: var(--portfolio-control-radius); background: rgba(0,0,0,.72); color: #f5f5f7; font: 10px/1.5 var(--font-body); }
 .work-library .comet-archive__mobile-link { display: none; }
-.work-library .comet-archive__copy { grid-row: 3; display: block; margin-top: 5px; }
+.work-library .comet-archive__copy { grid-row: 3; display: block; margin-top: var(--portfolio-work-caption-gap); }
 .work-library .comet-archive__details strong { display: block; max-width: none; text-align: left; }
 .work-library .comet-archive__card:hover .comet-archive__image { transform: none; }
 .library-empty { min-height: 300px; display: grid; align-content: center; justify-items: center; color: var(--apple-secondary); }
@@ -52,17 +52,21 @@ html:has(#works-root) { background: var(--library-bg); }
   .library-intro .page-title { margin-top: var(--space-3); }
   .library-intro > p:last-child { font-size: var(--type-supporting-mobile); }
   .library-category-note { font-size: var(--type-caption-mobile); }
-  .library-filters { flex-wrap: wrap; justify-content: space-between; gap: 0 8px; }
-  .library-filters button { position: relative; flex: 0 0 auto; gap: 0; min-height: 44px; padding: 0 2px; border: 0; border-radius: 0; background: transparent; color: var(--apple-secondary); font-size: 13px; white-space: nowrap; }
+  .library-filters { flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; }
+  .library-filters button { position: relative; flex: 0 0 auto; justify-content: center; gap: 0; min-width: 44px; min-height: 44px; padding: 0 6px; border: 0; border-radius: 0; background: transparent; color: var(--apple-secondary); font-size: 13px; white-space: nowrap; }
   .library-filters .library-filter-label, .library-filters .library-filter-count { display: none; }
   .library-filter-short { display: inline; }
   .library-filters button[aria-pressed="true"], .library-filters button:hover { background: transparent; color: var(--apple-text); }
   .library-filters button[aria-pressed="true"]::after { content: ''; position: absolute; left: 2px; right: 2px; bottom: 4px; height: 1px; background: currentColor; }
   .library-filters button:focus-visible { outline-offset: -2px; }
   .library-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 14px; margin-top: 24px; }
-  .work-library .comet-archive__title { margin-top: 8px; }
-  .work-library .comet-archive__copy { margin-top: 4px; }
   .work-library .comet-archive__image > .comet-archive__meta { right: 7px; bottom: 7px; font-size: 9px; padding: 4px 7px; }
+}
+/* Featured switches to the compact two-up card at 720px, not 760px.
+   Match its card text rhythm even while the library toolbar is still compact. */
+@media (max-width: 720px) {
+  .work-library .comet-archive__title { margin-top: var(--portfolio-work-title-gap-mobile); }
+  .work-library .comet-archive__copy { margin-top: var(--portfolio-work-caption-gap-mobile); }
 }
 @media (min-width: 761px) { .work-library .library-back { display: none; } }
 @media (max-width: 349px) { .library-filters { display: grid; grid-template-columns: repeat(3, max-content); } }
