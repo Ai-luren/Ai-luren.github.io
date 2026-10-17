@@ -101,7 +101,7 @@ try {
           `${tag}: home & works page heading sizes differ (${homeStyle.section.size} vs ${libraryStyle.heading.size})`);
         assert.equal(homeStyle.section.family, libraryStyle.heading.family, `${tag}: heading families differ`);
         assert.equal(homeStyle.section.weight, libraryStyle.heading.weight, `${tag}: heading weights differ`);
-        assert.equal(homeStyle.projects.size, homeStyle.lab.size, `${tag}: home section headings differ`);
+        assert(homeStyle.lab.size < homeStyle.projects.size, 'AI Lab must be a subordinate heading');
         if (width === 760) assert(homeStyle.section.size <= 42,
           `${tag}: heading jumps too high just before desktop boundary`);
         if (width === 761) assert(homeStyle.section.size >= 39,

@@ -36,7 +36,7 @@ try{
    same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
    await arrows(p,width);await p.keyboard.press('Escape');
   }
-  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();}
+  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();}
   else await p.locator('#primary-nav [data-impact-nav]').click();
   await p.waitForTimeout(650);
   await p.locator('.impact-award-card').first().click();await p.waitForSelector('#impact-award-lightbox');await p.waitForTimeout(400);await p.mouse.move(0,0);await p.waitForTimeout(220);
@@ -56,7 +56,7 @@ try{
   if(width<=760){
    await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');await p.mouse.move(0,0);await p.waitForTimeout(220);
    same(button,await p.locator('.library-menu .cinema-player__close').evaluate(geometry));
-   assert.equal(await p.locator('.shared-menu-links a').count(),7);
+   assert.equal(await p.locator('.shared-menu-links a').count(),4);
    assert((await p.locator('.shared-menu-links a').first().getAttribute('href')).endsWith('index.html#projects'));
    for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.library-menu')));}
    await p.keyboard.press('Escape');assert.equal(await p.locator('.library-menu').count(),0);
@@ -73,7 +73,7 @@ try{
  // A blurred scrolling ancestor must never carry the fixed award capsule away.
  const short=await browser.newPage({viewport:{width:393,height:500}});
  await short.goto(new URL('index.html#impact-awards',base).href);
- await short.locator('.nav-toggle').click();await short.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await short.waitForTimeout(650);
+ await short.locator('.nav-toggle').click();await short.locator('#mobile-primary-nav a[href="#recognition"]').click();await short.waitForTimeout(650);
  await short.locator('.impact-award-card').first().click();await short.waitForTimeout(400);
  const before=await short.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry);
  await short.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);
@@ -106,7 +106,7 @@ try{
    assert.equal(style.opacity,'1');
   };
   await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-card',{state:'attached'});await capability();
-  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();}
+  if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();}
   else await p.locator('#primary-nav [data-impact-nav]').click();
   await p.waitForTimeout(650);
   await p.locator('.impact-award-card').first().click();await p.waitForTimeout(420);

@@ -1671,9 +1671,8 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
-/* Impact rhythm: separate module spacing from the content inside each panel.
-   This keeps the three impact sections predictable and brings AI Lab closer
-   without changing the information architecture or navigation behavior. */
+/* Expertise rhythm: align the three recognition modules and the nested Lab
+   without changing their media layouts or interaction behavior. */
 @media (min-width: 761px) {
   #recognition {
     padding-top: clamp(96px, 8vw, 115px);
@@ -2064,4 +2063,18 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
   --portfolio-icon-surface: var(--portfolio-panel-surface);
   --portfolio-icon-hover-surface: var(--apple-surface-raised);
   --portfolio-icon-active-surface: var(--apple-surface-solid);
+}
+
+/* AI Lab belongs to the Expertise group. Its title uses the subordinate
+   heading scale; the anchored Lab and content grid stay intact. */
+#expertise-group > section[id] { scroll-margin-top: var(--anchor-offset); }
+#experiments .section-title {
+  font-size: var(--impact-title-size);
+  line-height: var(--impact-title-line-height);
+  letter-spacing: var(--impact-title-letter-spacing);
+}
+@media (max-width: 720px) {
+  #experiments .section-title {
+    font-size: min(var(--impact-title-size-mobile), calc(var(--section-title-size-mobile) - 3px));
+  }
 }

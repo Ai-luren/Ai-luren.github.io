@@ -357,14 +357,14 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 移动端菜单必须把 8 个入口作为同一组动画打开；抽屉本体保持锚定，只做透明度过渡，避免打开/关闭时整体位移；同时禁止 transition: all。
+  // 移动端菜单必须把 4 个一级入口作为同一组动画打开；抽屉本体保持锚定，只做透明度过渡，避免打开/关闭时整体位移；同时禁止 transition: all。
   motionSystem: async (page) => {
     if (page.viewportSize().width > 760) return { ok: true };
     return page.evaluate(() => {
       const bad = [];
       const drawer = document.querySelector('#mobile-nav-drawer');
       const items = [...document.querySelectorAll('#mobile-primary-nav .nav-list li')];
-      if (!drawer || items.length !== 7) return { ok: false, detail: `移动菜单项目数 ${items.length}，应为 7` };
+      if (!drawer || items.length !== 4) return { ok: false, detail: `移动菜单项目数 ${items.length}，应为 4` };
 
       const wasOpen = document.body.classList.contains('mobile-nav-open');
       const wasDrawerOpen = drawer.classList.contains('is-open');
@@ -376,7 +376,7 @@ const CHECKS = {
       if (drawerStyle.transitionProperty === 'none') bad.push('菜单抽屉没有过渡');
       if (!drawerStyle.transitionProperty.split(',').map((value) => value.trim()).includes('opacity')) bad.push('菜单抽屉缺少 opacity 过渡');
       if (drawerStyle.transform !== 'none') bad.push('菜单抽屉不应发生整体位移');
-      if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('8 个菜单项没有统一入场动画');
+      if (itemStyles.some((style) => style.animationName !== 'mobile-nav-item-in')) bad.push('4 个菜单项没有统一入场动画');
       if (new Set(itemStyles.map((style) => style.animationDuration)).size !== 1) bad.push('菜单项动画时长不一致');
       if (new Set(itemStyles.map((style) => style.animationTimingFunction)).size !== 1) bad.push('菜单项 easing 不一致');
       if (delays.some((delay, index) => index > 0 && delay <= delays[index - 1])) bad.push('菜单项延迟没有递增');

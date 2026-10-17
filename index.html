@@ -1451,10 +1451,6 @@
       body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(2) { animation-delay: 24ms; }
       body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(3) { animation-delay: 48ms; }
       body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(4) { animation-delay: 72ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(5) { animation-delay: 96ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(6) { animation-delay: 120ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(7) { animation-delay: 144ms; }
-      body.mobile-nav-open #mobile-primary-nav .nav-list li:nth-child(8) { animation-delay: 168ms; }
       body.mobile-nav-closing #mobile-primary-nav .nav-list li { animation-play-state: paused; }
 
       @media (prefers-reduced-motion: reduce) {
@@ -1925,10 +1921,7 @@
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
         <li><a href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
-        <li><a href="#impact-awards"><span data-i18n="nav.recognition">AI 获奖荣誉</span><span class="nav-short" data-i18n="nav.recognition.short">获奖荣誉</span></a></li>
-        <li><a href="#impact-programs"><span data-i18n="nav.superCreator">AI 平台超创</span><span class="nav-short" data-i18n="nav.superCreator.short">平台超创</span></a></li>
-        <li><a href="#impact-reach"><span data-i18n="nav.media">AI 自媒体</span><span class="nav-short" data-i18n="nav.media.short">AI 自媒体</span></a></li>
-        <li><a href="#experiments"><span data-i18n="nav.experiments">AI 实验室</span><span class="nav-short" data-i18n="nav.experiments.short">实验室</span></a></li>
+        <li><a href="#recognition"><span data-i18n="nav.expertise">专业实力</span><span class="nav-short" data-i18n="nav.expertise.short">实力</span></a></li>
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
       </ul>
     </nav>
@@ -1958,18 +1951,20 @@
       </div>
     </section>
 
+    <div id="expertise-group" class="expertise-group" role="group" aria-labelledby="recognition-title">
     <section id="recognition" class="section" aria-labelledby="recognition-title">
       <div class="shell">
-        <div class="section-intro reveal"><div><p class="eyebrow">04 / IMPACT</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">AI 影响力</h2></div></div>
-        <div id="recognition-react-root" class="recognition-react-root" aria-label="AI 影响力" data-i18n-aria="recognition.root.aria"></div>
+        <div class="section-intro reveal"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
+        <div id="recognition-react-root" class="recognition-react-root" aria-label="专业实力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
     <section id="experiments" class="section" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">05 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
         <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
       </div>
     </section>
+    </div>
 
     <section id="profile" class="section closing-section" aria-labelledby="profile-title">
       <div class="shell">
@@ -2526,15 +2521,23 @@
       }
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');
+      function primaryNavSection(sectionId) {
+        if (sectionId === 'top' || sectionId === 'projects') return 'projects';
+        if (sectionId === 'recognition' || sectionId === 'experiments' || /^impact-(awards|programs|reach)$/.test(sectionId)) return 'recognition';
+        if (sectionId === 'contact' || sectionId === 'profile' || sectionId === 'footer') return 'contact';
+        return null;
+      }
       function setNavActive(sectionId) {
+        var activeSection = primaryNavSection(sectionId);
         document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]').forEach(function (link) {
           var target = link.getAttribute('href');
           if (target === '#footer-dock-react-root') target = '#contact';
-          var isContactAction = target === '#contact';
-          link.classList.toggle('is-active', !isContactAction && target === '#' + sectionId);
+          link.classList.toggle('is-active', Boolean(activeSection) && target === '#' + activeSection);
+          if (link.closest('#primary-nav, #mobile-primary-nav')) {
+            if (Boolean(activeSection) && target === '#' + activeSection) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+          }
         });
-        var impactLink = document.querySelector('#primary-nav [data-impact-nav]');
-        if (impactLink) impactLink.classList.toggle('is-active', /^impact-(awards|programs|reach)$/.test(sectionId));
       }
       function handleDesktopNavClick(event) {
         var link = event.target.closest('#primary-nav a[href^="#"]');
@@ -2592,7 +2595,6 @@
           }
         });
       });
-      var sections = document.querySelectorAll('main section, footer');
       if ('IntersectionObserver' in window) {
       // is-on-hero 由 Hero 占比观察器独立管理；导航观察器换章时不能顺带抹掉它，
       // 否则 Hero 离场途中蒙版会瞬间消失又在下个阈值恢复（01→02 背景闪跳的根源）。

@@ -43,7 +43,7 @@ try{
   // The desktop navigation has no visible hamburger; the anchor already exists.
   if(await p.locator('.nav-toggle').isVisible()){
     await p.locator('.nav-toggle').click();
-    await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();
+    await p.locator('#mobile-primary-nav a[href="#recognition"]').click();
   }else{
     await p.locator('#impact-awards').scrollIntoViewIfNeeded();
   }
@@ -103,7 +103,7 @@ try{
  // A genuinely short viewport keeps one internal scroller and accessible chrome.
  const p=await browser.newPage({viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
  const scroll=await p.evaluate(()=>scrollY);const close=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();assert.equal(await p.evaluate(()=>scrollY),scroll);assert.deepEqual(await p.locator('.cinema-player__close').evaluate(rect),close);await p.locator('.cinema-player__close').click();
- await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#impact-awards"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
+ await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
  const nav=await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect);const pageScroll=await p.evaluate(()=>scrollY);await p.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);assert.deepEqual(await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect),nav);assert.equal(await p.evaluate(()=>scrollY),pageScroll);await p.locator('#impact-award-lightbox .cinema-player__close').click();await p.close();
  console.log('Short viewport single-scroller access passed. Real award files all share 1124x2000 dimensions; other source-image ratios and real 3:4 video are not marked verified.');
 }finally{await browser.close();}
