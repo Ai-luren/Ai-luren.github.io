@@ -106,7 +106,8 @@ try {
       role: role?.textContent.trim(),
       description: text,
       previousSection: section?.previousElementSibling?.id,
-      nextSection: section?.nextElementSibling?.id || section?.parentElement?.nextElementSibling?.id,
+      lastExpertiseSection: section?.previousElementSibling?.lastElementChild?.id,
+      contactWithinSection: Boolean(section?.querySelector('#contact')),
       oldCareerElements: section?.querySelectorAll('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction], [data-career-pagination-index]').length ?? -1,
       textOverflow: description ? description.scrollWidth > description.clientWidth + 1 : true,
       boundsOverflow: description ? description.getBoundingClientRect().right > innerWidth + 1 : true,
@@ -118,7 +119,7 @@ try {
   if (aboutState.description !== '从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。') {
     throw new Error('关于我中文正文与确认文案不一致');
   }
-  if (aboutState.previousSection !== 'experiments' || aboutState.nextSection !== 'contact') {
+  if (aboutState.previousSection !== 'expertise-group' || aboutState.lastExpertiseSection !== 'experiments' || !aboutState.contactWithinSection) {
     throw new Error(`关于我没有位于 AI 实验室与联系我之间：${JSON.stringify(aboutState)}`);
   }
   if (aboutState.oldCareerElements !== 0 || aboutState.textOverflow || aboutState.boundsOverflow) {

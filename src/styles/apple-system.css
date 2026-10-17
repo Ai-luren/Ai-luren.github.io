@@ -1266,7 +1266,7 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-mobile-shell .comet-archive__image {
     order: 1 !important;
     aspect-ratio: 3 / 4 !important;
-    background-color: rgba(5, 7, 9, .78) !important;
+    background-color: var(--portfolio-content-surface) !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     background-size: cover !important;

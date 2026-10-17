@@ -30,7 +30,7 @@ html:has(#works-root) { background: var(--library-bg); }
 .work-library .comet-archive__title { grid-row: 2; display: block; min-width: 0; min-height: 0; margin-top: var(--portfolio-work-title-gap); }
 .work-library .comet-archive__image { position: relative; display: block; width: 100%; aspect-ratio: var(--portfolio-work-cover-ratio); overflow: hidden; border: 1px solid var(--portfolio-content-border); border-radius: var(--portfolio-content-radius); background: var(--comet-cover) center/cover no-repeat; box-shadow: var(--portfolio-content-shadow); }
 .work-library .comet-archive__image::after { display: none; }
-.work-library .comet-archive__image { grid-row: 1; background-size: var(--comet-cover-fit, cover); background-color: #080808; }
+.work-library .comet-archive__image { grid-row: 1; background-size: var(--comet-cover-fit, cover); background-color: var(--portfolio-content-surface); }
 .work-library .comet-archive__image > .comet-archive__meta { position: absolute; right: 12px; bottom: 12px; z-index: 1; padding: 5px 9px; border: 1px solid rgba(255,255,255,.16); border-radius: var(--portfolio-control-radius); background: rgba(0,0,0,.72); color: #f5f5f7; font: 10px/1.5 var(--font-body); }
 .work-library .comet-archive__mobile-link { display: none; }
 .work-library .comet-archive__copy { grid-row: 3; display: block; margin-top: var(--portfolio-work-caption-gap); }
@@ -67,6 +67,17 @@ html:has(#works-root) { background: var(--library-bg); }
 @media (max-width: 720px) {
   .work-library .comet-archive__title { margin-top: var(--portfolio-work-title-gap-mobile); }
   .work-library .comet-archive__copy { margin-top: var(--portfolio-work-caption-gap-mobile); }
+  /* ProjectCard includes the same status in both destinations. On touch,
+     present one quiet text CTA below the caption, not an invisible hover badge. */
+  .work-library .comet-archive__mobile-link {
+    display: block;
+    grid-row: 4;
+    min-width: 0;
+    padding-block: 6px;
+    color: var(--apple-secondary);
+    font: 500 11px/1.4 var(--font-body);
+    text-align: right;
+  }
 }
 @media (min-width: 761px) { .work-library .library-back { display: none; } }
 @media (max-width: 349px) { .library-filters { display: grid; grid-template-columns: repeat(3, max-content); } }

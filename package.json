@@ -12,6 +12,7 @@
     "check:impact-platform": "node scripts/check-impact-platform-breakpoints.mjs",
     "check:typography": "node scripts/check-typography-system.mjs",
     "check:work-cards": "node scripts/check-work-card-system.mjs",
+    "check:work-media": "node scripts/check-work-media-consistency.mjs",
     "check:design-system": "node scripts/check-design-system-foundation.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
     "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
