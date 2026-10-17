@@ -689,17 +689,16 @@ function ReachDossier() {
         <div
           ref={profileViewerRef}
           className={`impact-profile-lightbox${isProfileClosing ? ' is-closing' : ''}`}
-          role="presentation"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="impact-profile-dialog-title"
+          tabIndex={-1}
           onClick={event => { if (event.target === event.currentTarget) closeProfile(); }}
         >
           <CinemaNavigation lang={lang} closeRef={profileCloseRef} onClose={closeProfile} />
           <div
             ref={profileDialogRef}
             className="impact-profile-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="impact-profile-dialog-title"
-            tabIndex={-1}
             onClick={(event) => event.stopPropagation()}
           >
             <h2 id="impact-profile-dialog-title">{activeProfile.platform[lang]}</h2>

@@ -124,6 +124,15 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 .impact-award-lightbox figure { animation: apple-modal-in var(--apple-duration-modal) var(--apple-ease) both; transition: opacity var(--apple-duration-modal) var(--apple-ease); }
 .impact-award-lightbox.is-closing figure { animation: none; opacity: 0; }
 .impact-award-lightbox::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* Keyboard focus uses one functional blue across evidence cards, account
+   actions and the shared viewer; hover styling remains component-owned. */
+:is(#impact-awards .impact-award-card,
+    #impact-reach .impact-reach-action,
+    .impact-profile-dialog-action):focus-visible {
+  outline: 2px solid var(--apple-blue) !important;
+  outline-offset: 3px !important;
+}
+
 /* Both viewers use the award viewer's circular arrow language. */
 .cinema-player__sequence button, .impact-award-lightbox-nav {
   display: grid; place-items: center; cursor: pointer; touch-action: manipulation; flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
