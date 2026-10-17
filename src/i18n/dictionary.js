@@ -65,7 +65,8 @@ export const DICT = {
     'nav.experiments.short': '实验室',
     'nav.contact.short': '联系',
 
-    'hero.subtitle': 'AI 视频创意与影像效果设计，聚焦品牌广告、创意短片与视觉表达，从创意到成片。',
+    'hero.positioning': 'AI 视频创意 · 影像效果设计',
+    'hero.subtitle': '为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。',
     'hero.scrollCue.aria': '继续阅读',
     'hero.proof.aria': '创作能力方向',
     'hero.proof1.title': 'AI 视频制作',
@@ -159,7 +160,8 @@ export const DICT = {
     'nav.experiments.short': 'Lab',
     'nav.contact.short': 'Contact',
 
-    'hero.subtitle': 'AI video creative and visual effects for brand commercials and short films — from concept to final cut.',
+    'hero.positioning': 'AI Video Creation · Visual Effects',
+    'hero.subtitle': 'AI-powered commercials, product films and creative shorts for brands — from concept to final cut.',
     'hero.scrollCue.aria': 'Keep reading',
     'hero.proof.aria': 'Creative capabilities',
     'hero.proof1.title': 'AI Video',

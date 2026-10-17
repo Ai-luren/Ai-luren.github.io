@@ -11,11 +11,15 @@ const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:'+port+'/';
 const sizes=[320,390,760,1024,1440,1920];
 const expected={
  zh:{
+  positioning:'AI 视频创意 · 影像效果设计',
+  subtitle:'为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。',
   ctas:['查看作品','合作联系'],
   proof:['AI 视频制作','AI 影像效果'],
   details:['品牌广告 · 创意短片','视觉评测 · 创作工作流'],
  },
  en:{
+  positioning:'AI Video Creation · Visual Effects',
+  subtitle:'AI-powered commercials, product films and creative shorts for brands — from concept to final cut.',
   ctas:['View Work','Get in Touch'],
   proof:['AI Video','AI Effects'],
   details:['Commercials · Short Films','Visual QA · Creative Workflows'],
@@ -51,7 +55,19 @@ try{
       const proof=[...document.querySelectorAll('.hero-proof-card')];
       const buttons=[...document.querySelectorAll('#top .hero-actions button')];
       const subtitle=document.querySelector('.hero-subtitle');
+      const positioning=document.querySelector('#top .hero-positioning');
+      const kickerBox=positioning?.getBoundingClientRect();
+      const headingBox=document.querySelector('#hero-title')?.getBoundingClientRect();
+      const video=document.getElementById('hero-video');
       return {
+       positioning:positioning?.textContent.trim(),
+       positioningSize:parseFloat(getComputedStyle(positioning).fontSize),
+       positioningWidth:kickerBox?.width,
+       positioningLeft:kickerBox?.left,
+       headingTop:headingBox?.top,
+       positioningBottom:kickerBox?.bottom,
+       videoSources:[...video.querySelectorAll('source')].map(x=>x.getAttribute('src')),
+       rotatingTitleCount:document.querySelectorAll('#hero-title .text-type__content').length,
        buttons:buttons.map(e=>e.textContent.trim()),
        proof:proof.map(e=>e.querySelector('strong')?.textContent.trim()),
        details:proof.map(e=>e.querySelector('span')?.textContent.trim()),
@@ -71,7 +87,14 @@ try{
     assert.deepEqual(found.buttons,expected[lang].ctas,tag+': CTA wording');
     assert.deepEqual(found.proof,expected[lang].proof,tag+': proof labels');
     assert.deepEqual(found.details,expected[lang].details,tag+': proof evidence');
-    assert((lang==='zh'?found.subtitle.includes('品牌广告')&&found.subtitle.includes('创意短片'):found.subtitle.includes('commercials')&&found.subtitle.includes('short films')),tag+': subtitle must convey commercial-video craft');
+    assert.equal(found.positioning,expected[lang].positioning,tag+': positioning label');
+    assert.equal(found.subtitle,expected[lang].subtitle,tag+': confirmed bilingual subtitle');
+    assert(found.positioningLeft>=0&&found.positioningLeft+found.positioningWidth<=width+1,tag+': positioning exceeds viewport');
+    assert(found.positioningBottom<found.headingTop,tag+': positioning overlaps animated heading');
+    assert.equal(found.positioningSize,width<=720?12:13,tag+': positioning violates type scale');
+    assert.equal(found.rotatingTitleCount,1,tag+': three-word typing animation replaced');
+    // Vite fingerprints the same source files in production.
+    assert(found.videoSources.length===2 && /hero-mobile(?:-[a-zA-Z0-9]+)?\.mp4$/.test(found.videoSources[0]) && /(?:^|\/)hero(?:-[a-zA-Z0-9]+)?\.mp4$/.test(found.videoSources[1]),tag+': scroll video source changed');
     assert(found.buttonGeometry.every(r=>r.x>=0&&r.right<=width+1&&r.height>=44),tag+': CTA out of viewport');
     // Two CTA roles share one geometry and typographic baseline.
     const [a,b]=found.buttonGeometry;

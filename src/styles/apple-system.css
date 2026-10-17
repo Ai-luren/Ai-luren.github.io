@@ -276,7 +276,28 @@ header .nav-contact-icon:focus-visible {
   transition: opacity var(--apple-duration-section) var(--apple-ease), transform var(--apple-duration-section) var(--apple-ease);
 }
 
-/* Hero: one thesis, one action, one quiet secondary route. */
+/* Hero: one thesis, one action, one quiet secondary route.
+   Positioning uses the existing type and color tokens, and must not
+   replace or animate the real React typing headline. */
+#top .hero-positioning {
+  margin: 0;
+  padding: 0;
+  color: rgba(245, 245, 247, .88);
+  font: 650 13px/1.5 var(--font-body);
+  letter-spacing: .035em;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, .94), 0 0 14px rgba(0, 0, 0, .72);
+  overflow-wrap: normal;
+}
+#top .hero-positioning + #hero-title-react-root .hero-title {
+  margin-top: 15px;
+}
+@media (max-width: 720px) {
+  #top .hero-positioning {
+    font-size: 12px;
+    line-height: 1.55;
+    letter-spacing: .015em;
+  }
+}
 #top { padding-top: 116px; padding-bottom: 76px; }
 .hero-shell { min-height: calc(100svh - 192px); }
 .hero-copy { max-width: 720px; margin-top: 0; padding-right: 0; }
