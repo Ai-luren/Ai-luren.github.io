@@ -82,7 +82,7 @@
   --section-title-line-height: 1.02;
   --section-title-letter-spacing: -.055em;
   --impact-title-size: clamp(2.25rem, 3vw, 2.7rem);
-  --impact-title-size-mobile: clamp(2.15rem, 9vw, 2.75rem);
+  --impact-title-size-mobile: clamp(28px, 8vw, 34px);
   --impact-title-weight: 600;
   --impact-title-line-height: 1.08;
   --impact-title-letter-spacing: -.045em;
@@ -2065,16 +2065,58 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
   --portfolio-icon-active-surface: var(--apple-surface-solid);
 }
 
-/* AI Lab belongs to the Expertise group. Its title uses the subordinate
-   heading scale; the anchored Lab and content grid stay intact. */
+/* Expertise typography and spacing contract.
+   H2: main section > four equally ranked child headings.
+   The former Impact row gap (5vw / up to 72px), native heading margins,
+   and Lab list margin combined into inconsistent title-to-panel distances.
+   Own those distances here without changing cards, content or animations. */
+:root {
+  --expertise-subheading-size: var(--impact-title-size);
+  --expertise-title-panel-gap: 28px;
+  --expertise-main-subheading-gap: 44px;
+}
 #expertise-group > section[id] { scroll-margin-top: var(--anchor-offset); }
+#recognition .section-intro {
+  display: block;
+  margin-bottom: var(--expertise-main-subheading-gap);
+}
+#recognition .section-intro .section-title { margin: 0; }
+#recognition .impact-evidence-row {
+  row-gap: var(--expertise-title-panel-gap);
+}
+#recognition .impact-evidence-label { padding-top: 0; }
+#recognition .impact-evidence-label h2,
 #experiments .section-title {
-  font-size: var(--impact-title-size);
+  margin: 0;
+  font-size: var(--expertise-subheading-size);
+  font-weight: var(--impact-title-weight);
   line-height: var(--impact-title-line-height);
   letter-spacing: var(--impact-title-letter-spacing);
 }
-@media (max-width: 720px) {
-  #experiments .section-title {
-    font-size: min(var(--impact-title-size-mobile), calc(var(--section-title-size-mobile) - 3px));
+/* The Lab heading and list are siblings. Do not stack both their old margins. */
+#experiments > .shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--expertise-title-panel-gap);
+}
+#experiments .section-intro {
+  display: block;
+  margin: 0;
+}
+#experiments .flip-experiment { margin-top: 0; }
+@media (max-width: 760px) {
+  :root {
+    --expertise-subheading-size: var(--impact-title-size-mobile);
+    --expertise-title-panel-gap: 20px;
+    --expertise-main-subheading-gap: 36px;
+    --expertise-card-heading-size: clamp(24px, 6.8vw, 28px);
+  }
+  /* Creator headline is a card heading, never larger than its section H2.
+     English has its own older clamp; override both with one shared role. */
+  #recognition .impact-platform-mobile-manifesto h3,
+  html[lang="en"] #recognition .impact-platform-mobile-manifesto h3 {
+    font-size: var(--expertise-card-heading-size);
+    line-height: 1.12;
+    letter-spacing: -.045em;
   }
 }

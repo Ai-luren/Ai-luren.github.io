@@ -14,6 +14,7 @@
     "check:work-cards": "node scripts/check-work-card-system.mjs",
     "check:design-system": "node scripts/check-design-system-foundation.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
+    "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
     "check:social-media": "node scripts/check-social-media-system.mjs"
   },
   "dependencies": {
