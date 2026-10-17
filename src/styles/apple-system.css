@@ -14,6 +14,24 @@
   --apple-secondary: #a1a1a6;
   --apple-tertiary: #86868b;
   --apple-blue: #2997ff;
+  /* Hero CTA semantic tokens. Button geometry and states live only in
+     HeroActions.css; keep the secondary legible over both bright and dark
+     video footage without adding a second primary-blue action. */
+  --hero-cta-height: 48px;
+  --hero-cta-height-mobile: 46px;
+  --hero-cta-radius: var(--portfolio-control-radius);
+  --hero-cta-gap: 12px;
+  --hero-cta-font-size: 16px;
+  --hero-cta-font-size-mobile: 15px;
+  --hero-cta-font-weight: 600;
+  --hero-primary-bg: var(--apple-blue);
+  --hero-primary-hover-bg: #4aa8ff;
+  --hero-secondary-bg: rgba(30, 33, 40, .92);
+  --hero-secondary-border: rgba(255, 255, 255, .3);
+  --hero-secondary-color: #f5f5f7;
+  --hero-secondary-hover-bg: rgba(39, 43, 50, .96);
+  --hero-secondary-hover-border: rgba(255, 255, 255, .44);
+  --hero-subtitle-color: rgba(245, 245, 247, .88);
   --apple-hairline: rgba(255, 255, 255, .14);
   --apple-hairline-soft: rgba(255, 255, 255, .09);
   /* Geometry and shadows are owned by card-surfaces.css. */
@@ -273,29 +291,11 @@ header .nav-contact-icon:focus-visible {
 .hero-subtitle {
   max-width: 33ch;
   margin-top: 28px;
-  color: rgba(245, 245, 247, .82);
+  color: var(--hero-subtitle-color);
   font: 400 clamp(15px, 1.4vw, 18px)/1.65 var(--font-body);
   text-shadow: none;
 }
-.hero-actions { margin-top: 30px; gap: 12px; }
-.hero-actions .hero-primary {
-  min-width: 152px !important;
-  min-height: 48px !important;
-  padding-inline: 24px !important;
-  background: var(--apple-blue) !important;
-  box-shadow: 0 8px 22px rgba(41, 151, 255, .18) !important;
-  color: #fff !important;
-  font-weight: 600 !important;
-  transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-control) var(--apple-ease) !important;
-}
-.hero-actions .hero-primary:hover,
-.hero-actions .hero-primary:focus-visible {
-  background: #4aa8ff !important;
-  box-shadow: 0 10px 28px rgba(41, 151, 255, .28) !important;
-  transform: translateY(-1px);
-}
-/* CTA material/color are owned by the late Hero contract in index.html.
-   Do not reintroduce semi-transparent gray text over animated video. */
+/* Hero CTA geometry, interaction and finish belong to HeroActions.css. */
 .hero-proof { gap: 12px; }
 .hero-proof-card {
   min-height: 112px;
@@ -613,8 +613,6 @@ footer::before { background: transparent !important; }
   .hero-copy { width: 100%; margin-top: 6vh; }
   .hero-title { margin-top: 18px; font-size: clamp(3.4rem, 15vw, 5rem); line-height: .96; }
   .hero-subtitle { max-width: 28ch; margin-top: 24px; font-size: 15px; }
-  .hero-actions { margin-top: 26px; gap: 10px; }
-  .hero-actions .hero-primary { min-width: 142px !important; min-height: 46px !important; padding-inline: 20px !important; }
   .hero-proof { display: none; }
   #projects .section-intro { margin-bottom: 22px; }
   .comet-archive { gap: 12px; padding-bottom: 14px; }

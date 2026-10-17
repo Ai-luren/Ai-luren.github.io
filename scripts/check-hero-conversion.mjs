@@ -56,7 +56,13 @@ try{
        proof:proof.map(e=>e.querySelector('strong')?.textContent.trim()),
        details:proof.map(e=>e.querySelector('span')?.textContent.trim()),
        subtitle:subtitle?.textContent.trim(),
-       buttonGeometry:buttons.map(e=>{const r=e.getBoundingClientRect();return {x:r.left,right:r.right,width:r.width,height:r.height};}),
+       buttonGeometry:buttons.map(e=>{
+         const r=e.getBoundingClientRect(),c=getComputedStyle(e);
+         return {x:r.left,y:r.top,right:r.right,width:r.width,height:r.height,
+           fontSize:parseFloat(c.fontSize),fontWeight:c.fontWeight,radius:c.borderTopLeftRadius};
+       }),
+       buttonGap:parseFloat(getComputedStyle(document.querySelector('#top .hero-actions')).columnGap),
+       subtitleColor:getComputedStyle(subtitle).color,
        visibleProof:proof.some(e=>getComputedStyle(e).display!=='none'&&getComputedStyle(e.parentElement).display!=='none'),
        overflow:document.documentElement.scrollWidth-innerWidth,
        navCount:document.querySelectorAll('#primary-nav .site-primary-nav >li>a').length
@@ -67,6 +73,19 @@ try{
     assert.deepEqual(found.details,expected[lang].details,tag+': proof evidence');
     assert((lang==='zh'?found.subtitle.includes('品牌广告')&&found.subtitle.includes('创意短片'):found.subtitle.includes('commercials')&&found.subtitle.includes('short films')),tag+': subtitle must convey commercial-video craft');
     assert(found.buttonGeometry.every(r=>r.x>=0&&r.right<=width+1&&r.height>=44),tag+': CTA out of viewport');
+    // Two CTA roles share one geometry and typographic baseline.
+    const [a,b]=found.buttonGeometry;
+    assert.equal(a.height,b.height,tag+': mismatched CTA height');
+    assert.equal(a.height,width<=720?46:48,tag+': CTA breakpoint geometry changed');
+    assert.equal(a.fontSize,b.fontSize,tag+': CTA font sizes diverged');
+    assert.equal(a.fontSize,width<=720?15:16,tag+': CTA text scale changed');
+    assert.equal(a.fontWeight,b.fontWeight,tag+': CTA weights diverged');
+    assert.equal(a.fontWeight,'600',tag+': CTA weight should be 600');
+    assert.equal(a.radius,b.radius,tag+': CTA rounding diverged');
+    assert(Math.abs(a.y-b.y)<1,tag+': CTA top edges are not aligned');
+    assert(a.width>b.width && a.width-b.width<=24,tag+': CTA hierarchy is visually unbalanced');
+    assert.equal(found.buttonGap,width<=720?10:12,tag+': inconsistent CTA gap');
+    assert.equal(found.subtitleColor,'rgba(245, 245, 247, 0.88)',tag+': subtitle legibility token not applied');
     assert.equal(found.overflow,0,tag+': horizontal overflow');
     assert.equal(found.navCount,4,tag+': top navigation changed');
     // Composite the CTA's translucent surface over near-white and near-black

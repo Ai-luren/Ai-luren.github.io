@@ -1699,76 +1699,8 @@
       .nav-toggle-label { display: none !important; }
     }
 
-    /* CTA 层级：保留一个蓝色主操作；次操作采用稳定深色底，
-       在视频亮部/暗部均清晰可读，不依赖背景恰好足够暗。 */
-    .hero-actions button {
-      appearance: none;
-      -webkit-appearance: none;
-      flex: 0 0 auto !important;
-      width: auto !important;
-      min-height: 44px !important;
-      border: 0 !important;
-      border-radius: 999px !important;
-      background: transparent !important;
-      box-shadow: none !important;
-      color: rgba(245, 245, 247, .62) !important;
-      font: 500 14px/1 var(--font-body) !important;
-      letter-spacing: 0 !important;
-      text-shadow: none !important;
-      transition: background-color var(--motion-duration-control) ease, color var(--motion-duration-control) ease !important;
-    }
-    .hero-actions .hero-primary {
-      min-width: 140px !important;
-      padding: 0 24px !important;
-      background: var(--accent-blue) !important;
-      color: #fff !important;
-      font-weight: 600 !important;
-    }
-    .hero-actions .hero-primary:hover,
-    .hero-actions .hero-primary:focus-visible {
-      background: var(--accent-blue-focus) !important;
-      color: #fff !important;
-      box-shadow: none !important;
-    }
-    .hero-actions .hero-secondary {
-      min-width: 0 !important;
-      padding: 0 18px !important;
-      border: 1px solid rgba(255, 255, 255, .42) !important;
-      background: rgba(9, 11, 15, .94) !important;
-      color: #f9fbff !important;
-      font-weight: 600 !important;
-      text-decoration: none;
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-    }
-    .hero-actions .hero-secondary:hover,
-    .hero-actions .hero-secondary:focus-visible {
-      border-color: rgba(255, 255, 255, .72) !important;
-      background: rgba(24, 28, 35, .98) !important;
-      color: #fff !important;
-      text-decoration: none;
-    }
-    .hero-actions .specular-button__fx { display: none !important; }
-    @media (max-width: 560px) {
-      .hero-actions {
-        display: flex !important;
-        align-items: center;
-        justify-content: flex-start;
-        gap: 12px !important;
-      }
-      .hero-actions button {
-        width: auto !important;
-        min-height: 44px !important;
-        padding-inline: 8px !important;
-      }
-      .hero-actions .hero-primary {
-        min-width: 132px !important;
-        padding-inline: 20px !important;
-      }
-      .hero-actions .hero-secondary {
-        padding-inline: 16px !important;
-      }
-    }
+    /* Hero CTA 的材质、尺寸及交互完全由 HeroActions.css 管理。
+       不在 HTML 内写高优先级覆盖，避免再次出现主次按钮失衡。 */
 
     /* 页脚中性底色：视频保留氛围，页脚只用轻量黑色层保证阅读，不再叠加蓝黑遮罩。 */
     footer::before {
