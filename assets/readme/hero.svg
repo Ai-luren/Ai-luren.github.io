@@ -1,38 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
-  <title id="title">Ai路人｜AI 视频创意与视觉设计作品集</title>
-  <desc id="desc">Ai路人的个人作品集，展示动态设计、产品品牌、AI 创意效果和可复用的创作工作流。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">Ai路人｜AI 视频创意与影像效果作品集</title>
+  <desc id="desc">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</desc>
 
-  <rect width="1200" height="420" rx="28" fill="#08090b"/>
-  <rect x="40" y="40" width="1120" height="340" rx="22" fill="#111214" stroke="#2b2d31"/>
-  <path d="M40 284H1160" stroke="#24262a"/>
-  <path d="M692 254C756 254 774 188 842 188S934 254 1000 218 1062 138 1124 138" fill="none" stroke="#32353a" stroke-width="16" stroke-linecap="round"/>
-  <path d="M692 254C756 254 774 188 842 188S934 254 1000 218 1062 138 1124 138" fill="none" stroke="#2997ff" stroke-opacity=".88" stroke-width="3" stroke-linecap="round"/>
+  <rect width="1200" height="360" rx="28" fill="#08090b"/>
+  <rect x="40" y="28" width="1120" height="304" rx="22" fill="#111214" stroke="#2b2d31"/>
 
-  <g transform="translate(82 82)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
-    <text x="0" y="0" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" letter-spacing="3">AI VIDEO / CREATIVE ARCHIVE</text>
-    <text x="0" y="86" fill="#f5f5f7" font-size="68" font-weight="700" letter-spacing="-3">Ai路人</text>
-    <text x="0" y="132" fill="#d2d2d7" font-size="30" font-weight="600" letter-spacing="-1">AI 视频创意与视觉设计</text>
-    <text x="0" y="180" fill="#a1a1a6" font-size="22">从动态设计、产品品牌到 AI 创意效果与工作流。</text>
+  <g transform="translate(72 84)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+    <text x="0" y="0" fill="#a1a1a6" font-size="18" letter-spacing="1.2">AI 影像作品集 / 宁磊</text>
+    <text x="0" y="104" fill="#f5f5f7" font-size="84" font-weight="700" letter-spacing="-3">Ai路人</text>
+    <text x="0" y="166" fill="#e5e5e7" font-size="48" font-weight="600">AI 视频创意 · 影像效果设计</text>
   </g>
 
-  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
-    <g transform="translate(692 254)">
-      <circle r="12" fill="#2997ff"/>
-      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">动态设计</text>
-      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">01 / MOTION</text>
+  <path d="M752 64V296" stroke="#2b2d31"/>
+  <g transform="translate(792 66)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif">
+    <text x="0" y="0" fill="#86868b" font-size="18" letter-spacing="1.2">作品集一览</text>
+
+    <g transform="translate(0 42)">
+      <text x="0" y="34" fill="#f5f5f7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="42" font-weight="600">08</text>
+      <text x="82" y="32" fill="#b7b7bd" font-size="24">首页精选</text>
+      <path d="M0 50H320" stroke="#2b2d31"/>
     </g>
-    <g transform="translate(842 188)">
-      <circle r="12" fill="#2997ff"/>
-      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">产品品牌</text>
-      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">02 / BRAND</text>
+
+    <g transform="translate(0 112)">
+      <text x="0" y="34" fill="#f5f5f7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="42" font-weight="600">15</text>
+      <text x="82" y="32" fill="#b7b7bd" font-size="24">完整作品</text>
+      <path d="M0 50H320" stroke="#2b2d31"/>
     </g>
-    <g transform="translate(1000 218)">
-      <circle r="12" fill="#2997ff"/>
-      <text x="0" y="-28" fill="#f5f5f7" font-size="20" font-weight="600">AI 创意效果</text>
-      <text x="0" y="34" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16">03 / AI EFFECTS</text>
+
+    <g transform="translate(0 182)">
+      <text x="0" y="34" fill="#f5f5f7" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="42" font-weight="600">03</text>
+      <text x="82" y="32" fill="#b7b7bd" font-size="24">AI 实验室项目</text>
     </g>
   </g>
-
-  <text x="82" y="338" fill="#86868b" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="17" letter-spacing="1.5">SELECTED WORK  /  IMPACT PROOF  /  AI LAB</text>
-  <circle cx="1118" cy="338" r="5" fill="#2997ff"/>
 </svg>
