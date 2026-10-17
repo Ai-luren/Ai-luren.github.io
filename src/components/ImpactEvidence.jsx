@@ -651,12 +651,12 @@ function ReachDossier() {
             <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
           </div>
           <div className="impact-reach-feature-actions">
-            <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
-              {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
-            </a>
             <button className="impact-reach-action" type="button" aria-haspopup="dialog" onClick={(event) => openProfile(featureCard, event)}>
               {t('查看账号资料', 'View account details')}
             </button>
+            <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
+              {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </article>
 
