@@ -36,7 +36,6 @@
 - **专业实力**：集中展示 AI 创作赛事获奖、平台创作者项目和多平台内容成果。
 - **AI 实验室**：三个真实工具项目——[AI 新闻追踪](https://github.com/Ai-luren/Ainews-to-Feishu)、[AI 文章配图](https://github.com/Ai-luren/Ailuren-illustrations)、[图片对比工具](https://github.com/Ai-luren/Image-comparison)。
 - **关于与合作**：介绍 AI 影像创作方向，并提供邮箱、微信和社交平台入口。
-
 ## 本地运行
 
 需要 Node.js `^20.19.0` 或 `>=22.12.0`。
