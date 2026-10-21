@@ -257,8 +257,21 @@
 
     /* A first-frame still underlies native video and WebGL until decoding succeeds. */
     #video-bg { background: var(--space-black) url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat; }
+    /* Keep the actual ship frame above the native video and canvas while
+       desktop metadata/texture decoding catches up. This is a still from
+       the SAME film, not an added visual or an altered Hero color preset. */
+    #hero-first-frame {
+      position: absolute; inset: 0; z-index: 2; pointer-events: none;
+      background: #000 url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat;
+      opacity: 1;
+      transition: opacity 360ms ease;
+    }
+    #video-bg:is(.is-webgl-ready, .is-video-fallback-ready) #hero-first-frame { opacity: 0; }
     @media (max-width: 720px) {
-      #video-bg { background-image: url('assets/images/hero-first-frame-mobile.webp'); }
+      #video-bg, #hero-first-frame { background-image: url('assets/images/hero-first-frame-mobile.webp'); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #hero-first-frame { transition: none; }
     }
     #hero-video { filter: brightness(.72) saturate(.82) contrast(1.02); }
     nav a { color: var(--subtle-text); }
@@ -678,7 +691,7 @@
     body:is(.is-on-impact-awards, .is-on-impact-programs, .is-on-impact-reach) #video-dim { opacity: .2; }
     /* WebGL 画布只负责视频后处理；Hero 仅保留这一层局部阅读渐变。 */
     #video-webgl { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; }
-    #hero-profile-mask { z-index: 2; background: linear-gradient(90deg, rgba(0, 0, 0, .42) 0%, rgba(0, 0, 0, .18) 30%, transparent 62%); }
+    #hero-profile-mask { z-index: 3; background: linear-gradient(90deg, rgba(0, 0, 0, .42) 0%, rgba(0, 0, 0, .18) 30%, transparent 62%); }
 
     /* 一个章节只保留一个语义标签，避免 01 / 02 / 03 变成装饰噪音。 */
     .section-intro .eyebrow,
@@ -1668,7 +1681,7 @@
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata" poster="assets/images/hero-first-frame-mobile.webp"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata" poster="assets/images/hero-first-frame-mobile.webp"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
   <header>
     <div class="nav-inner shell">
@@ -1846,9 +1859,9 @@
       video.addEventListener('error', revealPage, { once: true });
       window.setTimeout(revealPage, 180);
 
-      // Mobile Safari may defer video data until a gesture: load the first frame
-      // proactively and keep the 26KB still poster visible until decoding works.
-      // Desktop retains the deferred policy for the larger cinematic video.
+      // All devices preload the selected local Hero asset immediately; on
+      // desktop the static first-frame layer keeps the ship visible before
+      // the video/WebGL compositing pipeline renders its first frame.
       var videoWarmed = false;
       function warmVideo() {
         if (videoWarmed || !video || !video.querySelector('source')) return;
@@ -1858,8 +1871,16 @@
       }
       window.addEventListener('pointerdown', warmVideo, { once: true, passive: true });
       window.addEventListener('scroll', warmVideo, { once: true, passive: true });
-      if (window.innerWidth <= 760) warmVideo();
-      else window.setTimeout(warmVideo, 1200);
+      warmVideo();
+      // Browsers with WebGL disabled should transition from the still to the
+      // native film after it decodes; don't leave a perpetual static poster.
+      video.addEventListener('loadeddata', function () {
+        window.setTimeout(function () {
+          if (!document.getElementById('video-webgl')) {
+            document.getElementById('video-bg').classList.add('is-video-fallback-ready');
+          }
+        }, 500);
+      }, { once: true });
 
       function setVideoTarget() {
         progressRaf = 0;

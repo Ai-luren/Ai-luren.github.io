@@ -456,7 +456,11 @@ async function run() {
           try { window.localStorage.setItem('ailuren-lang', l); } catch { /* 忽略 */ }
         }, lang);
         const page = await context.newPage();
-        await page.goto(URL, { waitUntil: 'networkidle' });
+        // Hero video now preloads immediately (desktop and mobile); a looping
+        // or streaming media request must not prevent a document audit from
+        // starting. Wait for the real React content instead of networkidle.
+        await page.goto(URL, { waitUntil: 'domcontentloaded' });
+        await page.locator('#projects .comet-archive__card').first().waitFor({ state: 'attached', timeout: 15000 });
         await page.waitForTimeout(2500);
 
         // 全页滚动采样扫描

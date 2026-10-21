@@ -7,11 +7,11 @@ import yueyangCover from '../../assets/images/project-covers/AI 文旅宣传-岳
 import riverCityCover from '../../assets/images/project-covers/AI 概念短片-人河流城市（MJ 官方优秀作品）.webp';
 import lightCover from '../../assets/images/project-covers/AI 概念短片-光（通义光引-还不错奖｜通义生动-优秀奖）.webp';
 
-import earbudsCover from '../../assets/images/project-covers/library/无线耳机 AI 品牌广告.webp';
-import earbuds2Cover from '../../assets/images/project-covers/library/无线耳机 AI 品牌广告 2.webp';
-import ugcEarbudsCover from '../../assets/images/project-covers/library/耳机 UGC 广告.webp';
-import cushionCover from '../../assets/images/project-covers/library/海外坐垫 UGC 广告.webp';
-import petLightCover from '../../assets/images/project-covers/library/宠物红光疗法设备 UGC 广告.webp';
+import earbudsCover from '../../assets/images/project-covers/library/海外无线耳机 AI 场景广告.webp';
+import earbuds2Cover from '../../assets/images/project-covers/library/海外无线耳机 AI 产品展示广告.webp';
+import ugcEarbudsCover from '../../assets/images/project-covers/library/海外无线耳机 AI 社媒创意广告.webp';
+import cushionCover from '../../assets/images/project-covers/library/海外车载坐垫 AI 产品体验广告.webp';
+import petLightCover from '../../assets/images/project-covers/library/海外宠物红光护理仪 AI 产品广告.webp';
 import giantsCover from '../../assets/images/project-covers/library/中式国风巨物美学.webp';
 import farewellCover from '../../assets/images/project-covers/library/最难的告别.webp';
 import coverOverrides from './project-cover-overrides.json';
@@ -39,7 +39,7 @@ export const PROJECT_CATEGORIES = [
   { id: 'all', label: { zh: '全部', en: 'All' } },
   { id: 'commercial', label: { zh: 'AI 商业广告', en: 'AI Commercials' }, description: { zh: 'TVC、品牌与产品广告、文旅宣传片。', en: 'TVC, brand and product advertising, and travel promotion films.' } },
   { id: 'short-film', label: { zh: 'AI 创意短片', en: 'AI Short Films' }, description: { zh: '剧情、故事叙事、情绪短片与概念电影。', en: 'Stories, emotional shorts and concept films.' } },
-  { id: 'social', label: { zh: 'AI 社媒与 UGC 广告', en: 'AI Social & UGC' }, description: { zh: 'UGC、TikTok、社媒营销与信息流广告。', en: 'UGC, TikTok, social content and performance advertising.' } },
+  { id: 'social', label: { zh: 'AI 海外产品广告', en: 'AI Overseas Product Ads' }, description: { zh: '面向海外市场的产品展示、场景体验与社媒创意广告。', en: 'Product showcases, lifestyle demos and social creative ads for overseas audiences.' } },
   { id: 'visual', label: { zh: 'AI 视觉实验', en: 'AI Visual Experiments' }, description: { zh: 'AI 特效、视觉风格测试、技术探索与实验影像。', en: 'AI effects, visual studies, technical exploration and experimental imagery.' } },
 ];
 
@@ -52,11 +52,11 @@ export const PROJECTS = [
   { id: '06', category: 'commercial', featured: true, videoUrl: videoSource('AI Commercials/AI 文旅宣传-岳阳楼（优秀奖|超棒奖）.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/yueyang-tower.mp4'), caseStudy: null, platform: { zh: '06 / 小红书', en: '06 / RED' }, title: { zh: '湖南 AI 文旅宣传', en: 'Hunan AI Travel Film' }, award: { zh: '超棒奖', en: 'Awesome Award' }, cover: yueyangCover, sourceUrl: 'https://www.xiaohongshu.com/discovery/item/68165055000000000e00525b?source=webshare&xhsshare=pc_web&xsec_token=ABDq1xQzCks5P83-ccrIgTlh_Pj6F4otf3gkmI-Y0Ugh0=&xsec_source=pc_share' },
   { id: '07', category: 'short-film', featured: true, videoUrl: videoSource('AI Short Films/AI 概念短片-人河流城市（Midjourney官方优秀作品）.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/people-river-city.mp4'), caseStudy: null, platform: { zh: '07 / 小红书', en: '07 / RED' }, title: { zh: '悠船 AI 创意短片', en: 'Midjourney AI Short Film' }, award: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, cover: riverCityCover, sourceUrl: 'https://www.xiaohongshu.com/discovery/item/68b8051d000000001d00936f?source=webshare&xhsshare=pc_web&xsec_token=AB_COh4fY4yQq-A1yx_pOf7OadIS_o61EUSTaIJWvmwOU=&xsec_source=pc_share' },
   { id: '08', category: 'short-film', featured: true, videoUrl: videoSource('AI Short Films/AI 概念短片-光（通义万相 光引-还不错奖｜通义万相 生动-优秀奖）.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/light.mp4'), caseStudy: null, platform: { zh: '08 / 小红书', en: '08 / RED' }, title: { zh: '通义万相 AI 创意短片', en: 'WAN AI Short Film' }, award: { zh: '优秀奖', en: 'Excellence Award' }, cover: lightCover, sourceUrl: 'https://www.xiaohongshu.com/discovery/item/688f595c0000000023031b1e?source=webshare&xhsshare=pc_web&xsec_token=AB1dIKBSOCR_91FMS218sLjy66ZJrUFPjhjkxX0Dejau0=&xsec_source=pc_share' },
-  { id: '09', category: 'commercial', featured: false, videoUrl: videoSource('AI Commercials/AI 品牌广告-无线耳机 TVC广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/wireless-earbuds-tvc.mp4'), caseStudy: null, title: { zh: '无线耳机 AI 品牌广告', en: 'Wireless Earbuds AI Ad' }, award: { zh: '', en: '' }, cover: earbudsCover, sourceUrl: null },
-  { id: '10', category: 'commercial', featured: false, videoUrl: videoSource('AI Commercials/AI 品牌广告-无线耳机 产品展示.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/wireless-earbuds-showcase.mp4'), caseStudy: null, title: { zh: '无线耳机 AI 品牌广告 2', en: 'Wireless Earbuds AI Ad 2' }, award: { zh: '', en: '' }, cover: earbuds2Cover, sourceUrl: null },
-  { id: '11', category: 'social', featured: false, videoUrl: videoSource('AI Social & UGC/AI UGC-海外耳机广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/ugc-earbuds-ad.mp4'), caseStudy: null, title: { zh: '耳机 UGC 广告', en: 'Earbuds UGC Ad' }, award: { zh: '', en: '' }, cover: ugcEarbudsCover, sourceUrl: null },
-  { id: '12', category: 'social', featured: false, videoUrl: videoSource('AI Social & UGC/AI UGC-海外坐垫.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/seat-cushion-ad.mp4'), caseStudy: null, title: { zh: '海外坐垫 UGC 广告', en: 'Cushion UGC Ad' }, award: { zh: '', en: '' }, cover: cushionCover, sourceUrl: null },
-  { id: '13', category: 'social', featured: false, videoUrl: videoSource('AI Social & UGC/AI UGC-海外宠物的红光疗法设备.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/pet-red-light-therapy.mp4'), caseStudy: null, title: { zh: '宠物红光疗法设备 UGC 广告', en: 'Pet Light Therapy UGC Ad' }, award: { zh: '', en: '' }, cover: petLightCover, sourceUrl: null },
+  { id: '09', category: 'commercial', featured: false, videoUrl: videoSource('AI Commercials/海外无线耳机 AI 场景广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/wireless-earbuds-tvc.mp4'), caseStudy: null, title: { zh: '海外无线耳机 AI 场景广告', en: 'Overseas Wireless Earbuds AI Lifestyle Ad' }, award: { zh: '', en: '' }, cover: earbudsCover, sourceUrl: null },
+  { id: '10', category: 'commercial', featured: false, videoUrl: videoSource('AI Commercials/海外无线耳机 AI 产品展示广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/wireless-earbuds-showcase.mp4'), caseStudy: null, title: { zh: '海外无线耳机 AI 产品展示广告', en: 'Overseas Wireless Earbuds AI Product Showcase' }, award: { zh: '', en: '' }, cover: earbuds2Cover, sourceUrl: null },
+  { id: '11', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外无线耳机 AI 社媒创意广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/ugc-earbuds-ad.mp4'), caseStudy: null, title: { zh: '海外无线耳机 AI 社媒创意广告', en: 'Overseas Wireless Earbuds AI Social Creative Ad' }, award: { zh: '', en: '' }, cover: ugcEarbudsCover, sourceUrl: null },
+  { id: '12', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外车载坐垫 AI 产品体验广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/seat-cushion-ad.mp4'), caseStudy: null, title: { zh: '海外车载坐垫 AI 产品体验广告', en: 'Overseas Car Seat Cushion AI Product Demo' }, award: { zh: '', en: '' }, cover: cushionCover, sourceUrl: null },
+  { id: '13', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外宠物红光护理仪 AI 产品广告.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/pet-red-light-therapy.mp4'), caseStudy: null, title: { zh: '海外宠物红光护理仪 AI 产品广告', en: 'Overseas Pet Red-Light Care Device AI Ad' }, award: { zh: '', en: '' }, cover: petLightCover, sourceUrl: null },
   { id: '14', category: 'visual', featured: false, videoUrl: videoSource('AI Visual Experiments/AI 创意短片-中式国风巨物美学.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/chinese-giant-aesthetics.mp4'), caseStudy: null, title: { zh: '中式国风巨物美学', en: 'Chinese Giant Aesthetics' }, award: { zh: '', en: '' }, cover: giantsCover, sourceUrl: null },
   { id: '15', category: 'visual', featured: false, videoUrl: videoSource('AI Visual Experiments/AI 创意短片-最难的告别.mp4', 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/hardest-goodbye.mp4'), caseStudy: null, title: { zh: '最难的告别', en: 'The Hardest Goodbye' }, award: { zh: '', en: '' }, cover: farewellCover, sourceUrl: null },
 ].map(project => {

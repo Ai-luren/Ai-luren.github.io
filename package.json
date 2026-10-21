@@ -24,6 +24,7 @@
     "check:hero-conversion": "node scripts/check-hero-conversion.mjs",
     "check:hero-published": "node scripts/check-hero-published-settings.mjs",
     "check:hero-first-frame": "node scripts/check-mobile-hero-first-frame.mjs",
+    "check:overseas-names": "node scripts/check-overseas-project-names.mjs",
     "check:webgl-recovery": "node scripts/check-webgl-context-recovery.mjs",
     "check:clipboard": "node scripts/check-clipboard-feedback.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",

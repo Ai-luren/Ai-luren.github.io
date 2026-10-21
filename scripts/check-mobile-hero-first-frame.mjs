@@ -30,6 +30,8 @@ try {
       return {
         poster: video.poster,
         backgroundImage: getComputedStyle(bg).backgroundImage,
+        stillImage: getComputedStyle(document.getElementById('hero-first-frame')).backgroundImage,
+        stillOpacity: getComputedStyle(document.getElementById('hero-first-frame')).opacity,
         preload: video.preload,
         readyState: video.readyState,
         prematureWebgl: bg.classList.contains('is-webgl-ready'),
@@ -39,7 +41,9 @@ try {
     const target = width === 390 ? 'hero-first-frame-mobile-' : 'hero-first-frame-desktop-';
     assert(state.backgroundImage.includes(target), `Missing ${width}px fallback image: ${state.backgroundImage}`);
     assert(state.poster.includes('hero-first-frame-mobile-'), 'No media element poster');
-    assert.equal(state.preload, width === 390 ? 'auto' : 'metadata');
+    assert.equal(state.preload, 'auto', 'Mobile and desktop must preload Hero from first paint');
+    assert(state.stillImage.includes(target), 'First-frame foreground fallback missing');
+    assert.equal(state.stillOpacity, '1', 'Still must cover pending media and WebGL');
     assert.equal(state.prematureWebgl, false, 'Black WebGL canvas may be exposed before video decode');
     assert.equal(state.loader, 'hidden', 'Loader never exited when media failed');
     const posterResponse = await page.request.get(state.poster);
@@ -67,6 +71,11 @@ try {
   assert(state.ready >= 2 && state.duration > 0);
   assert.equal(state.preload, 'auto');
   assert.deepEqual(errors, []);
+  if (state.gl) {
+    await page.waitForTimeout(460);
+    const opacity = await page.locator('#hero-first-frame').evaluate(el => Number(getComputedStyle(el).opacity));
+    assert(opacity < .06, 'Hero static still must fade after WebGL is ready');
+  }
   console.log(`PASS local mobile MP4 decode: readyState=${state.ready}, WebGL=${state.gl}`);
   await page.close();
 } finally {
