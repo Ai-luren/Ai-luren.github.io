@@ -506,7 +506,7 @@ function AwardGallery() {
         >
           <CinemaNavigation lang={lang} closeRef={viewerCloseRef} onClose={close} />
           <figure ref={viewerFigureRef} style={viewerSize ? {width:viewerSize.figureWidth} : undefined} onClick={(event) => event.stopPropagation()}>
-            <img ref={viewerImageRef} src={active.image} alt={active.title[lang]} style={viewerSize ? {width:viewerSize.width,height:viewerSize.height} : undefined} />
+            <img ref={viewerImageRef} src={active.image} alt={active.title[lang]} className={active.image === award1 ? 'impact-award-image--trim-right' : undefined} style={viewerSize ? {width:viewerSize.width,height:viewerSize.height} : undefined} />
             <figcaption ref={viewerCaptionRef} aria-live="polite">
               <strong id="impact-award-lightbox-title">{active.title[lang]}</strong>
               <span id="impact-award-lightbox-meta">{active.meta[lang]}</span>

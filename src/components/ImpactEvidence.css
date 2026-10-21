@@ -170,6 +170,17 @@
   min-height: 0; box-sizing: border-box; object-fit: contain;
   border: 0 !important; border-radius: var(--portfolio-content-radius,18px) !important; background: transparent !important; box-shadow: none !important;
 }
+/* The source for Hailuo Animal Diving has a 2–3px bright encoding seam on
+   its far right (1124px original). Trim that artifact proportionally only in
+   the enlarged viewer, without re-encoding the award asset or changing size. */
+.impact-award-lightbox figure > img.impact-award-image--trim-right {
+  clip-path: inset(0 0.36% 0 0 round var(--portfolio-content-radius, 18px));
+}
+@media (max-width: 760px) {
+  .impact-award-lightbox figure > img.impact-award-image--trim-right {
+    clip-path: inset(0 0.36% 0 0 round 16px);
+  }
+}
 .impact-award-lightbox figcaption { grid-column: 2; grid-row: 2; display: grid; justify-content: start; justify-items: start; align-items: start; gap: 4px; width: 100%; min-width: 0; margin: 0; text-align: left; overflow-wrap: anywhere; }
 .impact-award-lightbox figcaption strong { color: var(--apple-text); font: 600 15px/1.4 var(--font-display,system-ui,sans-serif); }
 .impact-award-lightbox figcaption span { color: var(--apple-secondary); font: 400 12px/1.5 var(--font-body,system-ui,sans-serif); letter-spacing: 0; }
