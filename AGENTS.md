@@ -41,6 +41,7 @@ npm run build
 npm run check:media-safety
 npm run check:hero-published
 npm run check:hero-first-frame
+npm run check:webgl-recovery
 npm run check:clipboard
 npm run check:i18n
 node scripts/check-project-library.mjs

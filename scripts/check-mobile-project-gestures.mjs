@@ -126,10 +126,12 @@ try {
   if (aboutState.oldCareerElements !== 0 || aboutState.textOverflow || aboutState.boundsOverflow) {
     throw new Error(`关于我内容溢出或仍残留旧经历组件：${JSON.stringify(aboutState)}`);
   }
+  // The confirmed Hero secondary CTA now leads to collaboration/contact,
+  // not the older About Me anchor. Keep independent About copy assertions.
   await page.locator('.hero-secondary').click();
-  await page.waitForFunction(() => location.hash === '#profile');
+  await page.waitForFunction(() => location.hash === '#contact');
   await page.waitForTimeout(250);
-  if (!(await page.locator('#profile-title').isVisible())) throw new Error('Hero 关于我入口未定位到章节标题');
+  if (!(await page.locator('#contact').isVisible())) throw new Error('Hero 合作联系入口未定位到联系卡片');
   await page.locator('#nav-lang').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();

@@ -65,6 +65,13 @@ try {
           });
           await page.locator('#impact-programs .impact-logo-shell').waitFor({ state: 'attached' });
           await page.locator('#impact-programs').evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+          // GSAP entrance starts at visibility:hidden. Wait for the intended
+          // card's entrance animation rather than sampling a transient frame.
+          const expectedMobile = width <= 760;
+          await page.locator(expectedMobile
+            ? '#impact-programs .impact-platform-mobile-card'
+            : '#impact-programs .impact-platform-desktop-card'
+          ).waitFor({ state: 'visible', timeout: 10000 });
 
           const state = await page.evaluate(() => {
             const root = document.querySelector('#impact-programs .impact-logo-shell');
@@ -97,7 +104,6 @@ try {
             };
           });
           const tag = `${width}px ${lang}`;
-          const expectedMobile = width <= 760;
           assert.equal(state.visibleMobile, expectedMobile, `${tag}: mobile platform visibility; ${JSON.stringify(state)}`);
           assert.equal(state.visibleDesktop, !expectedMobile, `${tag}: desktop platform visibility; ${JSON.stringify(state)}`);
           assert(state.panelHeight >= 200, `${tag}: platform card collapsed to ${state.panelHeight}px`);
