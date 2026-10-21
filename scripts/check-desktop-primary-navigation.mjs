@@ -18,7 +18,7 @@ const expected = {
 };
 
 try {
-  for (const width of [1024, 1102, 1440, 1920]) {
+  for (const width of [761, 768, 820, 912, 1023, 1024, 1102, 1440, 1920]) {
     const page = await createSafePage(browser, { viewport: { width, height: 900 } });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
