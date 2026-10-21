@@ -46,14 +46,15 @@ npm run dev
 ```
 
 在项目仓库目录运行以上命令。
-然后打开 <http://127.0.0.1:5174/>。请通过 Vite 服务访问页面，不要直接用 `file://` 打开 `index.html`。
+开发服务器固定 `http://127.0.0.1:5174/`；`npm run preview` 的生产预览固定 `http://127.0.0.1:5181/`。请通过 Vite 服务访问页面，不要直接用 `file://` 打开 `index.html`。
 
 ## 技术与验证
 
-项目使用 Vite 与 React，包含首页和独立作品库两个入口。首页章节与视频背景保留在 HTML 中；React 负责作品、影响力、实验室和播放器等交互内容。作品视频使用项目配置的 ImageKit 地址，用户主动播放后才开始加载。
+项目使用 Vite 与 React，包含首页和独立作品库两个入口。首页章节与视频背景保留在 HTML 中；React 负责作品、影响力、实验室和播放器等交互内容。本地开发使用仓库外的 `assets/videos/works/` 原片，不访问 ImageKit；生产环境使用配置的 ImageKit 原片地址，仅在用户主动播放后加载。
 
 ```bash
 npm run build
+npm run check:media-safety
 npm run check:i18n
 git diff --check
 ```
