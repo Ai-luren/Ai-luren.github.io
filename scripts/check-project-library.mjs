@@ -41,7 +41,7 @@ try {
         await page.locator(`[data-category="${category}"]`).click();
         assert.equal(await page.locator('.library-grid .comet-archive__card').count(), count);
         if (!count) assert.equal(await page.locator('.library-empty').isVisible(), true);
-        // The social directory contains "&": verify the actual media URL, not just the card count.
+        // The overseas product ads directory is mapped by the stable social ID; verify actual media URLs.
         if (category === 'social') {
           await page.locator('.library-grid .comet-archive__card').first().click();
           await page.waitForSelector('.cinema-player[open]');

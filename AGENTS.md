@@ -10,7 +10,7 @@
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
 - `src/data/projects.js`：首页精选与全部作品库共享的作品、分类及视频地址；无真实资料时保留空值。
-- `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理。
+- `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、海外产品广告、视觉实验管理。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：`设计规范.md` 是唯一持续生效的视觉与交互规范；维护指南为操作说明，带日期的审计/验收文档只作历史记录。
@@ -73,3 +73,5 @@ git diff --check
 - `docs/作品集转化审计-Step07.md`：首屏转化审计及后续建议；建议不是已授权的页面修改。
 - `docs/作品库维护.md`、`docs/影院导航维护.md`、`docs/播放器媒体维护.md`：作品数据、影院交互与媒体元数据维护。
 - `docs/本地封面工作流.md`、`docs/本地封面工作台使用教程.md`：本地封面工具流程和操作说明。
+
+- 海外产品命名（ID 09–13）及 Hero 首屏交接见 `docs/播放器媒体维护.md`。改作品标题时必须同步默认封面、custom 映射、播放器海报元数据、本地 MP4 路径、封面工具缓存与测试；**ImageKit 生产 URL 绝不可随本地文件改名**。运行 `npm run check:overseas-names` 和 `npm run check:hero-first-frame`。

@@ -202,6 +202,7 @@ export default function VideoPostProcess() {
     canvas.style.opacity = '0';
     canvas.style.transition = 'opacity .3s ease';
     container.appendChild(canvas);
+    container.classList.remove('is-video-fallback-ready');
 
     const texture = new Texture(gl, { image: video, generateMipmaps: false, minFilter: gl.LINEAR, magFilter: gl.LINEAR });
     const geometry = new Triangle(gl);

@@ -11,7 +11,7 @@ const MOBILE_CATEGORY_LABELS = {
   all: { zh: '全部', en: 'All' },
   commercial: { zh: '商业广告', en: 'Ads' },
   'short-film': { zh: '创意短片', en: 'Films' },
-  social: { zh: '社媒UGC', en: 'Social UGC' },
+  social: { zh: '海外产品', en: 'Overseas' },
   visual: { zh: '视觉实验', en: 'Visuals' },
 };
 
@@ -28,7 +28,7 @@ export default function WorksLibrary() {
 
   useEffect(() => {
     document.title = lang === 'en' ? 'All Work · AI路人' : '全部作品 · AI路人';
-    document.querySelector('meta[name="description"]')?.setAttribute('content', lang === 'en' ? 'AI commercials, short films, social & UGC ads and visual experiments by AI路人.' : 'AI路人的 AI 商业广告、创意短片、社媒与 UGC 广告、视觉实验作品库。');
+    document.querySelector('meta[name="description"]')?.setAttribute('content', lang === 'en' ? 'AI commercials, short films, overseas product ads and visual experiments by AI路人.' : 'AI路人的 AI 商业广告、创意短片、海外产品广告、视觉实验作品库。');
   }, [lang]);
   useEffect(() => {
     const url = new URL(location.href);

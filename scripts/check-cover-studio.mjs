@@ -38,8 +38,8 @@ try {
   const unconfirmed = await fetch(`${tool.url}/api/export`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Cover-Token': boot.token }, body: JSON.stringify({ confirmed: false }) });
   assert.equal(unconfirmed.status, 400);
   const inputs = [
-    ['landscape', '09', 'assets/videos/works/AI Commercials/AI 品牌广告-无线耳机 TVC广告.mp4'],
-    ['portrait', '12', 'assets/videos/works/AI Social & UGC/AI UGC-海外坐垫.mp4'],
+    ['landscape', '09', 'assets/videos/works/AI Commercials/海外无线耳机 AI 场景广告.mp4'],
+    ['portrait', '12', 'assets/videos/works/AI Overseas Product Ads/海外车载坐垫 AI 产品体验广告.mp4'],
   ];
   for (const [kind, projectId, source] of inputs) {
     const original = path.join(root, source), before = await sha(original), beforeMap = await mapping();
@@ -83,7 +83,7 @@ try {
         await page.locator('#replace-consent').check(); await page.locator('#associate-cover').click();
         await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('已关联作品'));
         const nextMap = await mapping(); assert(nextMap[projectId]);
-        assert(nextMap[projectId].startsWith(projectId === '09' ? '无线耳机 AI 品牌广告-' : '海外坐垫 UGC 广告-'), 'Associated cover filenames must start with the Chinese project title.');
+        assert(nextMap[projectId].startsWith(projectId === '09' ? '海外无线耳机 AI 场景广告-' : '海外车载坐垫 AI 产品体验广告-'), 'Associated cover filenames must start with the Chinese project title.');
         assert((await fs.stat(path.join(fixture, 'assets/images/project-covers/custom', nextMap[projectId]))).size > 0);
         const work = await createSafePage(browser); await work.goto('http://127.0.0.1:5193/works.html'); await work.locator('.library-grid').waitFor();
         const card = work.locator('.comet-archive__card').nth(projectId === '09' ? 8 : 11);
@@ -95,7 +95,7 @@ try {
     console.log(`${kind}: 12 candidates, manual timestamp, drag, both modes, real WebP files, explicit association and video playback passed.`);
   }
   // Import an existing image without generating video candidates.
-  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/library/无线耳机 AI 品牌广告.webp'));
+  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/library/海外无线耳机 AI 场景广告.webp'));
   await page.waitForFunction(() => !document.querySelector('#export-cover').disabled && document.querySelector('#frame-status').textContent.startsWith('导入图片'));
   assert.equal(await page.locator('.candidates button').count(), 0); await page.locator('#export-cover').click();
   await page.waitForFunction(() => !document.querySelector('#export-result').hidden && !document.querySelector('#export-cover').disabled);
