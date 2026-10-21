@@ -21,6 +21,7 @@
 ## 规则
 
 - 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。
+- 修改 CSS 前先确认规则归属：Hero、共享 Token、导航、玻璃和作品库拥有各自文件；禁止复制旧版调参器或无必要地在 `index.html`、共享 CSS 中叠加同选择器覆盖。
 - 保持 GitHub Pages 相对路径构建方式，不修改部署配置或环境变量。
 - 不提交简历、提示词、过程记录、临时预览页或过期设计方案。
 - 页面内容和视觉调整完成后，必须执行构建验证。
@@ -38,6 +39,7 @@
 ```bash
 npm run build
 npm run check:media-safety
+npm run check:hero-published
 npm run check:i18n
 node scripts/check-project-library.mjs
 git diff --check
@@ -45,7 +47,7 @@ git diff --check
 
 封面工具相关改动另运行 `node scripts/check-cover-studio.mjs`，只在隔离临时项目中验证导出与替换，不使用真实作品封面做自动验收写入。
 
-本地预览必须先启动 Vite 开发服务，再访问 `http://127.0.0.1:5174/`；不要直接打开 `index.html`，否则 React 挂载、资源路径和动态模块可能不完整。
+本地开发必须先启动 `npm run dev`，再访问固定地址 `http://127.0.0.1:5174/`（生产预览使用 `npm run preview` 和 5181 端口）；不要直接打开 `index.html`，否则 React 挂载、资源路径和动态模块可能不完整。
 
 `check:i18n` 说明（`scripts/check-i18n.mjs`）：
 - 双语言 × 手机/桌面两种视口全页滚动扫描，检测视口溢出与文字被裁剪。

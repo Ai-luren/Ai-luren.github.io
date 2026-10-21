@@ -116,8 +116,7 @@ header.is-condensed {
 /* Action-shaped controls share a pill; navigation and close controls are true
    circles and keep their geometry independent from content cards. */
 .hero-actions button,
-.comet-archive__meta,
-.video-tuner__toggle {
+.comet-archive__meta {
   border-radius: var(--portfolio-control-radius) !important;
 }
 

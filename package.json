@@ -19,6 +19,7 @@
     "check:design-system": "node scripts/check-design-system-foundation.mjs",
     "check:responsive": "node scripts/check-final-responsive.mjs",
     "check:hero-conversion": "node scripts/check-hero-conversion.mjs",
+    "check:hero-published": "node scripts/check-hero-published-settings.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
     "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
     "check:social-media": "node scripts/check-social-media-system.mjs"

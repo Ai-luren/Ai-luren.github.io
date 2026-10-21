@@ -156,7 +156,7 @@
   position: fixed; inset: 0; z-index: 200; width: auto; max-height: none;
   overflow: auto; overscroll-behavior: contain; border: 0; border-radius: 0;
   box-shadow: none; transform: none;
-  display: flex; align-items: center; align-items: safe center; justify-content: center;
+  display: flex; align-items: safe center; justify-content: center;
   height: 100dvh; box-sizing: border-box;
   padding: max(92px,calc(env(safe-area-inset-top) + 80px)) max(48px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(48px,env(safe-area-inset-left));
 }

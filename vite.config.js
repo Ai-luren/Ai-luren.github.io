@@ -16,6 +16,9 @@ export default defineConfig(({ command }) => ({
   // 开发服务使用站点根路径；构建产物保留相对路径，以便 GitHub Pages 根目录发布。
   base: command === 'build' ? './' : '/',
   plugins: [react(), copyVendorToDist],
+  // Match documented local addresses; never silently jump to another port.
+  server: { host: '127.0.0.1', port: 5174, strictPort: true },
+  preview: { host: '127.0.0.1', port: 5181, strictPort: true },
   build: {
     // Preserve standards-based backdrop-filter declarations in production.
     // The default CSS minifier currently drops them in favor of a -webkit-
