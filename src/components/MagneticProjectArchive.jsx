@@ -137,7 +137,7 @@ export default function MagneticProjectArchive({ onSelect }) {
       return;
     }
     event.preventDefault();
-    onSelect(project);
+    onSelect(project, event.target.closest('.comet-archive__card'));
   };
 
   useEffect(() => {

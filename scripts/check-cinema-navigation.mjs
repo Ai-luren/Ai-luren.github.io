@@ -46,7 +46,12 @@ try{
    for(let i=0;i<16;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.cinema-player')));}
    assert(await p.locator('body > header #nav-lang').evaluate(el=>{el.focus();return !!document.activeElement.closest('.cinema-player');}));
   }else{await p.locator('.cinema-player__language').click();await p.waitForFunction(()=>document.documentElement.lang==='en');await ready(p,[1440,1920].includes(width)?'04':'01');}
-  await p.keyboard.press('Escape');assert(await trigger.evaluate(el=>el===document.activeElement));assert.equal(await p.locator('html').getAttribute('lang'),'en');
+  await p.keyboard.press('Escape');
+  // New shared modal motion retains the native dialog for the 220ms exit.
+  // Focus returns only after its backdrop is gone and the dialog unmounts.
+  await p.locator('.cinema-player').waitFor({state:'detached'});
+  await p.waitForFunction(() => document.activeElement === document.querySelector('.comet-archive__card'));
+  assert(await trigger.evaluate(el=>el===document.activeElement));assert.equal(await p.locator('html').getAttribute('lang'),'en');
   if(width===393){
    await trigger.click();await ready(p,'01');
    await p.evaluate(()=>{const video=document.querySelector('.cinema-player video');window.addEventListener('pagehide',()=>sessionStorage.setItem('cinema-left-paused',String(video.paused)),{once:true});});
@@ -58,7 +63,7 @@ try{
   assert.equal(await p.locator('.cinema-player__count').textContent(),'1 / 2');
   await p.locator('.cinema-player__sequence button').last().click();await ready(p,'15');assert(await p.locator('.cinema-player__sequence button').last().isDisabled());
   assert.equal(await p.locator('.cinema-player__count').textContent(),'2 / 2');
-  await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();await p.locator('.cinema-player__return').click();assert.equal(new URL(p.url()).searchParams.get('category'),'visual');assert.equal(await p.locator('.library-grid .comet-archive__card').count(),2);assert.equal(await p.locator('.cinema-player').count(),0);assert.equal(await p.evaluate(()=>scrollY),listScroll);
+  await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();await p.locator('.cinema-player__return').click();await p.locator('.cinema-player').waitFor({state:'detached'});assert.equal(new URL(p.url()).searchParams.get('category'),'visual');assert.equal(await p.locator('.library-grid .comet-archive__card').count(),2);assert.equal(await p.locator('.cinema-player').count(),0);assert.equal(await p.evaluate(()=>scrollY),listScroll);
   // In-page history changes retain the site's native back behavior and dismiss cinema.
   await p.evaluate(()=>history.pushState(null,'',location.href+'#history-test'));
   await p.locator('.library-grid .comet-archive__card').first().click();await ready(p,'14');await p.goBack();await p.waitForSelector('.cinema-player',{state:'detached'});

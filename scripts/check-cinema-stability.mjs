@@ -20,10 +20,13 @@ try {
    let release; const gate=new Promise(resolve=>release=resolve);
    let requestStarted; const requestSeen=new Promise(resolve=>requestStarted=resolve);
    await page.route('**/tr:orig-true/videos/**',async route=>{requestStarted();await gate;await route.fallback();});
-   // Capture geometry on the very first rendered modal frame, before metadata is available.
-   await page.evaluate(()=>{window.cinemaRects=[];const sample=()=>{const s=document.querySelector('.cinema-player[open] .cinema-player__stage');if(s){const r=s.getBoundingClientRect();window.cinemaRects.push([r.x,r.y,r.width,r.height]);}window.cinemaSampler=requestAnimationFrame(sample);};window.cinemaSampler=requestAnimationFrame(sample);});
    await page.locator('.library-grid .comet-archive__card').nth(index).click();
+   // The modal is intentionally translated by 8px while entering. Confirm
+   // stable video geometry only AFTER the shared 260ms entrance completes.
+   await page.waitForFunction(()=>document.querySelector('.cinema-player')?.classList.contains('is-motion-visible'));
+   await page.waitForTimeout(310);
    const initial=await page.evaluate(rect);
+   await page.evaluate(()=>{window.cinemaRects=[];const sample=()=>{const s=document.querySelector('.cinema-player[open] .cinema-player__stage');if(s){const r=s.getBoundingClientRect();window.cinemaRects.push([r.x,r.y,r.width,r.height]);}window.cinemaSampler=requestAnimationFrame(sample);};window.cinemaSampler=requestAnimationFrame(sample);});
    assert(initial.w>0 && Math.abs(initial.w/initial.h-ratio)<.001);
    assert(initial.paused && initial.time===0 && initial.ready===0);
    assert.equal(initial.clip,'hidden'); assert.equal(initial.fit,'contain');

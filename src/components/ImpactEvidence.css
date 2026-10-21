@@ -333,9 +333,17 @@
   background: var(--portfolio-modal-surface);
   backdrop-filter: var(--portfolio-modal-blur);
   -webkit-backdrop-filter: var(--portfolio-modal-blur);
+  opacity: 0;
+  transition: opacity var(--apple-duration-modal) var(--apple-ease);
 }
+.impact-profile-lightbox.is-motion-visible::before { opacity: 1; }
+.impact-profile-lightbox.is-closing::before { opacity: 0; transition-duration: var(--apple-duration-modal-exit); }
 /* One open shows both proof images; no additional view or navigation. */
 .impact-profile-dialog {
+  opacity: 0;
+  transform: translate3d(0,var(--apple-motion-modal-offset),0);
+  transition: opacity var(--apple-duration-modal) var(--apple-ease),
+              transform var(--apple-duration-modal) var(--apple-ease);
   position: relative;
   box-sizing: border-box;
   flex: 0 0 auto;
@@ -346,6 +354,21 @@
   padding: 0;
   background: transparent;
   color: var(--impact-text);
+}
+.impact-profile-lightbox.is-motion-visible .impact-profile-dialog { opacity: 1; transform: translate3d(0,0,0); }
+.impact-profile-lightbox.is-closing .impact-profile-dialog {
+  opacity: 0;
+  transform: translate3d(0,6px,0);
+  transition-duration: var(--apple-duration-modal-exit);
+}
+@media (prefers-reduced-motion: reduce) {
+  .impact-profile-lightbox::before, .impact-profile-dialog,
+  .impact-award-lightbox::before, .impact-award-lightbox figure {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
 }
 .impact-profile-dialog:focus-visible { outline: none; }
 .impact-profile-dialog h2 {

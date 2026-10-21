@@ -6,7 +6,7 @@ import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { WORKS_HREF } from '../navigation/links.js';
 
-export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose }) {
+export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
   const lang = useLang();
   const dialogRef = useRef(null);
   const videoRef = useRef(null);
@@ -28,6 +28,10 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [status, setStatus] = useState('idle');
   const [started, setStarted] = useState(false);
   const [playBlocked, setPlayBlocked] = useState(false);
+  const [motionVisible, setMotionVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const closingRef = useRef(false);
+  const closeTimerRef = useRef(null);
   const failed = status === 'error';
   const playing = status === 'playing';
   const videoUrl = project?.videoUrl?.trim();
@@ -45,12 +49,19 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   useLayoutEffect(() => {
     if (!project) return undefined;
     const dialog = dialogRef.current;
-    const trigger = document.activeElement;
+    // Source cards are owned by another portal and may lose activeElement
+    // during React reconciliation. Preserve the original activation target.
+    const trigger = returnFocusRef?.current?.isConnected ? returnFocusRef.current : document.activeElement;
     const previousOverflow = document.body.style.overflow;
     const scroll = [window.scrollX, window.scrollY];
     document.body.style.overflow = 'hidden';
     document.body.classList.add('cinema-open');
     if (!dialog.open) dialog.showModal();
+    let entranceFrame = requestAnimationFrame(() => {
+      entranceFrame = requestAnimationFrame(() => {
+        if (!closingRef.current) setMotionVisible(true);
+      });
+    });
     closeRef.current?.focus({ preventScroll: true });
     const pauseWhenHidden = () => { if (document.hidden) videoRef.current?.pause(); };
     const closeForHistory = () => { stop(); onClose(); };
@@ -59,6 +70,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     window.addEventListener('popstate', closeForHistory);
     window.addEventListener('pagehide', stopForPageHide);
     return () => {
+      cancelAnimationFrame(entranceFrame);
+      window.clearTimeout(closeTimerRef.current);
       document.removeEventListener('visibilitychange', pauseWhenHidden);
       window.removeEventListener('popstate', closeForHistory);
       window.removeEventListener('pagehide', stopForPageHide);
@@ -66,7 +79,13 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       document.body.classList.remove('cinema-open');
       document.body.style.overflow = previousOverflow;
       window.scrollTo(scroll[0], scroll[1]);
-      if (trigger?.isConnected) trigger.focus({ preventScroll: true });
+      // React portals can briefly detach the source card while rekeying the
+      // viewer. Restore focus after its source card is connected again.
+      requestAnimationFrame(() => {
+        if (trigger?.isConnected && !document.querySelector('.cinema-player[open]')) {
+          trigger.focus({ preventScroll: true });
+        }
+      });
     };
   }, [Boolean(project)]);
 
@@ -146,9 +165,20 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   }, [project?.id]);
 
   if (!project) return null;
-  const dismiss = () => { stop(); onClose(); };
+  const dismiss = () => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    stop(); // Release media immediately; the visual exit is video-free.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      onClose();
+      return;
+    }
+    setIsClosing(true);
+    setMotionVisible(false);
+    closeTimerRef.current = window.setTimeout(onClose, 220);
+  };
   const switchWork = async nextIndex => {
-    if(nextIndex < 0 || nextIndex >= projects.length || !onSelect || switchingRef.current) return;
+    if(nextIndex < 0 || nextIndex >= projects.length || !onSelect || switchingRef.current || closingRef.current) return;
     const controls=dialogRef.current?.querySelectorAll('.cinema-player__sequence button');
     switchFocusRef.current=document.activeElement===controls?.[1]?'next':document.activeElement===controls?.[0]?'previous':null;
     switchingRef.current=true;setSwitching(true);
@@ -158,7 +188,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     let timer;
     try { await Promise.race([image.decode().catch(()=>{}),new Promise(resolve=>{timer=setTimeout(resolve,1500);})]); }
     finally { clearTimeout(timer);switchingRef.current=false; }
-    if(!dialogRef.current?.open)return;
+    if(!dialogRef.current?.open || closingRef.current)return;
     stop();setSwitching(false);onSelect(next);
   };
   const play = async (reload = false) => {
@@ -196,7 +226,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const focusLastControl = () => dialogRef.current?.querySelector('.cinema-player__return')?.focus();
 
   return createPortal(
-    <dialog className="cinema-player" ref={dialogRef} aria-labelledby="cinema-player-title"
+    <dialog className={`cinema-player${motionVisible && !isClosing ? ' is-motion-visible' : ''}${isClosing ? ' is-closing' : ''}`} ref={dialogRef} aria-labelledby="cinema-player-title"
       data-project-id={project?.id}
       data-format={dimensions ? (dimensions.width >= dimensions.height ? 'landscape' : 'portrait') : undefined}
       onCancel={event => { event.preventDefault(); dismiss(); }}>

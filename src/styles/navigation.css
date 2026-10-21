@@ -121,9 +121,28 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 .impact-award-lightbox, .impact-award-lightbox.is-closing { background: transparent !important; opacity: 1 !important; animation: none !important; transition: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 /* Fade the image rather than the blur ancestor, which would prevent the
    pseudo-element from sampling the page behind it. */
-.impact-award-lightbox figure { animation: apple-modal-in var(--apple-duration-modal) var(--apple-ease) both; transition: opacity var(--apple-duration-modal) var(--apple-ease); }
-.impact-award-lightbox.is-closing figure { animation: none; opacity: 0; }
-.impact-award-lightbox::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* Modal motion is reversible: the fixed glass layer stays anchored and only
+   its opacity and the content's short GPU-composited offset change. */
+.impact-award-lightbox figure {
+  animation: none !important;
+  opacity: 0;
+  transform: translate3d(0,var(--apple-motion-modal-offset),0);
+  transition: opacity var(--apple-duration-modal) var(--apple-ease),
+              transform var(--apple-duration-modal) var(--apple-ease);
+}
+.impact-award-lightbox.is-motion-visible figure { opacity: 1; transform: translate3d(0,0,0); }
+.impact-award-lightbox.is-closing figure {
+  opacity: 0;
+  transform: translate3d(0,6px,0);
+  transition-duration: var(--apple-duration-modal-exit);
+}
+.impact-award-lightbox::before {
+  content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--apple-duration-modal) var(--apple-ease);
+}
+.impact-award-lightbox.is-motion-visible::before { opacity: 1; }
+.impact-award-lightbox.is-closing::before { opacity: 0; transition-duration: var(--apple-duration-modal-exit); }
 /* Keyboard focus uses one functional blue across evidence cards, account
    actions and the shared viewer; hover styling remains component-owned. */
 :is(#impact-awards .impact-award-card,
