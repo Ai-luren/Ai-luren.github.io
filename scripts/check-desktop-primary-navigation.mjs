@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
@@ -18,7 +19,7 @@ const expected = {
 
 try {
   for (const width of [1024, 1102, 1440, 1920]) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const page = await createSafePage(browser, { viewport: { width, height: 900 } });
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(new URL('index.html#projects', base).href, { waitUntil: 'domcontentloaded' });
@@ -62,7 +63,7 @@ try {
     assert.deepEqual(errors, [], `${width}px home page errors`);
     await page.close();
 
-    const works = await browser.newPage({ viewport: { width, height: 900 } });
+    const works = await createSafePage(browser, { viewport: { width, height: 900 } });
     await works.goto(new URL('works.html?category=visual', base).href, { waitUntil: 'domcontentloaded' });
     await works.waitForSelector('.library-page-navigation .site-primary-nav');
     for (const lang of ['zh', 'en']) {
@@ -81,7 +82,7 @@ try {
     console.log(`${width}px: home/library navigation, bilingual labels, Expertise anchor, active state and fit passed`);
   }
 
-  const mobile = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  const mobile = await createSafePage(browser, { viewport: { width: 390, height: 844 } });
   await mobile.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
   await mobile.locator('.nav-toggle').click();
   assert.deepEqual(await mobile.locator('#mobile-primary-nav a').evaluateAll(as => as.map(a => a.getAttribute('href'))), ['#projects', './works.html', '#recognition', '#contact']);

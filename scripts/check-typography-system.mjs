@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Step 02: verify that section headings and reading hierarchy remain coherent
  * on the home page and the works library in Chinese and English.
@@ -43,8 +44,8 @@ try {
   const browser = await chromium.launch({ executablePath: executable, headless: true });
   try {
     for (const width of widths) for (const lang of ['zh','en']) {
-      const home = await browser.newPage({ viewport: { width, height: 900 } });
-      const works = await browser.newPage({ viewport: { width, height: 900 } });
+      const home = await createSafePage(browser, { viewport: { width, height: 900 } });
+      const works = await createSafePage(browser, { viewport: { width, height: 900 } });
       try {
         const errors = [];
         home.on('pageerror', e => errors.push(`home ${e.message}`));

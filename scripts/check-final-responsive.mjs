@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /* Final two-page portfolio release sanity check.
  * Detailed media, modal and card behaviors retain their focused suites.
  */
@@ -32,7 +33,7 @@ try{
  const browser=await chromium.launch({headless:true,executablePath:binary});
  try{
   for(const lang of langs)for(const width of widths){
-   const page=await browser.newPage({viewport:{width,height:900}});
+   const page=await createSafePage(browser, {viewport:{width,height:900}});
    try{
     const errors=[];
     page.on('pageerror',error=>errors.push(error.message));

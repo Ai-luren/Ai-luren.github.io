@@ -10,7 +10,7 @@
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
 - `src/data/projects.js`：首页精选与全部作品库共享的作品、分类及视频地址；无真实资料时保留空值。
-- `assets/videos/works/`：本地原始作品视频；仅当作品没有 ImageKit 地址时作为 Vite 开发兜底，Git 忽略且不进入正式构建。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理。
+- `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、社媒与 UGC、视觉实验管理。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：`设计规范.md` 是唯一持续生效的视觉与交互规范；维护指南为操作说明，带日期的审计/验收文档只作历史记录。
@@ -27,11 +27,17 @@
 - 修改文案、字号、行宽、容器宽度等影响排版的内容后，必须执行双语布局检测。
 - 双语文案约定：英文标题尽量 ≤ 26 字符、导航标签 ≤ 8 字符，避免触发为长文案准备的降级规则。
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
+- 在本机 Vite 开发模式下，`src/data/projects.js` 的作品播放器使用 `assets/videos/works/` 中的本地 MP4；即使已配置 ImageKit URL 也不能走线上 CDN。没有本地原片时不要自动回退访问 ImageKit。正式构建仍保持 ImageKit 原始视频链接。
+- **零 ImageKit CDN 消耗是自动化测试的硬性约束**：日常测试、截图、UI 检查、回归测试禁止向 ImageKit 发起真实网络请求；不要为了测试布局访问线上作品视频。
+- 所有使用 Playwright 的脚本必须通过 `scripts/lib/safe-media.mjs` 的 `createSafePage` / `createSafeContext` 创建受保护的页面或上下文；这些辅助函数在导航和播放前拦截 ImageKit 请求，MP4 由 `scripts/fixtures/` 本地小视频替代，其他 ImageKit 请求直接阻断。新测试也必须遵守。不能调用 `route.continue()` 绕过该保护。
+- 自动测试使用本地模拟媒体验证播放器状态、尺寸和导航；真实 CDN 播放检查只能在用户**明确授权**后单独手动执行，绝不自动回退到真实视频。不得改动生产环境 `tr:orig-true`、点击后加载及 `preload="none"` 的行为。
+
 
 ## 验证
 
 ```bash
 npm run build
+npm run check:media-safety
 npm run check:i18n
 node scripts/check-project-library.mjs
 git diff --check

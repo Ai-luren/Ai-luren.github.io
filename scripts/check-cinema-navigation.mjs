@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import {existsSync,mkdirSync} from 'node:fs';
 import assert from 'node:assert/strict';
@@ -11,7 +12,7 @@ async function ready(p,id){await p.waitForFunction(id=>document.querySelector('.
 async function shot(p,name){if(out)await p.screenshot({path:`${out}/${name}.png`});}
 try{
  for(const width of [360,375,393,430,1280,1440,1920]){
-  const p=await browser.newPage({viewport:{width,height:width<=760?852:1000}});
+  const p=await createSafePage(browser, {viewport:{width,height:width<=760?852:1000}});
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.goto(new URL('index.html#projects',base).href);await p.waitForSelector('.comet-archive__card',{state:'attached'});await p.locator('#projects').scrollIntoViewIfNeeded();
   if(width===393){await p.locator('.nav-toggle').click();await p.waitForTimeout(600);await shot(p,'393-menu');await p.locator('.nav-toggle').click();await p.waitForTimeout(500);}
@@ -65,7 +66,7 @@ try{
   console.log(`${width}px: header continuity, language keeps video, featured/filter sequence, disabled edges, focus, list return and history passed`);await p.close();
  }
  // Short viewport: actions scroll while navigation stays fixed and operable.
- const p=await browser.newPage({viewport:{width:393,height:640}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await ready(p,'04');
+ const p=await createSafePage(browser, {viewport:{width:393,height:640}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await ready(p,'04');
  const top=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();const after=await p.locator('.cinema-player__close').evaluate(rect);after.forEach((v,i)=>assert(Math.abs(v-top[i])<1));await p.locator('.cinema-player__close').click();
  await p.close();
  console.log('Short viewport scrolling and fixed cinema navigation passed.');

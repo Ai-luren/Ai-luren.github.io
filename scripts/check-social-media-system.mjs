@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Regression contract: AI Media mobile layout + one shared modal navigation.
  * Run: npm run check:social-media (starts its own Vite server)
@@ -41,7 +42,7 @@ try {
   const browser = await chromium.launch({executablePath,headless:true});
   try {
     for(const width of widths)for(const lang of ['zh','en']){
-      const page=await browser.newPage({viewport:{width,height:900}});
+      const page=await createSafePage(browser, {viewport:{width,height:900}});
       try {
         const errors=[];
         page.on('pageerror',e=>errors.push(e.message));

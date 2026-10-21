@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
@@ -16,7 +17,7 @@ async function arrows(p,width){
 }
 try{
  for(const width of [360,375,393,430,1280,1440,1920]){
-  const p=await browser.newPage({viewport:{width,height:width<=760?852:1000}});
+  const p=await createSafePage(browser, {viewport:{width,height:width<=760?852:1000}});
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.goto(new URL('index.html',base).href);await p.waitForSelector('.comet-archive__card',{state:'attached'});await p.waitForTimeout(450);
   const home=await p.locator('body > header').evaluate(geometry);
@@ -71,7 +72,7 @@ try{
   await p.close();
  }
  // A blurred scrolling ancestor must never carry the fixed award capsule away.
- const short=await browser.newPage({viewport:{width:393,height:500}});
+ const short=await createSafePage(browser, {viewport:{width:393,height:500}});
  await short.goto(new URL('index.html#impact-awards',base).href);
  await short.locator('.nav-toggle').click();await short.locator('#mobile-primary-nav a[href="#recognition"]').click();await short.waitForTimeout(650);
  await short.locator('.impact-award-card').first().click();await short.waitForTimeout(400);
@@ -81,7 +82,7 @@ try{
  await short.locator('#impact-award-lightbox .cinema-player__close').click();await short.close();
  console.log('Short award viewport: capsule stays fixed while image content scrolls');
  for(const width of [393,1440]) for(const mode of ['normal','reduced','unsupported']) {
-  const p=await browser.newPage({viewport:{width,height:width===393?852:1000}});
+  const p=await createSafePage(browser, {viewport:{width,height:width===393?852:1000}});
   const cdp=await p.context().newCDPSession(p);
   await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-transparency',value:mode==='reduced'?'reduce':'no-preference'}]});
   const capability=async()=>{

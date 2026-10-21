@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /* Step 05: one accessible dialog boundary including shared navigation,
    consistent keyboard focus, Esc/close restoration and no background escape. */
 import assert from 'node:assert/strict';
@@ -44,7 +45,7 @@ try{
   const browser=await chromium.launch({headless:true,executablePath:browserPath});
   try {
     for(const width of widths)for(const lang of ['zh','en']){
-      const page=await browser.newPage({viewport:{width,height:900}});
+      const page=await createSafePage(browser, {viewport:{width,height:900}});
       const tag=width+'px '+lang;
       try{
         const errors=[];page.on('pageerror',err=>errors.push(err.message));

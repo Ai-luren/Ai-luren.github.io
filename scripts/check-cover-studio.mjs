@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // End-to-end checks write only to an isolated temporary project, never the real covers.
 import { createCoverStudio } from '../tools/cover-studio/server.mjs';
 import { createServer } from 'vite';
@@ -23,7 +24,7 @@ const tool = await createCoverStudio({ projectRoot: fixture, port: 5192 });
 const vite = await createServer({ root: fixture, configFile: path.join(root, 'vite.config.js'), server: { host: '127.0.0.1', port: 5193, strictPort: true, fs: { allow: [fixture, root] } }, logLevel: 'error' });
 await vite.listen();
 const browser = await chromium.launch({ executablePath: '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', headless: true });
-const page = await browser.newPage({ viewport: { width: 1440, height: 1100 } });
+const page = await createSafePage(browser, { viewport: { width: 1440, height: 1100 } });
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 const mapping = () => fs.readFile(path.join(fixture, 'src/data/project-cover-overrides.json'), 'utf8').then(JSON.parse);
@@ -84,7 +85,7 @@ try {
         const nextMap = await mapping(); assert(nextMap[projectId]);
         assert(nextMap[projectId].startsWith(projectId === '09' ? '无线耳机 AI 品牌广告-' : '海外坐垫 UGC 广告-'), 'Associated cover filenames must start with the Chinese project title.');
         assert((await fs.stat(path.join(fixture, 'assets/images/project-covers/custom', nextMap[projectId]))).size > 0);
-        const work = await browser.newPage(); await work.goto('http://127.0.0.1:5193/works.html'); await work.locator('.library-grid').waitFor();
+        const work = await createSafePage(browser); await work.goto('http://127.0.0.1:5193/works.html'); await work.locator('.library-grid').waitFor();
         const card = work.locator('.comet-archive__card').nth(projectId === '09' ? 8 : 11);
         assert(decodeURIComponent(await card.getAttribute('style')).includes(nextMap[projectId]), 'Public library must use the newly associated cover.');
         await card.click(); await work.locator('.cinema-player__play').click(); await work.waitForFunction(() => document.querySelector('video')?.videoWidth > 0); await work.locator('.cinema-player__close').click(); await work.close();

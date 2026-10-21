@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Step 01: preserve current surface, typography and navigation contract.
  * Browser regression baseline, not a redesign.
@@ -33,7 +34,7 @@ try {
     for(const width of [360,390,760,1024,1440])for(const lang of ['zh','en']) {
       const pages={};
       for(const kind of ['home','library']) {
-        const page=await browser.newPage({viewport:{width,height:900}});
+        const page=await createSafePage(browser, {viewport:{width,height:900}});
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
         await page.goto(new URL(kind==='home'?'index.html#impact-reach':'works.html',base).href);
         await page.locator(kind==='home'?'#impact-reach .impact-glass':'.library-grid .comet-archive__image').first().waitFor();

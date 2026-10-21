@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Step 03: shared ProjectCard visual contract on Featured & All Work.
  *
@@ -40,8 +41,8 @@ try{
   const browser=await chromium.launch({executablePath,headless:true});
   try{
     for(const width of widths) for(const lang of ['zh','en']){
-      const home=await browser.newPage({viewport:{width,height:900}});
-      const works=await browser.newPage({viewport:{width,height:900}});
+      const home=await createSafePage(browser, {viewport:{width,height:900}});
+      const works=await createSafePage(browser, {viewport:{width,height:900}});
       try{
         const errors=[];
         home.on('pageerror',e=>errors.push('home: '+e.message));

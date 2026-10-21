@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /* Step 04: matching status affordances, surfaces and viewer across pages. */
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
@@ -23,7 +24,7 @@ try {
   for(const width of widths)for(const lang of ['zh','en']){
    const pairs={};
    for(const kind of ['home','library']){
-    const page=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+    const page=await createSafePage(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
     try{
      const errors=[];
      page.on('pageerror',e=>errors.push(e.message));

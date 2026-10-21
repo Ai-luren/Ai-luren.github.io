@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // 移动端主导航焦点回归：node scripts/check-mobile-menu-focus.mjs
 // 触摸打开菜单不应把第一个链接误聚焦成蓝色大框；键盘 Tab 仍需进入第一个链接。
 
@@ -15,7 +16,7 @@ const executablePath = BROWSER_CANDIDATES.find(existsSync);
 if (!executablePath) throw new Error('未找到 Chrome / Edge / Chromium');
 
 const browser = await chromium.launch({ executablePath, headless: true });
-const context = await browser.newContext({
+const context = await createSafeContext(browser, {
   viewport: { width: 393, height: 852 },
   isMobile: true,
   hasTouch: true,

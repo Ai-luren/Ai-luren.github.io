@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Step 01 regression: the Platform Creator content must never disappear
  * between the mobile and desktop CSS breakpoints.
@@ -51,7 +52,7 @@ try {
   try {
     for (const width of WIDTHS) {
       for (const lang of LANGS) {
-        const page = await browser.newPage({ viewport: { width, height: 850 } });
+        const page = await createSafePage(browser, { viewport: { width, height: 850 } });
         try {
           const errors = [];
           page.on('pageerror', error => errors.push(error.message));

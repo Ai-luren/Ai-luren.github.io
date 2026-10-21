@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // 双语布局溢出检测：npm run check:i18n
 // 覆盖 zh/en 两种语言 × 手机/桌面两种视口，检测内容溢出与已知复发点的排版回归。
 // 依赖 playwright-core（仅驱动，不带浏览器），使用系统已装的 Chrome 或 Edge。
@@ -450,7 +451,7 @@ async function run() {
     for (const vp of VIEWPORTS) {
       for (const lang of LANGS) {
         const label = `[${vp.name} ${lang}]`;
-        const context = await browser.newContext({ viewport: { width: vp.width, height: vp.height } });
+        const context = await createSafeContext(browser, { viewport: { width: vp.width, height: vp.height } });
         await context.addInitScript(l => {
           try { window.localStorage.setItem('ailuren-lang', l); } catch { /* 忽略 */ }
         }, lang);

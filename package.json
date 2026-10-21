@@ -9,6 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "check:media-safety": "node scripts/check-safe-media-coverage.mjs && node scripts/check-safe-media-guard.mjs",
     "check:impact-platform": "node scripts/check-impact-platform-breakpoints.mjs",
     "check:typography": "node scripts/check-typography-system.mjs",
     "check:work-cards": "node scripts/check-work-card-system.mjs",

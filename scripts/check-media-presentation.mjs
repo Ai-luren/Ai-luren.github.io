@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
 import {mkdirSync} from 'node:fs';
@@ -23,7 +24,7 @@ function videoCheck(m,width,height){
 }
 try{
  for(const [width,height]of viewports)for(const lang of ['zh','en'])for(const mode of ['normal','reduced']){
-  const p=await browser.newPage({viewport:{width,height}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
+  const p=await createSafePage(browser, {viewport:{width,height}});const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.addInitScript(lang=>localStorage.setItem('ailuren-lang',lang),lang);
   const cdp=await p.context().newCDPSession(p);await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-transparency',value:mode==='reduced'?'reduce':'no-preference'}]});
   await p.goto(new URL('works.html',base).href);
@@ -72,7 +73,7 @@ try{
  }
  // Switching between equally wide films must also update their real height.
  for(const [width,height]of [[360,740],[393,852],[1440,900]]){
-  const p=await browser.newPage({viewport:{width,height}});
+  const p=await createSafePage(browser, {viewport:{width,height}});
   await p.addInitScript(()=>localStorage.setItem('ailuren-lang','en'));
   await p.goto(new URL('works.html',base).href);
   // Read production-rendered cards, not /src/* paths available only in dev.
@@ -102,7 +103,7 @@ try{
   await p.close();
  }
  // A genuinely short viewport keeps one internal scroller and accessible chrome.
- const p=await browser.newPage({viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
+ const p=await createSafePage(browser, {viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
  const scroll=await p.evaluate(()=>scrollY);const close=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();assert.equal(await p.evaluate(()=>scrollY),scroll);assert.deepEqual(await p.locator('.cinema-player__close').evaluate(rect),close);await p.locator('.cinema-player__close').click();
  await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
  const nav=await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect);const pageScroll=await p.evaluate(()=>scrollY);await p.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);assert.deepEqual(await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect),nav);assert.equal(await p.evaluate(()=>scrollY),pageScroll);await p.locator('#impact-award-lightbox .cinema-player__close').click();await p.close();

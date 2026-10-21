@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /* Phase 2 Step 07: clear AI-video positioning and direct portfolio/contact
    conversion paths. Existing visual layout, work grid and navigation stay intact. */
 import assert from 'node:assert/strict';
@@ -41,7 +42,7 @@ try{
  const browser=await chromium.launch({headless:true,executablePath:binary});
  try{
   for(const lang of ['zh','en'])for(const width of sizes){
-   const p=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});
+   const p=await createSafePage(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
    const tag=width+'px '+lang;
    try{
     const errors=[];

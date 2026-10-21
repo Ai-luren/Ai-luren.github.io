@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // Run against a Vite production preview to catch extracted CSS order regressions.
 // PORTFOLIO_URL=http://127.0.0.1:5182/ REVIEW_SCREENSHOTS=/outside/repo node scripts/capture-final-review.mjs
 import { chromium } from 'playwright-core';
@@ -102,7 +103,7 @@ async function section(page, id, name, record) {
   record.sections.push({ name, assets });
 }
 async function capture(path, width, height, lang) {
-  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
+  const page = await createSafePage(browser, { viewport: { width, height }, deviceScaleFactor: 1 });
   const home = path === 'index.html';
   const name = `${home ? 'home' : 'works'}-${lang}-${width}`;
   const record = { name, viewport: { width, height }, console: [], pageErrors: [], requestFailed: [], httpErrors: [], imageResponses: [], sections: [] };

@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import {existsSync,mkdirSync} from 'node:fs';
 import assert from 'node:assert/strict';
@@ -13,12 +14,12 @@ try {
  // repeatedly streaming the CDN asset at every width; layout tests cover the rest.
  for(const width of [1440,393]) {
   const height=width>=1000?900:852;
-  const page=await browser.newPage({viewport:{width,height}});
+  const page=await createSafePage(browser, {viewport:{width,height}});
   for(const [index,label,ratio] of [[0,'16-9',16/9],[3,'9-16',9/16]]) {
    await page.goto(new URL('works.html',base).href);
    let release; const gate=new Promise(resolve=>release=resolve);
    let requestStarted; const requestSeen=new Promise(resolve=>requestStarted=resolve);
-   await page.route('**/tr:orig-true/videos/**',async route=>{requestStarted();await gate;await route.continue();});
+   await page.route('**/tr:orig-true/videos/**',async route=>{requestStarted();await gate;await route.fallback();});
    // Capture geometry on the very first rendered modal frame, before metadata is available.
    await page.evaluate(()=>{window.cinemaRects=[];const sample=()=>{const s=document.querySelector('.cinema-player[open] .cinema-player__stage');if(s){const r=s.getBoundingClientRect();window.cinemaRects.push([r.x,r.y,r.width,r.height]);}window.cinemaSampler=requestAnimationFrame(sample);};window.cinemaSampler=requestAnimationFrame(sample);});
    await page.locator('.library-grid .comet-archive__card').nth(index).click();

@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // 对抗式审查 1：断点临界视口 × 中英文，全页滚动扫描溢出/截断/重叠
 // 项目预览地址固定为 Vite 的 5174 端口；横向滚动轨道内部的内容不作为视口溢出判断对象。
 // 攻击目标：常规检测只用 393/1440，这里用断点边界值（320/360/375/390/414/519/520/559/560/640/719/720/721/760/761/820/900/980/1024/1280/1920）
@@ -75,7 +76,7 @@ const report = [];
 for (const lang of ['zh', 'en']) {
   for (const vw of VIEWPORTS) {
     const height = vw < 500 ? 852 : vw < 900 ? 900 : 900;
-    const context = await browser.newContext({ viewport: { width: vw, height } });
+    const context = await createSafeContext(browser, { viewport: { width: vw, height } });
     await context.addInitScript((l) => { try { localStorage.setItem('ailuren-lang', l); } catch (e) {} }, lang);
     const page = await context.newPage();
     const pageErrors = [];
