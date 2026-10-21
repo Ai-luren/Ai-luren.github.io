@@ -46,7 +46,9 @@
   --apple-duration-control: 180ms;
   --apple-duration-card: 320ms;
   --apple-duration-section: 400ms;
-  --apple-duration-modal: 240ms;
+  --apple-duration-modal: 260ms;
+  --apple-duration-modal-exit: 220ms;
+  --apple-motion-modal-offset: 8px;
   --apple-duration-menu: 380ms;
   --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
   --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;

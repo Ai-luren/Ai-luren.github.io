@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import CinemaPlayer from './components/CinemaPlayer.jsx';
 import { FEATURED_PROJECTS } from './data/projects.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
@@ -16,6 +16,11 @@ import './styles/navigation.css';
 
 export default function App() {
   const [selectedProject, setSelectedProject] = useState(null);
+  const cinemaReturnFocusRef = useRef(null);
+  const selectFeaturedProject = (project, trigger) => {
+    if (trigger?.isConnected) cinemaReturnFocusRef.current = trigger;
+    setSelectedProject(project);
+  };
   const projectArchiveRoot = document.getElementById('projects-react-root');
   const impactEvidenceRoot = document.getElementById('recognition-react-root');
   const footerDockRoot = document.getElementById('footer-dock-react-root');
@@ -27,8 +32,8 @@ export default function App() {
   return (
     <>
       <VideoPostProcess />
-      {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={setSelectedProject} />, projectArchiveRoot)}
-      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
+      {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
+      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       {footerDockRoot && createPortal(<FloatingDock />, footerDockRoot)}
       {experimentRoot && createPortal(<ExperimentFlip />, experimentRoot)}

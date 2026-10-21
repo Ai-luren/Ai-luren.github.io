@@ -130,6 +130,7 @@ function AwardGallery() {
   const lang = useLang();
   const [openIndex, setOpenIndex] = useState(-1);
   const [isClosing, setIsClosing] = useState(false);
+  const [awardMotionVisible, setAwardMotionVisible] = useState(false);
   const [railState, setRailState] = useState({ canScrollLeft: false, canScrollRight: true });
   const [isMobile, setIsMobile] = useState(() => (
     typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
@@ -153,6 +154,7 @@ function AwardGallery() {
     window.clearTimeout(closeTimerRef.current);
     closingRef.current = false;
     setIsClosing(false);
+    setAwardMotionVisible(false);
     setOpenIndex(index);
   }, []);
   const close = useCallback(() => {
@@ -166,12 +168,13 @@ function AwardGallery() {
       return;
     }
     setIsClosing(true);
+    setAwardMotionVisible(false);
     closeTimerRef.current = window.setTimeout(() => {
       setOpenIndex(-1);
       setIsClosing(false);
       closingRef.current = false;
       requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
-    }, 240);
+    }, 220);
   }, [isOpen]);
   const step = useCallback((delta) => {
     setOpenIndex((index) => (index < 0 ? index : (index + delta + awards.length) % awards.length));
@@ -319,6 +322,16 @@ function AwardGallery() {
   useEffect(() => {
     return () => window.clearTimeout(closeTimerRef.current);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!isOpen) return undefined;
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        if (!closingRef.current) setAwardMotionVisible(true);
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen]);
 
   useLayoutEffect(() => {
     if (!isOpen) return undefined;
@@ -484,7 +497,7 @@ function AwardGallery() {
         <div
           id="impact-award-lightbox"
           ref={dialogRef}
-          className={`impact-award-lightbox${isClosing ? ' is-closing' : ''}`}
+          className={`impact-award-lightbox${awardMotionVisible && !isClosing ? ' is-motion-visible' : ''}${isClosing ? ' is-closing' : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="impact-award-lightbox-title"
@@ -579,6 +592,7 @@ function ReachDossier() {
   const [activeProfile, setActiveProfile] = useState(null);
   const [profileImageFailed, setProfileImageFailed] = useState({ screenshot: false, qr: false });
   const [isProfileClosing, setIsProfileClosing] = useState(false);
+  const [profileMotionVisible, setProfileMotionVisible] = useState(false);
   const profileDialogRef = useRef(null);
   const profileViewerRef = useRef(null);
   const profileCloseRef = useRef(null);
@@ -593,6 +607,7 @@ function ReachDossier() {
     profileClosingRef.current = false;
     setProfileImageFailed({ screenshot: false, qr: false });
     setIsProfileClosing(false);
+    setProfileMotionVisible(false);
     setActiveProfile(card);
   };
 
@@ -610,10 +625,20 @@ function ReachDossier() {
       return;
     }
     setIsProfileClosing(true);
-    profileCloseTimerRef.current = window.setTimeout(finish, 240);
+    setProfileMotionVisible(false);
+    profileCloseTimerRef.current = window.setTimeout(finish, 220);
   }, [activeProfile]);
 
   useEffect(() => () => window.clearTimeout(profileCloseTimerRef.current), []);
+  useLayoutEffect(() => {
+    if (!activeProfile) return undefined;
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        if (!profileClosingRef.current) setProfileMotionVisible(true);
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [Boolean(activeProfile)]);
 
   // Restore keyboard focus only after modal unmount restores the page's inert state.
   useLayoutEffect(() => {
@@ -722,7 +747,7 @@ function ReachDossier() {
       {activeProfile && createPortal(
         <div
           ref={profileViewerRef}
-          className={`impact-profile-lightbox${isProfileClosing ? ' is-closing' : ''}`}
+          className={`impact-profile-lightbox${profileMotionVisible && !isProfileClosing ? ' is-motion-visible' : ''}${isProfileClosing ? ' is-closing' : ''}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="impact-profile-dialog-title"
