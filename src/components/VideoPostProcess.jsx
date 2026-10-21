@@ -261,8 +261,13 @@ export default function VideoPostProcess() {
       program.uniforms.uVideoResolution.value = [video.videoWidth || 16, video.videoHeight || 9];
       onResize();
     };
+    // Wait until the texture has actually been uploaded and rendered. A
+    // 'loadeddata' event alone can precede WebGL's first video-backed frame,
+    // producing a black flash on slower mobile devices.
+    let webglRevealed = false;
     const revealWebgl = () => {
-      if (video.readyState < 2) return;
+      if (webglRevealed || video.readyState < 2) return;
+      webglRevealed = true;
       canvas.style.opacity = '1';
       container.classList.add('is-webgl-ready');
     };
@@ -282,9 +287,12 @@ export default function VideoPostProcess() {
       frame = requestAnimationFrame(render);
       if (time - lastRenderAt < renderInterval) return;
       lastRenderAt = time;
-      if (video.readyState >= 2) texture.needsUpdate = true;
+      const hasDecodedFrame = video.readyState >= 2;
+      if (hasDecodedFrame) texture.needsUpdate = true;
       program.uniforms.uTime.value = time * 0.001;
       renderer.render({ scene: mesh });
+      // Do not hide the poster-backed native video before the first WebGL render.
+      if (hasDecodedFrame) revealWebgl();
     };
     const onVisibilityChange = () => {
       if (!document.hidden && !frame) frame = requestAnimationFrame(render);
@@ -294,21 +302,17 @@ export default function VideoPostProcess() {
     onResize();
     window.addEventListener('video-tuning-change', onTuningChange);
     video.addEventListener('loadedmetadata', onVideoMetadata);
-    video.addEventListener('loadeddata', revealWebgl, { once: true });
-    video.addEventListener('canplay', revealWebgl, { once: true });
+    // The render loop owns the reveal, not a media event that can arrive
+    // before the first texture upload.
     window.addEventListener('resize', onResize, { passive: true });
     window.addEventListener('video-scrub-state', onVideoScrubState);
     document.addEventListener('visibilitychange', onVisibilityChange);
     frame = requestAnimationFrame(render);
-    revealWebgl();
-
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener('video-tuning-change', onTuningChange);
       video.removeEventListener('loadedmetadata', onVideoMetadata);
       window.removeEventListener('resize', onResize);
-      video.removeEventListener('loadeddata', revealWebgl);
-      video.removeEventListener('canplay', revealWebgl);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('video-scrub-state', onVideoScrubState);
       container.classList.remove('is-webgl-ready');

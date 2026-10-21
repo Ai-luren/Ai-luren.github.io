@@ -255,7 +255,11 @@
 
     /* 色彩系统：深空底色、蓝灰信息层、单一蓝色交互层。 */
 
-    #video-bg { background: var(--space-black); }
+    /* A first-frame still underlies native video and WebGL until decoding succeeds. */
+    #video-bg { background: var(--space-black) url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat; }
+    @media (max-width: 720px) {
+      #video-bg { background-image: url('assets/images/hero-first-frame-mobile.webp'); }
+    }
     #hero-video { filter: brightness(.72) saturate(.82) contrast(1.02); }
     nav a { color: var(--subtle-text); }
     nav a:hover, nav a:focus-visible, nav a.is-active { color: var(--mist); }
@@ -1022,7 +1026,7 @@
         -webkit-backdrop-filter: none !important;
       }
       #video-webgl { display: none !important; }
-      #video-bg { background: #000; }
+      #video-bg { background-color: #000; }
     }
     @media (prefers-contrast: more) {
       :root {
@@ -1664,7 +1668,7 @@
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata" poster="assets/images/hero-first-frame-mobile.webp"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
   <header>
     <div class="nav-inner shell">
@@ -1842,7 +1846,9 @@
       video.addEventListener('error', revealPage, { once: true });
       window.setTimeout(revealPage, 180);
 
-      // 首屏先拿元数据，用户准备滚动或桌面端稳定停留后再开始下载完整视频。
+      // Mobile Safari may defer video data until a gesture: load the first frame
+      // proactively and keep the 26KB still poster visible until decoding works.
+      // Desktop retains the deferred policy for the larger cinematic video.
       var videoWarmed = false;
       function warmVideo() {
         if (videoWarmed || !video || !video.querySelector('source')) return;
@@ -1852,7 +1858,8 @@
       }
       window.addEventListener('pointerdown', warmVideo, { once: true, passive: true });
       window.addEventListener('scroll', warmVideo, { once: true, passive: true });
-      if (window.innerWidth > 760) window.setTimeout(warmVideo, 1200);
+      if (window.innerWidth <= 760) warmVideo();
+      else window.setTimeout(warmVideo, 1200);
 
       function setVideoTarget() {
         progressRaf = 0;
@@ -2020,13 +2027,42 @@
       }
 
       var status = document.querySelector('.copy-status');
+      var copyNoticeTimer = 0;
+      function showCopyNotice(success, value) {
+        if (!status) return;
+        var key = success ? 'copy.copiedPrefix' : 'copy.failed';
+        var text = success
+          ? (window.__i18n ? window.__i18n.t(key) : '已复制：') + value
+          : (window.__i18n ? window.__i18n.t(key) : '复制失败，请手动复制微信号');
+        window.clearTimeout(copyNoticeTimer);
+        status.textContent = text;
+        status.classList.add('is-visible');
+        copyNoticeTimer = window.setTimeout(function () { status.classList.remove('is-visible'); }, 2200);
+      }
+      function tryLegacyCopy(value) {
+        var input = document.createElement('textarea');
+        input.value = value;
+        input.setAttribute('readonly', '');
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.focus();
+        input.select();
+        try { return document.execCommand('copy') === true; }
+        catch (error) { return false; }
+        finally { input.remove(); }
+      }
       document.querySelectorAll('.copy-link[data-copy]').forEach(function (link) {
         link.addEventListener('click', function (event) {
           event.preventDefault();
           var value = link.getAttribute('data-copy');
-          var done = function () { status.textContent = (window.__i18n ? window.__i18n.t('copy.copiedPrefix') : '已复制：') + value; status.classList.add('is-visible'); window.setTimeout(function () { status.classList.remove('is-visible'); }, 1500); };
-          if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(value).then(done).catch(done);
-          else { var input = document.createElement('textarea'); input.value = value; input.style.position = 'fixed'; input.style.opacity = '0'; document.body.appendChild(input); input.focus(); input.select(); try { document.execCommand('copy'); } catch (error) {} document.body.removeChild(input); done(); }
+          if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+            navigator.clipboard.writeText(value)
+              .then(function () { showCopyNotice(true, value); })
+              .catch(function () { showCopyNotice(tryLegacyCopy(value), value); });
+          } else {
+            showCopyNotice(tryLegacyCopy(value), value);
+          }
         });
       });
 
