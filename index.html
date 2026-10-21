@@ -1684,7 +1684,7 @@
     </div>
   </header>
 
-  <div class="mobile-nav-drawer" id="mobile-nav-drawer" role="dialog" aria-modal="true" aria-label="主导航" data-i18n-aria="nav.aria" aria-hidden="true">
+  <div class="mobile-nav-drawer" id="mobile-nav-drawer" role="dialog" tabindex="-1" aria-modal="true" aria-label="主导航" data-i18n-aria="nav.aria" aria-hidden="true">
     <div class="mobile-nav-drawer-head">
       <span class="mobile-nav-drawer-brand" data-i18n="nav.drawer.brand">Ai路人 / 导航</span>
       <button class="mobile-nav-close" type="button" aria-label="关闭主导航" data-i18n-aria="nav.close.aria"><svg class="mobile-nav-close-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
@@ -2108,6 +2108,7 @@
       var mobileNavLastFocus = mobileNavToggle;
       var mobileNavCloseTimer = null;
       var mobileNavBackground = [];
+      var tabletNavigation = window.matchMedia('(min-width: 761px)');
       function mobileNavLabel(key, fallback) {
         return window.__i18n && typeof window.__i18n.t === 'function' ? window.__i18n.t(key) : fallback;
       }
@@ -2135,9 +2136,28 @@
         mobileNavToggle.setAttribute('aria-label', mobileNavLabel(isOpen ? 'nav.close.aria' : 'nav.toggle.aria', isOpen ? '关闭主导航' : '展开主导航'));
         mobileNavToggle.setAttribute('data-i18n-aria', isOpen ? 'nav.close.aria' : 'nav.toggle.aria');
       }
+      function finishMobileNavClose(restoreFocus, useDesktopFocus) {
+        window.clearTimeout(mobileNavCloseTimer);
+        mobileNavCloseTimer = null;
+        mobileNavDrawer.classList.remove('is-open', 'is-closing');
+        mobileNavDrawer.classList.add('is-closed');
+        mobileNavDrawer.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('mobile-nav-closing', 'mobile-nav-open');
+        mobileNavBackground.forEach(function (entry) { entry[0].inert = entry[1]; });
+        mobileNavBackground = [];
+        renderMobileNavTrigger(false);
+        if (restoreFocus !== false) {
+          var target = useDesktopFocus
+            ? document.querySelector('#primary-nav .site-primary-nav a[href]')
+            : (mobileNavLastFocus && mobileNavLastFocus.isConnected ? mobileNavLastFocus : mobileNavToggle);
+          if (target && typeof target.focus === 'function') target.focus({ preventScroll: true });
+        }
+      }
       function setMobileNavOpen(isOpen, restoreFocus) {
         if (!mobileNavDrawer || !mobileNavToggle) return;
         if (isOpen) {
+          // The mobile drawer must never open while the text nav is visible.
+          if (tabletNavigation.matches) return;
           window.clearTimeout(mobileNavCloseTimer);
           mobileNavLastFocus = document.activeElement || mobileNavToggle;
           if (!mobileNavBackground.length) {
@@ -2151,8 +2171,12 @@
           mobileNavDrawer.classList.add('is-open');
           mobileNavDrawer.setAttribute('aria-hidden', 'false');
           renderMobileNavTrigger(true);
+          // aria-modal requires focus to stay within the drawer, not on the
+          // hidden underlying brand, language control or hamburger trigger.
+          mobileNavDrawer.focus({ preventScroll: true });
           return;
         }
+        if (!mobileNavDrawer.classList.contains('is-open') && !mobileNavDrawer.classList.contains('is-closing')) return;
         window.clearTimeout(mobileNavCloseTimer);
         document.body.classList.add('mobile-nav-open', 'mobile-nav-closing');
         mobileNavDrawer.classList.add('is-closing');
@@ -2160,17 +2184,16 @@
         mobileNavDrawer.setAttribute('aria-hidden', 'false');
         renderMobileNavTrigger(false);
         mobileNavCloseTimer = window.setTimeout(function () {
-          mobileNavDrawer.classList.remove('is-closing');
-          mobileNavDrawer.classList.add('is-closed');
-          mobileNavDrawer.setAttribute('aria-hidden', 'true');
-          document.body.classList.remove('mobile-nav-closing', 'mobile-nav-open');
-          mobileNavBackground.forEach(function (entry) { entry[0].inert = entry[1]; });
-          mobileNavBackground = [];
-          if (restoreFocus !== false) {
-            var focusTarget = mobileNavLastFocus && typeof mobileNavLastFocus.focus === 'function' ? mobileNavLastFocus : mobileNavToggle;
-            focusTarget.focus();
-          }
+          finishMobileNavClose(restoreFocus, tabletNavigation.matches);
         }, 380);
+      }
+      function closeMobileNavOnWideLayout(event) {
+        if (!event.matches || !mobileNavDrawer) return;
+        if (!mobileNavDrawer.classList.contains('is-open') &&
+            !mobileNavDrawer.classList.contains('is-closing')) return;
+        // A viewport rotation must undo inert, body scroll-lock and pending
+        // exit timers *immediately*; the mobile hamburger becomes hidden.
+        finishMobileNavClose(true, true);
       }
       if (mobileNavToggle && mobileNavDrawer) {
         mobileNavToggle.addEventListener('click', function () {
@@ -2191,13 +2214,17 @@
             return;
           }
           if (event.key !== 'Tab') return;
-          var focusable = [mobileNavToggle].concat(mobileNavFocusable(), Array.from(document.querySelectorAll('header #nav-lang, header .brand')));
+          if (!mobileNavDrawer.classList.contains('is-open')) return;
+          var focusable = mobileNavFocusable();
           if (!focusable.length) return;
           event.preventDefault();
           var activeIndex = focusable.indexOf(document.activeElement);
-          var nextIndex = event.shiftKey ? (activeIndex <= 0 ? focusable.length - 1 : activeIndex - 1) : (activeIndex + 1) % focusable.length;
+          var nextIndex = event.shiftKey
+            ? (activeIndex <= 0 ? focusable.length - 1 : activeIndex - 1)
+            : (activeIndex + 1) % focusable.length;
           focusable[nextIndex].focus();
         });
+        tabletNavigation.addEventListener('change', closeMobileNavOnWideLayout);
       }
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');

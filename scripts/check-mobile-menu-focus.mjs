@@ -1,6 +1,6 @@
 import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // 移动端主导航焦点回归：node scripts/check-mobile-menu-focus.mjs
-// 触摸打开菜单不应把第一个链接误聚焦成蓝色大框；键盘 Tab 仍需进入第一个链接。
+// 触摸打开后焦点停留在无可见焦点环的菜单容器；键盘 Tab 进入第一个链接。
 
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
@@ -36,15 +36,15 @@ try {
     const toggleNode = document.querySelector('.nav-toggle');
     const firstNode = document.querySelector('#mobile-primary-nav .nav-list a');
     return {
-      activeIsToggle: document.activeElement === toggleNode,
+      activeIsDialog: document.activeElement === document.querySelector('#mobile-nav-drawer'),
       activeIsFirstLink: document.activeElement === firstNode,
       firstLinkFocusVisible: firstNode.matches(':focus-visible'),
       drawerOpen: document.querySelector('#mobile-nav-drawer').classList.contains('is-open'),
     };
   });
   if (!touchOpenState.drawerOpen) throw new Error('触摸打开后菜单没有进入打开状态');
-  if (!touchOpenState.activeIsToggle || touchOpenState.activeIsFirstLink || touchOpenState.firstLinkFocusVisible) {
-    throw new Error(`触摸打开菜单的焦点不应落在第一个链接：${JSON.stringify(touchOpenState)}`);
+  if (!touchOpenState.activeIsDialog || touchOpenState.activeIsFirstLink || touchOpenState.firstLinkFocusVisible) {
+    throw new Error(`触摸打开菜单焦点应留在菜单容器：${JSON.stringify(touchOpenState)}`);
   }
 
   await page.keyboard.press('Tab');
