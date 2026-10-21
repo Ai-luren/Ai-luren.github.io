@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync } from 'node:fs';
 import assert from 'node:assert/strict';
@@ -42,7 +43,7 @@ function check(m) {
 }
 try {
   for (const [width,height] of sizes) {
-    const page = await browser.newPage({viewport:{width,height}});
+    const page = await createSafePage(browser, {viewport:{width,height}});
     for (const [path,selector] of [['works.html','.library-grid .comet-archive__card'],['index.html#projects','.comet-archive__card']]) {
       await page.goto(new URL(path,base).href);
       await page.waitForSelector(selector);

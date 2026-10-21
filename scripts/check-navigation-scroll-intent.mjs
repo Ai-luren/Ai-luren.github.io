@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * A destination clicked in the primary navigation must stay selected during
  * smooth scrolling past intermediate sections. Manual scrolling afterward
@@ -46,7 +47,7 @@ try{
   const browser=await chromium.launch({headless:true,executablePath});
   try{
     for(const width of [1024,1440,1920])for(const lang of ['zh','en'])for(const start of ['projects','recognition']){
-      const page=await browser.newPage({viewport:{width,height:900}});
+      const page=await createSafePage(browser, {viewport:{width,height:900}});
       const tag=width+'px '+lang+' '+start;
       try{
         const errors=[];page.on('pageerror',err=>errors.push(err.message));
@@ -77,7 +78,7 @@ try{
       }finally{await page.close();}
     }
     // Reduced-motion navigation completes without smooth-scroll intent locking.
-    const page=await browser.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
+    const page=await createSafePage(browser, {viewport:{width:1440,height:900},reducedMotion:'reduce'});
     try{
       await page.goto(new URL('index.html#projects',base).href);
       await page.locator('#primary-nav a[href="#contact"]').click();

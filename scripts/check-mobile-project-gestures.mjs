@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // 移动端精选作品手势回归：node scripts/check-mobile-project-gestures.mjs
 // 驱动真实页面的触摸事件，锁定横向切页、纵向滚动和快速点击控件的边界。
 
@@ -15,7 +16,7 @@ const executablePath = BROWSER_CANDIDATES.find(existsSync);
 if (!executablePath) throw new Error('未找到 Chrome / Edge / Chromium');
 
 const browser = await chromium.launch({ executablePath, headless: true });
-const context = await browser.newContext({
+const context = await createSafeContext(browser, {
   viewport: { width: 393, height: 852 },
   isMobile: true,
   hasTouch: true,

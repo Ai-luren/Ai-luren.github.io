@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // Normal rendering, native media emulation, and the real CSS @supports fallback branch.
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync } from 'node:fs';
@@ -20,7 +21,7 @@ function checkSurface(s,mode){
 function box(){const r=document.querySelector('.cinema-player__stage').getBoundingClientRect();return[r.x,r.y,r.width,r.height];}
 try{
  for(const width of [393,1440]) for(const lang of ['zh','en']) for(const mode of ['normal','reduced','unsupported']){
-  const page=await browser.newPage({viewport:{width,height:width===393?852:900}});
+  const page=await createSafePage(browser, {viewport:{width,height:width===393?852:900}});
   await page.addInitScript(lang=>localStorage.setItem('ailuren-lang',lang),lang);
   const cdp=await page.context().newCDPSession(page);
   await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-transparency',value:mode==='reduced'?'reduce':'no-preference'}]});

@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /* Responsive typography and rhythm of the Expertise group.
  * Measure rendered geometry in a real browser after disabling reveal motion.
  */
@@ -25,7 +26,7 @@ try{
   const browser=await chromium.launch({headless:true,executablePath:browserPath});
   try{
     for(const lang of ['zh','en'])for(const width of widths){
-      const page=await browser.newPage({viewport:{width,height:900}});
+      const page=await createSafePage(browser, {viewport:{width,height:900}});
       const tag=width+'px '+lang;
       try{
         const errors=[];

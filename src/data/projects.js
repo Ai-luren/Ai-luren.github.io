@@ -21,14 +21,15 @@ const playerPosters = import.meta.glob('../../assets/images/player-posters/*.web
 
 const customCovers = import.meta.glob('../../assets/images/project-covers/custom/*.webp', { eager: true, query: '?url', import: 'default' });
 
-// Public ImageKit URLs are the playback source in development and production.
-// Local originals remain available as a development fallback for future works.
+// Local Vite development always plays local originals: never charge ImageKit
+// during manual testing. Production still uses the original ImageKit URLs.
 const videoSource = (localPath, imageKitUrl = null) => {
-  if (imageKitUrl) return imageKitUrl;
-  if (!import.meta.env.DEV) return null;
-  // Preserve the existing archive's misspelled folder without moving videos.
-  const archivePath = localPath.replace(/^AI Short Films\//, 'AI Short Flims/');
-  return `${import.meta.env.BASE_URL}assets/videos/works/${encodeURI(archivePath)}`;
+  if (import.meta.env.DEV) {
+    // Preserve the existing archive's misspelled folder without moving videos.
+    const archivePath = localPath.replace(/^AI Short Films\//, 'AI Short Flims/');
+    return `${import.meta.env.BASE_URL}assets/videos/works/${encodeURI(archivePath)}`;
+  }
+  return imageKitUrl || null;
 };
 
 // Only real works belong here. Add one videoUrl per work (ImageKit HTTPS URL),

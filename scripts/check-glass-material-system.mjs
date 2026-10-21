@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 /**
  * Step 02 material QA: computed materials in normal, reduced transparency
  * and simulated unsupported backdrop-filter conditions.
@@ -45,7 +46,7 @@ try {
   const browser=await chromium.launch({headless:true,executablePath:browserPath});
   try {
     for(const width of widths)for(const lang of ['zh','en'])for(const mode of ['normal','reduced','unsupported']){
-      const page=await browser.newPage({viewport:{width,height:900}});
+      const page=await createSafePage(browser, {viewport:{width,height:900}});
       try{
         const errors=[];
         page.on('pageerror',error=>errors.push(error.message));

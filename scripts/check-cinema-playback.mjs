@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
 import assert from 'node:assert/strict';
@@ -6,7 +7,7 @@ const browser = await chromium.launch({ executablePath, headless: true });
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 try {
   for (const width of [1440, 393]) {
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    const page = await createSafePage(browser, { viewport: { width, height: 900 } });
     await page.goto(new URL('works.html', base).href);
     const cards = page.locator('.library-grid .comet-archive__card');
     for (const index of [0, 1, 0]) {

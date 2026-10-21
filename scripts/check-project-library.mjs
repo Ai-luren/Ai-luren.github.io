@@ -1,3 +1,4 @@
+import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // Run against a local Vite dev/preview server. Set PORTFOLIO_URL for a subpath build.
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
@@ -17,20 +18,18 @@ async function assertPlayer(page) {
     const video = page.locator('.cinema-player video');
     assert.equal(await video.evaluate(v => v.controls && v.paused && !v.getAttribute('src') && v.preload === 'none'), true);
     assert.equal(await page.locator('.cinema-player__close').evaluate(button => button === document.activeElement), true);
-    await page.locator('.cinema-player__play').click();
-    await page.waitForFunction(() => {
-      const video = document.querySelector('.cinema-player video');
-      return video?.videoWidth > 0 && !video.paused && video.currentTime > 0;
-    });
-    await video.evaluate(v => v.pause());
-    await page.locator('.cinema-player__close').focus();
+    // Layout/navigation regression must not repeatedly play videos.
+    // Actual playback is covered separately by check-cinema-playback.mjs
+    // using a tiny locally fulfilled fixture.
+    assert.equal(await page.locator('.cinema-player__play').isVisible(), true);
+    assert.equal(await page.locator('.cinema-player__poster').isVisible(), true);
   } else assert.equal(await page.locator('.cinema-player__pending').isVisible(), true);
 }
 
 try {
   for (const width of [1280, 1440, 1680, 1920, 360, 375, 393, 430]) {
     for (const lang of ['zh', 'en']) {
-      const page = await browser.newPage({ viewport: { width, height: 900 } });
+      const page = await createSafePage(browser, { viewport: { width, height: 900 } });
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.addInitScript(value => localStorage.setItem('ailuren-lang', value), lang);
