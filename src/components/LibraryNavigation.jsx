@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { HOME_HREF, HOME_SECTIONS, WORKS_HREF } from '../navigation/links.js';
@@ -7,6 +7,15 @@ import DesktopPrimaryNavigation from './DesktopPrimaryNavigation.jsx';
 export default function LibraryNavigation({ lang }) {
   const [open, setOpen] = useState(false);
   const dialogRef = useRef(null), closeRef = useRef(null), triggerRef = useRef(null);
+  useEffect(() => {
+    const wide = window.matchMedia('(min-width: 761px)');
+    const handleWideNavigation = () => {
+      // The mobile-only dialog cannot survive an orientation/breakpoint change.
+      if (wide.matches) setOpen(false);
+    };
+    wide.addEventListener('change', handleWideNavigation);
+    return () => wide.removeEventListener('change', handleWideNavigation);
+  }, []);
   useLayoutEffect(() => {
     if (!open) return;
     const overflow = document.body.style.overflow;
@@ -15,7 +24,10 @@ export default function LibraryNavigation({ lang }) {
     closeRef.current?.focus({preventScroll:true});
     return () => {
       document.body.style.overflow = overflow;
-      triggerRef.current?.focus({preventScroll:true});
+      const focusTarget = window.matchMedia('(min-width: 761px)').matches
+        ? document.querySelector('.library-page-navigation .site-primary-nav a[href]')
+        : triggerRef.current;
+      focusTarget?.focus({preventScroll:true});
     };
   }, [open]);
   return <>
