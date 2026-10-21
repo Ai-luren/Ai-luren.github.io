@@ -74,6 +74,7 @@ export const DICT = {
     'footer.social.kicker': '社交平台',
     'footer.copyright': '© 2024-2026 Ai路人 · 保留所有权利',
     'copy.copiedPrefix': '已复制：',
+    'copy.failed': '复制失败，请手动复制微信号',
   },
   en: {
     'meta.title': 'Ai Luren (Ning Lei) | AI Video Creative Designer · AIGC Content Creation',
@@ -147,5 +148,6 @@ export const DICT = {
     'footer.social.kicker': 'SOCIAL PROFILES',
     'footer.copyright': '© 2024-2026 Ai Luren · All rights reserved',
     'copy.copiedPrefix': 'Copied: ',
+    'copy.failed': 'Copy failed. Please copy the WeChat ID manually.',
   },
 };
