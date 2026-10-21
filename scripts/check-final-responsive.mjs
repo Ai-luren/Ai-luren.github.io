@@ -88,8 +88,8 @@ try{
      // project records and pagination are checked by the work-card suite.
      assert.equal(evidence.cardCount,kind==='home'?(width<=720?4:8):15,tag+': expected visible portfolio cards changed');
      assert(evidence.navWidth>100,tag+': shared navigation missing');
-     if(width<=1023)assert(evidence.menuWidth>=44,tag+': menu touch target too small');
-     if(width>=1024)assert.deepEqual(evidence.navLinks,expectedNav[lang],tag+': desktop nav changed');
+     if(width<=760)assert(evidence.menuWidth>=44,tag+': menu touch target too small');
+     if(width>=761)assert.deepEqual(evidence.navLinks,expectedNav[lang],tag+': tablet/desktop nav changed');
      assert.deepEqual(errors,[],tag+': runtime error');
     }
     if([320,390,768,1440].includes(width)){

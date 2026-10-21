@@ -154,11 +154,9 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 8px !important; }
   .library-nav-space { height: 76px; }
 }
-@media (min-width:761px) and (max-width:1023px) {
-  header #primary-nav { display: none !important; }
-  header .nav-toggle { display: grid !important; }
-}
-@media (min-width:1024px) {
+/* Tablets have enough room for the existing four-label navigation.
+   Keep the shared capsule, active state and language control identical to desktop. */
+@media (min-width:761px) {
   header #primary-nav {
     position: absolute !important;
     inset: 0 auto 0 50% !important;
