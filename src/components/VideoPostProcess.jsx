@@ -1,5 +1,5 @@
 import { Mesh, Program, Renderer, Texture, Triangle } from 'ogl';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const DEFAULT_SETTINGS = {
   brightness: 63,
@@ -183,6 +183,10 @@ function isZeroEffects(settings) {
 }
 
 export default function VideoPostProcess() {
+  // A restored WebGL context invalidates GPU programs/textures. Build fresh
+  // OGL resources instead of showing the old canvas's undefined contents.
+  const [webglGeneration, setWebglGeneration] = useState(0);
+
   useEffect(() => {
     const video = document.getElementById('hero-video');
     const container = document.getElementById('video-bg');
@@ -265,8 +269,32 @@ export default function VideoPostProcess() {
     // 'loadeddata' event alone can precede WebGL's first video-backed frame,
     // producing a black flash on slower mobile devices.
     let webglRevealed = false;
+    let contextLost = false;
+    const hideWebgl = () => {
+      webglRevealed = false;
+      container.classList.remove('is-webgl-ready');
+      canvas.style.opacity = '0';
+    };
+    const onContextLost = (event) => {
+      // Allow WebGL to recover. Keep the native video and its static poster
+      // visible throughout a GPU reset; never leave a lost canvas on top.
+      event.preventDefault();
+      contextLost = true;
+      hideWebgl();
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+    const onContextRestored = () => {
+      // OGL resources are not valid after a context reset. Remount with a
+      // brand new renderer, texture, mesh and shader program.
+      if (!contextLost) return;
+      contextLost = false;
+      setWebglGeneration(previous => previous + 1);
+    };
+    canvas.addEventListener('webglcontextlost', onContextLost);
+    canvas.addEventListener('webglcontextrestored', onContextRestored);
     const revealWebgl = () => {
-      if (webglRevealed || video.readyState < 2) return;
+      if (contextLost || gl.isContextLost() || webglRevealed || video.readyState < 2) return;
       webglRevealed = true;
       canvas.style.opacity = '1';
       container.classList.add('is-webgl-ready');
@@ -280,6 +308,12 @@ export default function VideoPostProcess() {
       if (event.detail?.active) lastRenderAt = 0;
     };
     const render = (time) => {
+      if (contextLost || gl.isContextLost()) {
+        // Handles context loss even if the browser failed to deliver the event.
+        hideWebgl();
+        frame = 0;
+        return;
+      }
       if (document.hidden) {
         frame = 0;
         return;
@@ -295,7 +329,7 @@ export default function VideoPostProcess() {
       if (hasDecodedFrame) revealWebgl();
     };
     const onVisibilityChange = () => {
-      if (!document.hidden && !frame) frame = requestAnimationFrame(render);
+      if (!document.hidden && !frame && !contextLost && !gl.isContextLost()) frame = requestAnimationFrame(render);
     };
 
     applySettings(settings);
@@ -315,11 +349,15 @@ export default function VideoPostProcess() {
       window.removeEventListener('resize', onResize);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('video-scrub-state', onVideoScrubState);
-      container.classList.remove('is-webgl-ready');
+      hideWebgl();
+      canvas.removeEventListener('webglcontextlost', onContextLost);
+      canvas.removeEventListener('webglcontextrestored', onContextRestored);
       canvas.remove();
-      renderer.gl.getExtension('WEBGL_lose_context')?.loseContext();
+      // Deliberately release the old renderer after listeners are detached,
+      // avoiding a synthetic loss event during React cleanup/reinitialization.
+      if (!gl.isContextLost()) gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, []);
+  }, [webglGeneration]);
 
   return null;
 }
