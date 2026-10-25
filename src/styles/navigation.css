@@ -82,7 +82,11 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
   background: rgba(255,255,255,.16);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
   transform: translateX(0);
-  transition: transform 200ms var(--apple-ease);
+  /* B+++ motion: a slower, balanced travel with restrained elastic
+     stretch via WAAPI on individual scale, never on transform.
+     Keeping translation in CSS makes rapid reversals continuous. */
+  transition: transform 330ms cubic-bezier(.32,.72,.28,1);
+  will-change: transform;
   pointer-events: none;
 }
 .nav-language-switch[data-active-lang="en"] .nav-language-switch__thumb { transform: translateX(100%); }
@@ -105,8 +109,9 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: color 200ms var(--apple-ease) !important;
+  transition: color 265ms cubic-bezier(.32,.72,.28,1), scale 165ms ease-out !important;
 }
+.nav-language-switch > button:active { scale: .975; }
 .nav-language-switch > button[aria-pressed="true"] { color: #fff !important; }
 .nav-language-switch > button:hover { color: #fff !important; }
 .nav-language-switch > button:focus-visible {
@@ -156,6 +161,7 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
 }
 @media (prefers-reduced-motion:reduce) {
   .nav-language-switch__thumb, .nav-language-switch > button { transition: none !important; }
+  .nav-language-switch > button:active { scale: 1; }
 }
 :is(header .nav-toggle,.cinema-player__navigation .cinema-player__close):hover { background: var(--portfolio-icon-hover-surface) !important; }
 :is(header .nav-toggle,.cinema-player__navigation .cinema-player__close):active { background: var(--portfolio-icon-active-surface) !important; }

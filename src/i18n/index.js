@@ -41,12 +41,31 @@ function applyDictToDocument(lang) {
 }
 
 // 首页静态导航与 React 查看器共享同一语言状态和选中态。
-function syncLanguageSwitch() {
+function syncLanguageSwitch(animate = false) {
+  const allowMotion = animate && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   document.querySelectorAll('.nav-language-switch').forEach((control) => {
+    const changed = control.dataset.activeLang !== currentLang;
+    const thumb = control.querySelector('.nav-language-switch__thumb');
+    // Read current elastic scale before cancelling an in-flight animation:
+    // reversing quickly must never snap to its resting size.
+    const currentScale = thumb && changed && allowMotion ? getComputedStyle(thumb).scale : null;
+    const previousMotion = thumb?.getAnimations().filter(
+      animation => animation.id === 'language-thumb-elastic',
+    ) ?? [];
+    previousMotion.forEach(animation => animation.cancel());
     control.dataset.activeLang = currentLang;
     control.querySelectorAll('[data-switch-lang]').forEach((button) => {
       button.setAttribute('aria-pressed', String(button.dataset.switchLang === currentLang));
     });
+    // Scale is independent of the translated position: subtle 4% stretch.
+    if (changed && allowMotion && thumb?.animate) {
+      const animation = thumb.animate([
+        { scale: currentScale && currentScale !== 'none' ? currentScale : '1 1', offset: 0 },
+        { scale: '1.04 .99', offset: .44 },
+        { scale: '1 1', offset: 1 },
+      ], { duration: 330, easing: 'cubic-bezier(.32,.72,.28,1)' });
+      animation.id = 'language-thumb-elastic';
+    }
   });
 }
 
@@ -64,7 +83,7 @@ export function setLang(nextLang) {
   try { window.localStorage.setItem(STORAGE_KEY, nextLang); } catch (error) { /* 忽略写入失败 */ }
   applyDictToDocument(currentLang);
   window.__i18n = { lang: currentLang, t };
-  syncLanguageSwitch();
+  syncLanguageSwitch(true);
   listeners.forEach((listener) => listener(currentLang));
   notifyScrollRefresh();
 }
