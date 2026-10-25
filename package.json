@@ -38,7 +38,8 @@
     "check:mobile-scroll-response": "node scripts/check-mobile-scroll-response.mjs",
     "check:gallery-no-black": "node scripts/check-gallery-no-black.mjs",
     "check:mobile-gestures": "node scripts/check-mobile-project-gestures.mjs",
-    "check:award-hover-radius": "node scripts/check-award-hover-radius.mjs"
+    "check:award-hover-radius": "node scripts/check-award-hover-radius.mjs",
+    "check:profile-no-flash": "node scripts/check-profile-no-flash.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

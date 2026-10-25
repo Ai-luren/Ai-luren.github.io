@@ -1,7 +1,7 @@
 import './ImpactEvidence.css';
 import LogoLoop from './LogoLoop.jsx';
 import CinemaNavigation from './CinemaNavigation.jsx';
-import { isImageReady, warmImage, warmNear } from '../utils/warmImage.js';
+import { isImageReady, warmImage, warmImages, warmNear } from '../utils/warmImage.js';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLang, useT } from '../i18n/index.js';
@@ -652,6 +652,8 @@ function ReachDossier() {
   const lang = useLang();
   const t = useT();
   const [activeProfile, setActiveProfile] = useState(null);
+  const [preparingProfileId, setPreparingProfileId] = useState(null);
+  const profileOpenRequestRef = useRef(0);
   const [profileImageFailed, setProfileImageFailed] = useState({ screenshot: false, qr: false });
   const [isProfileClosing, setIsProfileClosing] = useState(false);
   const [profileMotionVisible, setProfileMotionVisible] = useState(false);
@@ -663,17 +665,27 @@ function ReachDossier() {
   const profileCloseTimerRef = useRef(null);
   const profileClosingRef = useRef(false);
 
-  const openProfile = (card, event) => {
-    profileTriggerRef.current = event.currentTarget;
+  const openProfile = async (card, event) => {
+    // Do not mount a translucent modal with undecoded screenshots: this was
+    // flashing on both desktop and mobile, especially on the first visit.
+    const request = ++profileOpenRequestRef.current;
+    const trigger = event.currentTarget;
+    profileTriggerRef.current = trigger;
     window.clearTimeout(profileCloseTimerRef.current);
+    setPreparingProfileId(card.id);
+    const [screenshotReady, qrReady] = await warmImages([card.screenshot, card.qrCode]);
+    if (request !== profileOpenRequestRef.current || !trigger.isConnected) return;
+    setPreparingProfileId(null);
     profileClosingRef.current = false;
-    setProfileImageFailed({ screenshot: false, qr: false });
+    setProfileImageFailed({ screenshot: !screenshotReady, qr: !qrReady });
     setIsProfileClosing(false);
     setProfileMotionVisible(false);
     setActiveProfile(card);
   };
 
   const closeProfile = useCallback(() => {
+    profileOpenRequestRef.current++;
+    setPreparingProfileId(null);
     if (!activeProfile || profileClosingRef.current) return;
     profileClosingRef.current = true;
     const finish = () => {
@@ -691,7 +703,16 @@ function ReachDossier() {
     profileCloseTimerRef.current = window.setTimeout(finish, 220);
   }, [activeProfile]);
 
-  useEffect(() => () => window.clearTimeout(profileCloseTimerRef.current), []);
+  useEffect(() => () => {
+    profileOpenRequestRef.current++;
+    window.clearTimeout(profileCloseTimerRef.current);
+  }, []);
+
+  useEffect(() => warmNear(
+    document.getElementById('impact-reach'),
+    reachCards.flatMap(card => [card.screenshot, card.qrCode]),
+    '850px',
+  ), []);
   useLayoutEffect(() => {
     if (!activeProfile) return undefined;
     let frame = requestAnimationFrame(() => {
@@ -773,7 +794,7 @@ function ReachDossier() {
             </div>
           </div>
           <div className="impact-reach-feature-actions">
-            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
+            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-busy={preparingProfileId === featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
               {t('查看账号资料', 'View account details')}
             </button>
             <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
@@ -793,7 +814,7 @@ function ReachDossier() {
                 </div>
               </div>
               <div className="impact-reach-record-actions">
-                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
+                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
                   {t('查看账号资料', 'View account details')}
                 </button>
                 {card.link && (
