@@ -21,7 +21,10 @@ for(const width of [390,1440]){
  console.log('PASS STEP03',width,'home request on interest + assets',JSON.stringify(after).slice(0,360));
  await p.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
  await p.locator('.library-grid .comet-archive__card').first().waitFor();
- await p.waitForTimeout(2500);
+ // Hosted previews can take several seconds to discover hashed resources.
+ await p.waitForFunction(() => [...document.querySelectorAll('link[rel="prefetch"]')].some(
+   el => /\/assets\/index-.*\.js|\/src\/main\.jsx/.test(el.href),
+ ), null, {timeout:15000});
  const returnAssets=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>e.href));
  assert(requests.some(u=>/index.html/.test(u)),'Home page not warmed from library idle');
  assert(returnAssets.some(u=>/src\/main|index-/.test(u)),'Home JS entry not warmed');
