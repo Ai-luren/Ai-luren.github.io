@@ -27,13 +27,12 @@ export default function ProjectCard({ project, lang, onClick }) {
         aria-label={[project.title[lang], detail, status].filter(Boolean).join(' · ')}
         style={{ '--comet-cover': `url(${project.cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>
         <span className="comet-archive__image">
-          <span className="comet-archive__meta" aria-hidden="true">{status}</span>
+          <span className="comet-archive__play-badge" aria-hidden="true">{status}</span>
         </span>
         <strong className="comet-archive__title">{renderTitle(project.title[lang])}</strong>
         <span className="comet-archive__copy">
           <span className="comet-archive__details"><strong>{detail}</strong></span>
         </span>
-        <span className="comet-archive__mobile-link" aria-hidden="true">{status}</span>
       </button>
     </CometCard>
   );

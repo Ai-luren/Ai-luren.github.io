@@ -93,9 +93,8 @@ header.is-condensed {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Repeated compact items use the same quiet tile treatment. */
-#recognition .impact-platform-desktop-tile,
-#recognition .impact-platform-mobile-tile,
+/* The interactive Dock keeps the quiet tile material. Platform credentials
+   are static evidence inside a single cinematic glass panel, not buttons. */
 .floating-dock-item {
   border: 1px solid var(--portfolio-tile-border);
   border-radius: var(--portfolio-tile-radius) !important;
@@ -111,6 +110,18 @@ header.is-condensed {
   border-radius: var(--portfolio-tile-radius);
   background: var(--apple-surface-raised, var(--portfolio-tile-surface));
   color: var(--apple-text, #f5f5f7);
+}
+
+/* Eight static creator credentials: no second inset glass box per identity.
+   Subtle grid rules are owned by the platform component, not shared chrome. */
+#recognition .impact-platform-desktop-tile,
+#recognition .impact-platform-mobile-tile {
+  border: 0;
+  border-radius: 0 !important;
+  background: transparent;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 /* Action-shaped controls share a pill; navigation and close controls are true

@@ -313,8 +313,9 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18、内部小卡片 12；
-  // 操作控件使用胶囊，圆形控制使用 50%；内容层不叠加第二层模糊。
+  // 视觉系统的表面层级必须稳定：外层面板 24、内容卡片 18；
+  // 平台静态资质改用无圆角的分栏，不能再当成独立小卡片。
+  // 操作胶囊、圆形 Dock 按钮及模糊层级不变。
   surfaceHierarchy: async (page) => {
     return page.evaluate(() => {
       const visible = (selector) => [...document.querySelectorAll(selector)].filter((el) => {
@@ -332,7 +333,7 @@ const CHECKS = {
       assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card, #experiments .flip-experiment', '24px', '外层面板圆角');
       assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
       assertRadius('#experiments .flip-experiment__row', '0px', '编辑索引行不使用独立卡片圆角');
-      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '12px', '内部卡片圆角');
+      assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '0px', '平台静态分栏不使用卡片圆角');
       assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
       assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a, .closing-social .floating-dock-item', '50%', '圆形控件圆角');
 

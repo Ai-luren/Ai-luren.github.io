@@ -46,6 +46,20 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
 :is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button,.cinema-player__brand):focus-visible {
   outline: 2px solid var(--apple-blue) !important; outline-offset: 4px !important;
 }
+/* Auto-focused Close remains in the accessibility tree. A touch-opened
+   dialog should not get Safari's / Chromium's bright blue keyboard ring,
+   but Tab navigation (including a paired phone keyboard) still must. */
+@media (hover: none) and (pointer: coarse) {
+  :is(header #nav-lang, header .nav-toggle, .mobile-nav-close,
+      .cinema-player__navigation button) {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html[data-nav-input="touch"]
+    :is(header #nav-lang, header .nav-toggle, .mobile-nav-close,
+        .cinema-player__navigation button):focus-visible {
+    outline: none !important;
+  }
+}
 body.mobile-nav-open { overflow: hidden; }
 /* All viewers hide the source-page navigation, showing only CinemaNavigation. */
 body.cinema-open > header, body.award-viewer-open > header, body.profile-viewer-open > header,

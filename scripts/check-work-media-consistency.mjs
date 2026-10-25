@@ -34,15 +34,18 @@ try {
      const card=page.locator(selector).first();
      await card.waitFor();
      const output=await card.evaluate(card=>{
-      const image=card.querySelector('.comet-archive__image'),hint=card.querySelector('.comet-archive__mobile-link'),badge=card.querySelector('.comet-archive__meta');
-      const im=getComputedStyle(image),hintStyle=getComputedStyle(hint),imageBox=image.getBoundingClientRect(),hintBox=hint.getBoundingClientRect();
+      const image=card.querySelector('.comet-archive__image'),badge=card.querySelector('.comet-archive__play-badge');
+      const im=getComputedStyle(image),badgeStyle=getComputedStyle(badge),imageBox=image.getBoundingClientRect(),badgeBox=badge.getBoundingClientRect();
       return {
        mediaBg:im.backgroundColor,border:im.borderTopColor,ratio:im.aspectRatio,round:im.borderRadius,shadow:im.boxShadow,
-       status:hint.textContent.trim(),hintVisible:hintStyle.display!=='none'&&hintBox.height>0,
-       hintFont:hintStyle.fontSize,hintHeight:hintBox.height,
+       status:badge.textContent.trim(),
+       badgeVisible:badgeStyle.display!=='none'&&badgeStyle.visibility!=='hidden'&&Number(badgeStyle.opacity)>.01,
+       badgeFont:badgeStyle.fontSize,badgeHeight:badgeBox.height,
+       badgeBg:badgeStyle.backgroundColor,badgeRadius:badgeStyle.borderRadius,
+       badgeInside:badgeBox.left>=imageBox.left-1&&badgeBox.right<=imageBox.right+1
+         &&badgeBox.top>=imageBox.top-1&&badgeBox.bottom<=imageBox.bottom+1,
+       orphanCount:card.querySelectorAll('.comet-archive__mobile-link').length,
        cardName:card.querySelector('.comet-archive__title').textContent.trim().replace(/\s+/g,' '),
-       badgeText:badge.textContent.trim(),
-       captionEnd:card.querySelector('.comet-archive__copy').getBoundingClientRect().bottom,hintStart:hintBox.top,
        coverWidth:imageBox.width,coverHeight:imageBox.height,
        overflow:document.documentElement.scrollWidth-innerWidth};
      });
@@ -51,16 +54,14 @@ try {
      assert.equal(output.ratio,'3 / 4');
      assert(Math.abs(output.coverWidth/output.coverHeight-.75)<.01);
      assert.equal(output.round,'18px');
-     if(width<=720){
-      assert(output.hintVisible,tag+': mobile status hidden');
-      assert(Math.abs(output.hintHeight-27.39)<1,tag+': mobile status height mismatch');
-      assert(output.hintStart>=output.captionEnd-1,tag+': mobile status overlaps caption');
-     }else {
-      assert(!output.hintVisible,tag+': desktop has second status');
-      await card.hover();await page.waitForTimeout(180);
-      const opacity=await card.locator('.comet-archive__meta').evaluate(el=>Number(getComputedStyle(el).opacity));
-      assert(opacity>.95,tag+': hover/focus status missing');
-     }
+     assert(output.badgeVisible,tag+': shared badge must always be visible');
+     assert(output.badgeInside,tag+': status badge must stay inside the cover');
+     assert.equal(output.orphanCount,0,tag+': orphan status below the caption');
+     assert.equal(output.status,lang==='en'?'Play':'播放',tag+': wrong status language');
+     assert.equal(output.badgeFont,width<=720?'10px':'11px',tag+': shared badge type scale changed');
+     await card.hover();
+     assert(await card.locator('.comet-archive__play-badge').evaluate(el=>Number(getComputedStyle(el).opacity)>.95),
+       tag+': badge should not disappear on hover');
      if([390,1024].includes(width)){
       await card.click();
       const dialog=page.locator('.cinema-player[open]');
@@ -86,8 +87,9 @@ try {
     } finally{await page.close()}
    }
    const a=pairs.home,b=pairs.library,tag=width+'px '+lang;
-   for(const field of ['mediaBg','border','ratio','round','shadow','status','cardName','badgeText'])assert.equal(a[field],b[field],tag+': '+field+' mismatch');
-   if(width<=720)for(const field of ['hintFont','hintHeight'])assert.equal(a[field],b[field],tag+': '+field+' differs');
+   for(const field of ['mediaBg','border','ratio','round','shadow','status','cardName',
+     'badgeVisible','badgeFont','badgeHeight','badgeBg','badgeRadius','badgeInside','orphanCount'])
+     assert.equal(a[field],b[field],tag+': '+field+' mismatch');
    console.log('PASS '+tag+': media surfaces, status, viewer');
   }
  }finally{await browser.close()}

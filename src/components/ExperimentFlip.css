@@ -15,7 +15,7 @@
   min-height: 48px;
   border-bottom: 1px solid var(--portfolio-panel-border);
   color: var(--apple-tertiary);
-  font: 500 10px/1.4 var(--font-mono, monospace);
+  font: 500 11px/1.45 var(--font-mono, monospace);
   letter-spacing: .04em;
   text-transform: uppercase;
 }
@@ -40,7 +40,7 @@
 
 .flip-experiment__index {
   color: var(--apple-tertiary);
-  font: 500 11px/1.4 var(--font-mono, monospace);
+  font: 500 12px/1.45 var(--font-mono, monospace);
   font-variant-numeric: tabular-nums;
 }
 
@@ -66,7 +66,7 @@
   max-width: 66ch;
   margin: 0;
   color: var(--apple-secondary);
-  font: 400 13px/1.55 var(--font-body, system-ui);
+  font: 400 14px/1.6 var(--font-body, system-ui);
   overflow-wrap: anywhere;
 }
 
@@ -75,8 +75,8 @@
   flex-wrap: wrap;
   gap: 4px 8px;
   min-width: 0;
-  color: var(--apple-tertiary);
-  font: 500 10px/1.4 var(--font-mono, monospace);
+  color: var(--apple-secondary);
+  font: 500 11px/1.5 var(--font-mono, monospace);
 }
 
 .flip-experiment__facts span:not(:last-child)::after {
@@ -95,7 +95,7 @@
   padding: 0 2px;
   border-bottom: 1px solid rgba(237, 244, 249, .32);
   color: var(--apple-secondary);
-  font: 500 12px/1.35 var(--font-body, system-ui);
+  font: 500 13px/1.4 var(--font-body, system-ui);
   text-decoration: none;
   white-space: nowrap;
   transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), gap var(--apple-duration-control) var(--apple-ease);
@@ -149,12 +149,12 @@
   }
 
   .flip-experiment__row-description {
-    font-size: 12px;
-    line-height: 1.55;
+    font-size: 14px;
+    line-height: 1.6;
   }
 
   .flip-experiment__facts {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .flip-experiment__link {

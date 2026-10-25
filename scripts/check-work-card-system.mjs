@@ -62,6 +62,25 @@ try{
           const imgRect=image.getBoundingClientRect(),titleRect=title.getBoundingClientRect(),copyRect=copy.getBoundingClientRect();
           const coverCSS=getComputedStyle(image), titleCSS=getComputedStyle(title);
           const copyCSS=getComputedStyle(copy);
+          const statusVisible=element=>{
+            if(!element)return false;
+            const style=getComputedStyle(element),rect=element.getBoundingClientRect();
+            return style.display!=='none' && style.visibility!=='hidden' && Number(style.opacity)>.01 && rect.width>0 && rect.height>0;
+          };
+          const badge=item.querySelector('.comet-archive__image > .comet-archive__play-badge');
+          const coverRect=badge?.getBoundingClientRect();
+          const status={
+            onCover:statusVisible(badge),
+            below:statusVisible(item.querySelector('.comet-archive__mobile-link')),
+            count:item.querySelectorAll('.comet-archive__play-badge').length,
+            label:badge?.textContent.trim(),
+            containment:coverRect ? (
+              coverRect.left >= imgRect.left - 1 &&
+              coverRect.right <= imgRect.right + 1 &&
+              coverRect.top >= imgRect.top - 1 &&
+              coverRect.bottom <= imgRect.bottom + 1
+            ) : false,
+          };
           const txt=element=>element.textContent.trim().replace(/\s+/g,' ');
           return {
             title:txt(title),detail:txt(description),
@@ -74,6 +93,16 @@ try{
             overflow:document.documentElement.scrollWidth-innerWidth,
             cardOverflow:item.scrollWidth-item.clientWidth,
             cards:root.querySelectorAll('.comet-archive__card').length,
+            statusesAllValid:[...root.querySelectorAll('.comet-archive__card')].every(card=>{
+              const image=card.querySelector('.comet-archive__image');
+              const badges=card.querySelectorAll('.comet-archive__play-badge');
+              if(!image||badges.length!==1||card.querySelector('.comet-archive__mobile-link'))return false;
+              const badge=badges[0],rect=badge.getBoundingClientRect(),cover=image.getBoundingClientRect(),style=getComputedStyle(badge);
+              return style.display!=='none'&&Number(style.opacity)>.01 &&
+                rect.width>0&&rect.height>0 && rect.left>=cover.left-1&&rect.right<=cover.right+1
+                && rect.top>=cover.top-1&&rect.bottom<=cover.bottom+1;
+            }),
+            status,
           };
         },scope);
         const [a,b]=await Promise.all([get(home,'#projects'),get(works,'.library-grid')]);
@@ -86,6 +115,13 @@ try{
           assert(near(result.cover.width/result.cover.height,.75),`${tag}: ${kind} cover proportions incorrect`);
           assert(result.cardOverflow<=2,`${tag}: ${kind} card horizontally overflows`);
           assert(result.overflow<=2,`${tag}: ${kind} page horizontally overflows`);
+          // One always-visible badge inside the cover on every viewport.
+          assert.equal(result.statusesAllValid,true,`${tag}: ${kind} some cards lack their permanent cover badge`);
+          assert.equal(result.status.count,1,`${tag}: ${kind} should have exactly one status badge`);
+          assert.equal(result.status.onCover,true,`${tag}: ${kind} cover badge not permanently visible`);
+          assert.equal(result.status.below,false,`${tag}: ${kind} has an orphan status below the card`);
+          assert.equal(result.status.containment,true,`${tag}: ${kind} badge escaped the artwork`);
+          assert.equal(result.status.label,lang==='en'?'Play':'播放',`${tag}: ${kind} status translation wrong`);
         }
         for(const prop of ['border','radius','shadow']) assert.equal(a.cover[prop],b.cover[prop],`${tag}: cover ${prop} mismatch`);
         for(const prop of ['font','weight','line','detailSize','detailLine']) assert.equal(a.typography[prop],b.typography[prop],`${tag}: typography ${prop} mismatch`);

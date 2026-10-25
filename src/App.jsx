@@ -12,6 +12,7 @@ import HeroTitle from './components/HeroTitle.jsx';
 import DesktopPrimaryNavigation from './components/DesktopPrimaryNavigation.jsx';
 import './styles/card-surfaces.css';
 import './styles/apple-system.css';
+import './navigation/inputModality.js';
 import './styles/navigation.css';
 
 export default function App() {

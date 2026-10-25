@@ -31,15 +31,17 @@ import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.we
 import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
 import kuaishouQrCode from '../../assets/images/social-profiles/快手二维码.webp';
 
+// Gallery order is editorial; keep each original image and its bilingual proof
+// attached to the same award. Two separate Haina pieces occupy positions 6/7.
 const awards = [
-  { image: award1, title: { zh: '海螺AI动物跳水', en: 'Hailuo AI Animal Diving' }, meta: { zh: '登陆LED大屏', en: 'Displayed on LED Screen' } },
-  { image: award2, title: { zh: '影视级特效小赛', en: 'Cinematic Effects Contest' }, meta: { zh: 'Pollo.ai / 优秀奖', en: 'Pollo.ai / Excellence Award' } },
-  { image: award3, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
+  { image: award7, title: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
   { image: award4, title: { zh: '未来AI设计大赛', en: 'Future AI Design Contest' }, meta: { zh: '美图 / 年度入围', en: 'Meitu / Annual Finalist' } },
   { image: award5, title: { zh: '联想AI比赛', en: 'Lenovo AI Competition' }, meta: { zh: '创作先锋奖 / 官号精选', en: 'Creative Pioneer / Official Selection' } },
-  { image: award7, title: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
+  { image: award1, title: { zh: '海螺AI动物跳水', en: 'Hailuo AI Animal Diving' }, meta: { zh: '登陆LED大屏', en: 'Displayed on LED Screen' } },
   { image: award8, title: { zh: '无限剧场小赛', en: 'Infinite Theater Contest' }, meta: { zh: '可灵AI / 超棒奖', en: 'Kling AI / Awesome Award' } },
+  { image: award3, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
   { image: award9, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
+  { image: award2, title: { zh: '影视级特效小赛', en: 'Cinematic Effects Contest' }, meta: { zh: 'Pollo.ai / 优秀奖', en: 'Pollo.ai / Excellence Award' } },
 ];
 
 const creatorLogos = [
@@ -419,13 +421,13 @@ function AwardGallery() {
 
   const active = isOpen ? awards[openIndex] : null;
   const galleryHint = lang === 'en'
-    ? (isMobile ? 'BROWSE WITH ARROWS' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
-    : (isMobile ? '左右浏览 · 选择荣誉' : '左右浏览 · 点击查看');
+    ? (isMobile ? 'SWIPE TO VIEW' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
+    : (isMobile ? '滑动浏览' : '左右浏览 · 点击查看');
 
   return (
     <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
-      <p className="impact-award-description">{lang === 'en' ? 'Awards and recognition from AI creation contests.' : 'AI 创作赛事获奖及入围荣誉。'}</p>
+      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{galleryHint}</span></div>
+      <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases.' : 'AI 创作赛事获奖、入围及展映记录。'}</p>
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
