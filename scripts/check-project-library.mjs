@@ -64,11 +64,12 @@ try {
       const langBefore = await page.locator('html').getAttribute('lang');
       await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="' + (langBefore === 'zh-CN' ? 'en' : 'zh') + '"]').click();
       assert.notEqual(await page.locator('html').getAttribute('lang'), langBefore);
+      assert.equal(await page.locator('.library-back').count(),0,'Redundant in-page back link was removed.');
       if (width <= 720) {
-        assert.equal(await page.locator('.library-back').isVisible(), true, 'Mobile library keeps its return link.');
-        await page.locator('.library-back').click();
+        const featured = page.locator('.library-page-navigation .cinema-player__brand--featured-return');
+        assert.equal(await featured.isVisible(), true, 'Mobile library has persistent featured return.');
+        await featured.click();
       } else {
-        assert.equal(await page.locator('.library-back').isVisible(), false, 'Desktop library removes the redundant return link.');
         const featured = page.locator('.library-page-navigation .site-primary-nav a[href$="#projects"]');
         assert.equal(await featured.isVisible(), true, 'Desktop navigation keeps the Featured link.');
         await featured.click();

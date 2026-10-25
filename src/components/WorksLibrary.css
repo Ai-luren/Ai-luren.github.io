@@ -68,6 +68,5 @@ html:has(#works-root) { background: var(--library-bg); }
   .work-library .comet-archive__title { margin-top: var(--portfolio-work-title-gap-mobile); }
   .work-library .comet-archive__copy { margin-top: var(--portfolio-work-caption-gap-mobile); }
 }
-@media (min-width: 761px) { .work-library .library-back { display: none; } }
 @media (max-width: 349px) { .library-filters { display: grid; grid-template-columns: repeat(3, max-content); } }
 @media (prefers-reduced-motion: reduce) { .library-filters button { transition: none; } }

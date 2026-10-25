@@ -4,7 +4,6 @@ import { PROJECTS, PROJECT_CATEGORIES } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
 import CinemaPlayer from './CinemaPlayer.jsx';
 import LibraryNavigation from './LibraryNavigation.jsx';
-import { HOME_HREF } from '../navigation/links.js';
 import { prepareProjectPoster } from '../utils/warmImage.js';
 import './WorksLibrary.css';
 
@@ -45,7 +44,7 @@ export default function WorksLibrary() {
       {!selected && <LibraryNavigation lang={lang} />}
       <div className="library-nav-space" />
       <main id="library-main">
-        <div className="library-intro"><a className="library-back" href={`${HOME_HREF}#projects`}>{lang==='en'?'← Selected work':'← 返回精选作品'}</a><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} projects · AI moving image & creative work` : `${PROJECTS.length} 个项目 · AI 影像与创意作品库`}</p></div>
+        <div className="library-intro"><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} projects · AI moving image & creative work` : `${PROJECTS.length} 个项目 · AI 影像与创意作品库`}</p></div>
         <div className="library-filters" role="group" aria-label={lang === 'en' ? 'Filter work by category' : '按作品类别筛选'}>
           {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{item.id === 'all' ? PROJECTS.length : PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>

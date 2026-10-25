@@ -29,14 +29,37 @@ header .nav-brand-name, .cinema-player__brand span {
   display: block !important; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
   color: var(--apple-text); font: 600 13px/1 var(--font-body); white-space: nowrap; letter-spacing: 0;
 }
-/* The Works capsule is fixed at every scroll position. Give its existing
-   avatar/home link an explicit mobile label rather than inventing a second
-   floating return button. Other viewer headers retain the creator brand. */
-.cinema-player__brand-home { display: none !important; }
+/* The library uses one coherent back control inside the existing capsule:
+   matching the circular menu material, with a quiet Featured label. Only
+   the Works landing is affected; viewers and opened menus keep their brand. */
+.cinema-player__brand-arrow, .cinema-player__brand-featured { display: none !important; }
 @media (max-width: 760px) {
-  .library-page-navigation .cinema-player__brand-name { display: none !important; }
-  .library-page-navigation .cinema-player__brand-home { display: block !important; }
-  .library-page-navigation .cinema-player__brand { text-decoration: none; }
+  .library-page-navigation .cinema-player__brand--featured-return {
+    display: grid !important;
+    place-items: center;
+    border-color: var(--portfolio-icon-border) !important;
+    background: var(--portfolio-icon-surface) !important;
+    color: var(--apple-text) !important;
+    text-decoration: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--apple-duration-control) var(--apple-ease);
+  }
+  .library-page-navigation .cinema-player__brand--featured-return:hover { background: var(--portfolio-icon-hover-surface) !important; }
+  .library-page-navigation .cinema-player__brand--featured-return:active { background: var(--portfolio-icon-active-surface) !important; }
+  .library-page-navigation .cinema-player__brand--featured-return img,
+  .library-page-navigation .cinema-player__brand--featured-return .cinema-player__brand-name { display: none !important; }
+  .library-page-navigation .cinema-player__brand--featured-return .cinema-player__brand-arrow {
+    display: block !important;
+    width: 20px;
+    height: 20px;
+  }
+  .library-page-navigation .cinema-player__brand--featured-return .cinema-player__brand-featured {
+    display: block !important;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
 }
 header .nav-toggle, .cinema-player__navigation .cinema-player__close {
   position: absolute !important; inset: auto !important; top: 6px !important;
@@ -247,7 +270,6 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 .library-page-navigation .cinema-player__navigation > .site-primary-nav { display: none; }
 .library-page-navigation .cinema-player__navigation > .cinema-player__close { display: grid; }
 .library-nav-space { height: 92px; }
-.library-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--apple-secondary) !important; font-size: 12px; }
 .library-menu {
   position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none;
   margin: 0; padding: max(112px,calc(env(safe-area-inset-top) + 96px)) 24px max(28px,env(safe-area-inset-bottom));

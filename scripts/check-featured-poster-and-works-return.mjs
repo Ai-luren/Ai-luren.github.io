@@ -36,17 +36,19 @@ try{
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.addInitScript(lang=>localStorage.setItem('ailuren-lang',lang),lang);
   await p.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
-  const link=p.locator('.library-page-navigation .cinema-player__brand');
-  const label=p.locator('.library-page-navigation .cinema-player__brand-home');
+  const link=p.locator('.library-page-navigation .cinema-player__brand--featured-return');
+  const label=p.locator('.library-page-navigation .cinema-player__brand-featured');
   if(width<=760){
-   assert.equal((await label.textContent()).trim(),lang==='en'?'← Home':'← 首页');
-   await p.waitForFunction(()=>getComputedStyle(document.querySelector('.library-page-navigation .cinema-player__brand-home')).display!=='none');
+   assert.equal((await label.textContent()).trim(),lang==='en'?'Featured':'精选作品');
+   await p.waitForFunction(()=>getComputedStyle(document.querySelector('.library-page-navigation .cinema-player__brand-featured')).display!=='none');
   }
+  assert.equal(await p.locator('.library-back').count(),0,'Redundant in-page return link remains');
+  assert((await link.getAttribute('href')).endsWith('#projects'),'Return target is not featured work');
   await p.evaluate(()=>window.scrollTo(0,Math.floor(document.documentElement.scrollHeight*.75)));
   await p.waitForTimeout(250);
   const geometry=await p.evaluate(()=>{
    const n=document.querySelector('.library-page-navigation .cinema-player__navigation').getBoundingClientRect();
-   const t=document.querySelector('.library-page-navigation .cinema-player__brand-home').getBoundingClientRect();
+   const t=document.querySelector('.library-page-navigation .cinema-player__brand-featured').getBoundingClientRect();
    const l=document.querySelector('.library-page-navigation .cinema-player__language').getBoundingClientRect();
    return {nav:[n.top,n.bottom],home:[t.left,t.right],lang:[l.left,l.right],scroll:scrollY,overflow:document.documentElement.scrollWidth-innerWidth};
   });

@@ -32,7 +32,7 @@ export default function LibraryNavigation({ lang }) {
   }, [open]);
   return <>
     <div className="library-page-navigation" style={open?{visibility:'hidden'}:undefined}>
-      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}>
+      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} featuredReturn homeHref={HOME_HREF + '#projects'} label={lang==='en'?'Main navigation':'主导航'}>
         <DesktopPrimaryNavigation page="works" />
       </CinemaNavigation>
     </div>
