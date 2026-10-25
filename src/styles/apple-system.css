@@ -1616,8 +1616,8 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
-/* <=720px: one quiet Play/Pending hint below the caption.
-   Keep the cover badge hidden, including tap/focus states. */
+/* Featured and All Work share one always-visible Play/Pending glass badge
+   inside the cover (ProjectCard.css); no separate caption-row hint. */
 
 /* Expertise rhythm: align the three recognition modules and the nested Lab
    without changing their media layouts or interaction behavior. */
