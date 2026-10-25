@@ -589,8 +589,21 @@
   .impact-platform-mobile-manifesto p { margin: 0; color: var(--impact-muted); font-size: var(--type-caption-mobile); line-height: 1.55; }
   .impact-platform-mobile-signature { margin-top: var(--space-3); color: var(--impact-muted); font: 500 var(--type-meta-mobile)/1.45 var(--tech, var(--mono, monospace)); letter-spacing: .04em; }
   .impact-platform-mobile-network { padding: 14px 20px 16px; }
-  .impact-platform-mobile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
-  .impact-platform-mobile-tile { display: grid; align-content: space-between; min-height: 68px; padding: 9px; }
+  .impact-platform-mobile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-top: 12px;
+    border-top: 1px solid var(--impact-hairline);
+  }
+  .impact-platform-mobile-tile {
+    display: grid;
+    align-content: space-between;
+    min-height: 78px;
+    padding: 10px 12px;
+  }
+  .impact-platform-mobile-tile:nth-child(even) { border-left: 1px solid var(--impact-hairline) !important; }
+  .impact-platform-mobile-tile:nth-child(n + 3) { border-top: 1px solid var(--impact-hairline) !important; }
   .impact-platform-mobile-tile img { display: block; width: auto; height: 24px; max-width: 44%; object-fit: contain; }
   .impact-platform-mobile-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-mobile-tile strong, .impact-platform-mobile-tile span { display: block; min-width: 0; overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }

@@ -479,8 +479,27 @@ header .nav-contact-icon {
   .impact-logo-shell > .impact-platform-desktop-card { display: block; }
   .impact-platform-desktop-head { display: flex; justify-content: space-between; gap: 20px; color: var(--apple-tertiary); font: 500 10px/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
   .impact-platform-desktop-head span:last-child { color: var(--apple-secondary); }
-  .impact-platform-desktop-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-  .impact-platform-desktop-tile { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 132px; padding: 17px; overflow: hidden; border: 1px solid var(--apple-hairline-soft); border-radius: var(--apple-radius-card); background: rgba(255, 255, 255, .045); transition: transform var(--apple-duration-card) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease); }
+  .impact-platform-desktop-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--apple-hairline-soft);
+  }
+  .impact-platform-desktop-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 118px;
+    padding: 17px 19px;
+    overflow: hidden;
+  }
+  .impact-platform-desktop-tile:not(:nth-child(4n + 1)) {
+    border-left: 1px solid var(--apple-hairline-soft) !important;
+  }
+  .impact-platform-desktop-tile:nth-child(n + 5) {
+    border-top: 1px solid var(--apple-hairline-soft) !important;
+  }
   .impact-platform-desktop-tile img { display: block; width: 48px; height: 48px; object-fit: contain; transition: transform var(--apple-duration-card) var(--apple-ease); }
   .impact-platform-desktop-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-desktop-tile strong { display: block; color: var(--apple-text); font: 600 15px/1.25 var(--font-display); }
@@ -488,18 +507,13 @@ header .nav-contact-icon {
   .impact-reach-profile-shot { height: 220px; }
 }
 
-@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
-  #recognition .impact-platform-desktop-tile:hover,
-  #recognition .impact-platform-desktop-tile:focus-within {
-    border-color: rgba(255, 255, 255, .32) !important;
-    background: rgba(255, 255, 255, .1) !important;
-    box-shadow: 0 14px 30px rgba(0, 0, 0, .2), inset 0 1px 0 rgba(255, 255, 255, .08);
-    transform: translateY(-4px);
-  }
-  #recognition .impact-platform-desktop-tile:hover img,
-  #recognition .impact-platform-desktop-tile:focus-within img { transform: scale(1.08); }
-  #recognition .impact-platform-desktop-tile:hover strong,
-  #recognition .impact-platform-desktop-tile:focus-within strong { color: #fff; }
+/* On a wide dossier, center the primary account's metric-and-actions group
+   against the three secondary records rather than leaving a blank lower half.
+   The existing one-column mobile/tablet reflow remains unchanged. */
+@media (min-width: 900px) {
+  #impact-reach .impact-reach-feature { justify-content: center; }
+  #impact-reach .impact-reach-feature-metrics { margin-top: 22px; }
+  #impact-reach .impact-reach-feature-actions { margin-top: 16px; }
 }
 
 /* QR preview is portaled to body, so it needs its own explicit Apple surface
@@ -1490,11 +1504,7 @@ header .nav-contact-icon:focus-visible {
   .impact-platform-mobile-network {
     padding: 20px 22px 16px;
   }
-  .impact-platform-mobile-grid {
-    row-gap: 12px;
-    column-gap: 8px;
-    margin-top: 16px;
-  }
+  .impact-platform-mobile-grid { margin-top: 16px; }
   .impact-platform-mobile-tile {
     min-height: 80px;
     padding: 11px;
@@ -1572,38 +1582,15 @@ header .nav-contact-icon:focus-visible {
   html[lang="en"] .impact-platform-mobile-manifesto p { max-width: 38ch; line-height: 1.5; }
   html[lang="en"] .impact-platform-mobile-signature { margin-top: 12px; letter-spacing: .03em; }
   html[lang="en"] .impact-platform-mobile-network-head { letter-spacing: .04em; }
-  html[lang="en"] .impact-platform-mobile-grid { row-gap: 10px; margin-top: 15px; }
+  html[lang="en"] .impact-platform-mobile-grid { margin-top: 15px; }
   html[lang="en"] .impact-platform-mobile-tile { min-height: 78px; }
 
-}
-
-/* Touch surfaces answer on press instead of pretending a phone has hover. */
-@media (max-width: 760px) {
-  .impact-platform-mobile-tile {
-    touch-action: manipulation;
-    transition: transform var(--apple-duration-control) var(--apple-ease),
-      border-color var(--apple-duration-control) var(--apple-ease),
-      background-color var(--apple-duration-control) var(--apple-ease);
-  }
-  .impact-platform-mobile-tile:active {
-    border-color: rgba(255, 255, 255, .34) !important;
-    background: rgba(255, 255, 255, .09) !important;
-    transform: scale(.98);
-  }
-  .impact-platform-mobile-tile img {
-    transition: transform var(--apple-duration-control) var(--apple-ease);
-  }
-  .impact-platform-mobile-tile:active img {
-    transform: scale(1.04);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .impact-award-pagination button,
   .impact-award-rail { transition: none !important; }
   .impact-award-rail > li { animation: none !important; }
-  .impact-platform-mobile-tile:active,
-  .impact-platform-mobile-tile:active img { transform: none !important; }
 }
 
 /* Desktop award cards keep the full portrait and expose its context below. */
@@ -1616,10 +1603,8 @@ header .nav-contact-icon:focus-visible {
   .impact-award-description { margin: 0 24px 8px; }
   .impact-platform-desktop-description { max-width: 48ch; margin-top: 14px; }
   .impact-reach-dossier-description { margin: -8px 0 20px; }
-  /* Slightly tighten the repeated platform tiles; preserve the logos and
-     the shared outer glass panel as the visual anchor. */
-  .impact-platform-desktop-grid { margin-top: 20px; gap: 12px; }
-  .impact-platform-desktop-tile { min-height: 118px; padding: 15px; }
+  /* One quiet 4×2 credential index rather than eight nested glass cards. */
+  .impact-platform-desktop-grid { margin-top: 20px; }
   .impact-reach-profile-hover-label {
     right: 12px;
     left: auto;
@@ -1936,10 +1921,7 @@ header .nav-contact-icon:focus-visible {
   }
 
   .impact-platform-mobile-grid,
-  html[lang="en"] .impact-platform-mobile-grid {
-    row-gap: 10px;
-    margin-top: 14px;
-  }
+  html[lang="en"] .impact-platform-mobile-grid { margin-top: 14px; }
 
   .impact-platform-mobile-tile,
   html[lang="en"] .impact-platform-mobile-tile {

@@ -32,7 +32,8 @@
     "check:social-media": "node scripts/check-social-media-system.mjs",
     "check:mobile-nav-focus": "node scripts/check-mobile-navigation-focus.mjs",
     "check:work-detail-markers": "node scripts/check-work-detail-markers.mjs",
-    "check:award-pagination": "node scripts/check-award-pagination-layout.mjs"
+    "check:award-pagination": "node scripts/check-award-pagination-layout.mjs",
+    "check:impact-polish": "node scripts/check-impact-evidence-polish.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
