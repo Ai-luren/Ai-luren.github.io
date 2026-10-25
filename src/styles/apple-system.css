@@ -113,10 +113,13 @@
   --project-card-detail-size: 12px;
   --project-card-detail-weight: 400;
   --project-card-detail-line-height: 1.55;
+  /* Shared detail rail: title-left aligned, 2×14px on the first text line,
+     same inset and marker geometry in cards and the cinema viewer. */
   --project-card-marker-width: 2px;
   --project-card-marker-height: 14px;
-  --project-card-detail-inset: 10px;
-  --project-card-detail-gap: 8px;
+  --project-card-marker-offset: 2px;
+  --project-card-detail-inset: 0px;
+  --project-card-detail-gap: 10px;
   --project-card-marker-color: var(--apple-blue);
   --type-body: 14px;
   /* Semantic reading roles shared by home and the separate Works page.
@@ -151,7 +154,6 @@
     --project-card-title-size: 14px;
     --project-card-title-weight: 500;
     --project-card-title-line-height: 1.45;
-    --project-card-marker-height: 12px;
   }
 }
 
@@ -342,6 +344,7 @@ header .nav-contact-icon {
   display: block;
   width: var(--project-card-marker-width);
   height: var(--project-card-marker-height);
+  margin-block-start: var(--project-card-marker-offset);
   border-radius: var(--heading-rule-radius);
   background: var(--project-card-marker-color);
 }
