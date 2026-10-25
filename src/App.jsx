@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { useRef, useState } from 'react';
 import CinemaPlayer from './components/CinemaPlayer.jsx';
 import { FEATURED_PROJECTS } from './data/projects.js';
+import { prepareProjectPoster } from './utils/warmImage.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
 import VideoPostProcess from './components/VideoPostProcess.jsx';
@@ -18,9 +19,15 @@ import './styles/navigation.css';
 export default function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const cinemaReturnFocusRef = useRef(null);
-  const selectFeaturedProject = (project, trigger) => {
-    if (trigger?.isConnected) cinemaReturnFocusRef.current = trigger;
-    setSelectedProject(project);
+  const selectionTokenRef = useRef(0);
+  const selectFeaturedProject = async (project, trigger) => {
+    const token = ++selectionTokenRef.current;
+    if (!trigger?.isConnected) return;
+    cinemaReturnFocusRef.current = trigger;
+    const prepared = await prepareProjectPoster(project);
+    // A second click or a swipe may have superseded this image request.
+    if (token !== selectionTokenRef.current || !trigger.isConnected) return;
+    setSelectedProject(prepared);
   };
   const projectArchiveRoot = document.getElementById('projects-react-root');
   const impactEvidenceRoot = document.getElementById('recognition-react-root');

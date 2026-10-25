@@ -2,6 +2,7 @@ import CometCard from './CometCard.jsx';
 import './CometCard.css';
 import './ProjectCard.css';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
+import { warmImage } from '../utils/warmImage.js';
 
 const renderTitle = (raw) => {
   if (raw === 'WAN AI Short Film') return <span className="comet-archive__title-content">{raw}</span>;
@@ -22,7 +23,11 @@ export default function ProjectCard({ project, lang, onClick }) {
     ? (lang === 'en' ? 'Play' : '播放')
     : (lang === 'en' ? 'Pending upload' : '待上传');
   return (
-    <CometCard className="comet-archive__item" enableTilt={false} onClick={event => onClick(event, project)}>
+    <CometCard className="comet-archive__item" enableTilt={false}
+      onPointerEnter={() => warmImage(project.playerPoster || project.cover)}
+      onPointerDownCapture={() => warmImage(project.playerPoster || project.cover)}
+      onFocusCapture={() => warmImage(project.playerPoster || project.cover)}
+      onClick={event => onClick(event, project)}>
       <button type="button" className="comet-archive__card" aria-haspopup="dialog"
         aria-label={[project.title[lang], detail, status].filter(Boolean).join(' · ')}
         style={{ '--comet-cover': `url(${project.cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>

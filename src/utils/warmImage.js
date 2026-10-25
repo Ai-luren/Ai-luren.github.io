@@ -52,3 +52,17 @@ export function warmNear(element, sources, margin = '1100px') {
   observer.observe(element);
   return () => observer.disconnect();
 }
+
+
+/**
+ * The archive uses a 3:4 cover while the viewer uses a separate 16:9 poster.
+ * Decode the latter before opening the dialog, so its first visible frame
+ * cannot expose the black video stage. A failed poster falls back to the
+ * already displayed card cover, without triggering a second image swap.
+ */
+export async function prepareProjectPoster(project) {
+  if (!project) return project;
+  const src = project.playerPoster || project.cover;
+  const ready = await warmImage(src);
+  return ready ? project : { ...project, playerPoster: project.cover };
+}

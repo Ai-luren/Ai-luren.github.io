@@ -40,7 +40,8 @@
     "check:mobile-gestures": "node scripts/check-mobile-project-gestures.mjs",
     "check:award-hover-radius": "node scripts/check-award-hover-radius.mjs",
     "check:profile-no-flash": "node scripts/check-profile-no-flash.mjs",
-    "check:motion-polish": "node scripts/check-motion-polish.mjs"
+    "check:motion-polish": "node scripts/check-motion-polish.mjs",
+    "check:poster-return": "node scripts/check-featured-poster-and-works-return.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

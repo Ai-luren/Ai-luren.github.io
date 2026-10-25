@@ -5,6 +5,7 @@ import ProjectCard from './ProjectCard.jsx';
 import CinemaPlayer from './CinemaPlayer.jsx';
 import LibraryNavigation from './LibraryNavigation.jsx';
 import { HOME_HREF } from '../navigation/links.js';
+import { prepareProjectPoster } from '../utils/warmImage.js';
 import './WorksLibrary.css';
 
 const MOBILE_CATEGORY_LABELS = {
@@ -23,6 +24,8 @@ export default function WorksLibrary() {
   });
   const [selected, setSelected] = useState(null);
   const cinemaReturnFocusRef = useRef(null);
+  const selectionTokenRef = useRef(0);
+  useEffect(() => { selectionTokenRef.current += 1; }, [category]);
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
   const visible = category === 'all' ? PROJECTS : PROJECTS.filter(project => project.category === category);
 
@@ -50,8 +53,12 @@ export default function WorksLibrary() {
           {activeCategory?.description?.[lang] || '\u00a0'}
         </p>
         {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map(project => <ProjectCard key={project.id} project={project} lang={lang} onClick={(event, item) => {
-          cinemaReturnFocusRef.current = event.target.closest('.comet-archive__card');
-          setSelected(item);
+          const trigger = event.target.closest('.comet-archive__card');
+          const token = ++selectionTokenRef.current;
+          cinemaReturnFocusRef.current = trigger;
+          void prepareProjectPoster(item).then(prepared => {
+            if (token === selectionTokenRef.current && trigger?.isConnected) setSelected(prepared);
+          });
         }} />)}</div>
           : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory('all')}>{lang === 'en' ? 'View all work' : '查看全部作品'}</button></div>}
       </main>

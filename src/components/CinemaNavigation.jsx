@@ -5,7 +5,8 @@ import avatar from '../../assets/images/ai-luren-avatar.webp';
 // The same capsule geometry also styles the static home header. Modal controls
 // live inside their own layer, so the underlying page remains inaccessible.
 export default function CinemaNavigation({ lang, closeRef, navRef, onClose, menu = false, homeHref, label, children }) {
-  const brand = <><img src={avatar} alt="" /><span>{DICT[lang]['brand.name']}</span></>;
+  const brand = <><img src={avatar} alt="" /><span className="cinema-player__brand-name">{DICT[lang]['brand.name']}</span>
+    {homeHref && <span className="cinema-player__brand-home">{lang === 'en' ? '← Home' : '← 首页'}</span>}</>;
   return <nav className="cinema-player__navigation" aria-label={label || (lang==='en'?'Cinema navigation':'影院导航')} ref={navRef}>
     {homeHref ? <a className="cinema-player__brand" href={homeHref} aria-label={lang==='en'?'Back to home':'返回首页'}>{brand}</a> : <div className="cinema-player__brand">{brand}</div>}
     {children}

@@ -29,6 +29,15 @@ header .nav-brand-name, .cinema-player__brand span {
   display: block !important; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
   color: var(--apple-text); font: 600 13px/1 var(--font-body); white-space: nowrap; letter-spacing: 0;
 }
+/* The Works capsule is fixed at every scroll position. Give its existing
+   avatar/home link an explicit mobile label rather than inventing a second
+   floating return button. Other viewer headers retain the creator brand. */
+.cinema-player__brand-home { display: none !important; }
+@media (max-width: 760px) {
+  .library-page-navigation .cinema-player__brand-name { display: none !important; }
+  .library-page-navigation .cinema-player__brand-home { display: block !important; }
+  .library-page-navigation .cinema-player__brand { text-decoration: none; }
+}
 header .nav-toggle, .cinema-player__navigation .cinema-player__close {
   position: absolute !important; inset: auto !important; top: 6px !important;
   display: grid !important; place-items: center; width: 44px !important; height: 44px !important;
