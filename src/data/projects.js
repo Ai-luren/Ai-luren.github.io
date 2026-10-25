@@ -68,6 +68,12 @@ export const PROJECTS = [
   };
 });
 
-// The home selection stays at eight; new works can enter the library without
-// changing the home layout or its two-page mobile gesture behavior.
-export const FEATURED_PROJECTS = PROJECTS.filter(project => project.featured).slice(0, 8);
+// Only reorder the homepage's eight featured works. Preserve the canonical
+// PROJECTS order, stable IDs, covers, metadata and All Work library filters.
+// These IDs intentionally define the 4+4 mobile pagination / player sequence.
+export const FEATURED_PROJECT_IDS = ['01', '02', '06', '03', '04', '07', '08', '05'];
+export const FEATURED_PROJECTS = FEATURED_PROJECT_IDS.map(id => {
+  const project = PROJECTS.find(item => item.id === id && item.featured);
+  if (!project) throw new Error(`Missing featured project: ${id}`);
+  return project;
+});
