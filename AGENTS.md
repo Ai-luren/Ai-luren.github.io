@@ -9,7 +9,7 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
-- `src/data/projects.js`：首页精选与全部作品库共享的作品、分类及视频地址；无真实资料时保留空值。
+- `src/data/projects.js`：15 件作品的唯一数据源；`PROJECTS` 是完整库顺序，`FEATURED_PROJECT_IDS` 独立控制首页八件精选及播放器顺序。无真实资料时保留空值。
 - `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、海外产品广告、视觉实验管理。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
@@ -31,7 +31,9 @@
 - 页面内容和视觉调整完成后，必须执行构建验证。
 - 修改文案、字号、行宽、容器宽度等影响排版的内容后，必须执行双语布局检测。
 - 双语文案约定：英文标题尽量 ≤ 26 字符、导航标签 ≤ 8 字符，避免触发为长文案准备的降级规则。
+- 维护首页精选顺序只编辑 `src/data/projects.js` 的 `FEATURED_PROJECT_IDS`，不要把它写成 `PROJECTS.slice(0, 8)`；改动后运行 `npm run check:curated-order`，并保持全部作品库原始顺序。
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
+- 改海外产品（ID 09–13）标题或本地文件名时，须同步默认封面、custom 映射、播放器海报、原片路径、封面工作台记录与回归测试；**ImageKit 生产 URL 不能随本地重命名改变**。步骤见 `docs/播放器媒体维护.md`，检查 `check:overseas-names` 和 `check:hero-first-frame`。
 - 在本机 Vite 开发模式下，`src/data/projects.js` 的作品播放器使用 `assets/videos/works/` 中的本地 MP4；即使已配置 ImageKit URL 也不能走线上 CDN。没有本地原片时不要自动回退访问 ImageKit。正式构建仍保持 ImageKit 原始视频链接。
 - **零 ImageKit CDN 消耗是自动化测试的硬性约束**：日常测试、截图、UI 检查、回归测试禁止向 ImageKit 发起真实网络请求；不要为了测试布局访问线上作品视频。
 - 所有使用 Playwright 的脚本必须通过 `scripts/lib/safe-media.mjs` 的 `createSafePage` / `createSafeContext` 创建受保护的页面或上下文；这些辅助函数在导航和播放前拦截 ImageKit 请求，MP4 由 `scripts/fixtures/` 本地小视频替代，其他 ImageKit 请求直接阻断。新测试也必须遵守。不能调用 `route.continue()` 绕过该保护。
@@ -43,6 +45,7 @@
 ```bash
 npm run build
 npm run check:media-safety
+npm run check:curated-order
 npm run check:modal-motion
 npm run check:hero-published
 npm run check:hero-first-frame
@@ -66,12 +69,10 @@ git diff --check
 
 ## 文档入口
 
-- `README.md`：运行、构建与目录速查。
+- `docs/文档索引.md`：**文档总导航**，区分当前维护手册和已过期历史快照。
+- `README.md`：GitHub 面向访客的真实作品展示、项目简介与最小启动说明；不是内部完整运维手册。
 - `docs/设计规范.md`：当前生效的视觉和交互规则。
 - `docs/交接说明.md`：运行时结构、关键入口和维护注意事项。
-- `docs/设计系统最终验收记录.md`：2026-10-17 的历史验收快照，不作为当前设计规范。
-- `docs/作品集转化审计-Step07.md`：首屏转化审计及后续建议；建议不是已授权的页面修改。
+- `.audit/docs-history/`：本地只读历史审计（设计系统验收、Step07 转化审计），**不是当前设计规范**；Git 中旧版本仍可通过提交历史找回。
 - `docs/作品库维护.md`、`docs/影院导航维护.md`、`docs/播放器媒体维护.md`：作品数据、影院交互与媒体元数据维护。
 - `docs/本地封面工作流.md`、`docs/本地封面工作台使用教程.md`：本地封面工具流程和操作说明。
-
-- 海外产品命名（ID 09–13）及 Hero 首屏交接见 `docs/播放器媒体维护.md`。改作品标题时必须同步默认封面、custom 映射、播放器海报元数据、本地 MP4 路径、封面工具缓存与测试；**ImageKit 生产 URL 绝不可随本地文件改名**。运行 `npm run check:overseas-names` 和 `npm run check:hero-first-frame`。
