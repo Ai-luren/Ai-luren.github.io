@@ -26,7 +26,7 @@ try {
     await page.waitForSelector('#primary-nav .site-primary-nav');
 
     for (const lang of ['zh', 'en']) {
-      if (lang === 'en') await page.locator('.nav-lang').click();
+      if (lang === 'en') await page.locator('#nav-lang [data-switch-lang="en"]').click();
       const links = page.locator('#primary-nav .site-primary-nav > li > a');
       assert.deepEqual(await links.allTextContents(), expected[lang], `${width}px home ${lang} labels`);
       assert.equal(await page.locator('#primary-nav [data-impact-trigger]').count(), 0);
@@ -67,7 +67,7 @@ try {
     await works.goto(new URL('works.html?category=visual', base).href, { waitUntil: 'domcontentloaded' });
     await works.waitForSelector('.library-page-navigation .site-primary-nav');
     for (const lang of ['zh', 'en']) {
-      if (lang === 'en') await works.locator('.library-page-navigation .cinema-player__language').click();
+      if (lang === 'en') await works.locator('.library-page-navigation .cinema-player__language [data-switch-lang="en"]').click();
       const links = works.locator('.library-page-navigation .site-primary-nav > li > a');
       assert.deepEqual(await links.allTextContents(), expected[lang], `${width}px works ${lang} labels`);
       assert.equal(await works.locator('.library-page-navigation [data-impact-trigger]').count(), 0);

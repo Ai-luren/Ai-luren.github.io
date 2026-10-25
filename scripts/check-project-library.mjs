@@ -62,17 +62,14 @@ try {
       await page.waitForSelector('.cinema-player', { state: 'detached' });
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true);
       const langBefore = await page.locator('html').getAttribute('lang');
-      await page.locator('.library-page-navigation .cinema-player__language').click();
+      await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="' + (langBefore === 'zh-CN' ? 'en' : 'zh') + '"]').click();
       assert.notEqual(await page.locator('html').getAttribute('lang'), langBefore);
-      if (width <= 720) {
-        assert.equal(await page.locator('.library-back').isVisible(), true, 'Mobile library keeps its return link.');
-        await page.locator('.library-back').click();
-      } else {
-        assert.equal(await page.locator('.library-back').isVisible(), false, 'Desktop library removes the redundant return link.');
-        const featured = page.locator('.library-page-navigation .site-primary-nav a[href$="#projects"]');
-        assert.equal(await featured.isVisible(), true, 'Desktop navigation keeps the Featured link.');
-        await featured.click();
-      }
+      assert.equal(await page.locator('.library-back').count(),0,'Redundant in-page back link was removed.');
+      const home = page.locator('.library-page-navigation .cinema-player__brand--home-return');
+      assert.equal(await home.isVisible(), true, 'Shared home return is present on desktop and mobile.');
+      assert.equal(await home.getAttribute('href'), './index.html');
+      await home.click();
+      assert.equal(new URL(page.url()).hash,'','Home return must open the Hero, not a work section.');
       await page.waitForSelector('.comet-archive__card', { state: 'attached' });
       assert.equal(await page.locator('.comet-archive__card').count(), width <= 720 ? 4 : 8);
       await page.locator('#projects').scrollIntoViewIfNeeded();

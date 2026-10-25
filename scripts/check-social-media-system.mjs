@@ -125,7 +125,7 @@ try {
             assert(await page.evaluate(()=>!!document.activeElement.closest('.impact-profile-lightbox')),tag+': focus leaked');
           }
           if(index===2){
-            await page.locator('.impact-profile-lightbox .cinema-player__language').click();
+            await page.locator('.impact-profile-lightbox .cinema-player__language [data-switch-lang="'+(lang==='zh'?'en':'zh')+'"]').click();
             assert.notEqual(await page.locator('html').getAttribute('lang'),lang);
           }
           await page.keyboard.press('Escape');

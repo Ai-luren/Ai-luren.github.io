@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright-core';
+import {createSafePage,getSafeMediaReport} from './lib/safe-media.mjs';
+const b=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
+const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:5174/';
+for(const width of [390,1440]){
+ const p=await createSafePage(b,{viewport:{width,height:900}});
+ const requests=[];const errors=[];
+ p.on('request',r=>{const u=r.url();if(/works.html|index.html|works-main|index-|pagePrefetch|imagekit/i.test(u)) requests.push(u.slice(0,180))});
+ p.on('pageerror',e=>errors.push(e.message));
+ await p.goto(base,{waitUntil:'domcontentloaded'});
+ await p.waitForTimeout(320);
+ const before=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>e.href));
+ assert(!before.some(s=>/works/.test(s)),'Preloaded work page too early on Hero');
+ await p.locator('#projects').scrollIntoViewIfNeeded();
+ await p.waitForTimeout(2400);
+ const after=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>({href:e.href,as:e.as})));
+ assert(requests.some(u=>/works.html/.test(u)),'Works page HTML not warmed near project archive');
+ assert(after.some(link=>/works-main|works-/.test(link.href)),'Works entry script not preloaded');
+ assert(!requests.some(url=>/imagekit/.test(url)),'ImageKit videos fetched during prefetch');
+ console.log('PASS STEP03',width,'home request on interest + assets',JSON.stringify(after).slice(0,360));
+ await p.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
+ await p.locator('.library-grid .comet-archive__card').first().waitFor();
+ // Hosted previews can take several seconds to discover hashed resources.
+ await p.waitForFunction(() => [...document.querySelectorAll('link[rel="prefetch"]')].some(
+   el => /\/assets\/index-.*\.js|\/src\/main\.jsx/.test(el.href),
+ ), null, {timeout:15000});
+ const returnAssets=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>e.href));
+ assert(requests.some(u=>/index.html/.test(u)),'Home page not warmed from library idle');
+ assert(returnAssets.some(u=>/src\/main|index-/.test(u)),'Home JS entry not warmed');
+ assert.deepEqual(errors,[]);
+ assert.equal(getSafeMediaReport(p).urls.length,0);
+ console.log('PASS STEP03',width,'library idle return shell',returnAssets.length,'prefetch entries');
+ await p.close();
+}
+await b.close();

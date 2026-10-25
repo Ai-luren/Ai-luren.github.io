@@ -1228,12 +1228,12 @@ header .nav-contact-icon:focus-visible {
   }
   .comet-archive-mobile-shell .comet-archive.is-touch-dragging { transition: none; }
   @keyframes comet-mobile-page-forward {
-    from { opacity: .72; transform: translate3d(18px, 0, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
+    from { transform: translate3d(18px, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
   }
   @keyframes comet-mobile-page-back {
-    from { opacity: .72; transform: translate3d(-18px, 0, 0); }
-    to { opacity: 1; transform: translate3d(0, 0, 0); }
+    from { transform: translate3d(-18px, 0, 0); }
+    to { transform: translate3d(0, 0, 0); }
   }
   .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
   .comet-archive-mobile-shell.is-page-back .comet-archive__item {
@@ -1480,8 +1480,8 @@ header .nav-contact-icon:focus-visible {
 }
 
 @keyframes impact-award-mobile-enter {
-  from { opacity: .35; transform: translateX(8px); }
-  to { opacity: 1; transform: none; }
+  from { transform: translateX(8px); }
+  to { transform: none; }
 }
 
 @media (max-width: 500px) {

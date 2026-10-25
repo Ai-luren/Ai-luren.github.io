@@ -20,7 +20,7 @@
   background: var(--portfolio-modal-surface, rgba(12, 12, 13, .9));
   -webkit-backdrop-filter: var(--portfolio-modal-blur, blur(28px) saturate(1.02));
   backdrop-filter: var(--portfolio-modal-blur, blur(28px) saturate(1.02));
-  opacity: 0;
+  opacity: .94;
   transition: opacity var(--apple-duration-modal) var(--apple-ease);
 }
 .cinema-player.is-motion-visible::backdrop { opacity: 1; }

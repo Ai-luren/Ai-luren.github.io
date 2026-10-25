@@ -1,6 +1,7 @@
 import './ImpactEvidence.css';
 import LogoLoop from './LogoLoop.jsx';
 import CinemaNavigation from './CinemaNavigation.jsx';
+import { isImageReady, warmImage, warmImages, warmNear } from '../utils/warmImage.js';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLang, useT } from '../i18n/index.js';
@@ -15,13 +16,21 @@ import qwenLogo from '../../assets/images/platform-logos/qwen-color.webp';
 import viduLogo from '../../assets/images/platform-logos/vidu-color.webp';
 
 import award1 from '../../assets/images/awards/海螺AI动物跳水.webp';
+import award1Thumb from '../../assets/images/awards/thumbs/海螺AI动物跳水.webp';
 import award2 from '../../assets/images/awards/影视级特效小赛.webp';
+import award2Thumb from '../../assets/images/awards/thumbs/影视级特效小赛.webp';
 import award3 from '../../assets/images/awards/海纳星火计划-小人国制作奶茶.webp';
+import award3Thumb from '../../assets/images/awards/thumbs/海纳星火计划-小人国制作奶茶.webp';
 import award4 from '../../assets/images/awards/未来AI设计大赛.webp';
+import award4Thumb from '../../assets/images/awards/thumbs/未来AI设计大赛.webp';
 import award5 from '../../assets/images/awards/联想AI比赛.webp';
+import award5Thumb from '../../assets/images/awards/thumbs/联想AI比赛.webp';
 import award7 from '../../assets/images/awards/MJ 官方优秀作品.webp';
+import award7Thumb from '../../assets/images/awards/thumbs/MJ 官方优秀作品.webp';
 import award8 from '../../assets/images/awards/无限剧场小赛.webp';
+import award8Thumb from '../../assets/images/awards/thumbs/无限剧场小赛.webp';
 import award9 from '../../assets/images/awards/海纳星火计划-打工喵的一天.webp';
+import award9Thumb from '../../assets/images/awards/thumbs/海纳星火计划-打工喵的一天.webp';
 import douyinScreenshot from '../../assets/images/social-profiles/抖音主页.webp';
 import xiaohongshuScreenshot from '../../assets/images/social-profiles/小红书主页.webp';
 import kuaishouScreenshot from '../../assets/images/social-profiles/快手主页.webp';
@@ -34,14 +43,14 @@ import kuaishouQrCode from '../../assets/images/social-profiles/快手二维码.
 // Gallery order is editorial; keep each original image and its bilingual proof
 // attached to the same award. Two separate Haina pieces occupy positions 6/7.
 const awards = [
-  { image: award7, title: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
-  { image: award4, title: { zh: '未来AI设计大赛', en: 'Future AI Design Contest' }, meta: { zh: '美图 / 年度入围', en: 'Meitu / Annual Finalist' } },
-  { image: award5, title: { zh: '联想AI比赛', en: 'Lenovo AI Competition' }, meta: { zh: '创作先锋奖 / 官号精选', en: 'Creative Pioneer / Official Selection' } },
-  { image: award1, title: { zh: '海螺AI动物跳水', en: 'Hailuo AI Animal Diving' }, meta: { zh: '登陆LED大屏', en: 'Displayed on LED Screen' } },
-  { image: award8, title: { zh: '无限剧场小赛', en: 'Infinite Theater Contest' }, meta: { zh: '可灵AI / 超棒奖', en: 'Kling AI / Awesome Award' } },
-  { image: award3, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
-  { image: award9, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
-  { image: award2, title: { zh: '影视级特效小赛', en: 'Cinematic Effects Contest' }, meta: { zh: 'Pollo.ai / 优秀奖', en: 'Pollo.ai / Excellence Award' } },
+  { image: award7, thumbnail: award7Thumb, title: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
+  { image: award4, thumbnail: award4Thumb, title: { zh: '未来AI设计大赛', en: 'Future AI Design Contest' }, meta: { zh: '美图 / 年度入围', en: 'Meitu / Annual Finalist' } },
+  { image: award5, thumbnail: award5Thumb, title: { zh: '联想AI比赛', en: 'Lenovo AI Competition' }, meta: { zh: '创作先锋奖 / 官号精选', en: 'Creative Pioneer / Official Selection' } },
+  { image: award1, thumbnail: award1Thumb, title: { zh: '海螺AI动物跳水', en: 'Hailuo AI Animal Diving' }, meta: { zh: '登陆LED大屏', en: 'Displayed on LED Screen' } },
+  { image: award8, thumbnail: award8Thumb, title: { zh: '无限剧场小赛', en: 'Infinite Theater Contest' }, meta: { zh: '可灵AI / 超棒奖', en: 'Kling AI / Awesome Award' } },
+  { image: award3, thumbnail: award3Thumb, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
+  { image: award9, thumbnail: award9Thumb, title: { zh: '海纳星火计划', en: 'Spark of Haina Program' }, meta: { zh: '中国联通 / 三等奖', en: 'China Unicom / 3rd Prize' } },
+  { image: award2, thumbnail: award2Thumb, title: { zh: '影视级特效小赛', en: 'Cinematic Effects Contest' }, meta: { zh: 'Pollo.ai / 优秀奖', en: 'Pollo.ai / Excellence Award' } },
 ];
 
 const creatorLogos = [
@@ -138,6 +147,11 @@ function AwardGallery() {
     typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
   ));
   const [mobileAwardIndex, setMobileAwardIndex] = useState(0);
+  const plannedMobileAwardRef = useRef(0);
+  const mobileAwardRequestRef = useRef(0);
+  const viewerTargetIndexRef = useRef(0);
+  const viewerRequestRef = useRef(0);
+  const [awardLoading, setAwardLoading] = useState(false);
   const railRef = useRef(null);
   const awardTouchState = useRef({ startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 });
   const triggerRef = useRef(null);
@@ -149,10 +163,14 @@ function AwardGallery() {
   const viewerFigureRef = useRef(null);
   const viewerCaptionRef = useRef(null);
   const [viewerSize, setViewerSize] = useState(null);
+  const [viewerHighResSource, setViewerHighResSource] = useState(null);
   const isOpen = openIndex >= 0;
 
   const open = useCallback((index, event) => {
     triggerRef.current = event.currentTarget;
+    viewerTargetIndexRef.current = index;
+    viewerRequestRef.current++;
+    for (const neighbor of [-1, 1]) warmImage(awards[(index + neighbor + awards.length) % awards.length].image);
     window.clearTimeout(closeTimerRef.current);
     closingRef.current = false;
     setIsClosing(false);
@@ -161,6 +179,7 @@ function AwardGallery() {
   }, []);
   const close = useCallback(() => {
     if (!isOpen || closingRef.current) return;
+    viewerRequestRef.current++; // An in-flight decoded image must not reopen the modal.
     closingRef.current = true;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       setOpenIndex(-1);
@@ -178,8 +197,16 @@ function AwardGallery() {
       requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
     }, 220);
   }, [isOpen]);
-  const step = useCallback((delta) => {
-    setOpenIndex((index) => (index < 0 ? index : (index + delta + awards.length) % awards.length));
+  const step = useCallback(async (delta) => {
+    if (closingRef.current) return;
+    const next = (viewerTargetIndexRef.current + delta + awards.length) % awards.length;
+    viewerTargetIndexRef.current = next;
+    const request = ++viewerRequestRef.current;
+    // Keep the already decoded award visible until the replacement is ready.
+    if (!isImageReady(awards[next].thumbnail)) await warmImage(awards[next].thumbnail);
+    if (request !== viewerRequestRef.current || closingRef.current) return;
+    setOpenIndex(next);
+    for (const neighbor of [-1, 1]) warmImage(awards[(next + neighbor + awards.length) % awards.length].image);
   }, []);
   const syncRail = useCallback(() => {
     const rail = railRef.current;
@@ -194,10 +221,22 @@ function AwardGallery() {
     });
   }, [isMobile, mobileAwardIndex]);
 
-  const moveToMobileAward = useCallback((index) => {
+  const moveToMobileAward = useCallback(async (index) => {
     const safeIndex = Math.max(0, Math.min(awards.length - 1, index));
+    const request = ++mobileAwardRequestRef.current;
+    plannedMobileAwardRef.current = safeIndex;
+    const image = awards[safeIndex].thumbnail;
+    if (!isImageReady(image)) {
+      setAwardLoading(true);
+      await warmImage(image);
+    }
+    if (request !== mobileAwardRequestRef.current) return;
+    // The outgoing award remains visible while decoding, never reveal black.
+    setAwardLoading(false);
     setMobileAwardIndex(safeIndex);
     setRailState({ canScrollLeft: safeIndex > 0, canScrollRight: safeIndex < awards.length - 1 });
+    if (safeIndex < awards.length - 1) warmImage(awards[safeIndex + 1].thumbnail);
+    if (safeIndex > 0) warmImage(awards[safeIndex - 1].thumbnail);
   }, []);
 
   const setRailTouchOffset = (offset, dragging) => {
@@ -211,7 +250,7 @@ function AwardGallery() {
     const rail = railRef.current;
     if (!rail) return;
     if (isMobile) {
-      moveToMobileAward(mobileAwardIndex + direction);
+      moveToMobileAward(plannedMobileAwardRef.current + direction);
       return;
     }
     const cards = [...rail.querySelectorAll(':scope > li')];
@@ -322,8 +361,29 @@ function AwardGallery() {
   }, [syncRail]);
 
   useEffect(() => {
-    return () => window.clearTimeout(closeTimerRef.current);
+    return () => {
+      mobileAwardRequestRef.current++;
+      viewerRequestRef.current++;
+      window.clearTimeout(closeTimerRef.current);
+    };
   }, []);
+
+  useEffect(() => warmNear(
+    document.getElementById('impact-awards') || railRef.current,
+    awards.map(award => award.thumbnail),
+  ), []);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const image = awards[openIndex].image;
+    let canceled = false;
+    // A small thumbnail paints instantly; upgrade in place only after the
+    // original high-resolution award has finished decoding.
+    warmImage(image).then(ready => {
+      if (ready && !canceled) setViewerHighResSource(image);
+    });
+    return () => { canceled = true; };
+  }, [isOpen, openIndex]);
 
   useLayoutEffect(() => {
     if (!isOpen) return undefined;
@@ -448,7 +508,7 @@ function AwardGallery() {
       >
         <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
-      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
+      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-busy={awardLoading} aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
         {(isMobile ? [awards[mobileAwardIndex]] : awards).map((award, visibleIndex) => {
           const index = isMobile ? mobileAwardIndex : visibleIndex;
           return (
@@ -469,7 +529,7 @@ function AwardGallery() {
               }}
             >
               <span className="impact-award-card-content">
-                <img src={award.image} alt={award.title[lang]} width="1124" height="2000" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
+                <img src={award.thumbnail} alt={award.title[lang]} width="540" height="960" loading={isMobile || index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
                 <span className="impact-award-card-caption" aria-hidden="true">
                   <strong>{award.title[lang]}</strong>
                   <small>{award.meta[lang]}</small>
@@ -508,7 +568,7 @@ function AwardGallery() {
         >
           <CinemaNavigation lang={lang} closeRef={viewerCloseRef} onClose={close} />
           <figure ref={viewerFigureRef} style={viewerSize ? {width:viewerSize.figureWidth} : undefined} onClick={(event) => event.stopPropagation()}>
-            <img ref={viewerImageRef} src={active.image} alt={active.title[lang]} className={active.image === award1 ? 'impact-award-image--trim-right' : undefined} style={viewerSize ? {width:viewerSize.width,height:viewerSize.height} : undefined} />
+            <img ref={viewerImageRef} src={viewerHighResSource === active.image ? active.image : active.thumbnail} alt={active.title[lang]} className={active.image === award1 ? 'impact-award-image--trim-right' : undefined} style={viewerSize ? {width:viewerSize.width,height:viewerSize.height} : undefined} />
             <figcaption ref={viewerCaptionRef} aria-live="polite">
               <strong id="impact-award-lightbox-title">{active.title[lang]}</strong>
               <span id="impact-award-lightbox-meta">{active.meta[lang]}</span>
@@ -592,6 +652,8 @@ function ReachDossier() {
   const lang = useLang();
   const t = useT();
   const [activeProfile, setActiveProfile] = useState(null);
+  const [preparingProfileId, setPreparingProfileId] = useState(null);
+  const profileOpenRequestRef = useRef(0);
   const [profileImageFailed, setProfileImageFailed] = useState({ screenshot: false, qr: false });
   const [isProfileClosing, setIsProfileClosing] = useState(false);
   const [profileMotionVisible, setProfileMotionVisible] = useState(false);
@@ -603,17 +665,27 @@ function ReachDossier() {
   const profileCloseTimerRef = useRef(null);
   const profileClosingRef = useRef(false);
 
-  const openProfile = (card, event) => {
-    profileTriggerRef.current = event.currentTarget;
+  const openProfile = async (card, event) => {
+    // Do not mount a translucent modal with undecoded screenshots: this was
+    // flashing on both desktop and mobile, especially on the first visit.
+    const request = ++profileOpenRequestRef.current;
+    const trigger = event.currentTarget;
+    profileTriggerRef.current = trigger;
     window.clearTimeout(profileCloseTimerRef.current);
+    setPreparingProfileId(card.id);
+    const [screenshotReady, qrReady] = await warmImages([card.screenshot, card.qrCode]);
+    if (request !== profileOpenRequestRef.current || !trigger.isConnected) return;
+    setPreparingProfileId(null);
     profileClosingRef.current = false;
-    setProfileImageFailed({ screenshot: false, qr: false });
+    setProfileImageFailed({ screenshot: !screenshotReady, qr: !qrReady });
     setIsProfileClosing(false);
     setProfileMotionVisible(false);
     setActiveProfile(card);
   };
 
   const closeProfile = useCallback(() => {
+    profileOpenRequestRef.current++;
+    setPreparingProfileId(null);
     if (!activeProfile || profileClosingRef.current) return;
     profileClosingRef.current = true;
     const finish = () => {
@@ -631,7 +703,16 @@ function ReachDossier() {
     profileCloseTimerRef.current = window.setTimeout(finish, 220);
   }, [activeProfile]);
 
-  useEffect(() => () => window.clearTimeout(profileCloseTimerRef.current), []);
+  useEffect(() => () => {
+    profileOpenRequestRef.current++;
+    window.clearTimeout(profileCloseTimerRef.current);
+  }, []);
+
+  useEffect(() => warmNear(
+    document.getElementById('impact-reach'),
+    reachCards.flatMap(card => [card.screenshot, card.qrCode]),
+    '850px',
+  ), []);
   useLayoutEffect(() => {
     if (!activeProfile) return undefined;
     let frame = requestAnimationFrame(() => {
@@ -713,7 +794,7 @@ function ReachDossier() {
             </div>
           </div>
           <div className="impact-reach-feature-actions">
-            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
+            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-busy={preparingProfileId === featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
               {t('查看账号资料', 'View account details')}
             </button>
             <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
@@ -733,7 +814,7 @@ function ReachDossier() {
                 </div>
               </div>
               <div className="impact-reach-record-actions">
-                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
+                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
                   {t('查看账号资料', 'View account details')}
                 </button>
                 {card.link && (

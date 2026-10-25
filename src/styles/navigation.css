@@ -29,7 +29,56 @@ header .nav-brand-name, .cinema-player__brand span {
   display: block !important; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
   color: var(--apple-text); font: 600 13px/1 var(--font-body); white-space: nowrap; letter-spacing: 0;
 }
-header #nav-lang, .cinema-player__language, header .nav-toggle, .cinema-player__navigation .cinema-player__close {
+/* A+ works-only home return: one 44px circular arrow in the same glass
+   material as the menu, plus a low-key Home label. Shared modal navigations
+   retain the original avatar and branding; no extra floating control. */
+.cinema-player__brand-arrow,
+.cinema-player__brand-home { display: none !important; }
+.library-page-navigation .cinema-player__brand--home-return {
+  left: 10px !important;
+  top: 6px !important;
+  width: 44px !important;
+  height: 44px !important;
+  display: grid !important;
+  place-items: center;
+  border-color: var(--portfolio-icon-border) !important;
+  border-radius: var(--portfolio-icon-radius) !important;
+  background: var(--portfolio-icon-surface) !important;
+  box-shadow: none !important;
+  color: var(--apple-text) !important;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--apple-duration-control) var(--apple-ease) !important;
+}
+.library-page-navigation .cinema-player__brand--home-return:hover {
+  background: var(--portfolio-icon-hover-surface) !important;
+}
+.library-page-navigation .cinema-player__brand--home-return:active {
+  background: var(--portfolio-icon-active-surface) !important;
+}
+.library-page-navigation .cinema-player__brand--home-return img,
+.library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-name { display: none !important; }
+.library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-arrow {
+  display: block !important;
+  width: 20px;
+  height: 20px;
+}
+.library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-home {
+  display: block !important;
+  left: calc(100% + 10px);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--apple-text);
+}
+@media (max-width: 760px) {
+  .library-page-navigation .cinema-player__brand--home-return { left: 8px !important; top: 5px !important; }
+  .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-home { font-size: 12px; }
+}
+
+header .nav-toggle, .cinema-player__navigation .cinema-player__close {
   position: absolute !important; inset: auto !important; top: 6px !important;
   display: grid !important; place-items: center; width: 44px !important; height: 44px !important;
   min-width: 44px !important; min-height: 44px !important; padding: 0 !important; margin: 0 !important;
@@ -38,24 +87,146 @@ header #nav-lang, .cinema-player__language, header .nav-toggle, .cinema-player__
   box-shadow: none !important; cursor: pointer; touch-action: manipulation;
   transition: background-color var(--apple-duration-control) var(--apple-ease), color var(--apple-duration-control) var(--apple-ease) !important;
 }
-header #nav-lang, .cinema-player__language { right: 68px !important; }
 header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 10px !important; }
 header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; height: 18px; }
-:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button):hover { background: var(--portfolio-icon-hover-surface) !important; }
-:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button):active { background: var(--portfolio-icon-active-surface) !important; }
-:is(header #nav-lang,header .nav-toggle,.cinema-player__navigation button,.cinema-player__brand):focus-visible {
+/* B++ quiet segmented language control; one shared material for the
+   static header, Works landing, cinema, award and account viewers. */
+.nav-language-switch {
+  position: absolute !important;
+  top: 9px !important;
+  right: 10px !important;
+  box-sizing: border-box;
+  display: flex !important;
+  align-items: stretch;
+  flex: none;
+  width: 100px !important;
+  min-width: 100px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding: 2px !important;
+  border: 1px solid var(--portfolio-icon-border) !important;
+  border-radius: var(--portfolio-control-radius) !important;
+  background: var(--portfolio-icon-surface) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06) !important;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  color: var(--apple-text);
+  isolation: isolate;
+  white-space: nowrap;
+}
+/* The rightmost desktop action belongs to Close inside detail viewers,
+   but to Language on the ordinary Works page. */
+@media (min-width:761px) {
+  .cinema-player__navigation .cinema-player__language { right: 68px !important; }
+  .library-page-navigation .cinema-player__navigation .cinema-player__language { right: 10px !important; }
+}
+.nav-language-switch__thumb {
+  position: absolute;
+  z-index: 0;
+  inset: 2px auto 2px 2px;
+  width: calc((100% - 4px) / 2);
+  border: 1px solid rgba(255,255,255,.19);
+  border-radius: 999px;
+  background: rgba(255,255,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+  transform: translateX(0);
+  /* B+++ motion: a slower, balanced travel with restrained elastic
+     stretch via WAAPI on individual scale, never on transform.
+     Keeping translation in CSS makes rapid reversals continuous. */
+  transition: transform 330ms cubic-bezier(.32,.72,.28,1);
+  will-change: transform;
+  pointer-events: none;
+}
+.nav-language-switch[data-active-lang="en"] .nav-language-switch__thumb { transform: translateX(100%); }
+.nav-language-switch > button {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(245,245,247,.7) !important;
+  font: 600 11.5px/1 var(--font-body);
+  letter-spacing: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 265ms cubic-bezier(.32,.72,.28,1), scale 165ms ease-out !important;
+}
+.nav-language-switch > button:active { scale: .975; }
+.nav-language-switch > button[aria-pressed="true"] { color: #fff !important; }
+.nav-language-switch > button:hover { color: #fff !important; }
+.nav-language-switch > button:focus-visible {
+  outline: 2px solid var(--apple-blue) !important;
+  outline-offset: -3px !important;
+}
+.nav-language-switch__zh-short { display: none; }
+@media (max-width:760px) {
+  .nav-language-switch {
+    top: 7px !important;
+    right: 60px !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+  .nav-language-switch__zh-long { display: none; }
+  .nav-language-switch__zh-short { display: inline; }
+}
+/* B++ detail-mode continuity: actions move, but their shared navigation
+   capsule stays fixed. On exit these motions reverse before it unmounts.
+   Do not apply to the ordinary Works bar or the mobile menu's '=' to '×'. */
+@media (min-width:761px) and (prefers-reduced-motion:no-preference) {
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox) > .cinema-player__navigation .cinema-player__language {
+    transform: translateX(58px);
+    transition: transform 220ms var(--apple-ease) !important;
+  }
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__language {
+    transform: translateX(0);
+  }
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox) > .cinema-player__navigation .cinema-player__close {
+    opacity: 0;
+    transform: scale(.92);
+    transition: opacity 190ms var(--apple-ease),transform 220ms var(--apple-ease) !important;
+  }
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__close {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/* Maintain the shared control material when OS transparency is reduced. */
+@media (prefers-reduced-transparency:reduce) {
+  .nav-language-switch { background: var(--portfolio-panel-solid) !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  .nav-language-switch { background: var(--portfolio-panel-solid) !important; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .nav-language-switch__thumb, .nav-language-switch > button { transition: none !important; }
+  .nav-language-switch > button:active { scale: 1; }
+}
+:is(header .nav-toggle,.cinema-player__navigation .cinema-player__close):hover { background: var(--portfolio-icon-hover-surface) !important; }
+:is(header .nav-toggle,.cinema-player__navigation .cinema-player__close):active { background: var(--portfolio-icon-active-surface) !important; }
+:is(header .nav-toggle,.cinema-player__navigation .cinema-player__close,.cinema-player__brand):focus-visible {
   outline: 2px solid var(--apple-blue) !important; outline-offset: 4px !important;
 }
 /* Auto-focused Close remains in the accessibility tree. A touch-opened
    dialog should not get Safari's / Chromium's bright blue keyboard ring,
    but Tab navigation (including a paired phone keyboard) still must. */
 @media (hover: none) and (pointer: coarse) {
-  :is(header #nav-lang, header .nav-toggle, .mobile-nav-close,
+  :is(header .nav-language-switch button, header .nav-toggle, .mobile-nav-close,
       .cinema-player__navigation button) {
     -webkit-tap-highlight-color: transparent;
   }
   html[data-nav-input="touch"]
-    :is(header #nav-lang, header .nav-toggle, .mobile-nav-close,
+    :is(header .nav-language-switch button, header .nav-toggle, .mobile-nav-close,
         .cinema-player__navigation button):focus-visible {
     outline: none !important;
   }
@@ -116,7 +287,6 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 .library-page-navigation .cinema-player__navigation > .site-primary-nav { display: none; }
 .library-page-navigation .cinema-player__navigation > .cinema-player__close { display: grid; }
 .library-nav-space { height: 92px; }
-.library-back { display: inline-flex; align-items: center; min-height: 44px; color: var(--apple-secondary) !important; font-size: 12px; }
 .library-menu {
   position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none;
   margin: 0; padding: max(112px,calc(env(safe-area-inset-top) + 96px)) 24px max(28px,env(safe-area-inset-bottom));
@@ -152,7 +322,7 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 }
 .impact-award-lightbox::before {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  opacity: 0;
+  opacity: .94;
   transition: opacity var(--apple-duration-modal) var(--apple-ease);
 }
 .impact-award-lightbox.is-motion-visible::before { opacity: 1; }
@@ -174,7 +344,10 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
 }
 .cinema-player__sequence button svg { width: 20px; height: 20px; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+/* The rail arrow uses translateY for its fixed vertical position. Do not
+   overwrite that transform on hover, or the button visibly drops. */
+.impact-award-rail-nav:hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; }
 :is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
 :is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
 .cinema-player__sequence button:disabled { opacity: .32; cursor: default; }
@@ -182,13 +355,30 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 @media (max-width:760px) {
   body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }
   header .brand, .cinema-player__brand { left: 8px; top: 5px; width: 44px; height: 44px; }
-  header #nav-lang, .cinema-player__language, header .nav-toggle, .cinema-player__navigation .cinema-player__close { top: 5px !important; }
-  header #nav-lang, .cinema-player__language { right: 60px !important; }
+  header .nav-toggle, .cinema-player__navigation .cinema-player__close { top: 5px !important; }
   header .nav-toggle, .cinema-player__navigation .cinema-player__close { right: 8px !important; }
   .library-nav-space { height: 76px; }
 }
 /* Tablets have enough room for the existing four-label navigation.
    Keep the shared capsule, active state and language control identical to desktop. */
+/* Mobile menu button must not visually jump when '=' morphs into '×'.
+   Existing global :active scales controls and open/hover states brighten
+   the circle. Keep the 44px hit area and material identical throughout;
+   only the two SVG paths animate. Keyboard focus rules remain intact. */
+@media (max-width:760px) {
+  header .nav-inner.shell .nav-toggle,
+  header .nav-inner.shell .nav-toggle:hover,
+  header .nav-inner.shell .nav-toggle:active,
+  body.mobile-nav-open header .nav-inner.shell .nav-toggle,
+  body.mobile-nav-open header .nav-inner.shell .nav-toggle:hover,
+  body.mobile-nav-open header .nav-inner.shell .nav-toggle:active {
+    transform: none !important;
+    background: var(--portfolio-icon-surface) !important;
+    border-color: var(--portfolio-icon-border) !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+}
 @media (min-width:761px) {
   header #primary-nav {
     position: absolute !important;
@@ -203,7 +393,6 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   header #primary-nav > #desktop-primary-nav-root { width: max-content; min-width: 0; }
   header #primary-nav .site-primary-nav { display: flex; }
   header .nav-toggle { display: none !important; }
-  header #nav-lang { right: 10px !important; }
   .library-page-navigation .cinema-player__navigation > .site-primary-nav {
     position: absolute;
     inset: 0 auto 0 50%;
@@ -213,7 +402,6 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
     transform: translateX(-50%);
   }
   .library-page-navigation .cinema-player__navigation > .cinema-player__close { display: none !important; }
-  .library-page-navigation .cinema-player__language { right: 10px !important; }
 }
 /* Extend the existing mobile menu to desktop; its links and click handlers stay
    authoritative, rather than adding a second home navigation implementation. */

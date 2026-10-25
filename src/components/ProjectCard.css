@@ -80,3 +80,20 @@
     font-size: 10px;
   }
 }
+
+/* Real image element preserves decoded artwork while the cover is composited
+   during mobile scroll; CSS-only background images can flash after remount. */
+.comet-archive__image {
+  position: relative;
+  background-image: none !important;
+}
+.comet-archive__image > .comet-archive__cover {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  object-position: center;
+}
