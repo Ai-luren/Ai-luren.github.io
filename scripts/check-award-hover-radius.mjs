@@ -17,15 +17,31 @@ try{
    await page.locator('#impact-awards').scrollIntoViewIfNeeded();
    await page.waitForFunction(()=>document.querySelector('#impact-awards .impact-award-card img')?.naturalWidth>0,null,{timeout:15000});
    if(mobile){
+    // On deployed sites, the gallery CSS chunk can arrive after the cached
+    // WebP has decoded. Wait for the final geometry, not just naturalWidth.
+    await page.waitForFunction(() => {
+      const img=document.querySelector('#impact-awards .impact-award-card img');
+      if (!img?.complete || !img.naturalWidth) return false;
+      const style=getComputedStyle(img),box=img.getBoundingClientRect();
+      return style.objectFit==='cover' && parseFloat(style.borderTopLeftRadius)>=14
+        && box.height>0 && Math.abs(box.width/box.height-540/960)<.04;
+    },null,{timeout:14000});
     const getMedia=()=>page.locator('#impact-awards .impact-award-card img').evaluate(el=>{
       const s=getComputedStyle(el),r=el.getBoundingClientRect();
       return {ratio:r.width/r.height,fit:s.objectFit,radius:parseFloat(s.borderTopLeftRadius),ready:el.complete&&el.naturalWidth>0};
     });
     const first=await getMedia();
-    assert(first.ready&&Math.abs(first.ratio-540/960)<0.04,width+': actual artwork not sized to rounded element');
+    assert(first.ready&&Math.abs(first.ratio-540/960)<0.04,width+': artwork wrong geometry '+JSON.stringify(first));
     assert(first.radius>=14&&first.fit==='cover');
     await page.locator('#impact-awards .impact-award-pagination button').last().evaluate(el=>el.click());
     await page.waitForFunction(()=>document.querySelector('#impact-awards .impact-award-pagination button:last-child')?.getAttribute('aria-selected')==='true',null,{timeout:15000});
+    await page.waitForFunction(() => {
+      const img=document.querySelector('#impact-awards .impact-award-card img');
+      if (!img?.naturalWidth || !img.complete) return false;
+      const style=getComputedStyle(img),box=img.getBoundingClientRect();
+      return style.objectFit==='cover' && parseFloat(style.borderTopLeftRadius)>=14
+        && box.height>0 && Math.abs(box.width/box.height-540/960)<.04;
+    },null,{timeout:14000});
     const last=await getMedia();
     assert(last.ready&&Math.abs(last.ratio-540/960)<0.04&&last.radius>=14&&last.fit==='cover',width+': last artwork corners lost');
     console.log('PASS',width,lang,'artwork rounded on first and last award');

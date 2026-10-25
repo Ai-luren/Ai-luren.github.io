@@ -40,6 +40,16 @@ function applyDictToDocument(lang) {
   document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', dict['meta.twitter.description']);
 }
 
+// 首页静态导航与 React 查看器共享同一语言状态和选中态。
+function syncLanguageSwitch() {
+  document.querySelectorAll('.nav-language-switch').forEach((control) => {
+    control.dataset.activeLang = currentLang;
+    control.querySelectorAll('[data-switch-lang]').forEach((button) => {
+      button.setAttribute('aria-pressed', String(button.dataset.switchLang === currentLang));
+    });
+  });
+}
+
 function notifyScrollRefresh() {
   // 文案长度变化会影响 pin 住的章节高度，等 React 重渲染完成后再刷新测量。
   window.setTimeout(() => {
@@ -54,6 +64,7 @@ export function setLang(nextLang) {
   try { window.localStorage.setItem(STORAGE_KEY, nextLang); } catch (error) { /* 忽略写入失败 */ }
   applyDictToDocument(currentLang);
   window.__i18n = { lang: currentLang, t };
+  syncLanguageSwitch();
   listeners.forEach((listener) => listener(currentLang));
   notifyScrollRefresh();
 }
@@ -88,7 +99,11 @@ export function useT() {
 
 function init() {
   applyDictToDocument(currentLang);
-  document.getElementById('nav-lang')?.addEventListener('click', toggleLang);
+  syncLanguageSwitch();
+  document.getElementById('nav-lang')?.addEventListener('click', (event) => {
+    const option = event.target.closest('[data-switch-lang]');
+    if (option) setLang(option.dataset.switchLang);
+  });
 }
 
 init();

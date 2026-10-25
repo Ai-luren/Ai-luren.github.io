@@ -62,7 +62,7 @@ try {
       await page.waitForSelector('.cinema-player', { state: 'detached' });
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true);
       const langBefore = await page.locator('html').getAttribute('lang');
-      await page.locator('.library-page-navigation .cinema-player__language').click();
+      await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="' + (langBefore === 'zh-CN' ? 'en' : 'zh') + '"]').click();
       assert.notEqual(await page.locator('html').getAttribute('lang'), langBefore);
       if (width <= 720) {
         assert.equal(await page.locator('.library-back').isVisible(), true, 'Mobile library keeps its return link.');

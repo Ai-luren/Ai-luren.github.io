@@ -62,7 +62,7 @@ try {
     const css=await card.locator('.comet-archive__image').evaluate(el=>getComputedStyle(el).backgroundImage);
     assert(css.includes(encodeURIComponent('海外').slice(0,3)) || css.includes('assets/'),id+' missing displayed cover');
   }
-  await page.locator('.library-page-navigation .cinema-player__language').click();
+  await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="en"]').click();
   await page.waitForFunction(()=>document.documentElement.lang==='en');
   for(const [id,,en] of names){
     const i=Number(id)-1;

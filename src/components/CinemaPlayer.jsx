@@ -315,7 +315,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           </div>
         </div>
       </div>
-      <span className="cinema-player__focus-guard" tabIndex={0} onFocus={() => dialogRef.current?.querySelector('.cinema-player__language')?.focus()} />
+      <span className="cinema-player__focus-guard" tabIndex={0} onFocus={() => dialogRef.current?.querySelector('.cinema-player__language button')?.focus()} />
     </dialog>, document.body
   );
 }

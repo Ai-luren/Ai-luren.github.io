@@ -133,7 +133,7 @@ try {
   await page.waitForFunction(() => location.hash === '#contact');
   await page.waitForTimeout(250);
   if (!(await page.locator('#contact').isVisible())) throw new Error('Hero 合作联系入口未定位到联系卡片');
-  await page.locator('#nav-lang').click();
+  await page.locator('#nav-lang [data-switch-lang="en"]').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();
   if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Visual Creator') || !aboutEnglish.includes('I now focus on AI video creation')) {

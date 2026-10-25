@@ -63,7 +63,7 @@ try {
       assert.equal(state.modality,'touch',tag+': touch flag not restored');
       assert.equal(state.outline,'none',tag+': retained focus-visible not suppressed on touch');
       // Switching language inside the opened viewer must not wake the ring.
-      await page.locator(c.viewer+' .cinema-player__language').first().tap();
+      await page.locator(c.viewer+' .cinema-player__language [data-switch-lang="'+(lang==='zh'?'en':'zh')+'"]').first().tap();
       const expectedLabel=lang==='zh'?'Close viewer':'关闭查看器';
       const switched=await close.evaluate(el=>({name:el.getAttribute('aria-label'),
         modality:document.documentElement.dataset.navInput,
