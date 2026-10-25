@@ -29,7 +29,8 @@
     "check:clipboard": "node scripts/check-clipboard-feedback.mjs",
     "check:glass-material": "node scripts/check-glass-material-system.mjs",
     "check:expertise": "node scripts/check-expertise-hierarchy.mjs",
-    "check:social-media": "node scripts/check-social-media-system.mjs"
+    "check:social-media": "node scripts/check-social-media-system.mjs",
+    "check:mobile-nav-focus": "node scripts/check-mobile-navigation-focus.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",
