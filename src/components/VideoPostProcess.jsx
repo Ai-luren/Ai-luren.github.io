@@ -302,10 +302,14 @@ export default function VideoPostProcess() {
     };
     let frame = 0;
     let lastRenderAt = 0;
-    const idleRenderInterval = window.innerWidth <= 760 ? 1000 / 30 : 1000 / 60;
-    let renderInterval = window.__videoScrollActive ? 1000 / 60 : idleRenderInterval;
+    const mobileRenderer = window.innerWidth <= 760;
+    const idleRenderInterval = mobileRenderer ? 1000 / 20 : 1000 / 60;
+    // The mobile source is 30fps. Uploading/rendering its texture at 60fps
+    // during scrolling only doubles GPU work, not the number of decoded frames.
+    const scrubbingRenderInterval = mobileRenderer ? 1000 / 30 : 1000 / 60;
+    let renderInterval = window.__videoScrollActive ? scrubbingRenderInterval : idleRenderInterval;
     const onVideoScrubState = (event) => {
-      renderInterval = event.detail?.active ? 1000 / 60 : idleRenderInterval;
+      renderInterval = event.detail?.active ? scrubbingRenderInterval : idleRenderInterval;
       if (event.detail?.active) lastRenderAt = 0;
     };
     const render = (time) => {
