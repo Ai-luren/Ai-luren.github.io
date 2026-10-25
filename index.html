@@ -1643,6 +1643,16 @@
       display: none !important;
     }
 
+    /* Improve chapter-title legibility against bright moving film frames.
+       Only local text shadows: no section-sized overlays or video adjustments. */
+    #projects .section-title,
+    #recognition .section-title,
+    #recognition .impact-evidence-label h2,
+    #experiments .section-title {
+      text-shadow: 0 2px 14px rgba(0, 0, 0, .78),
+                   0 0 28px rgba(0, 0, 0, .38);
+    }
+
     /* 导航材质统一：桌面与移动端都使用网站其他面板的中性深黑磨砂层。 */
     header,
     header.is-condensed {

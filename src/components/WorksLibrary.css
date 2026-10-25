@@ -67,6 +67,11 @@ html:has(#works-root) { background: var(--library-bg); }
 @media (max-width: 720px) {
   .work-library .comet-archive__title { margin-top: var(--portfolio-work-title-gap-mobile); }
   .work-library .comet-archive__copy { margin-top: var(--portfolio-work-caption-gap-mobile); }
+  /* The cover status is for hover/focus on wider viewports only.
+     Touch cards have exactly one visible status after the caption. */
+  .work-library .comet-archive__image > .comet-archive__meta {
+    display: none !important;
+  }
   /* ProjectCard includes the same status in both destinations. On touch,
      present one quiet text CTA below the caption, not an invisible hover badge. */
   .work-library .comet-archive__mobile-link {

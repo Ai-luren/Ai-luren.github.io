@@ -113,6 +113,14 @@ header.is-condensed {
   color: var(--apple-text, #f5f5f7);
 }
 
+/* Platform credentials: eight tiles sit inside one cinematic glass panel.
+   Soften only their internal outline and fill, without changing shared tiles. */
+#recognition .impact-platform-desktop-tile,
+#recognition .impact-platform-mobile-tile {
+  --portfolio-tile-border: rgba(255, 255, 255, .055);
+  --portfolio-tile-surface: rgba(255, 255, 255, .035);
+}
+
 /* Action-shaped controls share a pill; navigation and close controls are true
    circles and keep their geometry independent from content cards. */
 .hero-actions button,

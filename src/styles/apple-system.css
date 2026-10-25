@@ -1613,7 +1613,10 @@ header .nav-contact-icon:focus-visible {
   .impact-award-description { margin: 0 24px 8px; }
   .impact-platform-desktop-description { max-width: 48ch; margin-top: 14px; }
   .impact-reach-dossier-description { margin: -8px 0 20px; }
-  .impact-platform-desktop-grid { margin-top: 22px; }
+  /* Slightly tighten the repeated platform tiles; preserve the logos and
+     the shared outer glass panel as the visual anchor. */
+  .impact-platform-desktop-grid { margin-top: 20px; gap: 12px; }
+  .impact-platform-desktop-tile { min-height: 118px; padding: 15px; }
   .impact-reach-profile-hover-label {
     right: 12px;
     left: auto;
@@ -1625,20 +1628,8 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
-/* Keep the archive CTA identical to the social-media jump affordance on both
-   pointer and touch layouts. */
-@media (max-width: 720px) {
-  .comet-archive-mobile-shell .comet-archive__image > .comet-archive__meta {
-    display: inline-flex !important;
-    opacity: 1;
-    transform: none;
-  }
-  .comet-archive-mobile-shell .comet-archive__card:active .comet-archive__meta {
-    border-color: rgba(255, 255, 255, .56) !important;
-    background: rgba(20, 20, 22, .88) !important;
-    transform: translateY(1px) scale(.97);
-  }
-}
+/* <=720px: one quiet Play/Pending hint below the caption.
+   Keep the cover badge hidden, including tap/focus states. */
 
 /* Expertise rhythm: align the three recognition modules and the nested Lab
    without changing their media layouts or interaction behavior. */

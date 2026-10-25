@@ -62,6 +62,15 @@ try{
           const imgRect=image.getBoundingClientRect(),titleRect=title.getBoundingClientRect(),copyRect=copy.getBoundingClientRect();
           const coverCSS=getComputedStyle(image), titleCSS=getComputedStyle(title);
           const copyCSS=getComputedStyle(copy);
+          const statusVisible=element=>{
+            if(!element)return false;
+            const style=getComputedStyle(element),rect=element.getBoundingClientRect();
+            return style.display!=='none' && style.visibility!=='hidden' && Number(style.opacity)>.01 && rect.width>0 && rect.height>0;
+          };
+          const status={
+            onCover:statusVisible(item.querySelector('.comet-archive__image > .comet-archive__meta')),
+            below:statusVisible(item.querySelector('.comet-archive__mobile-link')),
+          };
           const txt=element=>element.textContent.trim().replace(/\s+/g,' ');
           return {
             title:txt(title),detail:txt(description),
@@ -74,6 +83,7 @@ try{
             overflow:document.documentElement.scrollWidth-innerWidth,
             cardOverflow:item.scrollWidth-item.clientWidth,
             cards:root.querySelectorAll('.comet-archive__card').length,
+            status,
           };
         },scope);
         const [a,b]=await Promise.all([get(home,'#projects'),get(works,'.library-grid')]);
@@ -86,6 +96,14 @@ try{
           assert(near(result.cover.width/result.cover.height,.75),`${tag}: ${kind} cover proportions incorrect`);
           assert(result.cardOverflow<=2,`${tag}: ${kind} card horizontally overflows`);
           assert(result.overflow<=2,`${tag}: ${kind} page horizontally overflows`);
+          // A phone must show exactly one status label. The cover badge is
+          // desktop-only; on mobile the status lives after the caption.
+          if(width<=720){
+            assert.equal(result.status.onCover,false,`${tag}: ${kind} duplicate cover Play badge`);
+            assert.equal(result.status.below,true,`${tag}: ${kind} missing mobile Play hint`);
+          }else{
+            assert.equal(result.status.below,false,`${tag}: ${kind} mobile Play hint leaked to desktop`);
+          }
         }
         for(const prop of ['border','radius','shadow']) assert.equal(a.cover[prop],b.cover[prop],`${tag}: cover ${prop} mismatch`);
         for(const prop of ['font','weight','line','detailSize','detailLine']) assert.equal(a.typography[prop],b.typography[prop],`${tag}: typography ${prop} mismatch`);
