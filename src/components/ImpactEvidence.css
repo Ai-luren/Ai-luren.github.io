@@ -30,6 +30,8 @@
 .impact-award-shell { position: relative; min-height: 0; padding: 18px 0 0; }
 .impact-award-shell .impact-evidence-note { margin-right: 24px; margin-left: 24px; }
 .impact-award-shell .impact-evidence-note { margin-bottom: 8px; }
+/* A reading-size evidence label, not an 8–9px decorative microcaption. */
+#impact-awards .impact-evidence-note { font-size: 11px; line-height: 1.45; letter-spacing: 0; }
 .impact-award-description { margin: 0 24px 8px; color: var(--impact-muted); font: 400 var(--type-caption)/1.55 var(--font-body, var(--sans, sans-serif)); }
 @media (max-width: 760px) {
   /* Same reading size in both Vite dev CSS order and extracted production CSS. */
@@ -563,7 +565,8 @@
 }
 
 @media (max-width: 500px) {
-  .impact-evidence-note { display: flex; align-items: center; justify-content: space-between; gap: 10px; white-space: nowrap; }
+  .impact-evidence-note { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; white-space: normal; }
+  #impact-awards .impact-evidence-note span { min-width: 0; overflow-wrap: anywhere; }
   .impact-evidence-note span + span { display: block; margin-top: 0; text-align: right; }
   .impact-award-shell { min-height: 0; padding-top: 20px; }
   .impact-award-description { margin: 0 14px 6px; font-size: var(--type-caption-mobile); }
@@ -593,11 +596,6 @@
   .impact-platform-mobile-tile strong, .impact-platform-mobile-tile span { display: block; min-width: 0; overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   .impact-platform-mobile-tile strong { color: var(--impact-text); font: 600 var(--type-platform-name-mobile)/1.3 var(--font-display, var(--sans, sans-serif)); }
   .impact-platform-mobile-tile span { margin-top: 2px; color: var(--impact-muted); font: 500 var(--type-platform-role-mobile)/1.35 var(--font-body, var(--sans, sans-serif)); }
-}
-
-/* 320px 级超窄屏：中文获奖说明条两个词组合计超出壳宽，降一档字号并收窄间距。 */
-@media (max-width: 340px) {
-  .impact-evidence-note { gap: 4px; font-size: 8px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

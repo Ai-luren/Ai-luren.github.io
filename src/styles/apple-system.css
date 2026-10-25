@@ -1877,6 +1877,18 @@ header .nav-contact-icon:focus-visible {
   }
 }
 
+/* 8 award pagination targets cannot coexist with two 44px arrows at 320px
+   using the 28px-wide slots. On ultra-narrow phones, retain 24px dot targets,
+   keep the 44px arrows and align both edges with the card shell. */
+@media (max-width: 389px) {
+  #impact-awards .impact-award-pagination button {
+    width: 24px !important;
+    flex: 0 0 24px !important;
+  }
+  #impact-awards .impact-award-rail-nav--prev { left: 0 !important; }
+  #impact-awards .impact-award-rail-nav--next { right: 0 !important; }
+}
+
 /* Round 2: use one vertical rhythm for the impact group and the Lab handoff.
    The award rail keeps its proven portrait height; the platform panel itself
    remains content-sized and only its internal breathing space is reduced. */

@@ -419,13 +419,13 @@ function AwardGallery() {
 
   const active = isOpen ? awards[openIndex] : null;
   const galleryHint = lang === 'en'
-    ? (isMobile ? 'BROWSE WITH ARROWS' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
-    : (isMobile ? '左右浏览 · 选择荣誉' : '左右浏览 · 点击查看');
+    ? (isMobile ? 'SWIPE TO VIEW' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
+    : (isMobile ? '滑动浏览' : '左右浏览 · 点击查看');
 
   return (
     <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARD CERTIFICATES' : '获奖截图'}</span><span>{galleryHint}</span></div>
-      <p className="impact-award-description">{lang === 'en' ? 'Awards and recognition from AI creation contests.' : 'AI 创作赛事获奖及入围荣誉。'}</p>
+      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{galleryHint}</span></div>
+      <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases.' : 'AI 创作赛事获奖、入围及展映记录。'}</p>
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
