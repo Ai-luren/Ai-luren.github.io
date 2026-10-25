@@ -274,7 +274,7 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 }
 .impact-award-lightbox::before {
   content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  opacity: 0;
+  opacity: .94;
   transition: opacity var(--apple-duration-modal) var(--apple-ease);
 }
 .impact-award-lightbox.is-motion-visible::before { opacity: 1; }

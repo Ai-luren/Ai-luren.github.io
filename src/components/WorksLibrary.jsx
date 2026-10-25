@@ -46,7 +46,9 @@ export default function WorksLibrary() {
         <div className="library-filters" role="group" aria-label={lang === 'en' ? 'Filter work by category' : '按作品类别筛选'}>
           {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{item.id === 'all' ? PROJECTS.length : PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>
-        {activeCategory?.description && <p className="library-category-note">{activeCategory.description[lang]}</p>}
+        <p className="library-category-note" aria-live="polite" aria-atomic="true">
+          {activeCategory?.description?.[lang] || '\u00a0'}
+        </p>
         {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map(project => <ProjectCard key={project.id} project={project} lang={lang} onClick={(event, item) => {
           cinemaReturnFocusRef.current = event.target.closest('.comet-archive__card');
           setSelected(item);

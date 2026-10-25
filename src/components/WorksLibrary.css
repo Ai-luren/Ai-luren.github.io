@@ -18,7 +18,9 @@ html:has(#works-root) { background: var(--library-bg); }
 .library-intro .page-title { margin: 0 0 var(--space-4); }
 .library-intro > p:last-child { margin: 0; color: var(--apple-secondary); font-size: var(--type-supporting); line-height: 1.65; }
 .library-filters { display: flex; flex-wrap: wrap; gap: 8px; }
-.library-category-note { margin: var(--space-4) 0 0; color: var(--apple-secondary); font-size: var(--type-caption); line-height: 1.6; }
+/* Reserve the description lane even for "All": changing categories should
+   not suddenly push the 3:4 cover grid down 35+ pixels. */
+.library-category-note { min-height: 1.6em; margin: var(--space-4) 0 0; color: var(--apple-secondary); font-size: var(--type-caption); line-height: 1.6; }
 .library-filters button { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 16px; border: 1px solid var(--apple-hairline); border-radius: var(--portfolio-control-radius); background: transparent; color: var(--apple-secondary); font-size: 12px; transition: color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
 .library-filter-count { color: var(--apple-tertiary); font: 10px var(--font-mono); }
 .library-filter-short { display: none; }
@@ -49,7 +51,8 @@ html:has(#works-root) { background: var(--library-bg); }
   .library-intro { padding: 26px 0 28px; }
   .library-intro .page-title { margin-top: var(--space-3); }
   .library-intro > p:last-child { font-size: var(--type-supporting-mobile); }
-  .library-category-note { font-size: var(--type-caption-mobile); }
+  /* Two lines cover the longest EN description at narrow phone widths. */
+  .library-category-note { font-size: var(--type-caption-mobile); min-height: 3.2em; }
   .library-filters { flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; }
   .library-filters button { position: relative; flex: 0 0 auto; justify-content: center; gap: 0; min-width: 44px; min-height: 44px; padding: 0 6px; border: 0; border-radius: 0; background: transparent; color: var(--apple-secondary); font-size: 13px; white-space: nowrap; }
   .library-filters .library-filter-label, .library-filters .library-filter-count { display: none; }

@@ -360,7 +360,7 @@
   background: var(--portfolio-modal-surface);
   backdrop-filter: var(--portfolio-modal-blur);
   -webkit-backdrop-filter: var(--portfolio-modal-blur);
-  opacity: 0;
+  opacity: .94;
   transition: opacity var(--apple-duration-modal) var(--apple-ease);
 }
 .impact-profile-lightbox.is-motion-visible::before { opacity: 1; }

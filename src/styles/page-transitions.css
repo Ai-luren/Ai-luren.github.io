@@ -1,11 +1,11 @@
 /* Shared by both Vite HTML entry points so the browser can opt in before
    either document paints during a same-origin page navigation. */
 ::view-transition-old(root) {
-  animation: 120ms ease-out both portfolio-page-exit;
+  animation: 160ms cubic-bezier(.32,.72,.28,1) both portfolio-page-exit;
 }
 
 ::view-transition-new(root) {
-  animation: 200ms ease-out both portfolio-page-enter;
+  animation: 240ms cubic-bezier(.32,.72,.28,1) both portfolio-page-enter;
 }
 
 @keyframes portfolio-page-exit { to { opacity: 0; } }
