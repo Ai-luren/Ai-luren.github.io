@@ -39,15 +39,19 @@ try{
    }else{
      assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1');
      await page.locator('#projects .comet-archive-pagination button').nth(1).evaluate(e=>e.click());
+     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(4),{timeout:10000});
      assert.deepEqual(await readProjects(),featured[lang].slice(4),tag+': featured page 2');
      await page.locator('#projects .comet-archive-pagination button').first().evaluate(e=>e.click());
+     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(0,4),{timeout:10000});
      assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1 return');
      const pagination=page.locator('#impact-awards .impact-award-pagination button');
      assert.equal(await pagination.count(),8,tag+': award pagination count');
      const urls=[];
      for(let i=0;i<8;i++){
        await pagination.nth(i).evaluate(e=>e.click());
+       await page.waitForFunction(expected=>document.querySelector('#impact-awards .impact-award-card-caption strong')?.textContent?.trim()===expected,awards[lang][i],{timeout:10000});
        assert.deepEqual(await readAwards(),[awards[lang][i]],tag+': award pagination '+i);
+       await page.waitForFunction(i=>document.querySelectorAll('#impact-awards .impact-award-pagination button')[i]?.getAttribute('aria-selected')==='true',i,{timeout:10000});
        urls.push(await page.locator('#impact-awards .impact-award-card img').first().getAttribute('src'));
      }
      assert.notEqual(urls[5],urls[6],tag+': distinct Haina proof images mixed together');
@@ -58,6 +62,7 @@ try{
    await page.locator('.impact-award-lightbox').waitFor({state:'visible',timeout:8500});
    assert.equal((await page.locator('#impact-award-lightbox-title').textContent()).trim(),awards[lang][0],tag+': first award viewer');
    await page.locator('.impact-award-lightbox-nav--next').evaluate(e=>e.click());
+   await page.waitForFunction(expected=>document.querySelector('#impact-award-lightbox-title')?.textContent?.trim()===expected,awards[lang][1],{timeout:10000});
    assert.equal((await page.locator('#impact-award-lightbox-title').textContent()).trim(),awards[lang][1],tag+': viewer next sequence');
    await page.locator('.impact-award-lightbox .cinema-player__close').first().evaluate(e=>e.click());
    await page.locator('.impact-award-lightbox').waitFor({state:'detached',timeout:8000});

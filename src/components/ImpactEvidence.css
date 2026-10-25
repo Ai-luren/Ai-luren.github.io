@@ -128,6 +128,20 @@
   /* Keep the existing mobile button flex layout: its image and caption remain
      flex items while the shared desktop alignment wrapper has no box. */
   #impact-awards .impact-award-card-content { display: contents; }
+  /* The mobile image previously filled a wide grid cell with object-fit:
+     contain. Only the cell had rounded corners; the actual narrow artwork
+     remained rectangular inside it. Size the image by its real aspect ratio
+     so its border radius clips the visible artwork itself. */
+  #impact-awards .impact-award-card-content > img {
+    width: auto !important;
+    max-width: 100%;
+    height: 100% !important;
+    aspect-ratio: 540 / 960;
+    align-self: center !important;
+    object-fit: cover !important;
+    border-radius: var(--portfolio-content-radius, 18px);
+    overflow: hidden;
+  }
 }
 @media (min-width: 761px) and (max-width: 1023px) {
   #impact-awards .impact-award-rail { padding-left: 58px; clip-path: inset(0 60px 0 58px); scroll-padding-inline: 58px 68px; }

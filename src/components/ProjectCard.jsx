@@ -27,6 +27,9 @@ export default function ProjectCard({ project, lang, onClick }) {
         aria-label={[project.title[lang], detail, status].filter(Boolean).join(' · ')}
         style={{ '--comet-cover': `url(${project.cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>
         <span className="comet-archive__image">
+          <img className="comet-archive__cover" src={project.cover} alt="" width="600" height="800"
+            loading={project.featured ? 'eager' : 'lazy'} decoding="async"
+            style={{ objectFit: project.featured ? 'cover' : 'contain' }} />
           <span className="comet-archive__play-badge" aria-hidden="true">{status}</span>
         </span>
         <strong className="comet-archive__title">{renderTitle(project.title[lang])}</strong>

@@ -174,7 +174,10 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
 }
 .cinema-player__sequence button svg { width: 20px; height: 20px; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+:is(.cinema-player__sequence button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+/* The rail arrow uses translateY for its fixed vertical position. Do not
+   overwrite that transform on hover, or the button visibly drops. */
+.impact-award-rail-nav:hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; }
 :is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
 :is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
 .cinema-player__sequence button:disabled { opacity: .32; cursor: default; }

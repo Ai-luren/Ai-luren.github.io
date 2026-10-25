@@ -88,6 +88,7 @@ try {
   }
 
   await swipe('.comet-archive-mobile-shell', { dx: -140, dy: 0 });
+  await page.waitForFunction(()=>document.querySelectorAll('.comet-archive-pagination button')[1]?.classList.contains('is-active'),{timeout:10000});
   if (await activePage() !== 1) throw new Error('横向左滑没有切换到第 2 页');
 
   await page.locator('.comet-archive-pagination button').first().click();

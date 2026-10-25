@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useLang, useT } from '../i18n/index.js';
 import { FEATURED_PROJECTS, PROJECTS } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
+import { isImageReady, warmImages, warmNear } from '../utils/warmImage.js';
 import { WORKS_HREF } from '../navigation/links.js';
 
 export default function MagneticProjectArchive({ onSelect }) {
@@ -10,6 +11,8 @@ export default function MagneticProjectArchive({ onSelect }) {
   const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
   const touchState = useRef({ startX: 0, startY: 0, moved: false, axis: 'none', pageAtStart: 0, suppressClickUntil: 0 });
   const pageTransitionTimer = useRef(null);
+  const pageRequestRef = useRef(0);
+  const [pageLoading, setPageLoading] = useState(false);
   const [canScroll, setCanScroll] = useState(false);
   const [isMobile, setIsMobile] = useState(() => (
     typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
@@ -28,9 +31,17 @@ export default function MagneticProjectArchive({ onSelect }) {
     archive.style.setProperty('--mobile-swipe-x', '0px');
   };
 
-  const changeMobilePage = (nextPage, direction) => {
+  const changeMobilePage = async (nextPage, direction) => {
     const safePage = Math.max(0, Math.min(1, nextPage));
-    if (safePage === mobilePage) return;
+    if (safePage === mobilePage && !pageLoading) return;
+    const token = ++pageRequestRef.current;
+    const covers = FEATURED_PROJECTS.slice(safePage * 4, safePage * 4 + 4).map(item => item.cover);
+    if (!covers.every(src => isImageReady(src))) {
+      setPageLoading(true);
+      await warmImages(covers);
+    }
+    if (token !== pageRequestRef.current) return;
+    setPageLoading(false);
     window.clearTimeout(pageTransitionTimer.current);
     setMobilePageTransition(direction < 0 ? 'back' : 'forward');
     setMobilePage(safePage);
@@ -88,7 +99,15 @@ export default function MagneticProjectArchive({ onSelect }) {
     touchState.current = { startX: 0, startY: 0, moved: false, axis: 'none', pageAtStart: mobilePage, suppressClickUntil: 0 };
   };
 
-  useEffect(() => () => window.clearTimeout(pageTransitionTimer.current), []);
+  useEffect(() => () => {
+    pageRequestRef.current++;
+    window.clearTimeout(pageTransitionTimer.current);
+  }, []);
+
+  useEffect(() => warmNear(
+    document.getElementById('projects') || archiveRef.current,
+    FEATURED_PROJECTS.map(item => item.cover),
+  ), []);
 
   const handlePageKeyDown = (event) => {
     if (!isMobile) return;
