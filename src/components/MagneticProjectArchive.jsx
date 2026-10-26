@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLang, useT } from '../i18n/index.js';
-import { FEATURED_PROJECTS, PROJECTS } from '../data/projects.js';
+import { FEATURED_PROJECTS } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
 import { isImageReady, warmImages, warmNear } from '../utils/warmImage.js';
 import { WORKS_HREF } from '../navigation/links.js';
@@ -187,11 +187,11 @@ export default function MagneticProjectArchive({ onSelect }) {
   const mobileNextDisabled = mobilePage === 1;
   const libraryLinkRoot = document.getElementById('projects-library-link');
   const featuredNoteRoot = document.getElementById('projects-featured-note');
-  const libraryLink = <div className="archive-more"><a href={WORKS_HREF}><span>{t('查看全部作品', 'View all work')}</span><span className="archive-more__count">{PROJECTS.length}</span><span className="archive-more__arrow" aria-hidden="true">↗</span></a></div>;
+  const libraryLink = <div className="archive-more"><a href={WORKS_HREF}>{t('浏览全部作品', 'Browse All Work')}</a></div>;
 
   return (
     <>
-      {featuredNoteRoot && createPortal(t(`精选 ${FEATURED_PROJECTS.length} 部 · 点击观看`, `Selected ${FEATURED_PROJECTS.length} films · Click to watch`), featuredNoteRoot)}
+      {featuredNoteRoot && createPortal(t(`${FEATURED_PROJECTS.length} 部代表作品`, `${FEATURED_PROJECTS.length} Featured Works`), featuredNoteRoot)}
       {!isMobile && libraryLinkRoot && createPortal(libraryLink, libraryLinkRoot)}
       <div className={`comet-archive-mobile-shell${mobilePageTransition ? ` is-page-${mobilePageTransition}` : ''}`} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel}>
       <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={() => changeMobilePage(mobilePage - 1, -1)}>

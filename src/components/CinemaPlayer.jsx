@@ -311,7 +311,15 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
               <button type="button" onClick={() => switchWork(index+1)} disabled={switching || index < 0 || index >= projects.length-1} aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
             </div>
           </div>
-            <a className="cinema-player__return" href={context === 'library' ? window.location.href : WORKS_HREF} onClick={event => {if(context==='library')event.preventDefault();dismiss();}}>{context==='library' ? (lang==='en'?'Back to work list':'返回作品列表') : (lang==='en'?'View all work ↗':'查看全部作品 ↗')}</a>
+            {context === 'library' ? (
+              <button type="button" className="cinema-player__return" onClick={dismiss}>
+                <span>{lang === 'en' ? 'View all work' : '查看全部作品'}</span>
+              </button>
+            ) : (
+              <a className="cinema-player__return" href={WORKS_HREF}>
+                <span>{lang === 'en' ? 'View all work' : '查看全部作品'}</span>
+              </a>
+            )}
           </div>
         </div>
       </div>

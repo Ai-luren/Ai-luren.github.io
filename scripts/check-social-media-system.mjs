@@ -119,6 +119,25 @@ try {
             assert(details.qr.x>=details.screenshot.x+details.screenshot.w-2,tag+': desktop should show two columns');
           }
           assert.equal(await page.locator('a.impact-profile-dialog-action[download]').count(),1);
+          // The four proof viewers share an in-modal, decoded account carousel;
+          // verify click + keyboard navigation and stable QR content on both
+          // phone and desktop without invoking any external profile URLs.
+          if(index===0 && [390,1440].includes(width)){
+            const cycle=page.locator('.impact-profile-pagination');
+            const arrows=cycle.locator('button');
+            assert.equal(await arrows.count(),2,`${tag}: profile arrows missing`);
+            assert.equal((await cycle.locator('.impact-profile-pagination-count').innerText()).trim(),'1 / 4');
+            await arrows.last().click();
+            await page.waitForFunction(()=>document.querySelector('.impact-profile-pagination-count')?.textContent.includes('2 / 4'));
+            await page.keyboard.press('ArrowRight');
+            await page.waitForFunction(()=>document.querySelector('.impact-profile-pagination-count')?.textContent.includes('3 / 4'));
+            await arrows.first().click();
+            await page.waitForFunction(()=>document.querySelector('.impact-profile-pagination-count')?.textContent.includes('2 / 4'));
+            await arrows.first().click();
+            await page.waitForFunction(()=>document.querySelector('.impact-profile-pagination-count')?.textContent.includes('1 / 4'));
+            assert.equal(await page.locator('.impact-profile-dialog-image').count(),2);
+            assert.equal(await page.locator('.impact-profile-lightbox > .cinema-player__navigation').count(),1);
+          }
           assert.equal(await page.locator('main').evaluate(el=>el.inert),true);
           for(let i=0;i<5;i++){
             await page.keyboard.press('Tab');

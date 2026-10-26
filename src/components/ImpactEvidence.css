@@ -45,17 +45,8 @@
 /* Desktop/tablet cards share one centered media-and-caption column. The rail
    follows the tallest real caption, so language and carousel changes add no
    artificial blank rows or fixed-height space. */
-@media (min-width: 761px) {
+@media (min-width: 721px) {
   #impact-awards .impact-award-shell { padding: 24px 0 20px; }
-  #impact-awards .impact-award-rail {
-    box-sizing: border-box;
-    height: auto;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 0 68px 0 62px;
-    clip-path: inset(0 64px 0 62px);
-    scroll-padding-inline: 62px 68px;
-  }
   #impact-awards .impact-award-rail > li {
     height: auto;
   }
@@ -73,8 +64,8 @@
   #impact-awards .impact-award-card-content {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 8px;
-    width: min(100%, 162px);
+    gap: 14px;
+    width: min(100%, var(--award-poster-width, 180px));
     min-width: 0;
     margin-inline: auto;
   }
@@ -102,7 +93,7 @@
   #impact-awards .impact-award-card-caption strong {
     display: block;
     min-width: 0;
-    margin: 0 0 4px;
+    margin: 0 0 5px;
     color: var(--apple-text);
     font: 600 14px/1.3 var(--font-display);
     white-space: normal;
@@ -143,15 +134,74 @@
     overflow: hidden;
   }
 }
-@media (min-width: 761px) and (max-width: 1023px) {
-  #impact-awards .impact-award-rail { padding-left: 58px; clip-path: inset(0 60px 0 58px); scroll-padding-inline: 58px 68px; }
-  #impact-awards .impact-award-rail > li { flex: 0 0 calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
+/* Centered gallery stage controls posters, gutters and arrows.
+   Keep 3 fully visible posters from 721px through 1279px and 4 on wider
+   desktops; <=720px retains its single-poster/touch carousel. */
+@media (min-width: 721px) {
+  #impact-awards .impact-award-stage {
+    --award-poster-width: 154px;
+    --award-poster-height: 274px;
+    --award-gutter: 20px;
+    --award-columns: 3;
+    position: relative;
+    width: min(100%, 616px);
+    margin-inline: auto;
+  }
+  #impact-awards .impact-award-stage .impact-award-rail {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0 64px;
+    clip-path: inset(0 64px);
+    scroll-padding-inline: 64px;
+    align-items: flex-start;
+    gap: var(--award-gutter);
+  }
+  #impact-awards .impact-award-stage .impact-award-rail > li {
+    flex: 0 0 calc((100% - (var(--award-columns) - 1) * var(--award-gutter)) / var(--award-columns));
+    width: calc((100% - (var(--award-columns) - 1) * var(--award-gutter)) / var(--award-columns));
+    height: auto;
+  }
+  #impact-awards .impact-award-stage .impact-award-rail-nav {
+    top: calc(var(--award-poster-height) / 2);
+    bottom: auto;
+    transform: translateY(-50%);
+  }
+  #impact-awards .impact-award-stage .impact-award-rail-nav--prev { left: 6px; }
+  #impact-awards .impact-award-stage .impact-award-rail-nav--next { right: 6px; }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
-  #impact-awards .impact-award-rail > li { flex: 0 0 calc((100% - 28px) / 3); width: calc((100% - 28px) / 3); }
+  #impact-awards .impact-award-stage {
+    --award-poster-width: 184px;
+    --award-poster-height: 327px;
+    --award-gutter: 25px;
+    --award-columns: 3;
+    width: min(100%, 768px);
+  }
 }
-@media (min-width: 1280px) {
-  #impact-awards .impact-award-rail > li { flex: 0 0 calc((100% - 42px) / 4); width: calc((100% - 42px) / 4); }
+@media (min-width: 1280px) and (max-width: 1439px) {
+  #impact-awards .impact-award-stage {
+    --award-poster-width: 180px;
+    --award-poster-height: 320px;
+    --award-gutter: 26px;
+    --award-columns: 4;
+    width: min(100%, 964px);
+  }
+}
+@media (min-width: 1440px) {
+  #impact-awards .impact-award-stage {
+    --award-poster-width: 192px;
+    --award-poster-height: 342px;
+    --award-gutter: 30px;
+    --award-columns: 4;
+    width: min(100%, 1020px);
+  }
+}
+@media (max-width: 720px) {
+  .impact-award-stage { display: contents; }
 }
 .impact-award-card:hover, .impact-award-card:focus-visible { border-color: var(--impact-edge); box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), 0 14px 30px rgba(0, 0, 0, .35); }
 .impact-award-card:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
@@ -221,73 +271,95 @@
 .impact-platform-desktop-description { margin: var(--space-3) 0 0; color: var(--impact-muted); font: 400 var(--type-caption)/1.55 var(--font-body, var(--sans, sans-serif)); }
 .impact-platform-mobile-card { display: none; }
 
-/* AI Media: a consistent type scale and scan-first actions across all accounts. */
+/* Social Media: one shared glass panel, with a proof-led primary account and
+   three compact channels. Logo, result and explicit action form the hierarchy. */
 .impact-reach-dossier {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  --reach-type-platform: 16px;
-  --reach-type-feature-value: clamp(36px, 3.5vw, 46px);
+  --reach-type-platform: 15px;
+  --reach-type-feature-value: clamp(38px, 4vw, 50px);
   --reach-type-account-value: 25px;
   --reach-type-unit: 12px;
   --reach-type-secondary: 12px;
-  --reach-type-action: 13px;
+  --reach-type-action: 12px;
   --reach-type-label: 11px;
-  padding: 24px 28px 22px;
+  padding: 27px 30px 25px;
 }
 .impact-reach-dossier-head {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   color: var(--impact-muted);
-  font: 500 var(--reach-type-label)/1.5 var(--font-body, var(--sans, sans-serif));
-  letter-spacing: .06em;
+  font: 500 var(--reach-type-label)/1.5 var(--font-mono);
+  letter-spacing: .055em;
 }
 .impact-reach-layout {
   display: grid;
-  grid-template-columns: minmax(0, .42fr) minmax(0, .58fr);
+  grid-template-columns: minmax(0, .43fr) minmax(0, .57fr);
   align-items: stretch;
-  gap: clamp(28px, 4vw, 56px);
+  gap: clamp(28px, 3vw, 48px);
 }
 .impact-reach-feature {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   min-width: 0;
+  padding: 10px 22px 10px 0;
+  border-right: 1px solid var(--impact-hairline);
 }
-.impact-reach-feature-main { min-width: 0; }
+.impact-reach-feature-main { display: grid; gap: 28px; min-width: 0; }
+.impact-reach-feature-head { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; }
+.impact-reach-identity { display: inline-flex; align-items: center; min-width: 0; gap: 10px; }
+.impact-reach-platform-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--portfolio-tile-border);
+  border-radius: 11px;
+  background: var(--portfolio-tile-surface);
+  color: var(--apple-text);
+}
+.impact-reach-platform-icon img { display: block; width: 20px; height: 20px; object-fit: contain; filter: grayscale(1) brightness(0) invert(1); }
 .impact-reach-account-name {
   min-width: 0;
   margin: 0;
   color: var(--impact-text);
-  font: 600 var(--reach-type-platform)/1.45 var(--font-display, var(--sans, sans-serif));
+  font: 600 var(--reach-type-platform)/1.35 var(--font-display);
   overflow-wrap: anywhere;
 }
-.impact-reach-feature-metrics { min-width: 0; margin-top: 26px; }
+.impact-reach-feature-tag {
+  color: var(--impact-muted);
+  font: 500 10px/1.5 var(--font-body);
+  white-space: nowrap;
+}
+.impact-reach-feature-metrics { min-width: 0; margin: 0; }
 .impact-reach-feature-primary,
 .impact-reach-record-metrics strong {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 7px;
+  gap: 3px 8px;
   color: var(--impact-text);
   font-variant-numeric: tabular-nums;
 }
 .impact-reach-feature-primary > span {
-  font: 600 var(--reach-type-feature-value)/1.15 var(--font-display, var(--sans, sans-serif));
+  font: 600 var(--reach-type-feature-value)/1.07 var(--font-display);
   letter-spacing: -.05em;
   white-space: nowrap;
 }
 .impact-reach-feature-primary small,
 .impact-reach-record-metrics small {
   color: var(--apple-secondary);
-  font: 400 var(--reach-type-unit)/1.4 var(--font-body, var(--sans, sans-serif));
+  font: 400 var(--reach-type-unit)/1.45 var(--font-body);
   letter-spacing: 0;
 }
 .impact-reach-feature-secondary,
 .impact-reach-record-metrics > span {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
   color: var(--apple-secondary);
-  font: 400 var(--reach-type-secondary)/1.5 var(--font-body, var(--sans, sans-serif));
+  font: 400 var(--reach-type-secondary)/1.5 var(--font-body);
   overflow-wrap: anywhere;
 }
 .impact-reach-feature-actions,
@@ -295,51 +367,73 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 20px;
+  gap: 8px 13px;
 }
-.impact-reach-feature-actions { margin-top: 18px; }
+.impact-reach-feature-actions { margin-top: 24px; }
 .impact-reach-dossier .impact-reach-action {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  gap: 7px;
   min-width: 0;
   min-height: 40px;
-  padding: 0;
+  box-sizing: border-box;
+  color: var(--apple-text);
+  font: 500 var(--reach-type-action)/1.45 var(--font-body);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--apple-duration-control) var(--apple-ease),
+    border-color var(--apple-duration-control) var(--apple-ease),
+    background-color var(--apple-duration-control) var(--apple-ease);
+}
+.impact-reach-dossier .impact-reach-action--primary {
+  padding: 0 15px;
+  border: 1px solid var(--portfolio-panel-border);
+  border-radius: var(--portfolio-control-radius);
+  background: var(--portfolio-tile-surface-hover);
+  color: var(--apple-text);
+}
+.impact-reach-dossier .impact-reach-action--primary:hover,
+.impact-reach-dossier .impact-reach-action--primary:focus-visible {
+  border-color: var(--portfolio-icon-border);
+  background: var(--portfolio-icon-hover-surface);
+}
+.impact-reach-dossier .impact-reach-action--primary:active { background: var(--portfolio-icon-active-surface); }
+.impact-reach-dossier .impact-reach-action--external {
+  padding: 0 2px;
   border: 0;
   background: transparent;
   color: var(--apple-secondary);
-  font: 500 var(--reach-type-action)/1.45 var(--font-body, var(--sans, sans-serif));
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
 }
-.impact-reach-dossier button.impact-reach-action { color: var(--impact-text); }
-.impact-reach-dossier .impact-reach-action:hover { color: var(--apple-text); }
-.impact-reach-dossier .impact-reach-action:focus-visible {
-  border-radius: 4px;
-  outline: 2px solid var(--impact-edge);
-  outline-offset: 3px;
-}
+.impact-reach-dossier .impact-reach-action--external:hover,
+.impact-reach-dossier .impact-reach-action--external:focus-visible { color: var(--apple-text); }
+.impact-reach-external-arrow { font-size: 14px; line-height: 1; }
+.impact-reach-dossier .impact-reach-action:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
+.impact-reach-dossier .impact-reach-action[aria-busy="true"] { cursor: progress; }
 .impact-reach-account-list { min-width: 0; }
 .impact-reach-account-record {
-  padding: 12px 0 13px;
+  padding: 18px 0 16px;
   border-top: 1px solid var(--impact-hairline);
 }
 .impact-reach-account-record:first-child { padding-top: 0; border-top: 0; }
 .impact-reach-account-record:last-child { padding-bottom: 0; }
 .impact-reach-record-main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.13fr);
   align-items: start;
-  gap: 16px;
+  gap: 12px;
 }
 .impact-reach-record-metrics { min-width: 0; }
-.impact-reach-record-metrics strong {
-  margin: 0;
-  font: 600 var(--reach-type-account-value)/1.2 var(--font-display, var(--sans, sans-serif));
-  letter-spacing: -.04em;
-}
-.impact-reach-record-actions { margin-top: 3px; }
+.impact-reach-record-metrics strong { margin: 0; font: 600 var(--reach-type-account-value)/1.1 var(--font-display); letter-spacing: -.04em; }
+.impact-reach-record-metrics strong > span { white-space: nowrap; }
+.impact-reach-record-metrics > span { margin-top: 5px; }
+.impact-reach-account-record .impact-reach-platform-icon { flex-basis: 32px; width: 32px; height: 32px; border-radius: 10px; }
+.impact-reach-account-record .impact-reach-platform-icon img { width: 18px; height: 18px; }
+.impact-reach-record-actions { margin-top: 10px; }
 /* Keep all three impact chapters on the same desktop title-over-panel layout. */
 @media (min-width: 821px) {
   #impact-awards.impact-evidence-row,
@@ -497,56 +591,42 @@
 }
 
 @media (min-width: 900px) and (max-width: 1100px) {
-  .impact-reach-layout { grid-template-columns: minmax(0, .4fr) minmax(0, .6fr); gap: 24px; }
+  .impact-reach-layout { grid-template-columns: minmax(0, .42fr) minmax(0, .58fr); gap: 24px; }
+  .impact-reach-feature { padding-right: 16px; }
   .impact-reach-record-main { gap: 10px; }
 }
-/* A 721px-wide viewport cannot comfortably support a two-column dossier.
-   Keep the text-first single column until 900px without affecting navigation. */
+/* Medium screens use the same vertical record rhythm as mobile. */
 @media (min-width: 721px) and (max-width: 899px) {
   .impact-reach-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .impact-reach-feature {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    padding-bottom: 13px;
-    border-bottom: 1px solid var(--impact-hairline);
-  }
-  .impact-reach-feature-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 16px; }
-  .impact-reach-feature-metrics { margin-top: 0; }
-  .impact-reach-feature-primary > span { font-size: 29px; }
-  .impact-reach-feature-actions { margin-top: 4px; }
-  .impact-reach-account-record:first-child { padding-top: 12px; }
+  .impact-reach-feature { padding: 0 0 22px; border-right: 0; border-bottom: 1px solid var(--impact-hairline); }
+  .impact-reach-feature-main { gap: 18px; }
+  .impact-reach-feature-primary > span { font-size: 37px; }
+  .impact-reach-feature-actions { margin-top: 18px; }
+  .impact-reach-account-record:first-child { padding-top: 18px; }
 }
 @media (max-width: 720px) {
   .impact-reach-dossier {
-    --reach-type-platform: 16px;
-    --reach-type-feature-value: 28px;
-    --reach-type-account-value: 25px;
-    --reach-type-unit: 12px;
+    --reach-type-platform: 15px;
+    --reach-type-feature-value: 38px;
+    --reach-type-account-value: 24px;
+    --reach-type-unit: 11px;
     --reach-type-secondary: 12px;
     --reach-type-label: 11px;
-    --reach-type-action: 13px;
+    --reach-type-action: 12px;
   }
   .impact-reach-dossier-head { margin-bottom: 18px; }
   .impact-reach-layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .impact-reach-feature {
-    display: block;
-    padding: 0 0 12px;
-    border-bottom: 1px solid var(--impact-hairline);
-  }
-  .impact-reach-feature-main,
-  .impact-reach-record-main {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    align-items: start;
-    gap: 10px;
-  }
-  .impact-reach-feature-metrics { margin-top: 0; }
-  .impact-reach-feature-secondary { margin-top: 5px; }
-  .impact-reach-feature-actions,
-  .impact-reach-record-actions { gap: 0 18px; margin-top: 4px; }
+  .impact-reach-feature { padding: 0 0 20px; border-right: 0; border-bottom: 1px solid var(--impact-hairline); }
+  .impact-reach-feature-main { gap: 17px; }
+  .impact-reach-feature-primary > span { font-size: var(--reach-type-feature-value); }
+  .impact-reach-feature-actions { margin-top: 14px; }
+  .impact-reach-record-main { grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr); gap: 8px; }
+  .impact-reach-record-actions { margin-top: 7px; }
+  .impact-reach-feature-actions, .impact-reach-record-actions { gap: 6px 12px; }
   .impact-reach-dossier .impact-reach-action { min-height: 44px; }
-  .impact-reach-account-record { padding: 12px 0; }
-  .impact-reach-account-record:first-child { padding-top: 12px; }
+  .impact-reach-dossier .impact-reach-action--primary { padding-inline: 12px; }
+  .impact-reach-account-record { padding: 15px 0; }
+  .impact-reach-account-record:first-child { padding-top: 15px; }
   .impact-profile-lightbox { padding: max(90px,calc(env(safe-area-inset-top) + 78px)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left)); }
   .impact-profile-dialog h2 { margin-bottom: 16px; font-size: 19px; }
   .impact-profile-dialog-content { grid-template-columns: minmax(0, 1fr); gap: 20px; }
@@ -578,6 +658,14 @@
   .impact-award-shell .impact-evidence-note { color: rgba(245, 245, 247, .68); }
 }
 
+/* Keep both text actions on one row in 320px English without shrinking the hit area. */
+@media (max-width: 349px) {
+  .impact-reach-dossier { --reach-type-action: 11px; }
+  .impact-reach-feature-actions, .impact-reach-record-actions { gap: 6px; }
+  .impact-reach-dossier .impact-reach-action--primary { padding-inline: 10px; }
+  .impact-reach-dossier .impact-reach-action--external { gap: 4px; }
+}
+
 @media (max-width: 500px) {
   .impact-evidence-note { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; white-space: normal; }
   #impact-awards .impact-evidence-note span { min-width: 0; overflow-wrap: anywhere; }
@@ -596,13 +684,19 @@
   .impact-logo-shell { padding: 0; overflow: hidden; }
   .impact-logo-shell > .impact-logo-head, .impact-logo-shell > .logo-loop { display: none; }
   .impact-platform-mobile-card { display: block; }
-  .impact-platform-mobile-manifesto { padding: 16px 20px 14px; border-bottom: 1px solid var(--impact-hairline); }
-  .impact-platform-mobile-meta, .impact-platform-mobile-network-head { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--impact-muted); font: 500 var(--type-meta-mobile)/1.5 var(--tech, var(--mono, monospace)); letter-spacing: .05em; text-transform: uppercase; }
-  .impact-platform-mobile-meta span:last-child, .impact-platform-mobile-network-head { text-align: right; }
-  .impact-platform-mobile-manifesto h3 { max-width: 12ch; margin: 14px 0 9px; color: var(--impact-text); font-size: clamp(2.05rem, 10vw, 3.2rem); font-weight: 600; line-height: .96; letter-spacing: -.07em; }
-  .impact-platform-mobile-manifesto p { margin: 0; color: var(--impact-muted); font-size: var(--type-caption-mobile); line-height: 1.55; }
-  .impact-platform-mobile-signature { margin-top: var(--space-3); color: var(--impact-muted); font: 500 var(--type-meta-mobile)/1.45 var(--tech, var(--mono, monospace)); letter-spacing: .04em; }
-  .impact-platform-mobile-network { padding: 14px 20px 16px; }
+  .impact-platform-mobile-network { padding: 20px 22px 18px; }
+  .impact-platform-mobile-network-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    color: var(--apple-secondary);
+    font: 500 var(--type-meta-mobile)/1.5 var(--font-mono);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .impact-platform-mobile-network-head span:first-child { text-align: left; }
+  .impact-platform-mobile-network-head span:last-child { text-align: right; }
   .impact-platform-mobile-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -622,7 +716,7 @@
   .impact-platform-mobile-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-mobile-tile strong, .impact-platform-mobile-tile span { display: block; min-width: 0; overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere; }
   .impact-platform-mobile-tile strong { color: var(--impact-text); font: 600 var(--type-platform-name-mobile)/1.3 var(--font-display, var(--sans, sans-serif)); }
-  .impact-platform-mobile-tile span { margin-top: 2px; color: var(--impact-muted); font: 500 var(--type-platform-role-mobile)/1.35 var(--font-body, var(--sans, sans-serif)); }
+  .impact-platform-mobile-tile span { margin-top: 3px; color: var(--apple-secondary); font: 500 var(--type-platform-role-mobile)/1.35 var(--font-body, var(--sans, sans-serif)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -637,3 +731,36 @@
   .impact-award-lightbox-nav--prev { grid-column: 1; grid-row: 3; }
   .impact-award-lightbox-nav--next { grid-column: 3; grid-row: 3; }
 }
+
+/* Account profile viewer: use the same restrained previous / count / next
+   rhythm as the work and award viewers. The QR proof stays on the same page. */
+.impact-profile-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(19px, 3vw, 34px);
+  min-height: 46px;
+  margin-top: 24px;
+}
+.impact-profile-pagination-arrow {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  border: 1px solid var(--portfolio-icon-border);
+  border-radius: 50%;
+  background: var(--portfolio-icon-surface);
+  color: var(--apple-text);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color var(--apple-duration-control) var(--apple-ease),
+    background-color var(--apple-duration-control) var(--apple-ease);
+}
+.impact-profile-pagination-arrow svg { display: block; width: 18px; height: 18px; }
+.impact-profile-pagination-arrow:hover:not(:disabled) { border-color: var(--portfolio-panel-border); background: var(--portfolio-icon-hover-surface); }
+.impact-profile-pagination-arrow:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
+.impact-profile-pagination-arrow:disabled { cursor: progress; opacity: .45; }
+.impact-profile-pagination-count { min-width: 55px; color: var(--apple-secondary); font: 500 13px/1.5 var(--font-mono); text-align: center; font-variant-numeric: tabular-nums; }
+@media (max-width: 720px) { .impact-profile-pagination { margin-top: 18px; } }
+@media (prefers-reduced-motion: reduce) { .impact-profile-pagination-arrow { transition: none; } }

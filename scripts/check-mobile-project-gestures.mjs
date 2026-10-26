@@ -136,7 +136,7 @@ try {
   await page.locator('#nav-lang [data-switch-lang="en"]').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();
-  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Visual Creator') || !aboutEnglish.includes('I now focus on AI video creation')) {
+  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes('I now create AI videos for commercials')) {
     throw new Error('关于我英文标题、职业定位或正文未按字典切换');
   }
 

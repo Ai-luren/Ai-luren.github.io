@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useLang } from '../i18n/index.js';
 import './FloatingDock.css';
+import ExternalLinkSheet, { useTouchExternalLink } from './ExternalLinkSheet.jsx';
 
 import mailIcon from '../../assets/images/icon/mail.svg';
 import phoneIcon from '../../assets/images/icon/phone.svg';
@@ -27,7 +28,7 @@ function DockIcon({ name }) {
   return <img src={iconPaths[name]} alt="" width="23" height="23" aria-hidden="true" />;
 }
 
-function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer }) {
+function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer, onExternalClick }) {
   const ref = useRef(null);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -37,7 +38,8 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
   });
   const targetScale = useTransform(mouseDistance, [-distance, 0, distance], [1, reducedMotion ? 1 : magnification / baseItemSize, 1]);
   const scale = useSpring(targetScale, spring);
-  const showLabel = hovered || focused;
+  // Coarse-pointer screens use the explicit bottom sheet, not a floating Hover label.
+  const showLabel = hasFinePointer && (hovered || focused);
 
   return (
     <motion.a
@@ -59,6 +61,7 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
           item.onClick();
           return;
         }
+        if (item.external) onExternalClick(event, item);
       }}
     >
       <motion.span className="floating-dock-icon" style={{ scale: focused ? (reducedMotion ? 1 : 1.18) : scale }}>{item.icon}</motion.span>
@@ -94,6 +97,7 @@ export default function FloatingDock() {
   ));
   const [status, setStatus] = useState('');
   const lang = useLang();
+  const { pendingLink, closeLink, intercept } = useTouchExternalLink();
   const spring = { mass: 0.18, stiffness: 180, damping: 22 };
 
   useEffect(() => {
@@ -134,10 +138,10 @@ export default function FloatingDock() {
   const items = [
     { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
     { label: lang === 'en' ? 'Save WeChat QR code' : '保存微信二维码', hoverLabel: lang === 'en' ? 'Save WeChat QR' : '保存微信二维码', href: wechatQrCode, download: 'wechat-qr-code.webp', icon: <DockIcon name="wechat" /> },
-    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, icon: <DockIcon name="github" /> },
-    { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, icon: <DockIcon name="xiaohongshu" /> },
-    { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, icon: <DockIcon name="douyin" /> },
-    { label: lang === 'en' ? 'Feishu portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Feishu portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, icon: <DockIcon name="feishu" /> }
+    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, zh: 'GitHub 主页', en: 'GitHub profile', icon: <DockIcon name="github" /> },
+    { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, zh: '小红书主页', en: 'REDnote profile', icon: <DockIcon name="xiaohongshu" /> },
+    { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, zh: '抖音主页', en: 'Douyin profile', icon: <DockIcon name="douyin" /> },
+    { label: lang === 'en' ? 'Feishu portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Feishu portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, zh: '飞书作品集', en: 'Feishu portfolio', icon: <DockIcon name="feishu" /> }
   ];
 
   return (
@@ -159,9 +163,11 @@ export default function FloatingDock() {
           spring={reducedMotion ? { duration: 0 } : spring}
           reducedMotion={reducedMotion}
           hasFinePointer={hasFinePointer}
+          onExternalClick={intercept}
         />)}
       </div>
       <div className="floating-dock-status" role="status" aria-live="polite">{status}</div>
+      <ExternalLinkSheet link={pendingLink} onClose={closeLink} lang={lang} />
     </div>
   );
 }

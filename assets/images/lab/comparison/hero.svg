@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="380" viewBox="0 0 1200 380" role="img" aria-labelledby="title desc">
+  <title id="title">图片对比工具：共享画布与可拖动分界线</title>
+  <desc id="desc">一个项目原生的界面示意：两张图片位于同一画布中，由中央圆形分界线进行 Before / After 对比，并支持同步缩放。</desc>
+  <defs>
+    <clipPath id="canvas-clip"><rect x="706" y="58" width="438" height="270" rx="20"/></clipPath>
+    <linearGradient id="before-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1c8a9"/><stop offset="1" stop-color="#b76643"/></linearGradient>
+    <linearGradient id="after-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8ddd1"/><stop offset="1" stop-color="#b78969"/></linearGradient>
+  </defs>
+
+  <rect width="1200" height="380" rx="28" fill="#f7f8f4"/>
+  <rect x="1" y="1" width="1198" height="378" rx="27" fill="none" stroke="#dfe4db" stroke-width="2"/>
+
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif">
+    <text x="58" y="68" fill="#3d8317" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18" letter-spacing="2">OFFLINE IMAGE REVIEW TOOL</text>
+    <text x="58" y="142" fill="#262b27" font-size="58" font-weight="750" letter-spacing="-2">图片对比工具</text>
+    <text x="58" y="190" fill="#59635a" font-size="25">在同一画布中检查 Before / After 的每个细节。</text>
+    <text x="58" y="226" fill="#59635a" font-size="25">本地运行 · 同步缩放 · 可导出 PNG</text>
+
+    <g transform="translate(58 282)" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="18">
+      <rect width="176" height="38" rx="19" fill="#e8f1e2"/>
+      <text x="22" y="25" fill="#3d8317">A / B SHARED</text>
+      <rect x="190" width="176" height="38" rx="19" fill="#edf0eb"/>
+      <text x="212" y="25" fill="#657064">100–500% ZOOM</text>
+    </g>
+  </g>
+
+  <g clip-path="url(#canvas-clip)">
+    <rect x="706" y="58" width="438" height="270" fill="#151715"/>
+    <rect x="706" y="58" width="219" height="270" fill="url(#before-sky)"/>
+    <rect x="925" y="58" width="219" height="270" fill="url(#after-sky)"/>
+    <path d="M706 202 C760 170 812 187 862 156 C887 140 908 142 925 158 L925 328 L706 328Z" fill="#9c583e" opacity=".82"/>
+    <path d="M925 195 C973 160 1024 185 1064 151 C1096 125 1120 142 1144 158 L1144 328 L925 328Z" fill="#936d57" opacity=".68"/>
+    <circle cx="817" cy="128" r="27" fill="#ffe0a1" opacity=".72"/>
+    <circle cx="1038" cy="116" r="22" fill="#fff0d4" opacity=".76"/>
+    <path d="M776 274 C804 229 836 214 869 228 C892 238 909 229 925 213" fill="none" stroke="#f6d8c0" stroke-width="9" stroke-linecap="round" opacity=".74"/>
+    <path d="M942 270 C974 229 1007 215 1042 231 C1071 244 1101 234 1132 214" fill="none" stroke="#ead3bf" stroke-width="9" stroke-linecap="round" opacity=".78"/>
+    <rect x="718" y="70" width="116" height="32" rx="7" fill="#463e39" opacity=".78"/>
+    <text x="736" y="92" fill="#fff" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700">BEFORE</text>
+    <rect x="1016" y="70" width="106" height="32" rx="7" fill="#463e39" opacity=".78"/>
+    <text x="1033" y="92" fill="#fff" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="17" font-weight="700">AFTER</text>
+  </g>
+  <rect x="706" y="58" width="438" height="270" rx="20" fill="none" stroke="#cbd4c7" stroke-width="2"/>
+  <line x1="925" y1="58" x2="925" y2="328" stroke="#fff" stroke-width="3"/>
+  <circle cx="925" cy="193" r="20" fill="#282b28" stroke="#fff" stroke-width="3"/>
+  <circle cx="925" cy="193" r="4" fill="#fff"/>
+  <text x="706" y="356" fill="#7b827b" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16">SHARED CANVAS / LOCAL ONLY</text>
+</svg>
