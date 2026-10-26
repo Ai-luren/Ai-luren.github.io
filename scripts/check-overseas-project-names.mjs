@@ -6,11 +6,11 @@ import {chromium} from 'playwright-core';
 import {createSafePage, getSafeMediaReport} from './lib/safe-media.mjs';
 
 const names=[
-  ['09','海外无线耳机 AI 场景广告','Overseas Wireless Earbuds AI Lifestyle Ad','commercial'],
-  ['10','海外无线耳机 AI 产品展示广告','Overseas Wireless Earbuds AI Product Showcase','commercial'],
-  ['11','海外无线耳机 AI 社媒创意广告','Overseas Wireless Earbuds AI Social Creative Ad','social'],
-  ['12','海外车载坐垫 AI 产品体验广告','Overseas Car Seat Cushion AI Product Demo','social'],
-  ['13','海外宠物红光护理仪 AI 产品广告','Overseas Pet Red-Light Care Device AI Ad','social'],
+  ['09','海外无线耳机 AI 场景广告','Wireless Earbuds · AI Lifestyle Ad','commercial'],
+  ['10','海外无线耳机 AI 产品展示广告','Wireless Earbuds · AI Product Showcase','commercial'],
+  ['11','海外无线耳机 AI 社媒创意广告','Wireless Earbuds · AI Social Media Ad','social'],
+  ['12','海外车载坐垫 AI 产品体验广告','Car Seat Cushion · AI Product Demo','social'],
+  ['13','海外宠物红光护理仪 AI 产品广告','Pet Red Light Therapy Device · AI Ad','social'],
 ];
 const root=resolve(import.meta.dirname,'..');
 const meta=JSON.parse(readFileSync(resolve(root,'src/data/project-video-metadata.json')));
@@ -40,6 +40,14 @@ for(const [id,zh,,category] of names){
   }
 }
 const source=readFileSync(resolve(root,'src/data/projects.js'),'utf8');
+for(const [id,zh,,category] of names) {
+  // category==='social' already explains the overseas audience in Chinese;
+  // title presentation is simplified without renaming the actual media files.
+  const display = category==='social'?zh.replace(/^海外/,''):zh;
+  const sourceLine = source.split('\n').find(line=>line.includes("id: '"+id+"'"));
+  assert(sourceLine?.includes("title: { zh: '"+display+"'"), id+': Chinese visible title mismatch');
+}
+
 const cdnURLs=source.match(/https:\/\/ik\.imagekit\.io\/Ailuren\/tr:orig-true\/videos\/[^']+/g)||[];
 assert.equal(cdnURLs.length,15,'Published 15 ImageKit sources must stay intact');
 assert.equal(new Set(cdnURLs).size,15);
@@ -58,9 +66,16 @@ try {
   for(const [id,zh,en] of names){
     const i=Number(id)-1;
     const card=page.locator('.library-grid .comet-archive__card').nth(i);
-    assert((await card.innerText()).includes(zh),`${id} Chinese title mismatch`);
-    const css=await card.locator('.comet-archive__image').evaluate(el=>getComputedStyle(el).backgroundImage);
-    assert(css.includes(encodeURIComponent('海外').slice(0,3)) || css.includes('assets/'),id+' missing displayed cover');
+    const visibleZh = names.find(([key])=>key===id)?.[3]==='social'?zh.replace(/^海外/,''):zh;
+    assert((await card.innerText()).includes(visibleZh),`${id} Chinese title mismatch`);
+    // Artwork is a real <img>; relying on background-image was obsolete after
+    // the mobile-scroll flash fix. Verify the local cover URL and decoding.
+    const cover=card.locator('.comet-archive__cover');
+    const coverURL=decodeURIComponent(await cover.getAttribute('src'));
+    assert(coverURL.includes(zh+'.webp') || coverURL.includes('assets/'),id+' missing displayed cover');
+    await cover.scrollIntoViewIfNeeded();
+    await cover.evaluate(img=>img.decode());
+    assert((await cover.evaluate(img=>img.naturalWidth))>0,id+' image failed to decode');
   }
   await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="en"]').click();
   await page.waitForFunction(()=>document.documentElement.lang==='en');
@@ -69,7 +84,7 @@ try {
     assert((await page.locator('.library-grid .comet-archive__card').nth(i).innerText()).includes(en),id+' English title mismatch');
   }
   const category=page.locator('[data-category="social"]');
-  assert((await category.innerText()).includes(width===390?'Overseas':'AI Overseas Product Ads'),'Overseas category filter mismatch');
+  assert((await category.innerText()).includes(width===390?'Product Ads':'AI Product & Social Ads'),'Product & Social Ads category filter mismatch');
   await category.click();
   assert.equal(await page.locator('.library-grid .comet-archive__card').count(),3);
   assert.equal(new URL(page.url()).searchParams.get('category'),'social','Existing category URL must be compatible');
@@ -87,7 +102,8 @@ try {
     const card=page.locator('.library-grid .comet-archive__card').nth(Number(id)-1);
     await card.evaluate(el=>el.click());
     await page.locator('.cinema-player').waitFor({state:'attached'});
-    assert((await page.locator('#cinema-player-title').textContent()).includes(zh),id+' player title');
+    const visibleZh=names.find(([key])=>key===id)?.[3]==='social'?zh.replace(/^海外/,''):zh;
+    assert((await page.locator('#cinema-player-title').textContent()).includes(visibleZh),id+' player title');
     const poster=page.locator('.cinema-player__poster');
     await poster.waitFor({state:'attached'});
     const posterSource=await poster.getAttribute('src');

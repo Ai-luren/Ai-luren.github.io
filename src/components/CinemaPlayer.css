@@ -145,8 +145,9 @@
 .cinema-player__work-nav { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: center; width: 100%; }
 .cinema-player__sequence { display: grid; grid-template-columns: 48px minmax(40px, 1fr) 48px; align-items: center; gap: 16px; width: min(224px, 100%); }
 .cinema-player__count { color: var(--apple-secondary); text-align: center; font: 12px var(--font-mono); white-space: nowrap; }
-.cinema-player__return { grid-column: 2; grid-row: 1; align-self: start; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius); color: var(--apple-text); background: var(--portfolio-tile-surface); font-size: 12px; text-decoration: none; cursor: pointer; white-space: nowrap; }
-.cinema-player__return:hover { background: var(--portfolio-tile-surface-hover); }
+.cinema-player__return { grid-column: 2; grid-row: 1; align-self: start; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius); color: var(--apple-text); background: var(--portfolio-tile-surface); font: 500 12px/1.4 var(--font-body); text-decoration: none; cursor: pointer; white-space: nowrap; transition: background var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
+.cinema-player__return:hover, .cinema-player__return:focus-visible { background: var(--portfolio-tile-surface-hover); border-color: var(--portfolio-icon-border); }
+.cinema-player__return:active { background: var(--portfolio-icon-active-surface); }
 @media (max-width: 760px) {
   .cinema-player__information { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
   .cinema-player__sequence { width: 100%; gap: 12px; }
@@ -154,6 +155,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .cinema-player__return { transition: none !important; }
   .cinema-player::backdrop, .cinema-player__layout {
     transition: none !important; transform: none !important;
   }

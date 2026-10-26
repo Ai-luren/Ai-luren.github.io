@@ -48,7 +48,10 @@ try{
           const creator=measure('#impact-programs .impact-evidence-label h2');
           const media=measure('#impact-reach .impact-evidence-label h2');
           const lab=measure('#experiments .section-title');
-          const cardTitle=measure('#impact-programs .impact-platform-mobile-manifesto h3');
+          // The old mobile manifesto H3 was removed when the creator-platform
+          // panel switched to a cleaner credential grid. Compare its tile
+          // labels with the section heading instead of dereferencing a dead H3.
+          const cardTitle=measure('#impact-programs .impact-platform-mobile-tile strong');
           const cards=[
             measure('#impact-awards .impact-glass'),
             measure('#impact-programs .impact-glass'),
@@ -69,12 +72,12 @@ try{
         assert(result.children.every(t=>Math.abs(t.size-sub)<.5),tag+': uneven subheadings');
         assert(result.children.every(t=>Math.abs(t.x-result.main.x)<=1.5),tag+': H2 left edges must align with Expertise: '+result.children.map(t=>t.x).join('/')+' vs '+result.main.x);
         assert(!result.children.some(t=>t.overflow),tag+': clipped child title');
-        if(width<=760)assert(result.cardTitle.size<=sub-3,tag+': card H3 larger than H2');
+        if(width<=760)assert(result.cardTitle && result.cardTitle.size<=sub-3,tag+': creator tile label must be smaller than section heading');
         const target=width<=760?20:28;
         for(const [i,gap] of result.gaps.entries())assert(Math.abs(gap-target)<=1.25,tag+': gap '+i+'='+gap.toFixed(2)+' expected '+target);
         assert(result.overflow<=2,tag+': horizontal overflow');
         assert.deepEqual(errors,[],tag+': page errors');
-        console.log('PASS '+tag+': main '+result.main.size+' > sub '+sub+(width<=760?' > card '+result.cardTitle.size:'')+'; gaps '+result.gaps.map(Math.round).join('/')+'px');
+        console.log('PASS '+tag+': main '+result.main.size+' > sub '+sub+(width<=760?' > tile '+result.cardTitle.size:'')+'; gaps '+result.gaps.map(Math.round).join('/')+'px');
       }finally{await page.close();}
     }
   }finally{await browser.close();}

@@ -5,8 +5,8 @@ import { useLang } from '../i18n/index.js';
 import './HeroTitle.css';
 
 const ROTATING_WORDS = {
-  zh: ['图像设计', '视频设计', '氛围编程'],
-  en: ['Image Design', 'Video Design', 'Vibe Coding'],
+  zh: ['视频设计', '图像设计', '氛围编程'],
+  en: ['Video Design', 'Image Design', 'Vibe Coding'],
 };
 
 export default function HeroTitle() {

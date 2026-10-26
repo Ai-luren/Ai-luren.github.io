@@ -39,11 +39,15 @@ import wechatChannelQrCode from '../../assets/images/social-profiles/视频号�
 import douyinQrCode from '../../assets/images/social-profiles/抖音二维码.webp';
 import xiaohongshuQrCode from '../../assets/images/social-profiles/小红书二维码.webp';
 import kuaishouQrCode from '../../assets/images/social-profiles/快手二维码.webp';
+import douyinIcon from '../../assets/images/icon/douyin.svg';
+import rednoteIcon from '../../assets/images/icon/xiaohongshu-solid.svg';
+import kuaishouIcon from '../../assets/images/icon/kuaishou.png';
+import wechatChannelsIcon from '../../assets/images/icon/wechat-channels.svg';
 
 // Gallery order is editorial; keep each original image and its bilingual proof
 // attached to the same award. Two separate Haina pieces occupy positions 6/7.
 const awards = [
-  { image: award7, thumbnail: award7Thumb, title: { zh: 'MJ 官方优秀作品', en: 'Midjourney Official Featured' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
+  { image: award7, thumbnail: award7Thumb, title: { zh: 'MJ 官方优秀作品', en: 'Featured by Midjourney' }, meta: { zh: 'Midjourney / 官方精选', en: 'Midjourney / Official Selection' } },
   { image: award4, thumbnail: award4Thumb, title: { zh: '未来AI设计大赛', en: 'Future AI Design Contest' }, meta: { zh: '美图 / 年度入围', en: 'Meitu / Annual Finalist' } },
   { image: award5, thumbnail: award5Thumb, title: { zh: '联想AI比赛', en: 'Lenovo AI Competition' }, meta: { zh: '创作先锋奖 / 官号精选', en: 'Creative Pioneer / Official Selection' } },
   { image: award1, thumbnail: award1Thumb, title: { zh: '海螺AI动物跳水', en: 'Hailuo AI Animal Diving' }, meta: { zh: '登陆LED大屏', en: 'Displayed on LED Screen' } },
@@ -60,9 +64,13 @@ const creatorLogos = [
   { src: viduLogo, width: 640, height: 640, alt: { zh: 'Vidu AI', en: 'Vidu AI' }, title: { zh: 'Vidu AI', en: 'Vidu AI' }, role: { zh: '艺术家', en: 'AI Artist' } },
   { src: pixverseLogo, width: 640, height: 640, alt: { zh: '拍我 AI', en: 'Paiwo AI' }, title: { zh: '拍我 AI', en: 'Paiwo AI' }, role: { zh: '超级创作者', en: 'Super Creator' } },
   { src: polloLogo, width: 446, height: 418, alt: { zh: 'Pollo AI', en: 'Pollo AI' }, title: { zh: 'Pollo AI', en: 'Pollo AI' }, role: { zh: '优秀创作者', en: 'Outstanding Creator' } },
-  { src: midjourneyLogo, width: 640, height: 640, alt: { zh: 'Midjourney', en: 'Midjourney' }, title: { zh: 'Midjourney', en: 'Midjourney' }, role: { zh: '官方精选', en: 'Official Featured' }, className: 'logo-loop__image--light' },
+  { src: midjourneyLogo, width: 640, height: 640, alt: { zh: 'Midjourney', en: 'Midjourney' }, title: { zh: 'Midjourney', en: 'Midjourney' }, role: { zh: '官方精选', en: 'Official Selection' }, className: 'logo-loop__image--light' },
   { src: qwenLogo, width: 640, height: 640, alt: { zh: '通义 Wan', en: 'Tongyi Wan' }, title: { zh: '通义 Wan', en: 'Tongyi Wan' }, role: { zh: '官方创作者', en: 'Official Creator' } },
 ];
+
+// Accurate platform marks rendered in one quiet, monochrome treatment.
+// Channels uses its own butterfly-shaped mark, never the WeChat chat logo.
+const reachIcons = { douyin: douyinIcon, xiaohongshu: rednoteIcon, kuaishou: kuaishouIcon, 'wechat-channel': wechatChannelsIcon };
 
 const reachCards = [
   {
@@ -487,7 +495,8 @@ function AwardGallery() {
   return (
     <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
       <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{galleryHint}</span></div>
-      <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases.' : 'AI 创作赛事获奖、入围及展映记录。'}</p>
+      <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases' : 'AI 创作赛事获奖、入围及展映记录'}</p>
+      <div className="impact-award-stage">
       <button
         type="button"
         className="impact-award-rail-nav impact-award-rail-nav--prev"
@@ -540,6 +549,7 @@ function AwardGallery() {
           );
         })}
       </ul>
+      </div>
       <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award or recognition' : '选择获奖荣誉'}>
         {awards.map((award, index) => (
           <button
@@ -613,7 +623,7 @@ function LogoIndex() {
           <span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span>
           <span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span>
         </div>
-        <p className="impact-platform-desktop-description">{lang === 'en' ? 'Creator partner across multiple AI video platforms.' : '多个 AI 视频平台的合作创作者。'}</p>
+        <p className="impact-platform-desktop-description">{lang === 'en' ? 'Recognized through AI creator programs' : '多个 AI 视频平台的合作创作者'}</p>
         <div className="impact-platform-desktop-grid">
           {logos.map((logo) => (
             <div className="impact-platform-desktop-tile" key={`desktop-${logo.title}`}>
@@ -624,16 +634,11 @@ function LogoIndex() {
         </div>
       </div>
       <div className="impact-platform-mobile-card">
-        <div className="impact-platform-mobile-manifesto">
-          <div className="impact-platform-mobile-meta"><span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span><span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span></div>
-          <h3>{lang === 'en' ? 'AI VIDEO CREATOR' : 'AI 视频创作者'}</h3>
-          <p>{lang === 'en'
-            ? 'Creator partner across multiple AI video platforms.'
-            : '多个 AI 视频平台的合作创作者。'}</p>
-          <div className="impact-platform-mobile-signature">{lang === 'en' ? 'CREATOR PARTNER · MULTI-PLATFORM' : '合作创作者 · 多平台创作'}</div>
-        </div>
         <div className="impact-platform-mobile-network">
-          <div className="impact-platform-mobile-network-head">{lang === 'en' ? 'CREATOR PLATFORMS / CREDENTIALS' : '创作平台 / 创作者身份'}</div>
+          <div className="impact-platform-mobile-network-head">
+            <span>{lang === 'en' ? 'PLATFORMS' : '创作平台'}</span>
+            <span>{lang === 'en' ? 'CREDENTIALS' : '创作者身份'}</span>
+          </div>
           <div className="impact-platform-mobile-grid">
             {logos.map((logo) => (
               <div className="impact-platform-mobile-tile" key={logo.title}>
@@ -664,6 +669,7 @@ function ReachDossier() {
   const profileFocusIdRef = useRef(null);
   const profileCloseTimerRef = useRef(null);
   const profileClosingRef = useRef(false);
+  const profileStepRef = useRef(null);
 
   const openProfile = async (card, event) => {
     // Do not mount a translucent modal with undecoded screenshots: this was
@@ -682,6 +688,23 @@ function ReachDossier() {
     setProfileMotionVisible(false);
     setActiveProfile(card);
   };
+
+  // A decoded, in-place account-to-account transition. Preserve the current
+  // screenshot/QR until the next account is ready, as the opening path does.
+  // A request token prevents a late decode from replacing a newer selection.
+  const stepProfile = async (direction) => {
+    if (!activeProfile || profileClosingRef.current) return;
+    const currentIndex = reachCards.findIndex(card => card.id === activeProfile.id);
+    const nextCard = reachCards[(currentIndex + direction + reachCards.length) % reachCards.length];
+    const request = ++profileOpenRequestRef.current;
+    setPreparingProfileId(nextCard.id);
+    const [screenshotReady, qrReady] = await warmImages([nextCard.screenshot, nextCard.qrCode]);
+    if (request !== profileOpenRequestRef.current || profileClosingRef.current || !profileViewerRef.current) return;
+    setProfileImageFailed({ screenshot: !screenshotReady, qr: !qrReady });
+    setPreparingProfileId(null);
+    setActiveProfile(nextCard);
+  };
+  profileStepRef.current = stepProfile;
 
   const closeProfile = useCallback(() => {
     profileOpenRequestRef.current++;
@@ -747,7 +770,12 @@ function ReachDossier() {
     profileCloseRef.current?.focus({ preventScroll: true });
 
     const onKeyDown = event => {
-      if (event.key === 'Escape') { event.preventDefault(); closeProfile(); }
+      if (event.key === 'Escape') { event.preventDefault(); closeProfile(); return; }
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        profileStepRef.current?.(event.key === 'ArrowLeft' ? -1 : 1);
+        return;
+      }
       if (event.key !== 'Tab') return;
       const controls = [...viewer.querySelectorAll('a[href],button:not(:disabled)')].filter(node => node.getClientRects().length);
       const first = controls[0], last = controls.at(-1);
@@ -776,15 +804,44 @@ function ReachDossier() {
   const featureCard = reachCards[0];
   const profileRecords = reachCards.slice(1);
 
+  const platformIdentity = (card) => (
+    <div className="impact-reach-identity">
+      <span className="impact-reach-platform-icon" aria-hidden="true">
+        <img src={reachIcons[card.id]} alt="" loading="lazy" />
+      </span>
+      <h3 className="impact-reach-account-name">{card.platform[lang]}</h3>
+    </div>
+  );
+
+  const accountActions = (card, featured = false) => (
+    <div className={featured ? 'impact-reach-feature-actions' : 'impact-reach-record-actions'}>
+      <button className="impact-reach-action impact-reach-action--primary" type="button"
+        data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id}
+        aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')}
+        onClick={(event) => openProfile(card, event)}>
+        {t('查看账号资料', 'View account details')}
+      </button>
+      {card.link && <a className="impact-reach-action impact-reach-action--external"
+        href={card.link} target="_blank" rel="noopener noreferrer"
+        aria-label={card.platform[lang] + ' · ' + t('访问主页（新窗口）', 'Visit profile (new tab)')}>
+        <span>{t('访问主页', 'Visit Profile')}</span>
+        <span className="impact-reach-external-arrow" aria-hidden="true">↗</span>
+      </a>}
+    </div>
+  );
+
   return (
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
-        <span>{t('多平台账号', 'SOCIAL CHANNELS')}</span>
+        <span>{t('跨平台影响力', 'CROSS-PLATFORM REACH')}</span>
       </div>
       <div className="impact-reach-layout">
         <article className="impact-reach-feature">
           <div className="impact-reach-feature-main">
-            <h3 className="impact-reach-account-name">{featureCard.platform[lang]}</h3>
+            <div className="impact-reach-feature-head">
+              {platformIdentity(featureCard)}
+              <span className="impact-reach-feature-tag">{t('主要账号', 'MAIN CHANNEL')}</span>
+            </div>
             <div className="impact-reach-feature-metrics">
               <strong className="impact-reach-feature-primary">
                 <span>{formatMetric(featureCard.primary[lang].value)}</span>
@@ -793,36 +850,20 @@ function ReachDossier() {
               <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
             </div>
           </div>
-          <div className="impact-reach-feature-actions">
-            <button className="impact-reach-action" type="button" data-social-profile-trigger={featureCard.id} aria-busy={preparingProfileId === featureCard.id} aria-haspopup="dialog" aria-label={featureCard.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(featureCard, event)}>
-              {t('查看账号资料', 'View account details')}
-            </button>
-            <a className="impact-reach-action" href={featureCard.link} target="_blank" rel="noopener noreferrer">
-              {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
-            </a>
-          </div>
+          {accountActions(featureCard, true)}
         </article>
 
         <div className="impact-reach-account-list">
           {profileRecords.map((card) => (
             <article className="impact-reach-account-record" key={card.id}>
               <div className="impact-reach-record-main">
-                <h3 className="impact-reach-account-name">{card.platform[lang]}</h3>
+                {platformIdentity(card)}
                 <div className="impact-reach-record-metrics">
-                  <strong>{formatMetric(card.primary[lang].value)} <small>{card.primary[lang].unit}</small></strong>
+                  <strong><span>{formatMetric(card.primary[lang].value)}</span><small>{card.primary[lang].unit}</small></strong>
                   <span>{formatMetric(card.secondary[lang])}</span>
                 </div>
               </div>
-              <div className="impact-reach-record-actions">
-                <button className="impact-reach-action" type="button" data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id} aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')} onClick={(event) => openProfile(card, event)}>
-                  {t('查看账号资料', 'View account details')}
-                </button>
-                {card.link && (
-                  <a className="impact-reach-action" href={card.link} target="_blank" rel="noopener noreferrer">
-                    {t('访问主页', 'Visit homepage')} <span aria-hidden="true">↗</span>
-                  </a>
-                )}
-              </div>
+              {accountActions(card)}
             </article>
           ))}
         </div>
@@ -883,6 +924,19 @@ function ReachDossier() {
                   </a>
                 )}
               </aside>
+            </div>
+            <div className="impact-profile-pagination" role="group" aria-label={t('切换平台账号', 'Browse platform profiles')}>
+              <button type="button" className="impact-profile-pagination-arrow" disabled={Boolean(preparingProfileId)}
+                aria-label={t('上一个平台账号', 'Previous platform profile')} onClick={() => stepProfile(-1)}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
+              </button>
+              <span className="impact-profile-pagination-count" aria-live="polite" aria-atomic="true">
+                {reachCards.findIndex(card => card.id === activeProfile.id) + 1} / {reachCards.length}
+              </span>
+              <button type="button" className="impact-profile-pagination-arrow" disabled={Boolean(preparingProfileId)}
+                aria-label={t('下一个平台账号', 'Next platform profile')} onClick={() => stepProfile(1)}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
+              </button>
             </div>
           </div>
         </div>,
@@ -946,11 +1000,11 @@ export default function ImpactEvidence() {
         <div><AwardGallery /></div>
       </section>
       <section id="impact-programs" className={`impact-evidence-row${activeImpactId === 'impact-programs' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-programs-heading">
-        <ImpactLabel id="impact-programs-heading" index="02 / AI PLATFORM CREATOR" title={lang === 'en' ? 'AI Platform Creator' : 'AI 平台超创'} />
+        <ImpactLabel id="impact-programs-heading" index="02 / CREATOR PROGRAMS" title={lang === 'en' ? 'Creator Programs' : 'AI 平台超创'} />
         <div><LogoIndex /></div>
       </section>
       <section id="impact-reach" className={`impact-evidence-row${activeImpactId === 'impact-reach' ? ' is-desktop-active' : ''}`} aria-labelledby="impact-reach-heading">
-        <ImpactLabel id="impact-reach-heading" index="03 / AI MEDIA" title={lang === 'en' ? 'AI Media' : 'AI 自媒体'} />
+        <ImpactLabel id="impact-reach-heading" index="03 / SOCIAL MEDIA" title={lang === 'en' ? 'Social Media' : 'AI 自媒体'} />
         <div><ReachDossier /></div>
       </section>
     </div>

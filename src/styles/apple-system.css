@@ -503,7 +503,7 @@ header .nav-contact-icon {
   .impact-platform-desktop-tile img { display: block; width: 48px; height: 48px; object-fit: contain; transition: transform var(--apple-duration-card) var(--apple-ease); }
   .impact-platform-desktop-tile img.logo-loop__image--light { filter: brightness(0) invert(1); }
   .impact-platform-desktop-tile strong { display: block; color: var(--apple-text); font: 600 15px/1.25 var(--font-display); }
-  .impact-platform-desktop-tile span { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 11px/1.4 var(--font-body); }
+  .impact-platform-desktop-tile span { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 12px/1.45 var(--font-body); }
   .impact-reach-profile-shot { height: 220px; }
 }
 
@@ -1493,14 +1493,6 @@ header .nav-contact-icon:focus-visible {
   .impact-evidence {
     --impact-mobile-card-height: 600px;
   }
-  .impact-platform-mobile-manifesto {
-    padding: 22px 22px 18px;
-  }
-  .impact-platform-mobile-manifesto h3 {
-    margin-top: 18px;
-    margin-bottom: 12px;
-  }
-  .impact-platform-mobile-manifesto p { line-height: 1.5; }
   .impact-platform-mobile-network {
     padding: 20px 22px 16px;
   }
@@ -1575,13 +1567,6 @@ header .nav-contact-icon:focus-visible {
   .impact-qr-dialog img { width: min(100%, 220px); }
   .impact-qr-dialog-actions a { min-height: 42px; padding-inline: 13px; }
   .impact-qr-dialog > p:not(.impact-qr-dialog-kicker) { max-width: 100%; text-align: center; }
-  html[lang="en"] .impact-platform-mobile-meta { letter-spacing: .05em; }
-  html[lang="en"] .impact-platform-mobile-manifesto { padding: 20px 22px 12px; }
-  html[lang="en"] .impact-platform-mobile-network { padding: 20px 22px 16px; }
-  html[lang="en"] .impact-platform-mobile-manifesto h3 { max-width: 11ch; margin-top: 17px; margin-bottom: 11px; font-size: clamp(1.8rem, 8.5vw, 2.6rem); text-wrap: balance; }
-  html[lang="en"] .impact-platform-mobile-manifesto p { max-width: 38ch; line-height: 1.5; }
-  html[lang="en"] .impact-platform-mobile-signature { margin-top: 12px; letter-spacing: .03em; }
-  html[lang="en"] .impact-platform-mobile-network-head { letter-spacing: .04em; }
   html[lang="en"] .impact-platform-mobile-grid { margin-top: 15px; }
   html[lang="en"] .impact-platform-mobile-tile { min-height: 78px; }
 
@@ -1656,7 +1641,6 @@ header .nav-contact-icon:focus-visible {
    This block changes only type metrics and English wrapping; media, behavior,
    content, and section order remain untouched. */
 #experiments .section-title,
-.impact-platform-mobile-manifesto h3,
 .impact-platform-desktop-tile strong,
 .impact-platform-mobile-tile strong,
 .impact-reach-profile-caption strong,
@@ -1668,7 +1652,6 @@ header .nav-contact-icon:focus-visible {
 .impact-evidence-label p,
 .impact-award-description,
 .impact-platform-desktop-description,
-.impact-platform-mobile-manifesto p,
 .impact-platform-mobile-tile span,
 .impact-reach-dossier-description {
   font-family: var(--font-body);
@@ -1676,9 +1659,7 @@ header .nav-contact-icon:focus-visible {
 
 .impact-evidence-note,
 .impact-platform-desktop-head,
-.impact-platform-mobile-meta,
 .impact-platform-mobile-network-head,
-.impact-platform-mobile-signature,
 .impact-reach-dossier-head,
 .impact-reach-profile-caption span,
 .impact-award-card-caption small {
@@ -1700,17 +1681,6 @@ header .nav-contact-icon:focus-visible {
 
 @media (max-width: 720px) {
   .impact-title { font-size: var(--impact-title-size-mobile); }
-
-  .impact-platform-mobile-manifesto h3 {
-    line-height: .98;
-    letter-spacing: -.055em;
-    text-wrap: balance;
-  }
-
-  html[lang="en"] .impact-platform-mobile-manifesto h3 {
-    line-height: .98;
-    letter-spacing: -.055em;
-  }
 
 }
 
@@ -1900,24 +1870,8 @@ header .nav-contact-icon:focus-visible {
     padding-top: 32px;
   }
 
-  .impact-platform-mobile-manifesto,
-  html[lang="en"] .impact-platform-mobile-manifesto {
-    padding: 18px 22px 14px;
-  }
-
-  .impact-platform-mobile-manifesto h3,
-  html[lang="en"] .impact-platform-mobile-manifesto h3 {
-    margin-top: 14px;
-    margin-bottom: 10px;
-  }
-
-  .impact-platform-mobile-signature {
-    margin-top: 12px;
-  }
-
-  .impact-platform-mobile-network,
-  html[lang="en"] .impact-platform-mobile-network {
-    padding: 16px 22px 14px;
+  .impact-platform-mobile-network {
+    padding: 20px 22px 18px;
   }
 
   .impact-platform-mobile-grid,
@@ -2067,13 +2021,5 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
     --expertise-title-panel-gap: 20px;
     --expertise-main-subheading-gap: 36px;
     --expertise-card-heading-size: clamp(24px, 6.8vw, 28px);
-  }
-  /* Creator headline is a card heading, never larger than its section H2.
-     English has its own older clamp; override both with one shared role. */
-  #recognition .impact-platform-mobile-manifesto h3,
-  html[lang="en"] #recognition .impact-platform-mobile-manifesto h3 {
-    font-size: var(--expertise-card-heading-size);
-    line-height: 1.12;
-    letter-spacing: -.045em;
   }
 }

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">Ainews-to-Feishu 工作流程</title>
+  <desc id="desc">cron-job.org 每 30 分钟触发 GitHub Actions，系统从三个 AI 资讯源拉取内容，去重、翻译、渲染后推送到飞书群。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#ff6b4a"/></marker>
+  </defs>
+  <rect width="1200" height="480" rx="26" fill="#faf9f6"/>
+  <path d="M54 92H1146M54 390H1146" stroke="#d8d5ce"/>
+  <text x="54" y="54" fill="#252a30" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="27" font-weight="800">一条自动化早报流水线</text>
+  <text x="1146" y="54" text-anchor="end" fill="#747a80" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16">08:00–15:30 · 每 30 分钟</text>
+  <g font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif">
+    <g transform="translate(70 132)">
+      <rect width="192" height="160" rx="18" fill="#1d252e"/>
+      <text x="24" y="44" fill="#ff6b4a" font-size="17" font-weight="700">01 / TRIGGER</text>
+      <text x="24" y="84" fill="#fffdf8" font-size="25" font-weight="800">外部调度</text>
+      <text x="24" y="120" fill="#bdc5cd" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">cron-job.org</text>
+      <text x="24" y="144" fill="#bdc5cd" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="15">workflow_dispatch</text>
+    </g>
+    <g transform="translate(310 132)">
+      <rect width="192" height="160" rx="18" fill="#fff" stroke="#d8d5ce"/>
+      <text x="24" y="44" fill="#ff6b4a" font-size="17" font-weight="700">02 / COLLECT</text>
+      <text x="24" y="84" fill="#252a30" font-size="25" font-weight="800">聚合三路资讯</text>
+      <text x="24" y="120" fill="#747a80" font-size="15">AI HOT · 橘鸦</text>
+      <text x="24" y="144" fill="#747a80" font-size="15">follow-builders</text>
+    </g>
+    <g transform="translate(550 132)">
+      <rect width="192" height="160" rx="18" fill="#fff" stroke="#d8d5ce"/>
+      <text x="24" y="44" fill="#ff6b4a" font-size="17" font-weight="700">03 / DECIDE</text>
+      <text x="24" y="84" fill="#252a30" font-size="25" font-weight="800">路由与容错</text>
+      <text x="24" y="120" fill="#747a80" font-size="15">时段路由 · 独立去重</text>
+      <text x="24" y="144" fill="#747a80" font-size="15">失败重试 · 停更告警</text>
+    </g>
+    <g transform="translate(790 132)">
+      <rect width="192" height="160" rx="18" fill="#d9f5f0" stroke="#a8ded6"/>
+      <text x="24" y="44" fill="#176b66" font-size="17" font-weight="700">04 / DELIVER</text>
+      <text x="24" y="84" fill="#176b66" font-size="25" font-weight="800">飞书卡片</text>
+      <text x="24" y="120" fill="#397d77" font-size="15">Markdown / HTML</text>
+      <text x="24" y="144" fill="#397d77" font-size="15">中文 + 原文</text>
+    </g>
+  </g>
+  <path d="M264 212H302M504 212H542M744 212H782" stroke="#ff6b4a" stroke-width="3" marker-end="url(#arrow)"/>
+  <g transform="translate(70 338)" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="16">
+    <circle cx="8" cy="8" r="8" fill="#ff6b4a"/><text x="28" y="14" fill="#5f666d">上午 &lt; 14:00 → morning：AI HOT + 橘鸦</text>
+    <circle cx="430" cy="8" r="8" fill="#176b66"/><text x="450" y="14" fill="#5f666d">下午 ≥ 14:00 → all：补推 builders</text>
+  </g>
+  <text x="70" y="430" fill="#747a80" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC',sans-serif" font-size="17">每个源独立记录状态；解析失败时，juya 在 11:00 后可降级为带链接的文本兜底。</text>
+</svg>

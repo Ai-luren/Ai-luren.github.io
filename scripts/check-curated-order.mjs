@@ -15,7 +15,7 @@ const featured={
 };
 const awards={
  zh:['MJ 官方优秀作品','未来AI设计大赛','联想AI比赛','海螺AI动物跳水','无限剧场小赛','海纳星火计划','海纳星火计划','影视级特效小赛'],
- en:['Midjourney Official Featured','Future AI Design Contest','Lenovo AI Competition','Hailuo AI Animal Diving','Infinite Theater Contest','Spark of Haina Program','Spark of Haina Program','Cinematic Effects Contest']
+ en:['Featured by Midjourney','Future AI Design Contest','Lenovo AI Competition','Hailuo AI Animal Diving','Infinite Theater Contest','Spark of Haina Program','Spark of Haina Program','Cinematic Effects Contest']
 };
 const shotdir='.oil-ui/curated-order/shots';mkdirSync(shotdir,{recursive:true});
 let passed=0;

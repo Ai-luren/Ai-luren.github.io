@@ -29,45 +29,56 @@ header .nav-brand-name, .cinema-player__brand span {
   display: block !important; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%);
   color: var(--apple-text); font: 600 13px/1 var(--font-body); white-space: nowrap; letter-spacing: 0;
 }
-/* A+ works-only home return: one 44px circular arrow in the same glass
-   material as the menu, plus a low-key Home label. Shared modal navigations
-   retain the original avatar and branding; no extra floating control. */
+/* The Works return matches the home avatar's visible diameter (36px desktop,
+   44px mobile) inside a permanent 44px touch target. Only the circular material
+   brightens; the icon and label never move. */
 .cinema-player__brand-arrow,
 .cinema-player__brand-home { display: none !important; }
 .library-page-navigation .cinema-player__brand--home-return {
-  left: 10px !important;
+  left: 6px !important;
   top: 6px !important;
   width: 44px !important;
   height: 44px !important;
   display: grid !important;
   place-items: center;
-  border-color: var(--portfolio-icon-border) !important;
-  border-radius: var(--portfolio-icon-radius) !important;
-  background: var(--portfolio-icon-surface) !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
   box-shadow: none !important;
   color: var(--apple-text) !important;
   text-decoration: none;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: background-color var(--apple-duration-control) var(--apple-ease) !important;
+  transition: none !important;
 }
-.library-page-navigation .cinema-player__brand--home-return:hover {
-  background: var(--portfolio-icon-hover-surface) !important;
+.library-page-navigation .cinema-player__brand--home-return::before {
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--portfolio-panel-border);
+  border-radius: 50%;
+  background: var(--portfolio-tile-surface);
+  content: '';
+  pointer-events: none;
+  transition: background-color var(--apple-duration-control) var(--apple-ease);
 }
-.library-page-navigation .cinema-player__brand--home-return:active {
-  background: var(--portfolio-icon-active-surface) !important;
+.library-page-navigation .cinema-player__brand--home-return:hover::before {
+  background: var(--portfolio-tile-surface-hover);
+}
+.library-page-navigation .cinema-player__brand--home-return:active::before {
+  background: var(--portfolio-icon-active-surface);
 }
 .library-page-navigation .cinema-player__brand--home-return img,
 .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-name { display: none !important; }
 .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-arrow {
+  position: relative;
   display: block !important;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-home {
   display: block !important;
-  left: calc(100% + 10px);
+  left: calc(100% + 8px);
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0;
@@ -75,7 +86,13 @@ header .nav-brand-name, .cinema-player__brand span {
 }
 @media (max-width: 760px) {
   .library-page-navigation .cinema-player__brand--home-return { left: 8px !important; top: 5px !important; }
-  .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-home { font-size: 12px; }
+  .library-page-navigation .cinema-player__brand--home-return::before { inset: 0; border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-surface); }
+  .library-page-navigation .cinema-player__brand--home-return:hover::before { background: var(--portfolio-icon-hover-surface); }
+  .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-arrow { width: 18px; height: 18px; }
+  .library-page-navigation .cinema-player__brand--home-return .cinema-player__brand-home { left: calc(100% + 12px); font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .library-page-navigation .cinema-player__brand--home-return::before { transition: none; }
 }
 
 header .nav-toggle, .cinema-player__navigation .cinema-player__close {
@@ -184,19 +201,19 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
    capsule stays fixed. On exit these motions reverse before it unmounts.
    Do not apply to the ordinary Works bar or the mobile menu's '=' to '×'. */
 @media (min-width:761px) and (prefers-reduced-motion:no-preference) {
-  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox) > .cinema-player__navigation .cinema-player__language {
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox,.lab-project-lightbox) > .cinema-player__navigation .cinema-player__language {
     transform: translateX(58px);
     transition: transform 220ms var(--apple-ease) !important;
   }
-  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__language {
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox,.lab-project-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__language {
     transform: translateX(0);
   }
-  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox) > .cinema-player__navigation .cinema-player__close {
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox,.lab-project-lightbox) > .cinema-player__navigation .cinema-player__close {
     opacity: 0;
     transform: scale(.92);
     transition: opacity 190ms var(--apple-ease),transform 220ms var(--apple-ease) !important;
   }
-  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__close {
+  :is(.cinema-player,.impact-award-lightbox,.impact-profile-lightbox,.lab-project-lightbox).is-motion-visible > .cinema-player__navigation .cinema-player__close {
     opacity: 1;
     transform: scale(1);
   }
@@ -233,7 +250,7 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
 }
 body.mobile-nav-open { overflow: hidden; }
 /* All viewers hide the source-page navigation, showing only CinemaNavigation. */
-body.cinema-open > header, body.award-viewer-open > header, body.profile-viewer-open > header,
+body.cinema-open > header, body.award-viewer-open > header, body.profile-viewer-open > header, body.lab-viewer-open > header,
 body.cinema-open .library-page-navigation, body.profile-viewer-open .library-page-navigation { visibility: hidden !important; }
 .library-page-navigation .cinema-player__navigation { z-index: 70; }
 .site-primary-nav {
