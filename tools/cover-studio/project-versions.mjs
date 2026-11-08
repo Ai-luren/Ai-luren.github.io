@@ -104,7 +104,7 @@ export async function appendVideoVersion({ projectRoot, workspace, sessionsDir, 
   const sourcePath=path.join(sessionsDir,sessionId,session.source);
   const created=[];
   try {
-    await fsp.copyFile(sourcePath,videoPath,constants.COPYFILE_EXCL); created.push(videoPath);
+    await fsp.copyFile(sourcePath,videoPath,constants.COPYFILE_EXCL); await fsp.chmod(videoPath,0o644); created.push(videoPath);
     await fsp.copyFile(posterSource,posterPath,constants.COPYFILE_EXCL); created.push(posterPath);
     const variant={
       id,label:{zh:label(labelZh,'中文版本名称'),en:label(labelEn,'英文版本名称')},

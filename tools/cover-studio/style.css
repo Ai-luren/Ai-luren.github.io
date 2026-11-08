@@ -2471,7 +2471,7 @@ body[data-media-stage=empty][data-new-open=true] #ux-new-editor .crop-panel .fin
   position:relative;box-sizing:border-box;min-width:0;
   width:100%;height:clamp(170px,33vh,310px);
   padding:8px;border:1px solid #526c8777;border-radius:9px;
-  background:radial-gradient(ellipse at center,#1b2935,#05090d 78%);
+  background:#000;
   overflow:hidden;
 }
 #ux-new-editor #ux-new-player-poster{

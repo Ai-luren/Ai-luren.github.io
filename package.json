@@ -60,7 +60,16 @@
     "check:workbench-fast-jog": "node scripts/check-cover-studio-fast-jog.mjs",
     "check:workbench-import-ui": "node scripts/check-cover-studio-import-ui.mjs",
     "check:workbench-icon-alignment": "node scripts/check-cover-studio-icon-alignment.mjs",
-    "check:workbench-phase3": "node scripts/check-cover-studio-phase3-layout.mjs"
+    "check:workbench-phase3": "node scripts/check-cover-studio-phase3-layout.mjs",
+    "check:workbench-storage": "node scripts/check-cover-studio-session-storage.mjs",
+    "covers:storage:scan": "node tools/cover-studio/session-storage.mjs scan",
+    "covers:storage:dedupe": "node tools/cover-studio/session-storage.mjs dedupe",
+    "covers:storage:verify": "node tools/cover-studio/session-storage.mjs verify",
+    "covers:storage:restore": "node tools/cover-studio/session-storage.mjs restore",
+    "check:workbench-backdrops": "node scripts/check-cover-studio-black-backdrops.mjs",
+    "check:smoke": "node scripts/run-check-suite.mjs smoke",
+    "check:workbench-core": "node scripts/run-check-suite.mjs workbench",
+    "check:project": "node scripts/run-check-suite.mjs all"
   },
   "dependencies": {
     "gsap": "^3.15.0",

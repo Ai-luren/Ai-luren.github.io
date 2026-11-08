@@ -101,7 +101,7 @@ npm run covers
 
 工作台：<http://127.0.0.1:5190/>
 
-**媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。
+**媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。 多次编辑的同内容临时视频会在本机使用只读共享存储，查看与验证命令见 [工作台使用教程](./docs/本地封面工作台使用教程.md#本地空间维护可选)。
 
 </details>
 
@@ -113,6 +113,7 @@ index.html · works.html           首页与作品库入口
 src/components/                  作品卡片、播放器与交互组件
 src/data/projects.js             原有作品与作品数据汇总
 src/data/auto-projects.json      新增作品及视频 A/B 版本
+src/data/legacy-video-variants.json 旧作品追加的视频版本
 src/data/project-order.json      首页精选与完整作品独立排序
 assets/images/project-covers/    四分类下的 3:4 视频封面，文件名与英文作品名一致
 assets/images/player-posters/    同分类、同英文文件名的原比例播放器海报
@@ -121,13 +122,10 @@ docs/                            设计规范与维护说明
 ~~~
 
 ~~~bash
-npm run build
-npm run check:i18n
-npm run check:curated-order
-npm run check:work-cards
-npm run check:asset-catalog
-npm run check:media-safety
-node scripts/check-cover-studio-order.mjs
+npm run check:smoke           # 构建、媒体资源、精选顺序与安全检查
+npm run check:workbench-core  # 工作台存储、封面底色、完整流程及交互回归
+npm run check:project         # 按顺序运行上述两套检查
+npm run check:i18n            # 需要时额外做中英文专项验证
 ~~~
 
 [文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [工作台使用教程](./docs/本地封面工作台使用教程.md) · [开发约定](./AGENTS.md)

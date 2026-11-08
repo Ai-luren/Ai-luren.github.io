@@ -116,6 +116,7 @@ export async function createNewCoverStudioProject({
     ]) {
       await fs.mkdir(path.dirname(destination), { recursive: true });
       await fs.copyFile(source, destination, constants.COPYFILE_EXCL);
+      if (source === originalVideo) await fs.chmod(destination, 0o644);
       copied.push(destination);
     }
     await atomicWrite(videoMetadataFile, { ...videoMetadata, [id]: metadata });
