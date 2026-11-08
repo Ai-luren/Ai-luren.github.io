@@ -38,20 +38,8 @@ try{
       assert.equal(await page.locator('#projects .comet-archive__item').first().evaluate(el=>getComputedStyle(el).opacity),'1');
 
       await page.locator('#impact-awards').scrollIntoViewIfNeeded();
-      const oldImage=page.locator('#impact-awards .impact-award-card img');
-      await page.waitForFunction(()=>{const img=document.querySelector('#impact-awards .impact-award-card img');return img?.complete && img.naturalWidth>0;},null,{timeout:14000});
-      const oldSrc=await oldImage.getAttribute('src');
-      await page.locator('#impact-awards .impact-award-pagination button').last().evaluate(e=>e.click());
-      await page.waitForTimeout(85);
-      if((await oldImage.getAttribute('src'))===oldSrc){
-        assert(await oldImage.evaluate(img=>img.complete&&img.naturalWidth>0),'Outgoing award not decoded');
-      }
-      await page.waitForFunction(()=>document.querySelector('#impact-awards .impact-award-pagination button:last-child')?.getAttribute('aria-selected')==='true',null,{timeout:14000});
-      assert.notEqual(await oldImage.getAttribute('src'),oldSrc,'Award thumbnail did not change');
-      assert(await oldImage.evaluate(img=>img.complete&&img.naturalWidth>0),'Award new frame blank');
-      assert.equal(await page.locator('#impact-awards .impact-award-rail > li').evaluate(el=>getComputedStyle(el).opacity),'1');
-
-      await page.locator('#impact-awards .impact-award-card').first().evaluate(e=>e.click());
+      await page.waitForFunction(() => [...document.querySelectorAll('#impact-awards .impact-award-grid-card img')].length === 8 && [...document.querySelectorAll('#impact-awards .impact-award-grid-card img')].every(img => img.complete && img.naturalWidth > 0), null, {timeout:14000});
+      await page.locator('#impact-awards .impact-award-grid-card').first().evaluate(e=>e.click());
       await page.locator('.impact-award-lightbox').waitFor({state:'visible'});
       const viewer=page.locator('.impact-award-lightbox figure > img');
       await page.waitForFunction(()=>{const img=document.querySelector('.impact-award-lightbox figure > img');return img?.complete&&img.naturalWidth>0;},null,{timeout:14000});

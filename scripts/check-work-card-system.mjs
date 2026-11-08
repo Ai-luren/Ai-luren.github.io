@@ -6,18 +6,27 @@ import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
  * Or: PORTFOLIO_URL=http://127.0.0.1:5181/ npm run check:work-cards
  */
 import assert from 'node:assert/strict';
-import {existsSync} from 'node:fs';
+import {existsSync,readFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright-core';
 
 const port = 5213;
+const workCount = 15 + JSON.parse(readFileSync(new URL('../src/data/auto-projects.json', import.meta.url))).length;
+const projectOrder=JSON.parse(readFileSync(new URL('../src/data/project-order.json',import.meta.url)));
+const autoProjects=JSON.parse(readFileSync(new URL('../src/data/auto-projects.json',import.meta.url)));
+const commercialIds=new Set(['01','02','03','04','06','09',...autoProjects.filter(p=>p.category==='commercial').map(p=>p.id)]);
+const visibleCommercial=projectOrder.all.filter(id=>commercialIds.has(id));
+const comparableFeaturedId=projectOrder.featured.slice(0,4).find(id=>commercialIds.has(id));
+const homeComparisonIndex=comparableFeaturedId?projectOrder.featured.indexOf(comparableFeaturedId):0;
+const libraryComparisonIndex=comparableFeaturedId?visibleCommercial.indexOf(comparableFeaturedId):0;
+const defaultCount=visibleCommercial.length;
 const base = process.env.PORTFOLIO_URL || `http://127.0.0.1:${port}/`;
 const executablePath = [
   '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
 ].find(existsSync);
 assert(executablePath, 'Chrome or Edge is required');
-const widths = [320,360,390,430,500,720,721,760,761,900,1024,1280,1440,1920];
+const widths = [320,360,390,430,500,720,721,744,760,761,820,899,900,1023,1024,1280,1440,1920];
 let server;
 
 async function waitForServer() {
@@ -52,9 +61,31 @@ try{
         await works.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
         await home.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
         await works.locator('.library-grid .comet-archive__card').first().waitFor({state:'attached'});
-        const get=async(page,scope)=>page.evaluate(selector=>{
+        if (width >= 721) {
+          const columns = await home.locator('#projects .comet-archive').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
+          assert.equal(columns, 4, `${width}px ${lang}: Featured must use four columns`);
+          const rows = await home.locator('#projects .comet-archive__card').evaluateAll(cards => cards.map(card => ({ top: card.querySelector('.comet-archive__image').getBoundingClientRect().top, detail: card.querySelector('.comet-archive__details').getBoundingClientRect().top })));
+          for (let i = 0; i < rows.length; i += 4) {
+            const group = rows.slice(i, i + 4);
+            assert(Math.max(...group.map(item => item.detail)) - Math.min(...group.map(item => item.detail)) <= 1, `${width}px ${lang}: Featured details do not align`);
+          }
+        }
+        if ([320, 390, 720].includes(width)) {
+          for (const pageIndex of [0, 1]) {
+            await home.locator('#projects .comet-archive-pagination button').nth(pageIndex).evaluate(button => button.click());
+            await home.waitForFunction(index => document.querySelectorAll('#projects .comet-archive-pagination button')[index]?.getAttribute('aria-selected') === 'true', pageIndex);
+            await home.waitForTimeout(400);
+            const positions = await home.locator('#projects .comet-archive__card').evaluateAll(cards => cards.map(card => card.querySelector('.comet-archive__details').getBoundingClientRect().top));
+            assert.equal(positions.length, 4, `${width}px ${lang}: expected four mobile cards`);
+            for (let i = 0; i < positions.length; i += 2) assert(Math.abs(positions[i] - positions[i + 1]) <= 1, `${width}px ${lang}: mobile page ${pageIndex + 1} details do not align`);
+          }
+          await home.locator('#projects .comet-archive-pagination button').first().evaluate(button => button.click());
+          await home.waitForFunction(() => document.querySelector('#projects .comet-archive-pagination button')?.getAttribute('aria-selected') === 'true');
+          await home.waitForTimeout(400);
+        }
+        const get=async(page,scope,index=0)=>page.evaluate(({selector,index})=>{
           const root=document.querySelector(selector);
-          const item=root.querySelector('.comet-archive__card');
+          const item=root.querySelectorAll('.comet-archive__card')[index];
           const image=item.querySelector('.comet-archive__image');
           const title=item.querySelector('.comet-archive__title');
           const copy=item.querySelector('.comet-archive__copy');
@@ -104,11 +135,13 @@ try{
             }),
             status,
           };
-        },scope);
-        const [a,b]=await Promise.all([get(home,'#projects'),get(works,'.library-grid')]);
+        },{selector:scope,index});
+        const [a,b]=await Promise.all([get(home,'#projects',homeComparisonIndex),get(works,'.library-grid',libraryComparisonIndex)]);
         const tag=`${width}px ${lang}`;
-        assert.equal(a.title,b.title,`${tag}: same first project must have same name`);
-        assert.equal(a.detail,b.detail,`${tag}: first project award/category differs`);
+        if(comparableFeaturedId){
+          assert.equal(a.title,b.title,`${tag}: shared featured commercial has same title`);
+          assert.equal(a.detail,b.detail,`${tag}: shared featured commercial has same description`);
+        }
         assert.equal(a.cover.ratio,'3 / 4',`${tag}: Featured must be 3:4`);
         assert.equal(b.cover.ratio,'3 / 4',`${tag}: All Work must be 3:4`);
         for(const [kind,result] of [['featured',a],['library',b]]){
@@ -131,13 +164,13 @@ try{
           assert(near(result.gapDetail,expectedDetail),`${tag}: ${kind} title-to-meta gap expected ${expectedDetail}px, got ${result.gapDetail}`);
         }
         assert.equal(a.cards,width<=720?4:8,`${tag}: Featured count or mobile paging changed`);
-        assert.equal(b.cards,15,`${tag}: All Work lost projects`);
+        assert.equal(b.cards,defaultCount,`${tag}: default commercial category count`);
         if(width<=760){
           const filters=await works.locator('.library-filters button').evaluateAll(elements=>elements.map(el=>{
             const r=el.getBoundingClientRect(),c=getComputedStyle(el);
             return {w:r.width,h:r.height,display:c.display,label:el.textContent.trim()};
           }));
-          assert.equal(filters.length,5,`${tag}: filter count`);
+          assert.equal(filters.length,4,`${tag}: four-category filter count`);
           for(const f of filters) assert(f.w>=43.5&&f.h>=43.5,`${tag}: filter ${f.label} is less than 44px target (${f.w}×${f.h})`);
         }
         assert.deepEqual(errors,[],`${tag}: page errors`);

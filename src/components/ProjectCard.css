@@ -39,6 +39,25 @@
     overflow: visible;
   }
   #projects .comet-archive__card { row-gap: var(--portfolio-work-caption-gap); }
+  @supports (grid-template-rows: subgrid) {
+  #projects .comet-archive { row-gap: 0; }
+  #projects .comet-archive__item {
+    display: grid;
+    grid-row: span 3;
+    grid-template-rows: subgrid;
+    padding-bottom: 22px;
+  }
+  #projects .comet-archive__card > .comet-archive__title {
+    min-width: 0;
+    grid-row: 2;
+    align-items: flex-start;
+    margin-top: var(--portfolio-work-title-gap);
+    overflow: visible;
+  }
+  #projects .comet-archive__card { grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: stretch; }
+  #projects .comet-archive__card > .comet-archive__image { grid-row: 1; }
+  #projects .comet-archive__card > .comet-archive__copy { grid-row: 3; padding-top: var(--portfolio-work-caption-gap); }
+  }
 }
 @media (max-width: 720px) {
   #projects .section-intro { margin-bottom: 22px; }
@@ -99,28 +118,28 @@
   object-position: center;
 }
 
-/* Tablet / unfolding-screen portfolio: the legacy 721–980px two-column,
-   max-680px archive left a large empty strip and oversized portrait posters.
-   Three evenly sized columns fill the available content area without altering
-   the <=720px swipe pager or >=1024px four-column desktop layout. */
+/* Tablet / unfolding-screen portfolio: four columns match desktop while the
+   <=720px mobile pager remains two columns. */
 @media (min-width: 721px) and (max-width: 1023px) {
   #projects .comet-archive-mobile-shell .comet-archive {
-    width: min(100%, 900px);
-    margin-inline: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: clamp(12px, 1.7vw, 18px);
-    row-gap: 25px;
-    padding-block: 12px 28px;
-  }
-}
-
-/* Wide tablet / Surface: four readable covers in two rows instead of a
-   three-row archive that becomes much taller just before the 1024px switch. */
-@media (min-width: 900px) and (max-width: 1023px) {
-  #projects .comet-archive-mobile-shell .comet-archive {
     width: 100%;
+    margin-inline: auto;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: clamp(13px, 1.6vw, 20px);
     row-gap: 22px;
+    padding-block: 12px 28px;
   }
+}
+@supports (grid-template-rows: subgrid) {
+  @media (min-width: 721px) and (max-width: 1023px) {
+    #projects .comet-archive-mobile-shell .comet-archive { row-gap: 0; }
+  }
+}
+
+
+/* Brief but readable location cue for workbench deep links; no new UI. */
+.comet-archive__card[data-direct-highlight='true'] .comet-archive__image {
+  outline: 2px solid rgba(117, 184, 246, .92);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 7px rgba(84, 148, 225, .13);
 }

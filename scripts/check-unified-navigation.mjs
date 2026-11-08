@@ -40,7 +40,7 @@ try{
   if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();}
   else await p.locator('#primary-nav [data-impact-nav]').click();
   await p.waitForTimeout(650);
-  await p.locator('.impact-award-card').first().click();await p.waitForSelector('#impact-award-lightbox');await p.waitForTimeout(400);await p.mouse.move(0,0);await p.waitForTimeout(220);
+  await p.locator('.impact-award-grid-card').first().click();await p.waitForSelector('#impact-award-lightbox');await p.waitForTimeout(400);await p.mouse.move(0,0);await p.waitForTimeout(220);
   same(home,await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('#impact-award-lightbox .cinema-player__close').evaluate(geometry));
   assert.equal(await p.locator('.impact-award-lightbox-close').count(),0);
   const image=await p.locator('#impact-award-lightbox figure > img').getAttribute('src');
@@ -49,7 +49,7 @@ try{
   for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('#impact-award-lightbox')));}
   if([393,1440].includes(width))await shot(p,`${width}-award-viewer`);
   await p.keyboard.press('Escape');await p.waitForSelector('#impact-award-lightbox',{state:'detached'});
-  assert(await p.locator('.impact-award-card').first().evaluate(el=>el===document.activeElement));
+  assert(await p.locator('.impact-award-grid-card').first().evaluate(el=>el===document.activeElement));
   assert(!await p.locator('main').evaluate(el=>el.inert));
   await p.goto(new URL('works.html?category=visual',base).href);
   same(home,await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
@@ -75,7 +75,7 @@ try{
  const short=await createSafePage(browser, {viewport:{width:393,height:500}});
  await short.goto(new URL('index.html#impact-awards',base).href);
  await short.locator('.nav-toggle').click();await short.locator('#mobile-primary-nav a[href="#recognition"]').click();await short.waitForTimeout(650);
- await short.locator('.impact-award-card').first().click();await short.waitForTimeout(400);
+ await short.locator('.impact-award-grid-card').first().click();await short.waitForTimeout(400);
  const before=await short.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry);
  await short.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);
  same(before,await short.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry));
@@ -106,11 +106,11 @@ try{
    assert.equal(style.blur,mode==='normal'?'blur(28px) saturate(1.02)':'none');
    assert.equal(style.opacity,'1');
   };
-  await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-card',{state:'attached'});await capability();
+  await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-grid-card',{state:'attached'});await capability();
   if(width<=760){await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();}
   else await p.locator('#primary-nav [data-impact-nav]').click();
   await p.waitForTimeout(650);
-  await p.locator('.impact-award-card').first().click();await p.waitForTimeout(420);
+  await p.locator('.impact-award-grid-card').first().click();await p.waitForTimeout(420);
   await material('#impact-award-lightbox','::before');
   if(out&&width===393)await shot(p,`${width}-award-${mode}`);
   await p.locator('#impact-award-lightbox .cinema-player__close').click();

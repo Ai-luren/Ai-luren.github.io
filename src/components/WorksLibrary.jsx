@@ -7,8 +7,9 @@ import LibraryNavigation from './LibraryNavigation.jsx';
 import { prepareProjectPoster } from '../utils/warmImage.js';
 import './WorksLibrary.css';
 
+// The All Work page uses the four real category tabs, never a redundant All filter.
+const DEFAULT_CATEGORY = 'commercial';
 const MOBILE_CATEGORY_LABELS = {
-  all: { zh: '全部', en: 'All' },
   commercial: { zh: '商业广告', en: 'Ads' },
   'short-film': { zh: '创意短片', en: 'Films' },
   social: { zh: '海外产品', en: 'Product Ads' },
@@ -19,14 +20,30 @@ export default function WorksLibrary() {
   const lang = useLang();
   const [category, setCategory] = useState(() => {
     const initial = new URLSearchParams(location.search).get('category');
-    return PROJECT_CATEGORIES.some(item => item.id === initial) ? initial : 'all';
+    return PROJECT_CATEGORIES.some(item => item.id === initial) ? initial : DEFAULT_CATEGORY;
   });
   const [selected, setSelected] = useState(null);
   const cinemaReturnFocusRef = useRef(null);
   const selectionTokenRef = useRef(0);
   useEffect(() => { selectionTokenRef.current += 1; }, [category]);
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
-  const visible = category === 'all' ? PROJECTS : PROJECTS.filter(project => project.category === category);
+  const visible = PROJECTS.filter(project => project.category === category);
+
+  // Direct preview from Studio opens the right category and finds the exact card.
+  useEffect(() => {
+    const id=new URLSearchParams(location.search).get('project');
+    if(!id || !visible.some(project=>project.id===id))return undefined;
+    let timeout;
+    const raf=requestAnimationFrame(()=>{
+      const target=document.querySelector('.library-grid .comet-archive__card[data-project-id="'+id+'"]');
+      if(!target)return;
+      target.classList.add('library-preview-target');
+      target.scrollIntoView({block:'center',behavior:'instant'});
+      target.focus({preventScroll:true});
+      timeout=setTimeout(()=>target.classList.remove('library-preview-target'),4000);
+    });
+    return ()=>{cancelAnimationFrame(raf);clearTimeout(timeout);};
+  },[category]);
 
   useEffect(() => {
     document.title = lang === 'en' ? 'All Work · Ai Luren' : '全部作品 · AI路人';
@@ -40,8 +57,39 @@ export default function WorksLibrary() {
   }, [lang]);
   useEffect(() => {
     const url = new URL(location.href);
-    if (category === 'all') url.searchParams.delete('category'); else url.searchParams.set('category', category);
+    if (category === DEFAULT_CATEGORY) url.searchParams.delete('category'); else url.searchParams.set('category', category);
     history.replaceState(null, '', url);
+  }, [category]);
+
+  // The workbench's "view this work" link points to one project, not the
+  // default first category. It selects the right category, then scrolls to
+  // and briefly highlights the actual card without opening/playing a video.
+  useEffect(() => {
+    const url = new URL(location.href);
+    const id = url.searchParams.get('project');
+    if (!id) return;
+    const project = PROJECTS.find(item => item.id === id);
+    if (!project) {
+      url.searchParams.delete('project');
+      history.replaceState(null, '', url);
+      return;
+    }
+    if (category !== project.category) {
+      setCategory(project.category);
+      return;
+    }
+    const frame = requestAnimationFrame(() => {
+      const card = [...document.querySelectorAll('.library-grid .comet-archive__card')]
+        .find(item => item.dataset.projectId === id);
+      if (!card) return;
+      card.scrollIntoView({behavior:'instant',block:'center'});
+      card.focus({preventScroll:true});
+      card.dataset.directHighlight = 'true';
+      url.searchParams.delete('project');
+      history.replaceState(null, '', url);
+      setTimeout(() => { if (card.isConnected) delete card.dataset.directHighlight; },2400);
+    });
+    return () => cancelAnimationFrame(frame);
   }, [category]);
 
   return <div className="work-library">
@@ -50,9 +98,9 @@ export default function WorksLibrary() {
       {!selected && <LibraryNavigation lang={lang} />}
       <div className="library-nav-space" />
       <main id="library-main">
-        <div className="library-intro"><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} Works · Commercials, Films & Visuals` : `${PROJECTS.length} 部作品 · 广告、短片与视觉实验`}</p></div>
+        <div className="library-intro"><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} Works · ${activeCategory?.label.en || 'Category'} (${visible.length})` : `共 ${PROJECTS.length} 部作品 · 当前：${activeCategory?.label.zh || '分类'} ${visible.length} 部`}</p></div>
         <div className="library-filters" role="group" aria-label={lang === 'en' ? 'Filter work by category' : '按作品类别筛选'}>
-          {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{item.id === 'all' ? PROJECTS.length : PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
+          {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>
         <p className="library-category-note" aria-live="polite" aria-atomic="true">
           {activeCategory?.description?.[lang] || '\u00a0'}
@@ -65,7 +113,7 @@ export default function WorksLibrary() {
             if (token === selectionTokenRef.current && trigger?.isConnected) setSelected(prepared);
           });
         }} />)}</div>
-          : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory('all')}>{lang === 'en' ? 'View all work' : '查看全部作品'}</button></div>}
+          : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory(DEFAULT_CATEGORY)}>{lang === 'en' ? 'View commercials' : '查看商业广告'}</button></div>}
       </main>
     </div>
     <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelected} context="library" onClose={() => setSelected(null)} />

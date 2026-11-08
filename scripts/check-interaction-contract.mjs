@@ -74,7 +74,7 @@ try{
         assert(await trigger.evaluate(el=>document.activeElement===el),tag+': profile focus not returned');
         assert.equal(await page.locator('main').evaluate(el=>el.inert),false,tag+': background remains inert');
 
-        const awardTrigger=page.locator('#impact-awards .impact-award-card').first();
+        const awardTrigger=page.locator('#impact-awards .impact-award-grid-card').first();
         await awardTrigger.click();
         const award=await checkDialog(page,'#impact-award-lightbox',tag+' awards');
         assert.equal(await award.getAttribute('role'),'dialog');

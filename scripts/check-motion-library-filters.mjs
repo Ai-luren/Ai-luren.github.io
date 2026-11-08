@@ -14,7 +14,7 @@ for(const [width,lang] of [[320,'zh'],[320,'en'],[390,'zh'],[390,'en'],[720,'en'
    return{y:+card.getBoundingClientRect().y.toFixed(2),h:+note.getBoundingClientRect().height.toFixed(2),count:document.querySelectorAll('.library-grid .comet-archive__card').length,note:note.textContent.trim(),overflow:document.documentElement.scrollWidth>innerWidth+1};
  });
  const initial=await inspect();
- for(const id of ['commercial','social','short-film','visual','all']){
+ for(const id of ['commercial','social','short-film','visual']){
   await p.locator('.library-filters button[data-category="'+id+'"]').click();
   const s=await inspect();
   assert(Math.abs(s.y-initial.y)<1.3,width+' '+lang+' '+id+': card jumps '+(s.y-initial.y)+'px');

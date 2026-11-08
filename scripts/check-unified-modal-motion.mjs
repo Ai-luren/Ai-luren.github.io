@@ -14,7 +14,7 @@ const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 const cases = [
   { path: 'works.html', trigger: '.library-grid .comet-archive__card', modal: '.cinema-player', content: '.cinema-player__layout', close: '.cinema-player__close' },
   { path: 'index.html', trigger: '#projects .comet-archive__card', modal: '.cinema-player', content: '.cinema-player__layout', close: '.cinema-player__close' },
-  { path: 'index.html', trigger: '#impact-awards .impact-award-card', modal: '.impact-award-lightbox', content: '.impact-award-lightbox figure', close: '.impact-award-lightbox .cinema-player__close' },
+  { path: 'index.html', trigger: '#impact-awards .impact-award-grid-card', modal: '.impact-award-lightbox', content: '.impact-award-lightbox figure', close: '.impact-award-lightbox .cinema-player__close' },
   { path: 'index.html', trigger: '[data-social-profile-trigger]', modal: '.impact-profile-lightbox', content: '.impact-profile-dialog', close: '.impact-profile-lightbox .cinema-player__close' },
 ];
 const opacity = (page, sel) => page.locator(sel).evaluate(el => Number(getComputedStyle(el).opacity));

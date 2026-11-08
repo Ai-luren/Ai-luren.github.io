@@ -8,6 +8,13 @@ const binary=['/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge','
 assert(binary,'Edge or Chrome required');
 const port=5258, base=process.env.PORTFOLIO_URL||'http://127.0.0.1:'+port+'/';
 const widths=[320,360,390,430,720,721,760,1024,1440];
+// Featured and All Work have independent orders. Compare the same shared card.
+const order=JSON.parse(await (await import('node:fs/promises')).readFile('src/data/project-order.json','utf8'));
+const autos=JSON.parse(await (await import('node:fs/promises')).readFile('src/data/auto-projects.json','utf8'));
+const commercial=new Set(['01','02','03','04','06','09',...autos.filter(p=>p.category==='commercial').map(p=>p.id)]);
+const shared=order.featured.find(id=>commercial.has(id));
+const homeIndex=order.featured.indexOf(shared);
+const libraryIndex=order.all.filter(id=>commercial.has(id)).indexOf(shared);
 let server;
 async function ready(){
  for(let i=0;i<90;i++){try{if((await fetch(base,{signal:AbortSignal.timeout(900)})).ok)return;}catch{}
@@ -31,7 +38,7 @@ try {
      await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
      await page.goto(new URL(kind==='home'?'index.html#projects':'works.html',base).href,{waitUntil:'domcontentloaded'});
      const selector=kind==='home'?'#projects .comet-archive__card':'.library-grid .comet-archive__card';
-     const card=page.locator(selector).first();
+     const card=page.locator(selector).nth(kind==='home'?homeIndex:libraryIndex);
      await card.waitFor();
      const output=await card.evaluate(card=>{
       const image=card.querySelector('.comet-archive__image'),badge=card.querySelector('.comet-archive__play-badge');

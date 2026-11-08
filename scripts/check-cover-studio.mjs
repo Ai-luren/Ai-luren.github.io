@@ -18,7 +18,7 @@ await fs.mkdir(path.join(fixture, 'assets/videos'), { recursive: true });
 await fs.symlink(path.join(root, 'assets/videos/works'), path.join(fixture, 'assets/videos/works'));
 await fs.symlink(path.join(root, 'node_modules'), path.join(fixture, 'node_modules'));
 await fs.writeFile(path.join(fixture, 'package.json'), '{"type":"module"}');
-await fs.writeFile(path.join(fixture, 'src/data/project-cover-overrides.json'), '{}\n');
+// All 17 published covers now have canonical category-based paths. Do not clear the fixture mapping.
 const realMappingBefore = await fs.readFile(path.join(root, 'src/data/project-cover-overrides.json'), 'utf8');
 const tool = await createCoverStudio({ projectRoot: fixture, port: 5192 });
 const vite = await createServer({ root: fixture, configFile: path.join(root, 'vite.config.js'), server: { host: '127.0.0.1', port: 5193, strictPort: true, fs: { allow: [fixture, root] } }, logLevel: 'error' });
@@ -31,18 +31,21 @@ const mapping = () => fs.readFile(path.join(fixture, 'src/data/project-cover-ove
 const ffprobe = file => JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height,codec_name', '-of', 'json', file])).streams[0];
 const sha = async file => createHash('sha256').update(await fs.readFile(file)).digest('hex');
 try {
-  await page.goto(tool.url); await page.waitForFunction(() => document.querySelector('#status').textContent.includes('FFmpeg 已连接'));
+  await page.goto(tool.url); await page.locator('.ux-advanced-nav').evaluate(x=>x.open=true); await page.waitForFunction(() => document.querySelector('#status').textContent.includes('已载入') || document.querySelector('#status').textContent.includes('就绪'));
+  await page.evaluate(()=>document.querySelector('[data-ux-advanced="cover"]').click());
   const boot = await (await fetch(`${tool.url}/api/bootstrap`)).json();
   const blocked = await fetch(`${tool.url}/api/export`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://example.com', 'X-Cover-Token': boot.token }, body: '{}' });
   assert.equal(blocked.status, 403);
   const unconfirmed = await fetch(`${tool.url}/api/export`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Cover-Token': boot.token }, body: JSON.stringify({ confirmed: false }) });
   assert.equal(unconfirmed.status, 400);
+  const localVideoPaths=JSON.parse(await fs.readFile(path.join(root,'src/data/local-video-paths.json'),'utf8'));
   const inputs = [
-    ['landscape', '09', 'assets/videos/works/AI Commercials/海外无线耳机 AI 场景广告.mp4'],
-    ['portrait', '12', 'assets/videos/works/AI Overseas Product Ads/海外车载坐垫 AI 产品体验广告.mp4'],
+    ['landscape', '10', 'assets/videos/works/'+localVideoPaths['10']],
+    ['portrait', '12', 'assets/videos/works/'+localVideoPaths['12']],
   ];
   for (const [kind, projectId, source] of inputs) {
     const original = path.join(root, source), before = await sha(original), beforeMap = await mapping();
+    await page.locator('#project-select').selectOption(projectId);
     await page.locator('#video-file').setInputFiles(original);
     await page.waitForFunction(() => document.querySelectorAll('.candidates button').length === 12 && !document.querySelector('#video-file').disabled, null, { timeout: 120000 });
     assert.equal(await page.locator('.candidates button').count(), 12);
@@ -60,6 +63,7 @@ try {
     assert.deepEqual(await mapping(), beforeMap);
     await page.locator('.candidates button').nth(3).click();
     await page.waitForFunction(() => !document.querySelector('#export-cover').disabled);
+    await page.locator('#timeline details').evaluate(el=>{el.open=true;});
     await page.locator('#time-input').fill('5.125'); await page.locator('#seek-frame').click();
     await page.waitForFunction(() => !document.querySelector('#export-cover').disabled && document.querySelector('#frame-status').textContent.startsWith('00:05.125'));
     await page.locator('[data-mode="cover"]').click();
@@ -78,15 +82,18 @@ try {
       assert.deepEqual(await mapping(), beforeMap, 'Export must not associate a project.');
       if (mode === 'contain-blur') {
         await page.screenshot({ path: path.join(fixture, 'screenshots', `${kind}.png`), fullPage: true });
-        await page.locator('#project-select').selectOption(projectId);
+        assert.equal(await page.locator('#project-select').inputValue(),projectId,'The selected work must stay unchanged while confirming.');
         assert(await page.locator('#associate-cover').isDisabled());
+        assert(await page.locator('#cover-confirm').isVisible(),'The confirmed 3:4 export must remain visible until applied.');
         await page.locator('#replace-consent').check(); await page.locator('#associate-cover').click();
-        await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('已关联作品'));
+        await page.waitForFunction(() => document.querySelector('#status').textContent.startsWith('已更新'));
         const nextMap = await mapping(); assert(nextMap[projectId]);
-        assert(nextMap[projectId].startsWith(projectId === '09' ? '海外无线耳机 AI 场景广告-' : '海外车载坐垫 AI 产品体验广告-'), 'Associated cover filenames must start with the Chinese project title.');
-        assert((await fs.stat(path.join(fixture, 'assets/images/project-covers/custom', nextMap[projectId]))).size > 0);
+        assert.equal(nextMap[projectId],boot.overrides[projectId], 'Replacing a cover keeps its stable English-title path.');
+        assert((await fs.stat(path.join(fixture, 'assets/images/project-covers', nextMap[projectId]))).size > 0);
         const work = await createSafePage(browser); await work.goto('http://127.0.0.1:5193/works.html'); await work.locator('.library-grid').waitFor();
-        const card = work.locator('.comet-archive__card').nth(projectId === '09' ? 8 : 11);
+        if(projectId==='12') await work.locator('.library-filters [data-category="social"]').click();
+        const projectTitle = boot.projects.find(p => p.id === projectId).title;
+        const card = work.locator('.library-grid .comet-archive__card').filter({ hasText: projectTitle }).first();
         assert(decodeURIComponent(await card.getAttribute('style')).includes(nextMap[projectId]), 'Public library must use the newly associated cover.');
         await card.click(); await work.locator('.cinema-player__play').click(); await work.waitForFunction(() => document.querySelector('video')?.videoWidth > 0); await work.locator('.cinema-player__close').click(); await work.close();
       }
@@ -95,16 +102,21 @@ try {
     console.log(`${kind}: 12 candidates, manual timestamp, drag, both modes, real WebP files, explicit association and video playback passed.`);
   }
   // Import an existing image without generating video candidates.
-  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/library/海外无线耳机 AI 场景广告.webp'));
+  await page.locator('#image-file').setInputFiles(path.join(root, 'assets/images/project-covers/commercial/Wireless Earbuds Lifestyle Ad.webp'));
   await page.waitForFunction(() => !document.querySelector('#export-cover').disabled && document.querySelector('#frame-status').textContent.startsWith('导入图片'));
   assert.equal(await page.locator('.candidates button').count(), 0); await page.locator('#export-cover').click();
   await page.waitForFunction(() => !document.querySelector('#export-result').hidden && !document.querySelector('#export-cover').disabled);
   const imageFile = (await page.locator('#export-path').innerText()).split(' · ')[0]; assert.equal(ffprobe(imageFile).width, 900);
-  assert.deepEqual(Object.keys(await mapping()).sort(), ['09', '12'], 'Existing eight featured covers must not be associated.');
+  assert.equal((await mapping())['10'],boot.overrides['10'],'Catalog paths must not change on replacement.');
   const exportedId = path.basename(imageFile, '.webp');
-  const protectedResponse = await fetch(`${tool.url}/api/associate`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Cover-Token': boot.token }, body: JSON.stringify({ confirmed: true, replaceExisting: true, projectId: '01', exportId: exportedId }) });
-  assert.equal(protectedResponse.status, 403);
+  const featuredResponse = await fetch(`${tool.url}/api/associate`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Cover-Token': boot.token }, body: JSON.stringify({ confirmed: true, replaceExisting: true, projectId: '01', expectedCover: (await mapping())['01'], exportId: exportedId }) });
+  assert.equal(featuredResponse.status, 200, 'Featured projects can now replace their 3:4 covers.');
+  const featuredMap = await mapping();
+  assert.equal(Object.keys(featuredMap).length,17);
+  assert.equal(featuredMap['01'],boot.overrides['01']);
+  assert((await fs.stat(path.join(fixture,'assets/images/project-covers',featuredMap['01']))).size>0);
+  console.log('FEATURED_COVER_REPLACEMENT_PASS: original assets unchanged');
   assert.equal(await fs.readFile(path.join(root, 'src/data/project-cover-overrides.json'), 'utf8'), realMappingBefore);
   assert.deepEqual(errors, []);
-  console.log(`Existing-image import, confirmation gates, cross-origin rejection and featured-cover protection passed.\nIsolated verification files retained at ${fixture}`);
+  console.log(`Existing-image import, confirmation gates, cross-origin rejection and featured-cover replacement passed.\nIsolated verification files retained at ${fixture}`);
 } finally { await browser.close(); await vite.close(); await tool.close(); }

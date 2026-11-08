@@ -5,6 +5,7 @@ import { PROJECT_CATEGORIES } from '../data/projects.js';
 import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { WORKS_HREF } from '../navigation/links.js';
+import {useLocalArtworkRevision,revisionedArtworkUrl} from '../utils/localPreviewArtwork.js';
 
 export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
   const lang = useLang();
@@ -18,6 +19,18 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const switchingRef = useRef(false);
   const switchFocusRef = useRef(null);
   const [switching, setSwitching] = useState(false);
+  const [versionSelection, setVersionSelection] = useState({ projectId: project?.id, index: 0 });
+  const versions = project ? [{
+    id: 'main', label: project.mainVersionLabel || { zh: '主版本', en: 'Main version' },
+    videoUrl: project.videoUrl, playerPoster: project.playerPoster,
+    videoWidth: project.videoWidth, videoHeight: project.videoHeight,
+  }, ...(project.variants || [])] : [];
+  const versionIndex = versionSelection.projectId === project?.id ? versionSelection.index : 0;
+  const currentVersion = versions[versionIndex] || versions[0];
+  const coverRevision=useLocalArtworkRevision('cover',project?.id);
+  const posterRevision=useLocalArtworkRevision('poster',project?.id,currentVersion?.id||'main');
+  const versionPoster = revisionedArtworkUrl(currentVersion?.playerPoster || project?.cover,
+    currentVersion?.playerPoster?posterRevision:coverRevision);
   const [dimensions, setDimensions] = useState(() => project?.videoWidth > 0 && project?.videoHeight > 0
     ? { width: project.videoWidth, height: project.videoHeight } : null);
   const cancelFrameRef = useRef(null);
@@ -34,7 +47,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const closeTimerRef = useRef(null);
   const failed = status === 'error';
   const playing = status === 'playing';
-  const videoUrl = project?.videoUrl?.trim();
+  const videoUrl = currentVersion?.videoUrl?.trim();
   const secondaryLabel = [PROJECT_CATEGORIES.find(category => category.id === project?.category)?.label[lang], project?.award[lang]].filter(Boolean).join(' · ');
 
   const index = projects.findIndex(item => item.id === project?.id);
@@ -92,7 +105,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   useLayoutEffect(() => {
     if (!project) return;
     const video = videoRef.current;
-    setDimensions(project.videoWidth > 0 && project.videoHeight > 0 ? {width:project.videoWidth,height:project.videoHeight}:null);
+    setDimensions(currentVersion?.videoWidth > 0 && currentVersion?.videoHeight > 0 ? {width:currentVersion.videoWidth,height:currentVersion.videoHeight}:null);
     attemptRef.current++;
     requestedRef.current = false;
     setStarted(false);setStatus('idle');setPlayBlocked(false);frameReadyRef.current=false;
@@ -106,7 +119,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       switchFocusRef.current=null;
     }
     return () => { cancelFrameRef.current?.(); if(video){video.pause();video.removeAttribute('src');video.load();} };
-  }, [project?.id, videoUrl]);
+  }, [project?.id, currentVersion?.id, videoUrl]);
 
   useLayoutEffect(() => {
     if (!dimensions) return undefined;
@@ -223,6 +236,13 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     }
   };
   const retry = () => play(true);
+  const chooseVersion = nextIndex => {
+    if (nextIndex === versionIndex || nextIndex < 0 || nextIndex >= versions.length || closingRef.current) return;
+    stop();
+    const next = versions[nextIndex];
+    setDimensions(next.videoWidth > 0 && next.videoHeight > 0 ? { width: next.videoWidth, height: next.videoHeight } : null);
+    setVersionSelection({ projectId: project.id, index: nextIndex });
+  };
   const focusLastControl = () => dialogRef.current?.querySelector('.cinema-player__return')?.focus();
 
   return createPortal(
@@ -235,7 +255,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       <div className="cinema-player__layout" ref={layoutRef}>
         <div ref={bodyRef} className="cinema-player__body" style={size && videoUrl ? { width: size.width, maxWidth: '100%' } : undefined}>
           {videoUrl ? <div className="cinema-player__stage" data-playback-state={status} style={size ? { width: size.width, height: size.height } : undefined} aria-busy={status === 'loading'}>
-            <video key={`video-${project.id}`} ref={videoRef} poster={project.playerPoster || project.cover} controls playsInline preload="none"
+            <video key={`video-${project.id}-${currentVersion?.id}`} ref={videoRef} poster={versionPoster} controls playsInline preload="none"
               aria-label={project.title[lang]} style={{ visibility: size && !failed ? 'visible' : 'hidden' }}
               onLoadedMetadata={event => {
                 const video = event.currentTarget;
@@ -277,8 +297,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
                 cancelFrameRef.current?.();
                 setStatus('error'); setStarted(false); setPlayBlocked(false);
               }} />
-            <img key={`poster-${project.id}`} className={`cinema-player__poster${started ? ' is-revealed' : ''}`}
-              src={project.playerPoster || project.cover} alt=""
+            <img key={`poster-${project.id}-${currentVersion?.id}`} className={`cinema-player__poster${started ? ' is-revealed' : ''}`}
+              src={versionPoster} alt=""
               onError={event => { if (event.currentTarget.getAttribute('src') !== project.cover) event.currentTarget.src = project.cover; }} />
             {status === 'loading' && <span className="cinema-player__loading" role="status">{lang === 'en' ? 'Loading film…' : '影片加载中…'}</span>}
             {!failed && !playing && status !== 'loading' && <div className="cinema-player__start">
@@ -300,6 +320,14 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <span>{lang === 'en' ? 'This work is not available for playback yet.' : '该作品暂未配置可播放的视频'}</span>
           </div>}
           <div className="cinema-player__information" ref={informationRef}>
+          {versions.length > 1 && <div className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
+            {versions.map((version, i) => (
+              <button key={version.id} type="button" className="cinema-player__version"
+                aria-pressed={i === versionIndex} onClick={() => chooseVersion(i)}>
+                {version.label?.[lang] || (lang === 'en' ? `Version ${i + 1}` : `版本 ${i + 1}`)}
+              </button>
+            ))}
+          </div>}
           <div className="cinema-player__caption">
             <h2 id="cinema-player-title">{project.title[lang]}</h2>
             {secondaryLabel && <p>{secondaryLabel}</p>}

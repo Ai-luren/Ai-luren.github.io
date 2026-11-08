@@ -150,18 +150,9 @@ function AwardGallery() {
   const [openIndex, setOpenIndex] = useState(-1);
   const [isClosing, setIsClosing] = useState(false);
   const [awardMotionVisible, setAwardMotionVisible] = useState(false);
-  const [railState, setRailState] = useState({ canScrollLeft: false, canScrollRight: true });
-  const [isMobile, setIsMobile] = useState(() => (
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 720px)').matches
-  ));
-  const [mobileAwardIndex, setMobileAwardIndex] = useState(0);
-  const plannedMobileAwardRef = useRef(0);
-  const mobileAwardRequestRef = useRef(0);
   const viewerTargetIndexRef = useRef(0);
   const viewerRequestRef = useRef(0);
-  const [awardLoading, setAwardLoading] = useState(false);
   const railRef = useRef(null);
-  const awardTouchState = useRef({ startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 });
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
@@ -216,164 +207,9 @@ function AwardGallery() {
     setOpenIndex(next);
     for (const neighbor of [-1, 1]) warmImage(awards[(next + neighbor + awards.length) % awards.length].image);
   }, []);
-  const syncRail = useCallback(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    if (isMobile) {
-      setRailState({ canScrollLeft: mobileAwardIndex > 0, canScrollRight: mobileAwardIndex < awards.length - 1 });
-      return;
-    }
-    setRailState({
-      canScrollLeft: rail.scrollLeft > 2,
-      canScrollRight: rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 2,
-    });
-  }, [isMobile, mobileAwardIndex]);
-
-  const moveToMobileAward = useCallback(async (index) => {
-    const safeIndex = Math.max(0, Math.min(awards.length - 1, index));
-    const request = ++mobileAwardRequestRef.current;
-    plannedMobileAwardRef.current = safeIndex;
-    const image = awards[safeIndex].thumbnail;
-    if (!isImageReady(image)) {
-      setAwardLoading(true);
-      await warmImage(image);
-    }
-    if (request !== mobileAwardRequestRef.current) return;
-    // The outgoing award remains visible while decoding, never reveal black.
-    setAwardLoading(false);
-    setMobileAwardIndex(safeIndex);
-    setRailState({ canScrollLeft: safeIndex > 0, canScrollRight: safeIndex < awards.length - 1 });
-    if (safeIndex < awards.length - 1) warmImage(awards[safeIndex + 1].thumbnail);
-    if (safeIndex > 0) warmImage(awards[safeIndex - 1].thumbnail);
-  }, []);
-
-  const setRailTouchOffset = (offset, dragging) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    rail.classList.toggle('is-touch-dragging', dragging);
-    rail.style.setProperty('--mobile-swipe-x', `${offset}px`);
-  };
-
-  const scrollRail = useCallback((direction) => {
-    const rail = railRef.current;
-    if (!rail) return;
-    if (isMobile) {
-      moveToMobileAward(plannedMobileAwardRef.current + direction);
-      return;
-    }
-    const cards = [...rail.querySelectorAll(':scope > li')];
-    if (!cards.length) return;
-
-    const railStyle = window.getComputedStyle(rail);
-    const clipInsets = railStyle.clipPath.match(/inset\(([^)]+)\)/)?.[1]
-      .split(/\s+/)
-      .map((value) => Number.parseFloat(value) || 0) ?? [0];
-    const clipLeft = clipInsets.length === 4 ? clipInsets[3] : clipInsets.length === 2 ? clipInsets[1] : clipInsets[0];
-    const clipRight = clipInsets.length >= 2 ? clipInsets[1] : clipInsets[0];
-    const gap = Number.parseFloat(railStyle.columnGap || railStyle.gap) || 0;
-    const cardWidth = cards[0].getBoundingClientRect().width;
-    const visibleWidth = rail.clientWidth - clipLeft - clipRight;
-    const pageSize = Math.max(1, Math.floor((visibleWidth + gap + 1) / (cardWidth + gap)));
-    const visibleStart = rail.scrollLeft + clipLeft;
-    const visibleEnd = rail.scrollLeft + rail.clientWidth - clipRight;
-    const currentStart = cards.findIndex((card) => {
-      const left = card.offsetLeft;
-      return left >= visibleStart - 1 && left + cardWidth <= visibleEnd + 1;
-    });
-    const startIndex = currentStart >= 0 ? currentStart : cards.findIndex((card) => card.offsetLeft + cardWidth > visibleStart);
-    const lastStart = Math.max(0, cards.length - pageSize);
-    const previousAlignedStart = Math.floor(lastStart / pageSize) * pageSize;
-    const targetIndex = direction > 0
-      ? Math.min(lastStart, Math.max(0, startIndex) + pageSize)
-      : (startIndex === lastStart && lastStart % pageSize !== 0
-        ? previousAlignedStart
-        : Math.max(0, startIndex - pageSize));
-    const target = cards[targetIndex];
-    const current = cards[Math.max(0, startIndex)];
-    if (!target || !current) return;
-
-    rail.scrollTo({
-      left: rail.scrollLeft + target.offsetLeft - current.offsetLeft,
-      behavior: 'smooth',
-    });
-  }, [isMobile, mobileAwardIndex, moveToMobileAward]);
-
-  const handleRailTouchStart = (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    awardTouchState.current = { startX: touch.clientX, startY: touch.clientY, moved: false, axis: 'none', suppressClickUntil: 0 };
-  };
-
-  const handleRailTouchMove = (event) => {
-    const touch = event.touches[0];
-    if (!touch) return;
-    const dx = touch.clientX - awardTouchState.current.startX;
-    const dy = touch.clientY - awardTouchState.current.startY;
-    const distanceX = Math.abs(dx);
-    const distanceY = Math.abs(dy);
-    if (distanceX > 10 || distanceY > 10) {
-      awardTouchState.current.moved = true;
-      if (awardTouchState.current.axis === 'none') {
-        awardTouchState.current.axis = distanceX > distanceY ? 'horizontal' : 'vertical';
-      }
-    }
-    if (awardTouchState.current.axis === 'horizontal') {
-      const atBoundary = (mobileAwardIndex === 0 && dx > 0)
-        || (mobileAwardIndex === awards.length - 1 && dx < 0);
-      setRailTouchOffset(atBoundary ? dx * .35 : dx, true);
-    }
-  };
-
-  const handleRailTouchEnd = (event) => {
-    if (!isMobile) return;
-    const touch = event.changedTouches[0];
-    if (!touch) return;
-    const distanceX = touch.clientX - awardTouchState.current.startX;
-    const distanceY = touch.clientY - awardTouchState.current.startY;
-    const isHorizontalSwipe = awardTouchState.current.axis === 'horizontal'
-      && Math.abs(distanceX) > 42
-      && Math.abs(distanceX) > Math.abs(distanceY);
-    if (isHorizontalSwipe) {
-      awardTouchState.current.suppressClickUntil = Date.now() + 450;
-      setRailTouchOffset(0, false);
-      scrollRail(distanceX < 0 ? 1 : -1);
-    } else if (awardTouchState.current.moved) {
-      awardTouchState.current.suppressClickUntil = Date.now() + 250;
-      setRailTouchOffset(0, false);
-    }
-  };
-
-  const handleRailTouchCancel = () => {
-    setRailTouchOffset(0, false);
-    awardTouchState.current = { startX: 0, startY: 0, moved: false, axis: 'none', suppressClickUntil: 0 };
-  };
-
-  useEffect(() => {
-    const media = window.matchMedia('(max-width: 720px)');
-    const update = () => setIsMobile(media.matches);
-    update();
-    media.addEventListener?.('change', update);
-    return () => media.removeEventListener?.('change', update);
-  }, []);
-
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return undefined;
-    syncRail();
-    rail.addEventListener('scroll', syncRail, { passive: true });
-    window.addEventListener('resize', syncRail);
-    return () => {
-      rail.removeEventListener('scroll', syncRail);
-      window.removeEventListener('resize', syncRail);
-    };
-  }, [syncRail]);
-
-  useEffect(() => {
-    return () => {
-      mobileAwardRequestRef.current++;
-      viewerRequestRef.current++;
-      window.clearTimeout(closeTimerRef.current);
-    };
+  useEffect(() => () => {
+    viewerRequestRef.current++;
+    window.clearTimeout(closeTimerRef.current);
   }, []);
 
   useEffect(() => warmNear(
@@ -488,82 +324,22 @@ function AwardGallery() {
   }, [isOpen, openIndex, lang]);
 
   const active = isOpen ? awards[openIndex] : null;
-  const galleryHint = lang === 'en'
-    ? (isMobile ? 'SWIPE TO VIEW' : 'BROWSE WITH ARROWS · CLICK TO VIEW')
-    : (isMobile ? '滑动浏览' : '左右浏览 · 点击查看');
-
   return (
-    <div className="impact-glass impact-award-shell" onTouchStart={handleRailTouchStart} onTouchMove={handleRailTouchMove} onTouchEnd={handleRailTouchEnd} onTouchCancel={handleRailTouchCancel}>
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{galleryHint}</span></div>
+    <div className="impact-glass impact-award-shell impact-award-shell--grid">
+      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{lang === 'en' ? 'CLICK TO VIEW' : '点击查看'}</span></div>
       <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases' : 'AI 创作赛事获奖、入围及展映记录'}</p>
-      <div className="impact-award-stage">
-      <button
-        type="button"
-        className="impact-award-rail-nav impact-award-rail-nav--prev"
-        aria-label={lang === 'en' ? 'Scroll awards left' : '向左浏览获奖荣誉'}
-        aria-controls="impact-award-rail"
-        disabled={!railState.canScrollLeft}
-        onClick={() => scrollRail(-1)}
-      >
-        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
-      </button>
-      <button
-        type="button"
-        className="impact-award-rail-nav impact-award-rail-nav--next"
-        aria-label={lang === 'en' ? 'Scroll awards right' : '向右浏览获奖荣誉'}
-        aria-controls="impact-award-rail"
-        disabled={!railState.canScrollRight}
-        onClick={() => scrollRail(1)}
-      >
-        <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
-      </button>
-      <ul id="impact-award-rail" ref={railRef} className="impact-award-rail" aria-busy={awardLoading} aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'} aria-describedby="impact-award-gallery-note" aria-live={isMobile ? 'polite' : 'off'} tabIndex={0}>
-        {(isMobile ? [awards[mobileAwardIndex]] : awards).map((award, visibleIndex) => {
-          const index = isMobile ? mobileAwardIndex : visibleIndex;
-          return (
+      <ul ref={railRef} className="impact-award-grid" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'}>
+        {awards.map((award, index) => (
           <li key={award.image}>
-            <button
-              type="button"
-              className="impact-award-card"
+            <button type="button" className="impact-award-grid-card"
               aria-label={lang === 'en' ? `Zoom in: ${award.title.en}, ${award.meta.en}` : `放大查看：${award.title.zh}，${award.meta.zh}`}
-              aria-haspopup="dialog"
-              aria-controls="impact-award-lightbox"
-              onClick={(event) => {
-                if (awardTouchState.current.moved || Date.now() < awardTouchState.current.suppressClickUntil) {
-                  event.preventDefault();
-                  handleRailTouchCancel();
-                  return;
-                }
-                open(index, event);
-              }}
-            >
-              <span className="impact-award-card-content">
-                <img src={award.thumbnail} alt={award.title[lang]} width="540" height="960" loading={isMobile || index < 4 ? 'eager' : 'lazy'} decoding="async" onLoad={syncRail} />
-                <span className="impact-award-card-caption" aria-hidden="true">
-                  <strong>{award.title[lang]}</strong>
-                  <small>{award.meta[lang]}</small>
-                </span>
-              </span>
+              aria-haspopup="dialog" aria-controls="impact-award-lightbox" onClick={(event) => open(index, event)}>
+              <img src={award.thumbnail} alt="" width="540" height="960" loading="lazy" decoding="async" />
+              <span className="impact-award-grid-caption" aria-hidden="true"><strong>{award.title[lang]}</strong><small>{award.meta[lang]}</small></span>
             </button>
           </li>
-          );
-        })}
-      </ul>
-      </div>
-      <div className="impact-award-pagination" role="tablist" aria-label={lang === 'en' ? 'Select an award or recognition' : '选择获奖荣誉'}>
-        {awards.map((award, index) => (
-          <button
-            key={award.image}
-            type="button"
-            role="tab"
-            aria-controls="impact-award-rail"
-            aria-selected={mobileAwardIndex === index}
-            aria-label={lang === 'en' ? `Show ${award.title.en}` : `查看${award.title.zh}`}
-            className={mobileAwardIndex === index ? 'is-active' : ''}
-            onClick={() => moveToMobileAward(index)}
-          />
         ))}
-      </div>
+      </ul>
       {/* 预览通过 Portal 独立于玻璃壳，避免 backdrop-filter 改变 fixed 定位；作为可退出的全屏模态层。 */}
       {active && createPortal(
         <div
@@ -800,9 +576,7 @@ function ReachDossier() {
     };
   }, [activeProfile, closeProfile]);
 
-  const formatMetric = (value) => (lang === 'zh' ? value.replace(/w$/i, '万') : value);
-  const featureCard = reachCards[0];
-  const profileRecords = reachCards.slice(1);
+  const formatMetric = (value) => (lang === 'zh' ? value.replace(/w(?=粉丝|喜爱|$)/i, '万') : value);
 
   const platformIdentity = (card) => (
     <div className="impact-reach-identity">
@@ -813,13 +587,13 @@ function ReachDossier() {
     </div>
   );
 
-  const accountActions = (card, featured = false) => (
-    <div className={featured ? 'impact-reach-feature-actions' : 'impact-reach-record-actions'}>
+  const accountActions = (card) => (
+    <div className="impact-reach-compact-actions">
       <button className="impact-reach-action impact-reach-action--primary" type="button"
         data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id}
         aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')}
         onClick={(event) => openProfile(card, event)}>
-        {t('查看账号资料', 'View account details')}
+        {t('查看资料', 'View details')}
       </button>
       {card.link && <a className="impact-reach-action impact-reach-action--external"
         href={card.link} target="_blank" rel="noopener noreferrer"
@@ -834,39 +608,19 @@ function ReachDossier() {
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
         <span>{t('跨平台影响力', 'CROSS-PLATFORM REACH')}</span>
+        <small>{t('4 个平台', '4 platforms')}</small>
       </div>
-      <div className="impact-reach-layout">
-        <article className="impact-reach-feature">
-          <div className="impact-reach-feature-main">
-            <div className="impact-reach-feature-head">
-              {platformIdentity(featureCard)}
-              <span className="impact-reach-feature-tag">{t('主要账号', 'MAIN CHANNEL')}</span>
+      <div className="impact-reach-compact-grid">
+        {reachCards.map((card) => (
+          <article className="impact-reach-compact-account" key={card.id}>
+            {platformIdentity(card)}
+            <div className="impact-reach-compact-metrics">
+              <strong className="impact-reach-compact-primary"><span>{formatMetric(card.primary[lang].value)}</span><small>{card.primary[lang].unit}</small></strong>
+              <span className="impact-reach-compact-secondary">{formatMetric(card.secondary[lang])}</span>
             </div>
-            <div className="impact-reach-feature-metrics">
-              <strong className="impact-reach-feature-primary">
-                <span>{formatMetric(featureCard.primary[lang].value)}</span>
-                <small>{featureCard.primary[lang].unit}</small>
-              </strong>
-              <span className="impact-reach-feature-secondary">{formatMetric(featureCard.secondary[lang])}</span>
-            </div>
-          </div>
-          {accountActions(featureCard, true)}
-        </article>
-
-        <div className="impact-reach-account-list">
-          {profileRecords.map((card) => (
-            <article className="impact-reach-account-record" key={card.id}>
-              <div className="impact-reach-record-main">
-                {platformIdentity(card)}
-                <div className="impact-reach-record-metrics">
-                  <strong><span>{formatMetric(card.primary[lang].value)}</span><small>{card.primary[lang].unit}</small></strong>
-                  <span>{formatMetric(card.secondary[lang])}</span>
-                </div>
-              </div>
-              {accountActions(card)}
-            </article>
-          ))}
-        </div>
+            {accountActions(card)}
+          </article>
+        ))}
       </div>
       {activeProfile && createPortal(
         <div
