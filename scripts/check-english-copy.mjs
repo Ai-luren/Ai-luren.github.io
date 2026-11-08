@@ -7,6 +7,7 @@ import {createSafePage,getSafeMediaReport} from './lib/safe-media.mjs';
 
 const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:5174/';
 const hero=readFileSync('src/components/HeroTitle.jsx','utf8');
+const workCount=15+JSON.parse(readFileSync('src/data/auto-projects.json','utf8')).length;
 assert(hero.includes("en: ['Video Design', 'Image Design', 'Vibe Coding']"),'Hero word order must remain Video → Image → Vibe Coding');
 assert(hero.includes("zh: ['视频设计', '图像设计', '氛围编程']"),'Chinese Hero order must match English');
 assert(hero.includes("lang === 'en' ? 'AI Creative'"),'Do not modify the AI Creative prefix');
@@ -51,7 +52,7 @@ try{
      programDescription:document.querySelector('.impact-platform-desktop-description')?.textContent,
      labTitles:[...document.querySelectorAll('.flip-experiment__title')].map(e=>e.textContent.trim()),
      text, overflow:document.documentElement.scrollWidth-innerWidth,
-     awards:[...document.querySelectorAll('#impact-awards .impact-award-card-caption strong')].map(e=>e.textContent.trim()),
+     awards:[...document.querySelectorAll('#impact-awards .impact-award-grid-caption strong')].map(e=>e.textContent.trim()),
      category:document.querySelector('[data-category="social"]')?.innerText,
      titles:[...document.querySelectorAll('.library-grid .comet-archive__title')].map(e=>e.textContent.replace(/\s+/g,' ').trim()),
     };
@@ -77,10 +78,14 @@ try{
     assert(!checks.meta.includes('Awarded by Kling'), 'Confusing platform awards and selections');
    }else{
     assert(checks.category.includes(width<=760?'Product Ads':'AI Product & Social Ads'), 'Product category label not localized');
-    assert(checks.titles.includes('Wireless Earbuds · AI Social Media Ad'), 'Missing natural social video title');
-    assert(checks.titles.includes('Chinese-Inspired Giant-Scale Visuals'), 'Missing visual experiment title');
-    assert(checks.titles.length===15, 'Lost a work while updating translations');
-    assert(!checks.titles.some(t=>t.includes('Overseas Wireless')||t.includes('Overseas Car Seat')), 'Old overseas title displayed');
+    await page.locator('[data-category="social"]').click();
+    const socialTitles=await page.locator('.library-grid .comet-archive__title').allTextContents();
+    assert(socialTitles.includes('Wireless Earbuds Comedy Ad'), 'Natural English comedy title missing in the social category');
+    await page.locator('[data-category="visual"]').click();
+    const visualTitles=await page.locator('.library-grid .comet-archive__title').allTextContents();
+    assert(visualTitles.includes('Monumental Chinese Visuals'), 'Visual experiment title missing');
+    assert((await page.locator('.library-intro').innerText()).includes(String(workCount)), 'Lost work count while updating translations');
+    assert(![...checks.titles,...socialTitles,...visualTitles].some(t=>t.includes('Overseas Wireless')||t.includes('Overseas Car Seat')), 'Deprecated overseas phrasing displayed');
    }
    assert.deepEqual(errors,[],`${width} ${route}: JavaScript errors`);
    assert.equal(getSafeMediaReport(page).urls.length,0,'Unexpected ImageKit media');

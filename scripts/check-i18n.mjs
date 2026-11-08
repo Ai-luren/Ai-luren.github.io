@@ -211,25 +211,23 @@ const CHECKS = {
       return { ok: bad.length === 0, detail: bad.join(' | ') };
     });
   },
-  // 移动端获奖轮播的分页圆点必须完整落在外层面板内，不能被面板的 overflow:hidden 裁掉。
-  awardPaginationVisible: async (page) => {
+  // 手机获奖网格的八张图必须都完整落在面板内，且按四列两排展示。
+  awardGridVisible: async (page) => {
     if (page.viewportSize().width > 720) return { ok: true };
     return page.evaluate(() => {
       const shell = document.querySelector('.impact-award-shell');
-      const rail = document.querySelector('.impact-award-rail');
-      const pagination = document.querySelector('.impact-award-pagination');
-      if (!shell || !rail || !pagination) return { ok: true };
+      const grid = document.querySelector('.impact-award-grid');
+      if (!shell || !grid) return { ok: false, detail: '获奖网格或面板缺失' };
       const shellRect = shell.getBoundingClientRect();
-      const railRect = rail.getBoundingClientRect();
-      const paginationRect = pagination.getBoundingClientRect();
-      const style = getComputedStyle(pagination);
-      const buttons = pagination.querySelectorAll('button');
-      const hidden = style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0;
-      const clipped = paginationRect.top < shellRect.top - 1 || paginationRect.bottom > shellRect.bottom + 1;
-      const overlapsRail = paginationRect.top < railRect.bottom - 6;
+      const images = [...grid.querySelectorAll('.impact-award-grid-card img')];
+      const clipped = images.filter(image => {
+        const rect = image.getBoundingClientRect();
+        return !rect.width || !rect.height || rect.left < shellRect.left - 1 || rect.right > shellRect.right + 1 || rect.top < shellRect.top - 1 || rect.bottom > shellRect.bottom + 1;
+      });
+      const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
       return {
-        ok: !hidden && !clipped && !overlapsRail && buttons.length > 0,
-        detail: `分页区域 ${Math.round(paginationRect.top)}-${Math.round(paginationRect.bottom)} / 轨道底部 ${Math.round(railRect.bottom)} / 面板 ${Math.round(shellRect.top)}-${Math.round(shellRect.bottom)}`,
+        ok: images.length === 8 && columns === 4 && clipped.length === 0,
+        detail: `图片 ${images.length} 张 / ${columns} 列 / 裁切 ${clipped.length} 张`,
       };
     });
   },
@@ -299,10 +297,10 @@ const CHECKS = {
           }
         }
       };
-      assertFamily('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-card-caption strong', displayFamily, '展示字体');
+      assertFamily('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-grid-caption strong', displayFamily, '展示字体');
       assertFamily('.impact-award-description, .impact-platform-desktop-description, .impact-platform-mobile-manifesto p, .impact-reach-dossier-description, .flip-experiment__row-description', bodyFamily, '正文字体');
-      assertFamily('.impact-evidence-note, .impact-platform-desktop-head, .impact-platform-mobile-meta, .impact-platform-mobile-network-head, .impact-reach-dossier-head, .impact-reach-profile-caption span, .impact-award-card-caption small, .flip-experiment__facts span', monoFamily, '等宽字体');
-      for (const el of visible('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-card-caption strong')) {
+      assertFamily('.impact-evidence-note, .impact-platform-desktop-head, .impact-platform-mobile-meta, .impact-platform-mobile-network-head, .impact-reach-dossier-head, .impact-reach-profile-caption span, .impact-award-grid-caption small, .flip-experiment__facts span', monoFamily, '等宽字体');
+      for (const el of visible('.impact-evidence-label h2, #experiments .section-title, .impact-platform-mobile-manifesto h3, .flip-experiment__row-title h3, .impact-award-grid-caption strong')) {
         if (getComputedStyle(el).fontWeight !== '600') bad.push(`展示字重不一致: ${el.textContent.trim().slice(0, 24)}`);
       }
       if (document.documentElement.lang === 'en') {
@@ -331,11 +329,12 @@ const CHECKS = {
         }
       };
       assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card, #experiments .flip-experiment', '24px', '外层面板圆角');
-      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#recognition .impact-award-grid-card img', innerWidth <= 720 ? '8px' : '12px', '获奖图片圆角');
       assertRadius('#experiments .flip-experiment__row', '0px', '编辑索引行不使用独立卡片圆角');
       assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '0px', '平台静态分栏不使用卡片圆角');
       assertRadius('.hero-actions button, .impact-qr-dialog-actions a, .comet-archive__meta, .impact-reach-profile-hover-label, .video-tuner__toggle', '999px', '操作控件圆角');
-      assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-rail-nav, .impact-award-card-zoom, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a, .closing-social .floating-dock-item', '50%', '圆形控件圆角');
+      assertRadius('.back-to-top, .brand, .footer-avatar, header .nav-lang, header .nav-contact-icon, .nav-toggle, .mobile-nav-close, .impact-award-lightbox-nav, .impact-award-lightbox-close, .comet-archive-page-arrow, .footer-social a, .closing-social .floating-dock-item', '50%', '圆形控件圆角');
 
       // All content panels share one cinematic-glass material regardless of
       // whether they render through static HTML or React portals.
@@ -353,7 +352,7 @@ const CHECKS = {
           bad.push(`内容玻璃 Token 失效: background=${base.backgroundColor}, blur=${base.backdropFilter}`);
         }
       }
-      for (const el of visible('#projects .comet-archive__image, #recognition .impact-award-card, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item')) {
+      for (const el of visible('#projects .comet-archive__image, #recognition .impact-award-grid-card img, #impact-reach .impact-reach-profile-media, #recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile, .floating-dock-item')) {
         if (getComputedStyle(el).backdropFilter !== 'none') bad.push(`内容层仍有模糊: ${el.className || el.tagName}`);
       }
       return { ok: bad.length === 0, detail: bad.join(' | ') };
@@ -484,7 +483,7 @@ async function run() {
         if (vp.name === 'mobile') {
           for (const w of [375, 360]) {
             await page.setViewportSize({ width: w, height: vp.height });
-            for (const name of ['navFits', 'archiveKickNoClip', 'archiveAwardNoClip', 'awardPaginationVisible']) {
+            for (const name of ['navFits', 'archiveKickNoClip', 'archiveAwardNoClip', 'awardGridVisible']) {
               const result = await CHECKS[name](page);
               if (result && result.ok === false) {
                 failures.push(`[mobile-${w}px ${lang}] ${name} 失败（${result.detail}）`);

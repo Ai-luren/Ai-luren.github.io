@@ -3,13 +3,16 @@ import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
  * Detailed media, modal and card behaviors retain their focused suites.
  */
 import assert from 'node:assert/strict';
-import {existsSync} from 'node:fs';
+import {existsSync,readFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
 import {chromium} from 'playwright-core';
 
 const binary=['/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(existsSync);
 assert(binary,'Chrome or Edge required for final QA');
 const port=5272;
+const autoWorks=JSON.parse(readFileSync(new URL('../src/data/auto-projects.json',import.meta.url)));
+const workCount=15+autoWorks.length;
+const defaultCount=6+autoWorks.filter(work=>work.category==='commercial').length;
 const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:'+port+'/';
 const widths=[320,360,375,390,430,720,721,760,761,768,820,900,1023,1024,1280,1440,1920];
 const langs=['zh','en'];
@@ -54,7 +57,7 @@ try{
        .filter(node=>{
         if(!visible(node))return false;
         // Carousel items outside the clipped horizontal rail are intentional.
-        if(node.closest('.impact-award-rail,.comet-archive,.logo-loop'))return false;
+        if(node.closest('.comet-archive,.logo-loop'))return false;
         const r=node.getBoundingClientRect();
         return r.left<-2||r.right>innerWidth+2;
        }).slice(0,8).map(node=>node.textContent.trim().slice(0,38));
@@ -86,7 +89,7 @@ try{
      assert(Math.abs(evidence.coverRatio-.75)<=.012,tag+': cover proportion changed');
      // Mobile Featured uses four mounted cards per page; the underlying eight
      // project records and pagination are checked by the work-card suite.
-     assert.equal(evidence.cardCount,kind==='home'?(width<=720?4:8):15,tag+': expected visible portfolio cards changed');
+     assert.equal(evidence.cardCount,kind==='home'?(width<=720?4:8):defaultCount,tag+': expected visible portfolio cards changed');
      assert(evidence.navWidth>100,tag+': shared navigation missing');
      if(width<=760)assert(evidence.menuWidth>=44,tag+': menu touch target too small');
      if(width>=761)assert.deepEqual(evidence.navLinks,expectedNav[lang],tag+': tablet/desktop nav changed');

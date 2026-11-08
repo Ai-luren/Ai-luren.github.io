@@ -16,7 +16,7 @@ const executablePath = [
 assert(executablePath, 'Edge or Chrome is required');
 const port = 5214;
 const base = process.env.PORTFOLIO_URL || `http://127.0.0.1:${port}/`;
-const widths = [320,360,390,430,720,760,761,1024,1440];
+const widths = [320,360,390,430,720,760,761,1024,1100,1101,1440];
 let server;
 const geometry = element => {
   const rect = element.getBoundingClientRect();
@@ -52,32 +52,31 @@ try {
         const tag=`${width}px ${lang}`;
         const home=await page.locator('body > header').evaluate(geometry);
         const layout=await page.locator('#impact-reach .impact-reach-dossier').evaluate(node=>{
-          const bounds=s=>{const r=node.querySelector(s).getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};};
-          return {
-            glass:bounds('.impact-reach-dossier-head'),
-            feature:bounds('.impact-reach-feature'),
-            rows:[...node.querySelectorAll('.impact-reach-account-record')].map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};}),
-            layout:getComputedStyle(node.querySelector('.impact-reach-layout')).gridTemplateColumns,
-            featureMetricX:bounds('.impact-reach-feature-metrics').x,
-            accountMetricX:bounds('.impact-reach-record-metrics').x,
+          const grid=node.querySelector('.impact-reach-compact-grid');
+          const rows=[...grid.querySelectorAll('.impact-reach-compact-account')].map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};});
+          return {rows, columns:getComputedStyle(grid).gridTemplateColumns.split(' ').length,
             panelOverflow:node.scrollWidth-node.clientWidth,
-            pageOverflow:document.documentElement.scrollWidth-innerWidth,
-          };
+            pageOverflow:document.documentElement.scrollWidth-innerWidth};
         });
-        assert.equal(layout.rows.length,3,`${tag}: must keep the 1+3 account layout`);
+        assert.equal(layout.rows.length,4,`${tag}: four account records required`);
+        assert.equal(layout.columns,width<=720?1:width<=1100?2:4,`${tag}: unexpected column count`);
         assert(layout.panelOverflow<=2 && layout.pageOverflow<=2,`${tag}: horizontal overflow`);
-        if(width<=720){
-          assert(layout.rows[0].y>layout.feature.y+layout.feature.h-2,`${tag}: mobile accounts should stack after feature`);
-          assert(layout.rows.every((r,i)=>i===0||r.y>layout.rows[i-1].y),`${tag}: account order`);
-          assert(layout.rows.every(r=>closeEnough(r.x,layout.feature.x)),`${tag}: account left edges differ`);
-          assert(layout.feature.h<205,`${tag}: featured platform too tall`);
-        }
+        if(width<=720) assert(layout.rows.every((r,i)=>i===0||r.y>layout.rows[i-1].y),`${tag}: mobile account order`);
         const actions=page.locator('#impact-reach .impact-reach-action');
         assert.equal(await actions.count(),7,`${tag}: missing actions`);
+        const actionGeometry=await page.locator('#impact-reach .impact-reach-compact-account').evaluateAll(cards=>cards.map(card=>({
+          overflow:card.scrollWidth-card.clientWidth,
+          actions:[...card.querySelectorAll('.impact-reach-action')].map(el=>{const r=el.getBoundingClientRect();return {y:r.y,h:r.height};})
+        })));
+        assert(actionGeometry.every(card=>card.overflow<=1),`${tag}: account text is clipped`);
+        if(width<=720) for(const card of actionGeometry) {
+          assert(card.actions.every(action=>action.h>=44),`${tag}: mobile action target too short`);
+          if(card.actions.length===2) assert(Math.abs(card.actions[0].y-card.actions[1].y)<=1,`${tag}: mobile actions wrap`);
+        }
         // Every available homepage link follows the single combined-account viewer.
         const names=await actions.allTextContents();
         for(const index of [0,2,4,6]){
-          assert(names[index].includes(lang==='zh'?'查看账号资料':'View account details'),`${tag}: action order is inconsistent`);
+          assert(names[index].includes(lang==='zh'?'查看资料':'View details'),`${tag}: action order is inconsistent`);
         }
         for(const index of [0,2,6]){
           const trigger=actions.nth(index);
@@ -169,7 +168,7 @@ try {
       } finally {await page.close()}
     }
   } finally {await browser.close()}
-  console.log('PASS: AI Media + combined profile and QR + shared navigation, 9 widths × 2 languages');
+  console.log('PASS: AI Media + combined profile and QR + shared navigation, 11 widths × 2 languages');
 } finally {
   if(server){server.kill('SIGTERM');await new Promise(resolve=>setTimeout(resolve,180));}
 }

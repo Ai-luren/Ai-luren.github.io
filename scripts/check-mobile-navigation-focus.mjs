@@ -14,7 +14,7 @@ mkdirSync(out,{recursive:true});
 const cases=[
   {name:'featured',path:'index.html',trigger:'#projects .comet-archive__card',viewer:'.cinema-player[open]'},
   {name:'library',path:'works.html',trigger:'.library-grid .comet-archive__card',viewer:'.cinema-player[open]'},
-  {name:'awards',path:'index.html',trigger:'#impact-awards .impact-award-card',viewer:'.impact-award-lightbox'},
+  {name:'awards',path:'index.html',trigger:'#impact-awards .impact-award-grid-card',viewer:'.impact-award-lightbox'},
   {name:'social',path:'index.html',trigger:'[data-social-profile-trigger]',viewer:'.impact-profile-lightbox'},
   {name:'library-menu',path:'works.html',trigger:'.library-page-navigation .cinema-player__close',viewer:'.library-menu[open]'},
 ];

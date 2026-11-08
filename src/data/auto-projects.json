@@ -1,0 +1,62 @@
+[
+  {
+    "id": "16",
+    "category": "commercial",
+    "featured": false,
+    "title": {
+      "zh": "MEXC 会员权益",
+      "en": "MEXC Member Perks"
+    },
+    "award": {
+      "zh": "",
+      "en": ""
+    },
+    "sourceUrl": null,
+    "caseStudy": null,
+    "localVideoPath": "AI Commercials/MEXC Member Perks - Version A.mp4",
+    "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/MEXC-StandardCabin%20Perks-Version%20A.mp4",
+    "coverFile": "commercial/MEXC Member Perks.webp",
+    "mainVersionLabel": {
+      "zh": "版本 A",
+      "en": "Version A"
+    },
+    "variants": [
+      {
+        "id": "b6e081f2-4867-4263-8a35-86b2774b6197",
+        "label": {
+          "zh": "版本 B",
+          "en": "Version B"
+        },
+        "localVideoPath": "AI Commercials/MEXC Member Perks - Version B.mp4",
+        "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/MEXC-StandardCabin%20Perks-Version%20B.mp4",
+        "videoWidth": 1282,
+        "videoHeight": 720,
+        "posterFile": "commercial/MEXC Member Perks - Version B.webp",
+        "posterTime": 26.26,
+        "posterTimeSource": "confirmed-poster-selection"
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "category": "commercial",
+    "featured": false,
+    "title": {
+      "zh": "MEXC 不用等了",
+      "en": "MEXC No More Waiting"
+    },
+    "award": {
+      "zh": "",
+      "en": ""
+    },
+    "sourceUrl": null,
+    "caseStudy": null,
+    "localVideoPath": "AI Commercials/MEXC No More Waiting.mp4",
+    "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/MEXC-DontUnpackYet.mp4",
+    "coverFile": "commercial/MEXC No More Waiting.webp",
+    "mainVersionLabel": {
+      "zh": "主版本",
+      "en": "Main version"
+    }
+  }
+]

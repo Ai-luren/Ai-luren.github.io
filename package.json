@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "covers": "node tools/cover-studio/server.mjs",
+    "covers": "node --env-file-if-exists=.env tools/cover-studio/server.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "check:english-copy": "node scripts/check-english-copy.mjs",
@@ -44,7 +44,23 @@
     "check:award-hover-radius": "node scripts/check-award-hover-radius.mjs",
     "check:profile-no-flash": "node scripts/check-profile-no-flash.mjs",
     "check:motion-polish": "node scripts/check-motion-polish.mjs",
-    "check:poster-return": "node scripts/check-featured-poster-and-works-return.mjs"
+    "check:poster-return": "node scripts/check-featured-poster-and-works-return.mjs",
+    "check:asset-catalog": "node scripts/check-asset-catalog.mjs",
+    "check:cover-poster": "node scripts/check-cover-studio-poster.mjs",
+    "check:workbench-ux": "node scripts/check-cover-studio-library.mjs",
+    "check:workbench-save": "node scripts/check-cover-studio-library-save.mjs",
+    "check:workbench-drag": "node scripts/check-cover-studio-direct-drag.mjs",
+    "check:workbench-full-flow": "node scripts/check-cover-studio-unified-workflow.mjs",
+    "check:workbench-history": "node scripts/check-cover-studio-history.mjs",
+    "check:workbench-endframe": "node scripts/check-cover-studio-endframe-sync.mjs",
+    "check:workbench-preview-sync": "node scripts/check-cover-studio-preview-sync.mjs",
+    "check:workbench-draft-focus": "node scripts/check-cover-studio-draft-focus.mjs",
+    "check:workbench-navigation": "node scripts/check-cover-studio-work-navigation.mjs",
+    "check:workbench-precision-frames": "node scripts/check-cover-studio-precision-frames.mjs",
+    "check:workbench-fast-jog": "node scripts/check-cover-studio-fast-jog.mjs",
+    "check:workbench-import-ui": "node scripts/check-cover-studio-import-ui.mjs",
+    "check:workbench-icon-alignment": "node scripts/check-cover-studio-icon-alignment.mjs",
+    "check:workbench-phase3": "node scripts/check-cover-studio-phase3-layout.mjs"
   },
   "dependencies": {
     "gsap": "^3.15.0",

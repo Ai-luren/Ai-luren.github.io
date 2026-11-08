@@ -1,4 +1,4 @@
-import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
+import { createSafePage, getSafeMediaReport } from './lib/safe-media.mjs';
 /**
  * Step 01 regression: the Platform Creator content must never disappear
  * between the mobile and desktop CSS breakpoints.
@@ -101,17 +101,26 @@ try {
                 const rect = el.getBoundingClientRect();
                 return rect.left < rootRect.left - 2 || rect.right > rootRect.right + 2;
               }).length,
+              badContent: [...tiles].filter(el => {
+                const tile = el.getBoundingClientRect();
+                const image = el.querySelector('img').getBoundingClientRect();
+                const copy = el.querySelector('div').getBoundingClientRect();
+                return copy.left < image.right - 1 || copy.right > tile.right + 1 || copy.bottom > tile.bottom + 1;
+              }).length,
             };
           });
           const tag = `${width}px ${lang}`;
           assert.equal(state.visibleMobile, expectedMobile, `${tag}: mobile platform visibility; ${JSON.stringify(state)}`);
           assert.equal(state.visibleDesktop, !expectedMobile, `${tag}: desktop platform visibility; ${JSON.stringify(state)}`);
           assert(state.panelHeight >= 200, `${tag}: platform card collapsed to ${state.panelHeight}px`);
+          assert(state.panelHeight <= (expectedMobile ? 350 : 300), `${tag}: platform card is too tall (${state.panelHeight}px)`);
           assert.equal(state.shownTiles, 8, `${tag}: platform identities are not all present`);
           assert.equal(state.imageSources, 8, `${tag}: platform logos are missing`);
           assert.equal(state.clipped, 0, `${tag}: platform tiles extend beyond the glass panel`);
+          assert.equal(state.badContent, 0, `${tag}: platform logo and text overlap or clip`);
           assert(state.pageWidth <= width + 2, `${tag}: document overflows horizontally (${state.pageWidth}px)`);
           assert.equal(errors.length, 0, `${tag}: JavaScript errors: ${errors.join(' | ')}`);
+          assert.equal(getSafeMediaReport(page).urls.length, 0, `${tag}: unexpected ImageKit request`);
           console.log(`PASS ${tag}: ${expectedMobile ? 'mobile' : 'desktop'} card, 8 identities, ${state.panelHeight}px tall`);
         } finally {
           await page.close();

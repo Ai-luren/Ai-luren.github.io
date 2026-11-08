@@ -3,9 +3,12 @@ import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // PORTFOLIO_URL=http://127.0.0.1:5182/ REVIEW_SCREENSHOTS=/outside/repo node scripts/capture-final-review.mjs
 import { chromium } from 'playwright-core';
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, realpathSync } from 'node:fs';
 import { resolve, relative, sep } from 'node:path';
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5182/';
+const source = readFileSync(new URL('../src/data/projects.js', import.meta.url), 'utf8');
+const autoWorks = JSON.parse(readFileSync(new URL('../src/data/auto-projects.json', import.meta.url), 'utf8'));
+const commercialCount = [...source.matchAll(/\{ id: '\d+', category: 'commercial'/g)].length + autoWorks.filter(work => work.category === 'commercial').length;
 const out = process.env.REVIEW_SCREENSHOTS;
 assert(out, 'Set REVIEW_SCREENSHOTS to a directory outside the Git repository.');
 mkdirSync(out, { recursive: true });
@@ -131,7 +134,7 @@ async function capture(path, width, height, lang) {
     assert(record.dom.lang === lang || record.dom.lang.startsWith(`${lang}-`));
     assert(!record.dom.overflow, `${name}: horizontal page overflow`);
     if (home) assert.equal(record.dom.awardHeading, lang === 'en' ? 'AI Awards & Recognition' : 'AI 获奖荣誉');
-    if (!home) assert.equal(record.dom.cards, 15);
+    if (!home) assert.equal(record.dom.cards, commercialCount);
     await shot(page, `${name}-full`, true);
     if (home) {
       await section(page, '#projects', `${name}-selected-work`, record);
@@ -147,7 +150,7 @@ async function capture(path, width, height, lang) {
       await section(page, '#impact-reach', `${name}-media`, record);
       if (lang === 'zh') {
         await scrollTo(page, await page.locator('#impact-awards').evaluate(e => scrollY + e.getBoundingClientRect().top - 106));
-        await page.locator('.impact-award-card').first().click();
+        await page.locator('.impact-award-grid-card').first().click();
         await page.waitForSelector('#impact-award-lightbox');
         const media = await decodeMedia(page); assert(media.every(a => a.ok));
         await settle(page); await shot(page, `${name}-award-viewer`);
@@ -156,8 +159,8 @@ async function capture(path, width, height, lang) {
       }
     } else {
       await section(page, '.library-grid', `${name}-grid-viewport`, record);
-      if (lang === 'zh') for (const [index, format] of [[0, 'landscape'], [3, 'portrait']]) {
-        await page.locator('.library-grid .comet-archive__card').nth(index).click();
+      if (lang === 'zh') for (const [id, format] of [['17', 'landscape'], ['04', 'portrait']]) {
+        await page.locator(`.library-grid .comet-archive__card[data-project-id="${id}"]`).click();
         await page.waitForSelector('.cinema-player[open]');
         await page.waitForFunction(format => document.querySelector('.cinema-player')?.dataset.format === format, format);
         const assets = await decodeMedia(page); assert(assets.every(a => a.ok));

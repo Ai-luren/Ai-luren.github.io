@@ -142,44 +142,11 @@ try {
 
   await page.locator('#impact-awards').scrollIntoViewIfNeeded();
   await page.waitForTimeout(350);
-  const awardStyles = await page.evaluate(() => ({
-    shellTouchAction: getComputedStyle(document.querySelector('.impact-award-shell')).touchAction,
-    nextTouchAction: getComputedStyle(document.querySelector('.impact-award-rail-nav--next')).touchAction,
-    dotTouchAction: getComputedStyle(document.querySelector('.impact-award-pagination button')).touchAction,
-    pagination: (() => {
-      const wrapper = document.querySelector('.impact-award-pagination');
-      const active = wrapper?.querySelector('button.is-active');
-      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
-      const dotStyle = active ? getComputedStyle(active, '::before') : null;
-      return {
-        background: wrapperStyle?.backgroundColor,
-        border: wrapperStyle?.borderStyle,
-        activeDotWidth: dotStyle?.width,
-      };
-    })(),
-  }));
-  if (awardStyles.shellTouchAction !== 'pan-y') {
-    throw new Error(`获奖作品容器 touch-action 应为 pan-y，实际为 ${awardStyles.shellTouchAction}`);
-  }
-  if (awardStyles.nextTouchAction !== 'manipulation' || awardStyles.dotTouchAction !== 'manipulation') {
-    throw new Error(`获奖作品控件 touch-action 应为 manipulation，实际为 ${JSON.stringify(awardStyles)}`);
-  }
-  if (awardStyles.pagination.background !== 'rgba(0, 0, 0, 0)' || awardStyles.pagination.border !== 'none' || awardStyles.pagination.activeDotWidth !== '20px') {
-    throw new Error(`获奖作品分页点视觉样式异常：${JSON.stringify(awardStyles.pagination)}`);
-  }
-  const activeAward = () => page.evaluate(() => (
-    [...document.querySelectorAll('.impact-award-pagination button')]
-      .findIndex((button) => button.classList.contains('is-active'))
-  ));
-  await swipe('.impact-award-shell', { dx: -140, dy: 0 });
-  if (await activeAward() !== 1) throw new Error('获奖作品横向左滑没有切换到第 2 张');
-
-  await page.locator('.impact-award-pagination button').first().click();
-  await page.waitForTimeout(100);
+  if (await page.locator('#impact-awards .impact-award-grid-card').count() !== 8) throw new Error('获奖网格应展示 8 张');
   await swipe('.impact-award-shell', { dx: 12, dy: 140 });
-  if (await activeAward() !== 0) throw new Error('获奖作品纵向滑动错误地切换了卡片');
+  if (await page.locator('#impact-awards .impact-award-grid-card').count() !== 8) throw new Error('纵向滚动不应改变获奖卡片');
 
-  console.log('移动端卡片手势回归通过（393px：两组卡片横滑、纵滑不切页、快速点击防缩放策略）。');
+  console.log('移动端卡片手势回归通过（393px：精选卡片横滑、获奖网格纵向滚动、快速点击防缩放策略）。');
 } finally {
   await browser.close();
 }

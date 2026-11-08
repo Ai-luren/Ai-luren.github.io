@@ -22,13 +22,7 @@ try {
     await page.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
     // Hailuo Animal Diving is award #4 in the current curated order.
     // The original edge test assumed Hailuo was the first award.
-    if (width <= 720) {
-      await page.locator('#impact-awards .impact-award-pagination button').nth(3).evaluate(node => node.click());
-      await page.waitForFunction(() => document.querySelectorAll('#impact-awards .impact-award-pagination button')[3]?.getAttribute('aria-selected') === 'true', null, { timeout: 14000 });
-      await page.locator('#impact-awards .impact-award-card').first().evaluate(node => node.click());
-    } else {
-      await page.locator('#impact-awards .impact-award-card').nth(3).evaluate(node => node.click());
-    }
+    await page.locator('#impact-awards .impact-award-grid-card').nth(3).evaluate(node => node.click());
     await page.locator('.impact-award-lightbox figure > img').waitFor({ state: 'visible' });
     // The thumbnail paints first, then the original upgrades after decode.
     await page.waitForFunction(() => document.querySelector('.impact-award-lightbox figure > img')?.naturalWidth === 1124, null, { timeout: 14000 });

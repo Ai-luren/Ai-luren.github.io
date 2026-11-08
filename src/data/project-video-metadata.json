@@ -2,105 +2,119 @@
   "10": {
     "videoWidth": 1256,
     "videoHeight": 720,
-    "playerPoster": "海外无线耳机 AI 产品展示广告-59f48908e5dd.webp",
-    "playerPosterTime": 9.443666457272728,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPoster": "social/Wireless Earbuds Product Showcase.webp",
+    "playerPosterTime": 11.99,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "11": {
     "videoWidth": 617,
     "videoHeight": 1080,
-    "playerPoster": "海外无线耳机 AI 社媒创意广告-0098baddc8e0.webp",
-    "playerPosterTime": 15.066,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPoster": "social/Wireless Earbuds Comedy Ad.webp",
+    "playerPosterTime": 11.232399,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "12": {
     "videoWidth": 617,
     "videoHeight": 1080,
-    "playerPoster": "海外车载坐垫 AI 产品体验广告-851fed88e38d.webp",
+    "playerPoster": "social/Car Seat Cushion Demo.webp",
     "playerPosterTime": 0.45249998999999996,
     "playerPosterTimeSource": "confirmed-cover-selection"
   },
   "13": {
     "videoWidth": 608,
     "videoHeight": 1080,
-    "playerPoster": "海外宠物红光护理仪 AI 产品广告-82c931debeff.webp",
+    "playerPoster": "social/Pet Red Light Therapy Ad.webp",
     "playerPosterTime": 13.924,
     "playerPosterTimeSource": "confirmed-cover-selection"
   },
   "14": {
     "videoWidth": 1280,
     "videoHeight": 720,
-    "playerPoster": "中式国风巨物美学-94b0ecc0ecb7.webp",
+    "playerPoster": "visual/Monumental Chinese Visuals.webp",
     "playerPosterTime": 29.164666989999997,
     "playerPosterTimeSource": "confirmed-cover-selection"
   },
   "15": {
     "videoWidth": 966,
     "videoHeight": 720,
-    "playerPoster": "最难的告别-8cfa4658b39b.webp",
-    "playerPosterTime": 0.87,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPoster": "visual/The Hardest Goodbye.webp",
+    "playerPosterTime": 22.51,
+    "playerPosterTimeSource": "confirmed-poster-selection"
+  },
+  "16": {
+    "videoWidth": 1282,
+    "videoHeight": 720,
+    "playerPoster": "commercial/MEXC Member Perks - Version A.webp",
+    "playerPosterTime": 12.924028925454547,
+    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+  },
+  "17": {
+    "videoWidth": 1692,
+    "videoHeight": 720,
+    "playerPoster": "commercial/MEXC No More Waiting.webp",
+    "playerPosterTime": 15.183781470909091,
+    "playerPosterTimeSource": "cover-studio-confirmed-selection"
   },
   "01": {
     "videoWidth": 1280,
     "videoHeight": 720,
-    "playerPoster": "屈臣氏 AI 品牌广告-4e8585a1e375.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "commercial/Watsons Brand Commercial.webp",
+    "playerPosterTime": 54.666,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "02": {
     "videoWidth": 1276,
     "videoHeight": 652,
-    "playerPoster": "联想 AI 品牌广告-b887e9a3fb83.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "commercial/Lenovo Brand Commercial.webp",
+    "playerPosterTime": 22.4,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "03": {
     "videoWidth": 1291,
     "videoHeight": 720,
-    "playerPoster": "通义万相 AI 品牌广告-6f21d54c30aa.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "commercial/Wan2.2 Promotional Film.webp",
+    "playerPosterTime": 26.29,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "04": {
     "videoWidth": 405,
     "videoHeight": 720,
-    "playerPoster": "霸王茶姬 AI 品牌广告-325c98f73c22.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "commercial/CHAGEE Brand Commercial.webp",
+    "playerPosterTime": 17.9,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "05": {
     "videoWidth": 609,
     "videoHeight": 1080,
-    "playerPoster": "宠物 AI 创意短片-e84c216042f4.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "short-film/A Day in a Cat's Life.webp",
+    "playerPosterTime": 26.07,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "06": {
     "videoWidth": 1280,
     "videoHeight": 720,
-    "playerPoster": "湖南 AI 文旅宣传-980dedb65f92.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "commercial/Yueyang Tower Tourism Film.webp",
+    "playerPosterTime": 133.86666666666667,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "07": {
     "videoWidth": 1275,
     "videoHeight": 720,
-    "playerPoster": "悠船 AI 创意短片-2a09ffa1f574.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "short-film/People, Rivers and Cities.webp",
+    "playerPosterTime": 46.93,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "08": {
     "videoWidth": 1290,
     "videoHeight": 720,
-    "playerPoster": "通义万相 AI 创意短片-9b0b0f6860c1.webp",
-    "playerPosterTime": 1,
-    "playerPosterTimeSource": "default-1s"
+    "playerPoster": "short-film/Light.webp",
+    "playerPosterTime": 12.82,
+    "playerPosterTimeSource": "confirmed-poster-selection"
   },
   "09": {
     "videoWidth": 1280,
     "videoHeight": 720,
-    "playerPoster": "海外无线耳机 AI 场景广告-a97c150d425a.webp",
+    "playerPoster": "commercial/Wireless Earbuds Lifestyle Ad.webp",
     "playerPosterTime": 10.130909271818181,
     "playerPosterTimeSource": "confirmed-cover-selection"
   }

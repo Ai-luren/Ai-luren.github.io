@@ -35,10 +35,7 @@ try {
         const gridStyle=style(activeGrid),one=style(first),two=style(second),later=style(nextRow);
         const label=first.querySelector('strong'),role=first.querySelector('span'),img=first.querySelector('img');
         const social=document.querySelector('.impact-reach-dossier');
-        const feature=social.querySelector('.impact-reach-feature'),main=feature.querySelector('.impact-reach-feature-main'),actions=feature.querySelector('.impact-reach-feature-actions');
-        const list=social.querySelector('.impact-reach-account-list');
-        const f=box(feature),m=box(main),a=box(actions),l=box(list);
-        const mid=(m.top+a.bottom)/2,center=f.top+f.height/2;
+        const socialGrid=social.querySelector('.impact-reach-compact-grid');
         return {
           platformCount:tiles.length,
           logoCount:tiles.filter(x=>x.querySelector('img')?.naturalWidth>0).length,
@@ -51,12 +48,10 @@ try {
           radius:one.borderRadius,
           hoverTransition:one.transitionProperty,
           textOk:box(label).height>0&&box(role).height>0&&box(img).height>0,
-          desktopCentered:Math.abs(mid-center),
-          featureVerticalCenter:style(feature).justifyContent,
-          socialCount:social.querySelectorAll('.impact-reach-account-record').length,
+          socialCount:social.querySelectorAll('.impact-reach-compact-account').length,
           socialActions:social.querySelectorAll('button[data-social-profile-trigger]').length,
-          socialLabel:social.querySelector('.impact-reach-feature-primary')?.textContent.trim(),
-          listHeight:l.height,featureHeight:f.height,
+          socialColumns:style(socialGrid).gridTemplateColumns.split(' ').length,
+          socialLabel:social.querySelector('.impact-reach-compact-primary')?.textContent.trim(),
           overflow:document.documentElement.scrollWidth-innerWidth,
         };
       });
@@ -69,16 +64,11 @@ try {
       assert.equal(state.background,'rgba(0, 0, 0, 0)',tag+': inset glass still visible');
       assert.equal(state.radius,'0px',tag+': repeated tile radius still visible');
       assert.equal(state.textOk,true,tag+': logo/label hidden');
-      assert.equal(state.socialCount,3,tag+': secondary accounts missing');
+      assert.equal(state.socialCount,4,tag+': account records missing');
+      assert.equal(state.socialColumns,width<=720?1:width<=1100?2:4,tag+': social columns');
       assert.equal(state.socialActions,4,tag+': account detail controls missing');
       assert(state.socialLabel.length>0,tag+': primary metric missing');
       assert(state.overflow<=2,tag+': overflow');
-      if(width>=900) {
-        assert.equal(state.featureVerticalCenter,'center',tag+': feature not vertically centered');
-        assert(state.desktopCentered<=25,tag+': feature metric/actions are not centered');
-      } else {
-        assert.notEqual(state.featureVerticalCenter,'center',tag+': mobile/tablet layout accidentally centered');
-      }
       assert.deepEqual(errors,[],tag+': page errors');
       assert.equal(getSafeMediaReport(page).urls.length,0,tag+': attempted ImageKit transfer');
       count++;

@@ -1,0 +1,44 @@
+// Verify current workbench ordering and website sync in an isolated project.
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import {chromium} from 'playwright-core';
+import {createServer} from 'vite';
+import {createSafePage,getSafeMediaReport} from './lib/safe-media.mjs';
+import {createCoverStudio} from '../tools/cover-studio/server.mjs';
+const root=path.resolve(import.meta.dirname,'..');
+const fixture=await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(),'ailuren-independent-curation-')));
+for(const name of ['src','assets/images','index.html','works.html']) await fs.cp(path.join(root,name),path.join(fixture,name),{recursive:true});
+await fs.mkdir(path.join(fixture,'assets/videos/works'),{recursive:true});await fs.symlink(path.join(root,'node_modules'),path.join(fixture,'node_modules'));
+await fs.writeFile(path.join(fixture,'package.json'),'{"type":"module"}\n');
+const orderFile=path.join(fixture,'src/data/project-order.json');const read=async()=>JSON.parse(await fs.readFile(orderFile,'utf8'));const initial=await read();
+let studio,vite,browser;
+try{
+ studio=await createCoverStudio({projectRoot:fixture,port:5201});
+ vite=await createServer({root:fixture,configFile:path.join(root,'vite.config.js'),server:{host:'127.0.0.1',port:5202,strictPort:true,fs:{allow:[fixture,root]}},logLevel:'error'});await vite.listen();
+ browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
+ const page=await createSafePage(browser,{viewport:{width:1440,height:950}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(studio.url);await page.waitForSelector('#ux-gallery .ux-project');
+ const bootstrap=await(await fetch(studio.url+'/api/bootstrap')).json();const catalog=bootstrap.ordering.projects;
+ const candidate=catalog.find(p=>!initial.featured.includes(p.id));assert(candidate);
+ await page.locator(`#ux-categories [data-filter="${candidate.category}"]`).click();
+ const star=page.locator(`.ux-project[data-id="${candidate.id}"] .ux-star`);assert.equal(await star.getAttribute('aria-pressed'),'false');await star.click();
+ assert.equal(await page.locator('#ux-feature-options button').count(),8);const removed=initial.featured[0];await page.locator('#ux-feature-options button').first().click();
+ await page.waitForFunction(id=>document.querySelector(`.ux-project[data-id="${id}"] .ux-star`)?.getAttribute('aria-pressed')==='true',candidate.id);
+ const featured=await read();assert.equal(featured.featured[0],candidate.id);assert(!featured.featured.includes(removed));assert.deepEqual(featured.all,initial.all);
+ const home=await createSafePage(browser,{viewport:{width:1440,height:900}});home.on('pageerror',e=>errors.push(e.message));await home.goto('http://127.0.0.1:5202/');
+ await home.locator('#projects .comet-archive__card').first().waitFor();assert.equal((await home.locator('#projects .comet-archive__title').first().innerText()).trim(),candidate.title);assert.equal(await home.locator('#projects .comet-archive__card').count(),8);await home.close();
+ await page.locator('#ux-categories [data-filter="commercial"]').click();const items=page.locator('#ux-gallery .ux-project');const firstId=await items.nth(0).getAttribute('data-id'),secondId=await items.nth(1).getAttribute('data-id');
+ const first=items.nth(0).locator('.ux-project-image'),second=items.nth(1).locator('.ux-project-image');await first.scrollIntoViewIfNeeded();const a=await first.boundingBox(),b=await second.boundingBox();
+ await page.mouse.move(a.x+a.width/2,a.y+a.height/2);await page.mouse.down();await page.mouse.move(b.x+b.width/2,b.y+b.height/2,{steps:12});await page.mouse.up();await page.waitForFunction(()=>document.querySelector('#ux-toast')?.textContent.includes('顺序已自动保存'));
+ const sorted=await read();assert.deepEqual(sorted.featured,featured.featured);assert(sorted.all.indexOf(secondId)<sorted.all.indexOf(firstId));
+ const post=async data=>(await fetch(studio.url+'/api/save-order',{method:'POST',headers:{'Content-Type':'application/json','X-Cover-Token':bootstrap.token},body:JSON.stringify(data)})).status;
+ assert.equal(await post({scope:'featured',ids:sorted.featured.slice(1),expected:sorted.featured,confirmed:true}),400);
+ assert.equal(await post({scope:'featured',ids:Array(8).fill(sorted.featured[0]),expected:sorted.featured,confirmed:true}),400);
+ assert.equal(await post({scope:'featured',ids:sorted.featured.slice().reverse(),expected:initial.featured,confirmed:true}),409);
+ assert.deepEqual(await read(),sorted);
+ const mobile=await createSafePage(browser,{viewport:{width:390,height:844},hasTouch:true,isMobile:true});await mobile.goto(studio.url);assert(await mobile.locator('#ux-desktop-only').isVisible());await mobile.close();
+ assert.deepEqual(errors,[]);assert.equal(getSafeMediaReport(page).urls.length,0);
+ console.log('INDEPENDENT_FEATURED_E2E_PASS replacement, homepage sync, category drag, validation and mobile desktop-only gate');
+}finally{if(browser)await browser.close();if(vite)await vite.close();if(studio)await studio.close();}

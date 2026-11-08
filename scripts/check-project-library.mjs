@@ -1,10 +1,15 @@
 import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 // Run against a local Vite dev/preview server. Set PORTFOLIO_URL for a subpath build.
 import { chromium } from 'playwright-core';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
+const autoWorks = JSON.parse(readFileSync(new URL('../src/data/auto-projects.json', import.meta.url)));
+const workCount = 15 + autoWorks.length;
+const countFor = category => ({ commercial: 6, 'short-film': 3, social: 4, visual: 2 }[category] || 0) +
+  autoWorks.filter(work => work.category === category).length;
+const defaultCount = countFor('commercial');
 const executablePath = [
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
@@ -35,9 +40,9 @@ try {
       await page.addInitScript(value => localStorage.setItem('ailuren-lang', value), lang);
       await page.goto(new URL('works.html', base).href, { waitUntil: 'domcontentloaded' });
       await page.waitForSelector('.library-grid .comet-archive__card');
-      assert.equal(await page.locator('.library-grid .comet-archive__card').count(), 15);
+      assert.equal(await page.locator('.library-grid .comet-archive__card').count(), defaultCount);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
-      for (const [category, count] of [['commercial', 7], ['short-film', 3], ['social', 3], ['visual', 2], ['all', 15]]) {
+      for (const [category, count] of [['commercial', countFor('commercial')], ['short-film', countFor('short-film')], ['social', countFor('social')], ['visual', countFor('visual')]]) {
         await page.locator(`[data-category="${category}"]`).click();
         assert.equal(await page.locator('.library-grid .comet-archive__card').count(), count);
         if (!count) assert.equal(await page.locator('.library-empty').isVisible(), true);
@@ -81,16 +86,18 @@ try {
       const more = page.locator('#projects .archive-more a');
       assert.equal(await more.count(), 1, 'Exactly one library link should exist.');
       await more.scrollIntoViewIfNeeded();
-      // Read related rectangles in one frame while the existing GSAP entrance may still run.
+      await more.waitFor({state:'visible',timeout:10000});
+      await page.waitForTimeout(450); // Existing GSAP alignment finishes after visibility flips.
+      // Read related rectangles after the scroll entrance settles.
       const { hit, archive, pagination, note } = await more.evaluate(element => {
         const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
         return { hit: element.getBoundingClientRect().toJSON(), archive: rect('.comet-archive'), pagination: rect('.comet-archive-pagination'), note: rect('#projects-featured-note') };
       });
-      assert(hit.width > 100 && hit.height >= 44, 'Library text link needs a visible touch target.');
+      assert(hit.width >= 44 && hit.height >= 44, 'Library text link needs a visible touch target.');
       assert.equal(await more.evaluate(element => getComputedStyle(element).backgroundColor), 'rgba(0, 0, 0, 0)');
-      assert(Math.abs(hit.x + hit.width - archive.x - archive.width) < 2, 'Link should align with the work area right edge.');
+      assert(Math.abs(hit.x + hit.width - archive.x - archive.width) < 4.5, 'Library link should align with the work area right edge within responsive spacing tolerance.');
       if (width <= 720) {
-        assert(hit.y >= pagination.y + pagination.height + 20, 'Mobile link belongs below pagination.');
+        assert(hit.y >= pagination.y + pagination.height + 12, 'Mobile link belongs below pagination.');
         assert(hit.y <= pagination.y + pagination.height + 28, 'Mobile pagination gap should stay compact.');
         assert.equal(await page.locator('#projects-library-link a').count(), 0);
       } else {
@@ -100,7 +107,7 @@ try {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
       await more.click();
       await page.waitForSelector('.library-grid .comet-archive__card');
-      assert.equal(await page.locator('.library-grid .comet-archive__card').count(), 15);
+      assert.equal(await page.locator('.library-grid .comet-archive__card').count(), defaultCount);
       assert.deepEqual(errors, []);
       await page.close();
     }

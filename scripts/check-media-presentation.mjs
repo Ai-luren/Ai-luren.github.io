@@ -1,8 +1,11 @@
 import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,readFileSync} from 'node:fs';
 const base=process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
+const autoWorks=JSON.parse(readFileSync(new URL('../src/data/auto-projects.json',import.meta.url)));
+const workCount=15+autoWorks.length;
+const defaultCount=7+autoWorks.filter(work=>work.category==='commercial').length;
 const out=process.env.MEDIA_SCREENSHOTS;
 if(out)mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
@@ -40,7 +43,7 @@ try{
    await p.locator('.cinema-player video').evaluate(v=>window.previousMediaVideo=v);
    await p.keyboard.press('Escape');assert(await p.evaluate(()=>window.previousMediaVideo.paused&&!window.previousMediaVideo.getAttribute('src')));
   }
-  await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-card',{state:'attached'});
+  await p.goto(new URL('index.html#impact-awards',base).href);await p.waitForSelector('.impact-award-grid-card',{state:'attached'});
   // The desktop navigation has no visible hamburger; the anchor already exists.
   if(await p.locator('.nav-toggle').isVisible()){
     await p.locator('.nav-toggle').click();
@@ -48,7 +51,7 @@ try{
   }else{
     await p.locator('#impact-awards').scrollIntoViewIfNeeded();
   }
-  await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
+  await p.waitForTimeout(450);await p.locator('.impact-award-grid-card').first().click();
   const originals=[];
   for(let index=0;index<8;index++){
    await p.waitForFunction(()=>{const img=document.querySelector('#impact-award-lightbox figure>img');return img?.complete&&img.naturalWidth>0;});await p.waitForTimeout(80);
@@ -68,7 +71,7 @@ try{
   const decodedOriginals=originals.map(src=>decodeURIComponent(src));
   assert.equal(new Set(decodedOriginals).size,8);assert(decodedOriginals.some(src=>src.includes('影视级特效小赛'))&&decodedOriginals.some(src=>src.includes('未来AI设计大赛')));
   for(let i=0;i<10;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('#impact-award-lightbox')));}
-  await p.keyboard.press('Escape');await p.waitForSelector('#impact-award-lightbox',{state:'detached'});assert(await p.locator('.impact-award-card').first().evaluate(el=>el===document.activeElement));assert(!await p.locator('main').evaluate(el=>el.inert));
+  await p.keyboard.press('Escape');await p.waitForSelector('#impact-award-lightbox',{state:'detached'});assert(await p.locator('.impact-award-grid-card').first().evaluate(el=>el===document.activeElement));assert(!await p.locator('main').evaluate(el=>el.inert));
   assert.deepEqual(errors,[]);console.log(`${width}x${height} ${lang} ${mode}: complete video controls, true image boundaries, all 8 original awards, shared materials and focus passed`);await p.close();
  }
  // Switching between equally wide films must also update their real height.
@@ -80,7 +83,7 @@ try{
   const projects=await p.locator('.library-grid .comet-archive__card').evaluateAll(cards =>
     cards.map(card=>({video:card.querySelector('.comet-archive__meta')?.textContent.trim()==='Play'}))
   );
-  assert.equal(projects.length,15,'All 15 projects must appear in the library');
+  assert.equal(projects.length,defaultCount,'All commercial projects must appear by default');
   await p.locator('.library-grid .comet-archive__card').first().click();
   const seen=new Set();
   let previousId=null;
@@ -105,7 +108,7 @@ try{
  // A genuinely short viewport keeps one internal scroller and accessible chrome.
  const p=await createSafePage(browser, {viewport:{width:393,height:500}});await p.goto(new URL('works.html',base).href);await p.locator('.library-grid .comet-archive__card').nth(3).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
  const scroll=await p.evaluate(()=>scrollY);const close=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();assert.equal(await p.evaluate(()=>scrollY),scroll);assert.deepEqual(await p.locator('.cinema-player__close').evaluate(rect),close);await p.locator('.cinema-player__close').click();
- await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-card').first().click();
+ await p.goto(new URL('index.html#impact-awards',base).href);await p.locator('.nav-toggle').click();await p.locator('#mobile-primary-nav a[href="#recognition"]').click();await p.waitForTimeout(450);await p.locator('.impact-award-grid-card').first().click();
  const nav=await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect);const pageScroll=await p.evaluate(()=>scrollY);await p.locator('#impact-award-lightbox').evaluate(el=>el.scrollTop=300);assert.deepEqual(await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(rect),nav);assert.equal(await p.evaluate(()=>scrollY),pageScroll);await p.locator('#impact-award-lightbox .cinema-player__close').click();await p.close();
  console.log('Short viewport single-scroller access passed. Real award files all share 1124x2000 dimensions; other source-image ratios and real 3:4 video are not marked verified.');
 }finally{await browser.close();}
