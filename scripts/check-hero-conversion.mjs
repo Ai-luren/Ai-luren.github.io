@@ -95,7 +95,7 @@ try{
     assert.equal(found.positioningSize,width<=720?12:13,tag+': positioning violates type scale');
     assert.equal(found.rotatingTitleCount,1,tag+': three-word typing animation replaced');
     // Vite fingerprints the same source files in production.
-    assert(found.videoSources.length===2 && /hero-mobile(?:-[a-zA-Z0-9]+)?\.mp4$/.test(found.videoSources[0]) && /(?:^|\/)hero(?:-[a-zA-Z0-9]+)?\.mp4$/.test(found.videoSources[1]),tag+': scroll video source changed');
+    assert(found.videoSources.length===2 && /hero-mobile(?:-[a-zA-Z0-9_-]+)?\.mp4$/.test(found.videoSources[0]) && /(?:^|\/)hero(?:-[a-zA-Z0-9]+)?\.mp4$/.test(found.videoSources[1]),tag+': scroll video source changed');
     assert(found.buttonGeometry.every(r=>r.x>=0&&r.right<=width+1&&r.height>=44),tag+': CTA out of viewport');
     // Two CTA roles share one geometry and typographic baseline.
     const [a,b]=found.buttonGeometry;

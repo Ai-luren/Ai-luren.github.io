@@ -69,7 +69,10 @@
     "check:workbench-backdrops": "node scripts/check-cover-studio-black-backdrops.mjs",
     "check:smoke": "node scripts/run-check-suite.mjs smoke",
     "check:workbench-core": "node scripts/run-check-suite.mjs workbench",
-    "check:project": "node scripts/run-check-suite.mjs all"
+    "check:project": "node scripts/run-check-suite.mjs all",
+    "check:site-full": "node scripts/run-adversarial-checks.mjs site",
+    "check:workbench-full": "node scripts/run-adversarial-checks.mjs workbench",
+    "check:adversarial": "node scripts/run-adversarial-checks.mjs all"
   },
   "dependencies": {
     "gsap": "^3.15.0",

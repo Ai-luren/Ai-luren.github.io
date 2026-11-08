@@ -122,10 +122,13 @@ docs/                            设计规范与维护说明
 ~~~
 
 ~~~bash
-npm run check:smoke           # 构建、媒体资源、精选顺序与安全检查
-npm run check:workbench-core  # 工作台存储、封面底色、完整流程及交互回归
-npm run check:project         # 按顺序运行上述两套检查
-npm run check:i18n            # 需要时额外做中英文专项验证
+npm run check:smoke          # 构建、素材、精选顺序和媒体安全
+npm run check:workbench-core # 工作台核心流程、存储和视觉回归
+npm run check:project        # 依次运行上述两组快速检查
+npm run check:site-full      # 独立生产预览下逐项检查公开网页
+npm run check:workbench-full # 隔离项目逐项检查工作台
+npm run check:adversarial    # 网站和工作台全量深测，记录到本地 .audit
+npm run check:i18n           # 需要时额外检查中英文
 ~~~
 
 [文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [工作台使用教程](./docs/本地封面工作台使用教程.md) · [开发约定](./AGENTS.md)

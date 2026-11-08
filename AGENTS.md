@@ -74,7 +74,7 @@ git diff --check
 
 ## 维护验证入口
 
-- 日常检查先用 `npm run check:smoke`，工作台变化用 `npm run check:workbench-core`，全面回归用 `npm run check:project`；独立 `check:*` 脚本保持原有可用性。
+- **测试分级**：日常 `npm run check:smoke`；工作台核心 `npm run check:workbench-core`；两组快速检查 `npm run check:project`。重大重构/上线前用 `npm run check:adversarial`，可按站点 `npm run check:site-full` 和工作台 `npm run check:workbench-full` 分开执行。独立 `check:*` 脚本保留；失败不得靠删除断言放行。深测在隔离项目执行写操作并阻止 ImageKit CDN 网络访问，结果只存本地 `.audit/adversarial-qa-20261108/`（不提交）。
 - `.audit/` 是 Git 忽略的本地审计与素材备份，不属于生产源码；旧报告先查 `.audit/README.md`。本地 Git 旧分支、不可达对象在核实恢复价值前不得自动删改或强制 prune。
 
 ## 文档入口
