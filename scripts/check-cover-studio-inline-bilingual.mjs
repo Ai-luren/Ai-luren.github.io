@@ -68,7 +68,7 @@ try {
   await page.locator('#ux-gallery .ux-project[data-id="16"] .ux-project-image').click();
   assert(await page.locator('#ux-editor').isVisible());
   assert.equal(await page.locator('#ux-title-en').inputValue(),'Membership Perks Creative Ad');
-  assert.equal(await page.locator('#ux-variant-chips button').count(),2);
+  assert.equal(await page.locator('#ux-variant-chips .ux-variant').count(),2);
   await page.locator('#ux-close-editor').click();
   const lib=await createSafePage(browser,{viewport:{width:1440,height:900}});
   lib.on('pageerror',e=>errors.push(e.message));

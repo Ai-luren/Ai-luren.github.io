@@ -41,6 +41,7 @@ try{
   if(width===1440)assert(d.scroll<=2,'details needs unintended scroll at 1440×900');
   // Secondary dialogs should remain inside the same viewport and retain
   // visible close/actions at laptop heights, without requiring a real restore.
+  await p.locator('[data-ux-panel=artwork]').click();
   await p.locator('#ux-history-cover').click();
   const history=await p.evaluate(()=>{
     const panel=document.querySelector('#ux-history-dialog .ux-history-panel').getBoundingClientRect();

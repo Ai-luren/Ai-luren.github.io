@@ -39,7 +39,23 @@ try{
  await page.waitForFunction(()=>document.querySelectorAll('#ux-gallery .ux-project').length===8);
  await page.locator('#ux-categories [data-filter="commercial"]').click();
  await page.locator('#ux-gallery .ux-project[data-id="16"] .ux-project-image img').click();
+ const titleBefore={zh:await page.locator('#ux-title-zh').inputValue(),en:await page.locator('#ux-title-en').inputValue()};
+ await page.locator('#ux-variant-chips .ux-variant-edit').nth(0).click();
+ assert(await page.locator('#ux-version-label-form').isVisible());
+ await page.locator('#ux-version-label-zh').fill('会员权益 A 测试名');
+ await page.locator('#ux-version-label-en').fill('Member Perks A Test Name');
+ await page.locator('#ux-version-label-form').evaluate(form=>form.requestSubmit());
+ await page.waitForFunction(()=>document.querySelector('#ux-variant-chips .ux-variant')?.textContent==='会员权益 A 测试名'
+  &&document.querySelector('#ux-context-version')?.textContent==='会员权益 A 测试名');
+ assert.equal(await page.locator('#ux-version-label').textContent().then(text=>text.includes('会员权益 A 测试名')),true);
+ assert.deepEqual({zh:await page.locator('#ux-title-zh').inputValue(),en:await page.locator('#ux-title-en').inputValue()},titleBefore);
+ assert.equal((await data('auto-projects')).find(p=>p.id==='16').mainVersionLabel.en,'Member Perks A Test Name');
+ await page.locator('#ux-add-variant').click();
+ assert(await page.locator('#ux-version-form').isVisible());
+ assert.equal(await page.locator('#ux-version-en').inputValue(),'Version C');
+ await page.locator('#ux-version-cancel').click();
  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-change-poster').click();
  assert.equal(await page.locator('body').getAttribute('data-workflow'),'library');
  assert(await page.locator('#ux-inline-cover').isVisible());

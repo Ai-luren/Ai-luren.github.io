@@ -33,9 +33,17 @@ async function catalog(root) {
     read(data(root,'local-video-paths')),
   ]);
   const legacyVariants=await read(data(root,'legacy-video-variants'));
-  return {metadata,auto,paths,legacyVariants};
+  const archived=await read(data(root,'archive-state')).catch(error=>{
+    if(error.code==='ENOENT')return {works:{},versions:{}};throw error;
+  });
+  const legacyMainLabels=await read(data(root,'legacy-main-version-labels')).catch(error=>{
+    if(error.code==='ENOENT')return {};throw error;
+  });
+  return {metadata,auto,paths,legacyVariants,legacyMainLabels,archived};
 }
 function versionFromCatalog(project,versionId,c) {
+  if(versionId!=='main'&&c.archived.versions?.[project.id]?.[versionId])
+    throw fail('此版本已移入回收站，请先恢复后再播放或编辑。',404);
   const work=c.auto.find(p=>p.id===project.id);
   const variants=work?.variants||c.legacyVariants[project.id]||[];
   const isMain=versionId==='main';
@@ -50,7 +58,7 @@ function versionFromCatalog(project,versionId,c) {
   if(!(width>0&&height>0))throw fail('视频显示比例元数据缺失。',422);
   safeVideoPath(video);
   safePosterPath(poster,project.category);
-  return {id:versionId,label:other?.label || (isMain ? (work?.mainVersionLabel||{zh:'主版本',en:'Main version'}) : null),
+  return {id:versionId,label:other?.label || (isMain ? (work?.mainVersionLabel||c.legacyMainLabels[project.id]||{zh:'主版本',en:'Main version'}) : null),
     poster,video,width,height,time:isMain?(meta.playerPosterTime??null):(other.posterTime??null),
     timeSource:isMain?(meta.playerPosterTimeSource??null):(other.posterTimeSource??null),
     main:isMain,work,other};
@@ -59,7 +67,8 @@ export async function listPosterVersions(root,projects) {
   const c=await catalog(root);
   return projects.map(project=>{
     const work=c.auto.find(p=>p.id===project.id);
-    const versions=['main',...(work?.variants||c.legacyVariants[project.id]||[]).map(v=>v.id)].map(id=>{
+    const versions=['main',...(work?.variants||c.legacyVariants[project.id]||[])
+      .filter(v=>!c.archived.versions?.[project.id]?.[v.id]).map(v=>v.id)].map(id=>{
       const v=versionFromCatalog(project,id,c);
       return {id:v.id,label:v.label,poster:v.poster,time:v.time,width:v.width,height:v.height};
     });

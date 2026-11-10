@@ -9,7 +9,7 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
-- `src/data/projects.js`：原始 15 件作品 + `src/data/auto-projects.json` 自动新增条目的汇总入口；`PROJECTS` 经 `project-order.json` 控制「全部作品」显示顺序，`FEATURED_PROJECT_IDS` 通过同一文件单独控制首页八件精选及播放器顺序。无真实资料时保留空值。
+- `src/data/projects.js`：原始 14 件作品 + `src/data/auto-projects.json` 自动新增条目的汇总入口；`PROJECTS` 经 `project-order.json` 控制「全部作品」显示顺序，`FEATURED_PROJECT_IDS` 通过同一文件单独控制首页八件精选及播放器顺序。无真实资料时保留空值。
 - `src/data/auto-projects.json`：工作台新增作品与其视频版本的数据源；旧作品新增版本另存 `src/data/legacy-video-variants.json`，旧作品主版本的线上 URL 在 `legacy-imagekit-urls.json`。上线前需配置可访问的视频地址。
 - `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、海外产品广告、视觉实验管理。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
@@ -90,7 +90,8 @@ git diff --check
 ## 作品管理工作台硬约束
 
 - **桌面限定**：`npm run covers` 只供 Mac 桌面（宽度 ≥921px）使用；公开作品集手机版保持原样。详情采用全屏双栏：左侧本地 MP4 播放/时间轴/选帧，右侧两种封面、中英文标题、版本、ImageKit 和精选。工作台不参与生产构建。
-- **版本兼容**：新作品版本保存在 `src/data/auto-projects.json`；原有 15 部作品可直接添加 B/C 版本，新增记录保存在 `src/data/legacy-video-variants.json`，**不迁移或覆盖原主视频**。每部最多 8 个版本；卡片封面属于作品，原比例海报与 ImageKit URL 属于所选视频版本。回归 `node scripts/check-cover-studio-legacy-version.mjs`。
+- **版本兼容**：新作品版本保存在 `src/data/auto-projects.json`；原有 14 部作品可直接添加 B/C 版本，新增记录保存在 `src/data/legacy-video-variants.json`，**不迁移或覆盖原主视频**。每部最多 8 个版本；卡片封面属于作品，原比例海报与 ImageKit URL 属于所选视频版本。回归 `node scripts/check-cover-studio-legacy-version.mjs`。
+- **版本名称**：整部作品的中英文标题由所有 A/B/C 版本共用；视频版本标签与作品标题独立。右侧「视频版本」任务区单击标签切换，单击铅笔或「重命名当前版本」编辑中英文；不要恢复隐藏的双击入口。新增版本同样位于右侧。名称保存在自动作品 `mainVersionLabel`、`legacy-main-version-labels.json` 或附加版本记录中；仅监听 `127.0.0.1:5190` 的 `/api/update-version-label` 不得连接到生产页面。
 - **导航**：顶部上一部/下一部按 `src/data/project-order.json` 中 `all` 顺序跨分类、精选及搜索**首尾循环**，不自动播放；切换前经过 `navigateWithDraft` 草稿保护。`Option + ←/→` 只在非输入状态使用；多版本切换只放在左侧播放器标题行，单版本不展示切换条。
 - **会话存储**：工作台的 `sessions/<UUID>/source.mp4` 同内容视频通过 `.cover-studio/source-objects/` 共享 SHA-256 校验的只读硬链接；正式作品 MP4 始终保持独立可编辑文件。不得自动删除 `project-revisions/`、`sessions/` 选帧或 `exports/`。需清理时先运行 `npm run covers:storage:scan` 与 `npm run covers:storage:verify`；恢复独立会话用 `npm run covers:storage:restore -- <UUID>`。变更须通过 `npm run check:workbench-storage`。
 - **封面与备份**：3:4 卡片封面和播放器原比例海报独立保存，不拉伸；保存/恢复前备份当前图。最多保留每部卡片 3 份旧图，以及每个视频版本海报 3 份旧图；按 SHA-256、版本、路径及真实比例校验。严禁把 `.cover-studio/project-revisions/` 当缓存删除。回归 `npm run check:workbench-history`。

@@ -26,6 +26,15 @@ const createPlusIcon=()=>{
   svg.append(path);
   return svg;
 };
+const createEditIcon=()=>{
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  const path=document.createElementNS(ns,'path');
+  path.setAttribute('d','m14 5 5 5M4 20l4.2-.8L19 8.4a2.1 2.1 0 0 0-3-3L5.2 16.2 4 20Z');
+  path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
+  svg.append(path);return svg;
+};
 const createStarIcon=()=>{
   // A font's ☆ / ★ has a baseline and inconsistent ink bounds across OSes.
   // The vector's path spans equal x/y extents around (12,12), so it centers.
@@ -41,10 +50,19 @@ const createStarIcon=()=>{
   return svg;
 };
 export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkflow,openPosterWorkflow,showManaged,openNewProject}){
- let filter='featured',search='',selectedId=null,selectedVersion='main',swapping=null,drag=null,busy=false;
- let notificationTimer=null,suppressDragClickUntil=0,suppressDragClickId=null,undoLast=null;
- let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null;
+ let filter='featured',search='',selectedId=null,selectedVersion='main',editingVersionId=null,swapping=null,drag=null,busy=false,activePanel='versions',archivePending=null;
+ let notificationTimer=null,suppressDragClickUntil=0,suppressDragClickId=null,undoLast=null,inlineNameTimer=null;
+ let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null,versionLabelOpener=null;
  let suppressUrlBlur=false,urlSaving=false;
+ // A stable image URL lets the browser reuse decoded thumbnails between tabs/searches.
+ // Increment only after an actual save/restore, not on every gallery render.
+ const artworkRevision={cover:new Map(),poster:new Map()};
+ const bumpArtwork=id=>{
+   artworkRevision.cover.set(id,(artworkRevision.cover.get(id)||0)+1);
+   artworkRevision.poster.set(id,(artworkRevision.poster.get(id)||0)+1);
+ };
+ const coverURL=id=>'/project-cover/'+encodeURIComponent(id)+'?v='+(artworkRevision.cover.get(id)||0);
+ const posterURL=(id,variantId)=>'/project-poster/'+encodeURIComponent(id)+'/'+encodeURIComponent(variantId||'main')+'?v='+(artworkRevision.poster.get(id)||0);
  // Detail arrows browse every work in the canonical full-portfolio order,
  // across category tabs. The tabs are filters, not navigation boundaries.
  let inlineCover;
@@ -56,6 +74,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    state,api,player,notify:(message,error)=>notify(message,error),
    refresh:async(projectId,variantId)=>{
      await bootstrap();
+     bumpArtwork(projectId);
      renderGallery();
      selectedId=projectId;selectedVersion=variantId;
      renderEditor();
@@ -65,16 +84,45 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    api,notify:(message,error)=>notify(message,error),
    refresh:async(projectId,variantId)=>{
      await bootstrap();
+     bumpArtwork(projectId);
      renderGallery();
      selectedId=projectId;selectedVersion=variantId;
      renderEditor();
    },
  });
  const list=()=>state.ordering?.projects||[];
+ const recycle=()=>state.archived||{works:[],versions:[]};
+ const trashCount=()=>recycle().works.length+recycle().versions.length;
+ function selectPanel(panel,{focus=false}={}){
+   if(!['versions','artwork','details'].includes(panel))return;
+   activePanel=panel;
+   $('ux-editor').querySelectorAll('[data-ux-panel]').forEach(button=>{
+     const selected=button.dataset.uxPanel===panel;
+     button.setAttribute('aria-pressed',String(selected));
+     button.tabIndex=selected?0:-1;
+     if(selected&&focus)button.focus({preventScroll:true});
+   });
+   $('ux-editor').querySelectorAll('[data-ux-section]').forEach(section=>{
+     section.hidden=section.dataset.uxSection!==panel;
+   });
+   if(panel==='artwork')$('ux-stage-instruction').textContent='更换封面或播放器海报请使用右侧按钮；可从当前视频选帧或导入图片。';
+   else $('ux-stage-instruction').textContent='视频可在左侧播放；在右侧选择任务：视频版本、封面与海报、作品设置。';
+ }
+ $('ux-editor').querySelectorAll('[data-ux-panel]').forEach(button=>{
+   button.addEventListener('click',()=>navigateWithDraft(()=>selectPanel(button.dataset.uxPanel)));
+   button.addEventListener('keydown',event=>{
+     if(!['ArrowLeft','ArrowRight'].includes(event.key))return;
+     event.preventDefault();
+     const buttons=[...$('ux-editor').querySelectorAll('[data-ux-panel]')];
+     const i=buttons.indexOf(button),next=buttons[(i+(event.key==='ArrowLeft'?-1:1)+buttons.length)%buttons.length];
+     navigateWithDraft(()=>selectPanel(next.dataset.uxPanel,{focus:true}));
+   });
+ });
  const byId=id=>list().find(p=>p.id===id);
  const isFeatured=id=>state.orderDraft?.featured.includes(id);
  const managed=id=>state.managed.find(p=>p.id===id);
  const versions=id=>state.posterVersions.find(p=>p.id===id)?.versions||[];
+ const versionById=(id,versionId)=>versions(id).find(v=>v.id===versionId);
  const poster=id=>versions(id).find(v=>v.id===selectedVersion)||versions(id)[0];
  const editableURL=()=>{
    const value=$('ux-url-value').value.trim();
@@ -103,7 +151,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-context-version').textContent=v?.label?.zh||'主版本';
    $('ux-context-hint').textContent=message||'';
    $('ux-context-hint').hidden=!message;
-   $('ux-context-save').textContent='已保存到本地 · 未发布网站';
+   syncSaveIndicator();
+ };
+ const syncVersionLabelDraftStatus=()=>{
+   if(!editingVersionId||$('ux-version-label-form').hidden)return;
+   const current=versionById(selectedId,editingVersionId)?.label||{zh:'',en:''};
+   const changed=$('ux-version-label-zh').value.trim()!==current.zh||$('ux-version-label-en').value.trim()!==current.en;
+   syncSaveIndicator();
  };
 
  const catName=id=>categories.find(x=>x[0]===id)?.[1]||'作品';
@@ -118,10 +172,26 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        $('ux-title-en').value.trim()!==(p.titleEn||''))),
      url:!$('ux-url-form').hidden&&editableURL()!==(actual||''),
      version:!$('ux-version-form').hidden&&Boolean($('ux-version-file').files?.length),
+      versionLabel:!$('ux-version-label-form').hidden&&Boolean(editingVersionId)&&(()=>{
+        const current=versionById(selectedId,editingVersionId)?.label||{zh:'',en:''};
+        return $('ux-version-label-zh').value.trim()!==current.zh||$('ux-version-label-en').value.trim()!==current.en;
+      })(),
      cover:Boolean(inlineCover?.hasDraft?.()),
    };
  };
  const anyDraft=()=>Object.values(draftSections()).some(Boolean);
+ function syncSaveIndicator({saving=false,error=false}={}){
+   const indicator=$('ux-context-save');
+   if(!selectedId||!indicator)return;
+   const issues=draftSections(),labels=[
+     issues.title&&'作品名称',issues.versionLabel&&'版本名称',
+     issues.url&&'视频地址',issues.version&&'待添加视频',issues.cover&&'封面画面',
+   ].filter(Boolean);
+   indicator.dataset.saveState=error?'error':saving?'saving':labels.length?'dirty':'saved';
+   indicator.textContent=error?'保存失败 · 修改仍在当前页面':saving?'正在保存到本地…':
+     labels.length?labels.join('、')+'有未保存修改':'已保存到本地 · 网站尚未发布';
+ }
+
  const dismissUnsaved=()=>{
    $('ux-unsaved-dialog').hidden=true;
    $('ux-editor').inert=false;
@@ -137,13 +207,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(!Object.values(issues).some(Boolean)){action();return;}
    pendingNavigation={action,issues};
    unsavedOrigin=document.activeElement;
-   const labels=[issues.title&&'作品名称',issues.url&&'ImageKit 地址',
+   const labels=[issues.title&&'作品名称',issues.versionLabel&&'视频版本名称',issues.url&&'ImageKit 地址',
      issues.version&&'尚未添加的视频',issues.cover&&'已选中的封面'].filter(Boolean);
    $('ux-unsaved-description').textContent='这些修改尚未保存：'+labels.join('、')+'。可以继续编辑，或放弃本次草稿。';
-   const savable=(issues.title||issues.url)&&!issues.version&&!issues.cover &&
-     Number(issues.title)+Number(issues.url)===1;
+   const savable=(issues.title||issues.url||issues.versionLabel)&&!issues.version&&!issues.cover &&
+     Number(issues.title)+Number(issues.url)+Number(issues.versionLabel)===1;
    $('ux-unsaved-save').hidden=!savable;
-   $('ux-unsaved-save').textContent=issues.title?'保存名称并继续':'保存地址并继续';
+   $('ux-unsaved-save').textContent=issues.title?'保存作品名称并继续':issues.versionLabel?'保存版本名称并继续':'保存地址并继续';
    $('ux-unsaved-dialog').hidden=false;
    $('ux-editor').inert=true;
    $('ux-unsaved-keep').focus({preventScroll:true});
@@ -161,27 +231,38 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-sort-undo').hidden=!undoLast;
    $('ux-sort-undo').disabled=busy;
  }
+ function reservedVersions(id){
+   return recycle().versions.filter(item=>item.projectId===id);
+ }
+ function syncVersionActions(){
+   const full=versions(selectedId).length+reservedVersions(selectedId).length>=8;
+   const disabled=busy||!managed(selectedId)||full;
+   $('ux-add-variant').disabled=disabled;
+   $('ux-add-variant').title=full?'每部作品最多 8 个视频版本（包含回收站版本；恢复后仍占用名额）':'为这部作品添加独立 MP4';
+ }
  $('ux-sort-undo').addEventListener('click',undoSort);
 
  function renderFilters(){
+   $('ux-trash-count').textContent=String(trashCount());
+   $('ux-open-trash').setAttribute('aria-pressed',String(filter==='trash'));
    const target=$('ux-categories');target.replaceChildren();
    const options=[['featured','★ 首页精选',state.orderDraft.featured.length],
      ...categories.map(([id,label])=>[id,label,list().filter(p=>p.category===id).length])];
    for(const [key,title,count] of options){
      const b=node('button','ux-filter');b.type='button';
-     b.dataset.filter=key;b.setAttribute('aria-pressed',String(key===filter));
+     b.dataset.filter=key;b.setAttribute('aria-pressed',String(!search&&key===filter));
      b.append(node('span','',title),node('small','',count));
-     b.addEventListener('click',()=>{filter=key;renderGallery();});
+     b.addEventListener('click',()=>{filter=key;search='';$('ux-search').value='';renderGallery();});
      target.append(b);
    }
    $('ux-overview').textContent=list().length+' 部作品 · '+state.orderDraft.featured.length+' 部首页精选';
-   $('ux-search').placeholder='搜索 '+list().length+' 部作品…';
+   $('ux-search').placeholder='搜索全部 '+list().length+' 部作品…';
  }
  function card(project,group,index){
    const a=node('article','ux-project');a.dataset.id=project.id;a.tabIndex=0;
    a.setAttribute('role','button');a.setAttribute('aria-label','编辑 '+project.title);
    const image=node('div','ux-project-image');
-   image.append(photo('/project-cover/'+project.id+'?v='+Date.now(),project.title));
+   image.append(photo(coverURL(project.id),project.title));
    const controls=node('div','ux-project-controls');
    const meta=node('div','ux-project-meta');
    meta.append(node('span','ux-project-index',String(index+1).padStart(2,'0')));
@@ -202,10 +283,25 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    const info=node('div','ux-project-name');
    for(const [language,text,klass] of [['zh',project.title,'ux-name-zh'],['en',project.titleEn,'ux-name-en']]){
      const label=node(language==='zh'?'strong':'span',klass,text);
-     label.title='双击修改名称';
+     label.title='单击修改名称 · Enter 保存 · Esc 取消';
+     label.tabIndex=0;label.setAttribute('role','button');
+     label.setAttribute('aria-label','修改'+(language==='zh'?'中文':'英文')+'作品名称：'+text);
+     label.addEventListener('click',event=>{
+       event.stopPropagation();clearTimeout(inlineNameTimer);
+       inlineNameTimer=setTimeout(()=>{
+         inlineNameTimer=null;
+         if(label.isConnected&&$('ux-editor').hidden)editInlineName(project,language,label);
+       },170);
+     });
      label.addEventListener('dblclick',event=>{
-       event.preventDefault();event.stopPropagation();
-       editInlineName(project,language,label);
+       event.preventDefault();event.stopPropagation();clearTimeout(inlineNameTimer);
+       inlineNameTimer=null;editInlineName(project,language,label);
+     });
+     label.addEventListener('keydown',event=>{
+       if(event.key==='Enter'||event.key===' '){
+         event.preventDefault();event.stopPropagation();clearTimeout(inlineNameTimer);
+         inlineNameTimer=null;editInlineName(project,language,label);
+       }
      });
      info.append(label);
    }
@@ -247,9 +343,55 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    tile.addEventListener('click',()=>openNewProject(category));
    return tile;
  }
+ async function restoreArchived(scope,projectId,variantId=''){
+   if(busy)return;
+   busy=true;
+   try{
+     await api('/api/restore-item',{scope,projectId,variantId,confirmed:true});
+     await bootstrap();
+     const p=byId(projectId);
+     filter=p?.category||'featured';search='';$('ux-search').value='';
+     renderGallery();
+     if(p)open(projectId,scope==='version'?variantId:'main');
+     notify(scope==='work'?'作品已恢复；视频和封面文件始终保留。':'视频版本已恢复，可以重新切换播放。');
+   }catch(e){notify('恢复失败：'+e.message,true);}
+   finally{busy=false;}
+ }
+ function renderTrash(){
+   const target=$('ux-gallery'),content=node('section','ux-recycle-section');
+   const header=node('div','ux-recycle-intro');
+   header.append(node('h3','', '回收站'),node('p','', '仅隐藏在本地作品管理与待发布的网站数据中；文件原样保留。点击「恢复」即可找回。'));
+   content.append(header);
+   const entries=[...recycle().works.map(p=>({scope:'work',projectId:p.id,title:p.title,detail:'整部作品 · '+catName(p.category),at:p.at})),
+     ...recycle().versions.map(v=>({scope:'version',projectId:v.projectId,variantId:v.variantId,
+       title:v.label?.zh||'视频版本',detail:'视频版本 · '+v.title,at:v.at,disabled:recycle().works.some(w=>w.id===v.projectId)}))]
+     .filter(item=>!search||[item.title,item.detail,item.projectId].some(text=>String(text).toLocaleLowerCase().includes(search.toLocaleLowerCase())));
+   if(!entries.length){
+     content.append(node('p','ux-recycle-empty',search?'回收站中没有匹配的作品或版本。':'回收站是空的。这里不会永久删除任何本地素材。'));
+   }
+   for(const item of entries){
+     const card=node('div','ux-recycle-item');
+     const img=node('div','ux-recycle-thumb');
+     img.append(photo(item.scope==='work'||!byId(item.projectId)
+       ?'/archived-cover/'+encodeURIComponent(item.projectId):coverURL(item.projectId),item.title));
+     const info=node('div','ux-recycle-info');
+     info.append(node('strong','',item.title),node('span','',item.detail));
+     const restore=node('button','secondary','恢复');restore.type='button';
+     restore.disabled=Boolean(item.disabled);
+     restore.title=item.disabled?'请先恢复该版本所属作品':'恢复到作品库，原视频文件未改动';
+     restore.addEventListener('click',()=>restoreArchived(item.scope,item.projectId,item.variantId||''));
+     card.append(img,info,restore);content.append(card);
+   }
+   target.replaceChildren(content);
+   $('ux-search-clear').hidden=!search;
+   $('ux-sort-hint').textContent='回收站只负责隐藏和恢复，不会删除本地 MP4、图片或 ImageKit 文件';
+   $('ux-sort-state').textContent='';$('ux-sort-undo').hidden=true;
+ }
  function renderGallery(){
    if(!state.ordering)return;
    renderFilters();
+   $('ux-search').placeholder=filter==='trash'?'搜索回收站…':'搜索全部 '+list().length+' 部作品…';
+   if(filter==='trash'){renderTrash();return;}
    const match=p=>!search||[p.title,p.titleEn,p.id,catName(p.category)].some(value=>
      String(value||'').toLocaleLowerCase().includes(search.toLocaleLowerCase()));
    const showCategories=search ? categories : categories.filter(c=>c[0]===filter);
@@ -270,10 +412,19 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      if(group.key!=='featured'&&!search)grid.append(createTile(group.key));
      section.append(header,grid);fragment.append(section);
    }
-   if(!count&&(search||filter==='featured'))
-     fragment.append(node('p','ux-empty','没有找到匹配的作品。'));
+   if(!count&&(search||filter==='featured')){
+     const empty=node('div','ux-empty');
+     empty.append(node('p','',search?'没有找到与「'+search+'」匹配的作品。':'当前没有精选作品。'));
+     if(search){
+       const clear=node('button','secondary','清除搜索，查看作品');clear.type='button';
+       clear.addEventListener('click',clearSearch);
+       empty.append(clear);
+     }
+     fragment.append(empty);
+   }
    target.replaceChildren(fragment);
-   $('ux-sort-hint').textContent=search?'正在搜索全部作品 · 清除搜索后可以直接拖动封面排序':
+   $('ux-search-clear').hidden=!search;
+   $('ux-sort-hint').textContent=search?'全部分类搜索结果 · 共 '+count+' 部作品 · 清除搜索后可拖拽排序':
      '点击封面编辑 · 按住封面拖动排序，松手自动保存 · ★ 设置精选';
    updateSaveBar();
  }
@@ -402,7 +553,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  }
  function askFeatured(id){
    if(busy)return;
-   if(!$('ux-editor').hidden&&(draftSections().title||draftSections().url||
+   if(!$('ux-editor').hidden&&(draftSections().title||draftSections().versionLabel||draftSections().url||
       draftSections().version||draftSections().cover)){
      navigateWithDraft(()=>askFeatured(id));return;
    }
@@ -420,7 +571,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    for(const project of choices){
      const button=node('button','ux-replace-item');
      button.type='button';
-     button.append(photo('/project-cover/'+project.id,project.title),node('span','',project.title));
+     button.append(photo(coverURL(project.id),project.title),node('span','',project.title));
      const preview=()=>{
        if(!swapping)return;
        const incoming=swapping.wasFeatured?project:target;
@@ -457,13 +608,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      applyOrder(result);closeFavorite();renderGallery();renderEditor();
      notify('已将「'+byId(incoming).title+'」加入首页精选，替换「'+byId(outgoing).title+'」。');
    }catch(e){notify('精选调整失败：'+e.message,true);}
-   finally{busy=false;}
+   finally{busy=false;syncVersionActions();}
  }
  async function saveTitle(p,zh,en){
    if(busy)return false;
    if(dirty()){notify('请先保存排序，再修改作品名称。',true);return false;}
    if(!zh||!en){notify('中英文标题都不能为空。',true);return false;}
-   busy=true;
+   busy=true;syncSaveIndicator({saving:true});
    try{
      await api('/api/update-title',{
        id:p.id,titleZh:zh,titleEn:en,expectedZh:p.title,expectedEn:p.titleEn,confirmed:true,
@@ -473,29 +624,30 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      $('ux-context-save').textContent='作品名称已保存到本地 · 未发布网站';
      notify('已保存作品名称：本地视频、封面和海报文件名已同步；线上 ImageKit 地址未更改。');
      return true;
-   }catch(e){notify('保存名称失败：'+e.message,true);return false;}
-   finally{busy=false;}
+   }catch(e){syncSaveIndicator({error:true});notify('保存名称失败：'+e.message,true);return false;}
+   finally{busy=false;syncVersionActions();}
  }
  function editInlineName(p,language,label){
    if(busy||dirty()){if(dirty())notify('请先保存当前排序。',true);return;}
    const field=node('input','ux-inline-name');
-   field.type='text';field.maxLength=80;field.value=language==='zh'?p.title:p.titleEn;
+   field.type='text';field.setAttribute('aria-label','修改'+(language==='zh'?'中文':'英文')+'作品名称');field.maxLength=80;field.value=language==='zh'?p.title:p.titleEn;
    label.replaceWith(field);field.focus();field.select();
    let done=false;
-   const restore=()=>{if(field.isConnected)field.replaceWith(label);};
+   const restore=(focus=false)=>{if(field.isConnected){field.replaceWith(label);if(focus)label.focus({preventScroll:true});}};
    const commit=()=>{
      if(done)return;done=true;const value=field.value.trim().replace(/\s+/g,' ');
-     restore();
+     restore(true);
      if(!value||value===(language==='zh'?p.title:p.titleEn))return;
-     saveTitle(p,language==='zh'?value:p.title,language==='en'?value:p.titleEn);
+     void saveTitle(p,language==='zh'?value:p.title,language==='en'?value:p.titleEn);
    };
    field.addEventListener('keydown',event=>{
      event.stopPropagation();
-     if(event.key==='Enter'){event.preventDefault();field.blur();}
-     if(event.key==='Escape'){done=true;restore();}
+     if(event.key==='Enter'){event.preventDefault();commit();}
+     if(event.key==='Escape'){event.preventDefault();done=true;restore(true);}
    });
    field.addEventListener('click',event=>event.stopPropagation());
-   field.addEventListener('blur',commit,{once:true});
+   // Losing focus cancels an unfinished name edit instead of silently renaming MP4s.
+   field.addEventListener('blur',()=>{if(!done){done=true;restore();}},{once:true});
  }
  const navigationIds=()=>state.orderDraft.all.filter(id=>Boolean(byId(id)));
  function updateWorkNavigation(){
@@ -554,7 +706,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      document.querySelector('#ux-gallery .ux-project[data-id="'+id+'"]');
    inlineCover.cancel();
    selectedId=id;selectedVersion=versionId;
-   renderEditor();
+   selectPanel('versions');renderEditor();
    $('ux-editor').hidden=false;
    $('ux-library').inert=true;
    document.body.classList.add('ux-editor-open');
@@ -579,7 +731,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(history.isOpen()){history.close();return;}
    navigateWithDraft(finishCloseEditor);
  }
- function renderEditor(){
+ function renderEditor({preserveVersionChips=false}={}){
    if(!selectedId||!byId(selectedId))return;
    const p=byId(selectedId),work=managed(selectedId);
    const options=versions(selectedId);
@@ -601,39 +753,68 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-title-zh').value=p.title;
    $('ux-title-en').value=p.titleEn||'';
    $('ux-title-save').hidden=true;
-   $('ux-cover-img').src='/project-cover/'+p.id+'?v='+Date.now();
-   $('ux-poster-img').src='/project-poster/'+p.id+'/'+encodeURIComponent(v?.id||'main')+'?v='+Date.now();
+   const currentCover=coverURL(p.id),currentPoster=posterURL(p.id,v?.id);
+   if($('ux-cover-img').getAttribute('src')!==currentCover)$('ux-cover-img').src=currentCover;
+   if($('ux-poster-img').getAttribute('src')!==currentPoster)$('ux-poster-img').src=currentPoster;
    $('ux-poster-size').textContent=v?v.width+' × '+v.height:'原比例';
-   const chips=$('ux-variant-chips');chips.replaceChildren();
-   for(const option of options){
-     const b=node('button','ux-variant',option.label?.zh||'主版本');
-     b.type='button';b.setAttribute('aria-pressed',String(option.id===selectedVersion));
-     b.addEventListener('click',()=>{
-       if(option.id===selectedVersion)return;
-       navigateWithDraft(()=>{
-         if(history.isOpen())history.close();
-         inlineCover.cancel();
-         cancelVersion();
-         selectedVersion=option.id;
-         renderEditor();
+   const chips=$('ux-variant-chips');
+   if(!preserveVersionChips){
+     chips.replaceChildren();
+     for(const option of options){
+       const item=node('div','ux-variant-item');
+       const b=node('button','ux-variant',option.label?.zh||'主版本');
+       b.type='button';b.dataset.version=option.id;b.setAttribute('aria-pressed',String(option.id===selectedVersion));
+       b.title='单击切换视频；点击右侧铅笔修改版本名称';
+       b.addEventListener('click',()=>{
+         if(option.id===selectedVersion)return;
+         navigateWithDraft(()=>{
+           if(history.isOpen())history.close();
+           inlineCover.cancel();
+           cancelVersion();
+           cancelVersionLabel();
+           selectedVersion=option.id;
+           renderEditor({preserveVersionChips:true});
+         });
        });
-     });
-     chips.append(b);
+       const edit=node('button','ux-variant-edit');edit.type='button';edit.append(createEditIcon());
+       edit.setAttribute('aria-label','编辑「'+(option.label?.zh||'主版本')+'」的中英文版本名称');
+       edit.title='编辑这个视频版本的中英文名称';
+       edit.addEventListener('click',()=>startVersionLabelEdit(option.id));
+       item.append(b,edit);chips.append(item);
+     }
+   }else{
+     chips.querySelectorAll('.ux-variant').forEach(button=>
+       button.setAttribute('aria-pressed',String(button.dataset.version===selectedVersion)));
    }
-   chips.hidden=options.length<2;
-   $('ux-stage-version').hidden=options.length>1;
+   chips.hidden=false;
+   $('ux-stage-version').hidden=false;
+   $('ux-edit-current-version').hidden=true;
+   $('ux-edit-current-version').onclick=()=>{selectPanel('versions');startVersionLabelEdit(selectedVersion);};
+   $('ux-rename-current').disabled=busy;
+   $('ux-archive-version').disabled=busy||selectedVersion==='main';
+   $('ux-archive-version').title=selectedVersion==='main'?'主版本不能单独移入回收站，可以归档整部作品。':'将此扩展版本移入可恢复的回收站';
+   $('ux-stage-version').title='当前视频版本；版本切换和重命名请使用右侧「视频版本」';
+   $('ux-stage-version').ondblclick=null;
+   syncVersionActions();
+   $('ux-version-label-form').hidden=true;
+   editingVersionId=null;
    const url=online?.videoUrl||null;
    $('ux-cloud-badge').textContent=url?'已配置 ImageKit 地址':'未配置线上视频';
    $('ux-cloud-badge').dataset.connected=String(Boolean(url));
-   $('ux-version-label').textContent='当前版本：'+(v?.label?.zh||'主版本')+
-     ' · '+(v?.width||'-')+' × '+(v?.height||'-');
+   $('ux-version-label').textContent='当前：'+(v?.label?.zh||'主版本')+' · '+(v?.width||'-')+' × '+(v?.height||'-')+' · 只影响此版本';
    $('ux-url-readonly').textContent=url||'未设置线上视频地址 · 点击填写 ImageKit 链接';
    $('ux-url-readonly').title='单击编辑 ImageKit 地址；进入编辑后可复制或修改';
+   $('ux-add-variant').replaceChildren(createPlusIcon(),document.createTextNode('添加视频版本'));
    $('ux-add-variant').hidden=false;
    {
-     const index=String.fromCharCode(65+Math.min(options.length,25));
+     // Archived versions reserve their existing file names and version slots.
+     const index=String.fromCharCode(65+Math.min(options.length+reservedVersions(p.id).length,25));
      $('ux-version-zh').value='版本 '+index;
      $('ux-version-en').value='Version '+index;
+     $('ux-version-proposed').textContent='默认：版本 '+index;
+     $('ux-version-advanced').open=false;
+     $('ux-version-file').value='';
+     syncNewVersionFileState();
    }
    $('ux-version-form').hidden=true;
    $('ux-url-form').hidden=true;
@@ -645,10 +826,15 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      createStarIcon(),document.createTextNode(featured?'首页精选 · 更换':'加入首页精选')
    );
    $('ux-featured-action').setAttribute('aria-pressed',String(featured));
+   $('ux-archive-work').disabled=featured||busy;
+   $('ux-archive-work').textContent=featured?'请先更换首页精选':'移入回收站';
+   $('ux-archive-work').title=featured?'先使用上方精选按钮更换掉该作品，才能移入回收站。':'不永久删除视频、封面或线上资源';
+   selectPanel(activePanel);
+   syncSaveIndicator();
  }
  function launchEditor(kind){
    if(!selectedId)return;
-   if(draftSections().title||draftSections().url||draftSections().version){
+   if(draftSections().title||draftSections().versionLabel||draftSections().url||draftSections().version){
      navigateWithDraft(()=>launchEditor(kind));return;
    }
    if(dirty()){notify('请先保存排序，再编辑封面。',true);return;}
@@ -657,16 +843,95 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    syncContext(kind==='poster'?'正在编辑当前版本的播放器海报；不影响 3:4 作品封面或其他版本。':'正在编辑整部作品的 3:4 卡片封面；不会修改各视频版本的海报。');
    inlineCover.start(kind,selectedId,v);
  }
+ function syncNewVersionFileState(){
+   const file=$('ux-version-file').files?.[0];
+   const valid=Boolean(file&&/\.mp4$/i.test(file.name)&&file.size>0&&file.size<=2*1024**3);
+   $('ux-version-file-name').textContent=file?file.name:'选择 MP4 视频';
+   $('ux-version-file-hint').textContent=file?(file.size/1048576).toFixed(1)+' MB · '+(valid?'可在左侧播放预览':'仅支持不超过 2GB 的 MP4'):
+     '点击选择 · 添加后保留原版本';
+   $('ux-version-submit').disabled=busy||!valid;
+   $('ux-version-submit').textContent='保存为'+$('ux-version-zh').value.trim();
+   if(!$('ux-version-form').hidden)syncSaveIndicator();
+ }
  function cancelVersion(){
    $('ux-version-form').hidden=true;
    $('ux-version-file').value='';
+   $('ux-version-advanced').open=false;
+   syncNewVersionFileState();
    if(selectedId)player.setSource(selectedId,selectedVersion);
    const current=poster(selectedId);
    if(current)$('ux-stage-version').textContent=(current.label?.zh||'主版本')+' · '+current.width+' × '+current.height;
+   if(selectedId)syncContext();
+ }
+ function cancelVersionLabel({restoreFocus=false}={}){
+   const origin=versionLabelOpener;
+   $('ux-version-label-form').hidden=true;
+   editingVersionId=null;versionLabelOpener=null;
+   if(selectedId)syncContext();
+   if(restoreFocus&&origin?.isConnected&&!origin.closest('[inert]'))origin.focus({preventScroll:true});
+ }
+ function startVersionLabelEdit(variantId){
+   if(!selectedId||busy)return;
+   selectPanel('versions');
+   const opener=document.activeElement;
+   navigateWithDraft(()=>{
+     cancelVersion();
+     let focusOpener=opener;
+     if(variantId!==selectedVersion){
+       cancelVersionLabel();selectedVersion=variantId;renderEditor();
+       // Switching a version recreates the chip: restore focus to its new pencil.
+       focusOpener=[...$('ux-variant-chips').querySelectorAll('.ux-variant-item')]
+         .find(item=>item.querySelector('.ux-variant')?.dataset.version===variantId)
+         ?.querySelector('.ux-variant-edit')||opener;
+     }
+     const version=versionById(selectedId,variantId);
+     if(!version)return;
+     editingVersionId=variantId;versionLabelOpener=focusOpener;
+     $('ux-version-label-zh').value=version.label?.zh||'';
+     $('ux-version-label-en').value=version.label?.en||'';
+     $('ux-version-label-current').textContent='当前：'+(version.label?.zh||'主版本');
+     $('ux-version-label-status').textContent='保存后，版本切换按钮和当前版本标题会同步更新。';
+     $('ux-version-label-form').hidden=false;
+     $('ux-version-label-form').scrollIntoView({block:'nearest',behavior:'instant'});
+     syncContext('仅重命名当前视频版本，不改变作品名称及其他视频。');
+     syncVersionLabelDraftStatus();
+     $('ux-version-label-zh').focus();
+   });
+ }
+ async function saveVersionLabel(event){
+   event.preventDefault();
+   if(busy||!selectedId||!editingVersionId)return;
+   if(dirty()){notify('请先保存排序，再修改版本名称。',true);return;}
+   const version=versionById(selectedId,editingVersionId);
+   if(!version)return;
+   const labelZh=$('ux-version-label-zh').value.trim();
+   const labelEn=$('ux-version-label-en').value.trim();
+   if(!labelZh||!labelEn){notify('请填写中英文版本名称。',true);return;}
+   const duplicate=versions(selectedId).some(item=>item.id!==editingVersionId&&
+     (item.label?.zh===labelZh||item.label?.en===labelEn));
+   if(duplicate){notify('同一作品的中英文版本名称都需要与其他版本区分。',true);return;}
+   const projectId=selectedId,variantId=editingVersionId;
+   busy=true;$('ux-version-label-save').disabled=true;
+   $('ux-version-label-status').textContent='正在保存中英文版本名称…';
+   try{
+     await api('/api/update-version-label',{
+       projectId,variantId,labelZh,labelEn,
+       expectedLabel:version.label||{zh:'主版本',en:'Main version'},confirmed:true,
+     });
+     await bootstrap();
+     selectedId=projectId;selectedVersion=variantId;editingVersionId=null;versionLabelOpener=null;
+     renderGallery();renderEditor();
+     notify('版本名称已保存到本地；切换按钮和当前版本标题已同步，网站尚未发布。');
+   }catch(error){
+     $('ux-version-label-status').textContent='保存失败：'+error.message;
+     notify('保存视频版本名称失败：'+error.message,true);
+   }finally{
+     busy=false;$('ux-version-label-save').disabled=false;syncVersionActions();
+   }
  }
  function launchHistory(kind,opener){
    if(!selectedId||busy)return;
-   if(draftSections().title||draftSections().url||draftSections().version){
+   if(draftSections().title||draftSections().versionLabel||draftSections().url||draftSections().version){
      navigateWithDraft(()=>launchHistory(kind,opener));return;
    }
    if(inlineCover.active()){
@@ -681,18 +946,21 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      title:p?.title||'作品',opener});
  }
  function launchVersion(){
-   if(draftSections().title||draftSections().url){
+   selectPanel('versions');
+   if(draftSections().title||draftSections().versionLabel||draftSections().url){
      navigateWithDraft(()=>launchVersion());return;
    }
    const work=managed(selectedId);
    if(!work){notify('此作品暂时无法管理版本。',true);return;}
+   cancelVersionLabel();
    if(inlineCover.active())inlineCover.cancel();
    const form=$('ux-version-form');
    if(!form.hidden){cancelVersion();return;}
    form.hidden=false;
-   syncContext('正在添加一个新视频版本；原版本与原海报不会被覆盖。');
-   $('ux-version-status').textContent='选择 MP4 后可以先在左侧播放预览，确认名称再保存。';
-   $('ux-context-save').textContent='正在添加视频版本 · 尚未保存';
+   form.scrollIntoView({block:'nearest',behavior:'instant'});
+   syncContext('添加视频只在本地保存，不覆盖现有视频，也不会上传 ImageKit。');
+   $('ux-version-status').textContent='先选择 MP4，再确认左侧画面；需要个性化标签时展开「自定义版本名称」。';
+   syncNewVersionFileState();
    $('ux-version-file').focus();
  }
  async function saveVersion(event){
@@ -705,11 +973,17 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    const labelZh=$('ux-version-zh').value.trim();
    const labelEn=$('ux-version-en').value.trim();
    if(!labelZh||!labelEn){notify('请填写中英文版本名称。',true);return;}
+   if([...versions(selectedId),...reservedVersions(selectedId)].some(v=>v.label?.zh===labelZh||v.label?.en===labelEn)){
+     $('ux-version-status').textContent='当前名称已被其他版本或回收站中的版本占用，请展开「自定义版本名称」修改。';
+     $('ux-version-advanced').open=true;
+     notify('版本名称不能与现有版本重复。',true);return;
+   }
    if(busy)return;
    const id=selectedId;
    busy=true;
+   syncSaveIndicator({saving:true});
    $('ux-version-submit').disabled=true;
-   $('ux-version-status').textContent='正在导入本地 MP4 并创建视频版本…';
+   $('ux-version-status').textContent='正在导入 MP4（请勿关闭或切换作品）…';
    try{
      const response=await fetch('/api/import?kind=video&candidates=0&name='+encodeURIComponent(file.name),{
        method:'POST',headers:{'X-Cover-Token':state.token},body:file,
@@ -734,7 +1008,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      $('ux-version-status').textContent='添加失败：'+e.message;
      notify('添加视频版本失败：'+e.message,true);
    }finally{
-     busy=false;$('ux-version-submit').disabled=false;
+     busy=false;syncNewVersionFileState();syncVersionActions();syncSaveIndicator();
    }
  }
  async function saveURL(){
@@ -742,7 +1016,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(!work||!v)return;
    const url=editableURL();
    if(urlError()){notify(urlError(),true);return false;}
-   if(busy)return;busy=true;
+   if(busy)return;busy=true;syncSaveIndicator({saving:true});
    try{
      const result=await api('/api/bind-imagekit',{
        projectId:selectedId,variantId:selectedVersion,url,
@@ -752,11 +1026,22 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      $('ux-context-save').textContent='ImageKit 地址已保存到本地 · 未发布网站';
      notify('已保存：'+(v.label?.zh||'主版本')+' 的 ImageKit 地址（仅本地配置，尚未发布网站）。');
      return true;
-   }catch(e){notify('保存线上地址失败：'+e.message,true);return false;}
-   finally{busy=false;}
+   }catch(e){syncSaveIndicator({error:true});notify('保存线上地址失败：'+e.message,true);return false;}
+   finally{busy=false;syncVersionActions();}
  }
+ const clearSearch=()=>{
+   search='';$('ux-search').value='';renderGallery();$('ux-search').focus({preventScroll:true});
+ };
+ $('ux-create-quick').addEventListener('click',()=>openNewProject(categories.some(c=>c[0]===filter)?filter:'commercial'));
+ $('ux-open-trash').addEventListener('click',()=>{
+   filter=filter==='trash'?'featured':'trash';search='';$('ux-search').value='';renderGallery();
+ });
+ $('ux-search-clear').addEventListener('click',clearSearch);
  $('ux-search').addEventListener('input',event=>{
    search=event.target.value.trim();renderGallery();
+ });
+ $('ux-search').addEventListener('keydown',event=>{
+   if(event.key==='Escape'&&search){event.preventDefault();event.stopPropagation();clearSearch();}
  });
  $('ux-work-prev').addEventListener('click',()=>navigateWork(-1));
  $('ux-work-next').addEventListener('click',()=>navigateWork(1));
@@ -764,7 +1049,71 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  $('ux-editor').querySelector('[data-ux-close]').addEventListener('click',closeEditor);
  $('ux-feature-close').addEventListener('click',closeFavorite);
  $('ux-feature-dialog').querySelector('[data-ux-feature-close]').addEventListener('click',closeFavorite);
+ let archiveFocusOrigin=null;
+ function openArchiveDialog(scope){
+   if(!selectedId||busy)return;
+   if(scope==='work'&&isFeatured(selectedId)){
+     notify('这部作品正在首页精选。请先替换精选，再移入回收站。',true);return;
+   }
+   if(scope==='version'&&selectedVersion==='main'){
+     notify('主版本不能单独移入回收站，可以归档整部作品。',true);return;
+   }
+   archiveFocusOrigin=document.activeElement;
+   archivePending={scope,projectId:selectedId,variantId:scope==='version'?selectedVersion:''};
+   const work=byId(selectedId),v=poster(selectedId);
+   $('ux-archive-title').textContent=scope==='work'?'将整部作品移入回收站？':'将这个视频版本移入回收站？';
+   $('ux-archive-message').textContent=scope==='work'
+     ?'「'+work.title+'」将从本地作品列表和网站待发布数据中隐藏。所有版本、MP4、封面及 ImageKit 地址均保留，可从回收站恢复。首页线上内容不会自动变化。'
+     :'「'+(v?.label?.zh||'此版本')+'」只会从当前作品的版本选择中隐藏；MP4 和海报仍在本机，可以恢复。其他视频版本不受影响。';
+   $('ux-archive-phrase-row').hidden=scope!=='work';$('ux-archive-phrase').value='';
+   $('ux-archive-confirm').disabled=scope==='work';
+   $('ux-archive-error').hidden=true;
+   $('ux-archive-dialog').hidden=false;
+   $('ux-editor').inert=true;document.body.classList.add('ux-dialog-open');
+   (scope==='work'?$('ux-archive-phrase'):$('ux-archive-cancel')).focus({preventScroll:true});
+ }
+ function closeArchiveDialog(){
+   $('ux-archive-dialog').hidden=true;
+   $('ux-editor').inert=false;
+   document.body.classList.remove('ux-dialog-open');
+   archivePending=null;
+   const origin=archiveFocusOrigin;archiveFocusOrigin=null;
+   if(origin?.isConnected&&!origin.closest('[inert]'))origin.focus({preventScroll:true});
+ }
+ $('ux-archive-phrase').addEventListener('input',()=>{
+   $('ux-archive-confirm').disabled=$('ux-archive-phrase').value.trim()!=='归档';
+ });
+ $('ux-archive-phrase').addEventListener('keydown',event=>{
+   if(event.key==='Enter'&&!$('ux-archive-confirm').disabled){event.preventDefault();$('ux-archive-confirm').click();}
+ });
+ $('ux-archive-cancel').addEventListener('click',closeArchiveDialog);
+ $('ux-archive-dialog').querySelector('.ux-archive-backdrop').addEventListener('click',closeArchiveDialog);
+ $('ux-archive-confirm').addEventListener('click',async()=>{
+   if(!archivePending||busy||$('ux-archive-confirm').disabled)return;
+   const item={...archivePending};busy=true;
+   $('ux-archive-confirm').disabled=true;$('ux-archive-confirm').textContent='正在移入回收站…';
+   try{
+     await api('/api/archive-item',{...item,confirmed:true,
+       confirmPhrase:item.scope==='work'?'归档':null});
+     closeArchiveDialog();
+     if(item.scope==='work')finishCloseEditor();
+     else{selectedVersion='main';player.pause();}
+     await bootstrap();
+     filter=item.scope==='work'?'trash':(byId(item.projectId)?.category||'featured');
+     renderGallery();
+     if(item.scope==='version')renderEditor();
+     notify(item.scope==='work'?'作品已移入回收站，可在作品库右上角恢复。':'视频版本已移入回收站，其他版本和所有原始文件不变。');
+   }catch(error){
+     $('ux-archive-error').textContent='操作失败：'+error.message;
+     $('ux-archive-error').hidden=false;
+     notify('回收站操作失败：'+error.message,true);
+   }finally{
+     busy=false;$('ux-archive-confirm').textContent='确认移入回收站';
+     $('ux-archive-confirm').disabled=Boolean(archivePending?.scope==='work'&&$('ux-archive-phrase').value.trim()!=='归档');
+   }
+ });
  const openModal=()=>{
+   if(!$('ux-archive-dialog').hidden)return $('ux-archive-dialog');
    if(!$('ux-unsaved-dialog').hidden)return $('ux-unsaved-dialog');
    if(history.isOpen())return $('ux-history-dialog');
    if(!$('ux-feature-dialog').hidden)return $('ux-feature-dialog');
@@ -772,6 +1121,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    return null;
  };
  document.addEventListener('keydown',event=>{
+   // Search is global. Do not hijack a text field, editable name, or modal.
+   const typing=event.target instanceof Element&&Boolean(event.target.closest('input,textarea,select,[contenteditable="true"]'));
+   const searchShortcut=(event.key==='/'&&!event.altKey&&!event.metaKey&&!event.ctrlKey)||
+     (event.key.toLowerCase()==='k'&&(event.metaKey||event.ctrlKey)&&!event.altKey&&!event.shiftKey);
+   if(searchShortcut&&!typing&&!openModal()&&state.workflow==='library'){
+     event.preventDefault();$('ux-search').focus({preventScroll:true});$('ux-search').select();return;
+   }
    if(event.altKey&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&
       ['ArrowLeft','ArrowRight'].includes(event.key)&&
       !$('ux-editor').hidden&&$('ux-unsaved-dialog').hidden&&!history.isOpen()&&
@@ -794,6 +1150,16 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      }
    }
    if(event.key!=='Escape')return;
+   if(!$('ux-archive-dialog').hidden){event.preventDefault();event.stopImmediatePropagation();closeArchiveDialog();return;}
+   if(!$('ux-editor').hidden&&$('ux-unsaved-dialog').hidden&&!history.isOpen()){
+     if(!$('ux-version-label-form').hidden){
+       event.preventDefault();event.stopImmediatePropagation();cancelVersionLabel({restoreFocus:true});return;
+     }
+     if(!$('ux-version-form').hidden){
+       event.preventDefault();event.stopImmediatePropagation();cancelVersion();
+       $('ux-add-variant').focus({preventScroll:true});return;
+     }
+   }
    // Allow the inline ImageKit input to consume Esc before the enclosing
    // editor's capture-phase Escape handler closes the whole work.
    if(event.target.closest('#ux-url-form')&&!$('ux-url-form').hidden&&$('ux-unsaved-dialog').hidden)return;
@@ -813,6 +1179,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-url-readonly').hidden=false;
    syncContext();
    cancelVersion();
+   cancelVersionLabel();
    inlineCover.cancel();
  };
  $('ux-unsaved-keep').addEventListener('click',dismissUnsaved);
@@ -831,6 +1198,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-unsaved-save').disabled=true;
    try{
      const saved=pending.issues.title?await saveTitle(p,fields.titleZh,fields.titleEn):
+       pending.issues.versionLabel?await saveVersionLabel(new Event('submit',{cancelable:true})).then(()=>!anyDraft()):
        pending.issues.url?await saveURL():false;
      if(saved){
        dismissUnsaved();
@@ -848,7 +1216,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    const p=byId(selectedId);if(!p)return;
    const hasChanges=$('ux-title-zh').value!==p.title||$('ux-title-en').value!==p.titleEn;
    $('ux-title-save').hidden=!hasChanges;
-   $('ux-context-save').textContent=hasChanges?'作品名称有未保存修改':'已保存到本地 · 未发布网站';
+   syncSaveIndicator();
  };
  $('ux-title-zh').addEventListener('input',updateTitleButton);
  $('ux-title-en').addEventListener('input',updateTitleButton);
@@ -862,9 +1230,20 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  $('ux-history-cover').addEventListener('click',()=>launchHistory('cover',$('ux-history-cover')));
  $('ux-history-poster').addEventListener('click',()=>launchHistory('poster',$('ux-history-poster')));
  $('ux-add-variant').addEventListener('click',launchVersion);
+ $('ux-rename-current').addEventListener('click',()=>startVersionLabelEdit(selectedVersion));
+ $('ux-archive-version').addEventListener('click',()=>{
+   if(selectedVersion==='main'){notify('主版本不可单独移入回收站。',true);return;}
+   navigateWithDraft(()=>openArchiveDialog('version'));
+ });
+ $('ux-archive-work').addEventListener('click',()=>navigateWithDraft(()=>openArchiveDialog('work')));
  $('ux-version-cancel').addEventListener('click',cancelVersion);
+ $('ux-version-label-cancel').addEventListener('click',()=>cancelVersionLabel({restoreFocus:true}));
+ $('ux-version-label-form').addEventListener('submit',saveVersionLabel);
+ $('ux-version-label-zh').addEventListener('input',syncVersionLabelDraftStatus);
+ $('ux-version-label-en').addEventListener('input',syncVersionLabelDraftStatus);
  $('ux-version-file').addEventListener('change',event=>{
    const file=event.target.files?.[0];
+   syncNewVersionFileState();
    if(!file)return;
    if(!/\.mp4$/i.test(file.name)||file.size>2*1024**3){
      $('ux-version-status').textContent='只支持不超过 2GB 的 MP4 视频。';
@@ -873,6 +1252,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    player.previewFile(file);
    $('ux-stage-version').textContent='待添加 · '+file.name;
    $('ux-version-status').textContent='视频已在左侧加载预览；确认版本名称后可添加，不会替换原文件。';
+ });
+ for(const id of ['ux-version-zh','ux-version-en'])$(id).addEventListener('input',syncNewVersionFileState);
+ $('ux-version-advanced').addEventListener('toggle',()=>{
+   $('ux-version-proposed').textContent=$('ux-version-advanced').open?'自定义名称':'默认：'+$('ux-version-zh').value.trim();
  });
  $('ux-version-form').addEventListener('submit',saveVersion);
  $('ux-featured-action').addEventListener('click',()=>askFeatured(selectedId));
@@ -902,7 +1285,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    const raw=$('ux-url-value').value.trim();
    if(raw.startsWith(prefix))$('ux-url-value').value=filenameOf(raw);
    syncUrlValidation();
-   $('ux-context-save').textContent=editableURL()===(managed(selectedId)?.versions.find(v=>v.id===selectedVersion)?.videoUrl||'')?'已保存到本地 · 未发布网站':'ImageKit 地址有未保存修改';
+   syncSaveIndicator();
  });
  $('ux-url-copy').addEventListener('click',async()=>{
    try{await navigator.clipboard.writeText(prefix);$('ux-url-copy').textContent='已复制';}

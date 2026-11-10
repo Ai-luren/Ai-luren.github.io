@@ -6,8 +6,7 @@ import assert from 'node:assert/strict';
 
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 const autoWorks = JSON.parse(readFileSync(new URL('../src/data/auto-projects.json', import.meta.url)));
-const workCount = 15 + autoWorks.length;
-const countFor = category => ({ commercial: 6, 'short-film': 3, social: 4, visual: 2 }[category] || 0) +
+const countFor = category => ({ commercial: 6, 'short-film': 3, social: 3, visual: 2 }[category] || 0) +
   autoWorks.filter(work => work.category === category).length;
 const defaultCount = countFor('commercial');
 const executablePath = [

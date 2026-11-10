@@ -9,12 +9,13 @@ import { pipeline } from 'node:stream/promises';
 import { Transform } from 'node:stream';
 import { createServer as createViteServer } from 'vite';
 import { createNewCoverStudioProject } from './project-publisher.mjs';
-import { listManagedVersions, appendVideoVersion, bindImageKitUrl } from './project-versions.mjs';
+import { listManagedVersions, appendVideoVersion, bindImageKitUrl, updateVideoVersionLabel } from './project-versions.mjs';
 import { describeProjectOrder, saveProjectOrder } from './project-order.mjs';
 import { saveProjectTitle, artworkPath } from './project-titles.mjs';
 import { listPosterVersions, currentPoster, currentVideo, replacePoster } from './project-poster.mjs';
 import {listArtworkHistory,artworkHistoryImage,restoreArtwork,pruneArtworkHistory,pruneAllArtworkHistory} from './artwork-history.mjs';
 import { deduplicateSessionSource } from './session-storage.mjs';
+import {readArchive, archiveItems, updateArchive} from './project-archive.mjs';
 
 const TOOL_DIR = path.dirname(fileURLToPath(import.meta.url));
 const fail = (message, status = 400) => Object.assign(new Error(message), { status });
@@ -199,6 +200,7 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
         token, projects: await projects(), overrides: await readJSON(mappingFile, {}), workspace,
         managedProjects: await listManagedVersions(projectRoot, await projects()),
         posterVersions: await listPosterVersions(projectRoot, await projects()),
+        archived: archiveItems(await readArchive(projectRoot)),
         ordering: await describeProjectOrder({ projectRoot, projects: await projects() }),
       }); return;
     }
@@ -244,6 +246,25 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
       if(chunks.length!==4)throw fail('需要指定作品和视频版本。');
       const {file}=await currentPoster({root:projectRoot,projects:await projects(),
         projectId:decodeURIComponent(chunks[2]),variantId:decodeURIComponent(chunks[3])});
+      // Only artwork GETs use short private caching. Versioned URLs are
+      // invalidated after a successful save or restore in the workbench.
+      res.setHeader('Cache-Control','private, max-age=600');
+      await sendFile(req,res,file);return;
+    }
+    if (req.method === 'GET' && pathname.startsWith('/archived-cover/')) {
+      const id=decodeURIComponent(pathname.slice('/archived-cover/'.length));
+      const archived=await readArchive(projectRoot);
+      if(!archived.works[id])throw fail('该作品不在回收站。',404);
+      const [overrides,created]=await Promise.all([
+        readJSON(mappingFile,{}),readJSON(path.join(projectRoot,'src/data/auto-projects.json'),[]),
+      ]);
+      const rel=overrides[id]||created.find(p=>p.id===id)?.coverFile;
+      if(!rel||!/^(commercial|short-film|social|visual)\/[^/]+\.webp$/.test(rel)||rel.includes('..'))
+        throw fail('回收站作品封面不合法。',422);
+      const root=path.join(projectRoot,'assets/images/project-covers');
+      const file=await fs.realpath(path.join(root,rel));
+      if(!file.startsWith(root+path.sep))throw fail('回收站封面路径越界。',403);
+      res.setHeader('Cache-Control','private, max-age=120');
       await sendFile(req,res,file);return;
     }
     if (req.method === 'GET' && pathname.startsWith('/project-cover/')) {
@@ -251,6 +272,7 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
       if (!p) throw fail('作品不存在。', 404);
       const file = await fs.realpath(path.resolve(projectRoot, `.${decodeURIComponent(p.cover.split('?')[0])}`));
       if (!file.startsWith(path.join(projectRoot, 'assets/images/') )) throw fail('无效封面路径。', 403);
+      res.setHeader('Cache-Control','private, max-age=600');
       await sendFile(req, res, file); return;
     }
     if (req.method === 'GET') {
@@ -388,6 +410,21 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
         respond(res, result);
         announcePreview('reload');return;
       }
+      if (pathname === '/api/archive-item'||pathname === '/api/restore-item') {
+        const active=await projects(),archive=await readArchive(projectRoot);
+        const currentOrder=await describeProjectOrder({projectRoot,projects:active});
+        const result=await updateArchive({
+          projectRoot,workspace,scope:input.scope,
+          action:pathname==='/api/archive-item'?'archive':'restore',
+          projectId:String(input.projectId||''),variantId:String(input.variantId||''),
+          confirmed:input.confirmed,confirmPhrase:input.confirmPhrase,
+          projects:active,managed:await listManagedVersions(projectRoot,active),
+          featured:currentOrder.featured,
+        });
+        // Data modules must be refreshed before a subsequent bootstrap request.
+        vite.moduleGraph.invalidateAll();
+        respond(res,result);announcePreview('reload',input.projectId);return;
+      }
       if (pathname === '/api/update-title') {
         const updated=await saveProjectTitle({
           projectRoot, workspace, projects: await projects(), id: input.id,
@@ -426,6 +463,16 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
           respond(res, result);
           announcePreview('reload');return;
         } finally { await fs.rm(draft,{force:true}); }
+      }
+      if (pathname === '/api/update-version-label') {
+        const updated=await updateVideoVersionLabel({
+          projectRoot,workspace,projectId:String(input.projectId||''),variantId:String(input.variantId||'main'),
+          labelZh:input.labelZh,labelEn:input.labelEn,expectedLabel:input.expectedLabel,
+          confirmed:input.confirmed,existingProjects:await projects(),
+        });
+        respond(res,updated);
+        announcePreview('reload',input.projectId);
+        return;
       }
       if (pathname === '/api/bind-imagekit') {
         const bound=await bindImageKitUrl({

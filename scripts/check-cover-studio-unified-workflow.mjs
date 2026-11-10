@@ -71,7 +71,8 @@ try{
   await page.locator('#ux-video-timeline').dispatchEvent('change');
   assert(Math.abs(await page.locator('#ux-video-preview').evaluate(v=>v.currentTime)-.8)<.15);
   console.log('VIDEO_PLAY_AND_SCRUB_PASS');
-  await page.locator('#ux-variant-chips button').nth(1).click();
+  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+  await page.locator('[data-ux-panel=artwork]').click();
   await page.locator('#ux-change-poster').click();
   await page.waitForFunction(()=>!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});
   assert.equal(await page.locator('#ux-poster-img').getAttribute('data-pending'),null);
@@ -111,8 +112,10 @@ try{
   assert.equal(await page.locator('#ux-video-preview').evaluate(v=>v.paused),false);
   await page.locator('#ux-play-toggle').click();
   console.log('UNSAVED_MP4_VERSION_PREVIEW_PASS');
-  await page.locator('#ux-version-zh').fill('版本 C');
-  await page.locator('#ux-version-en').fill('Version C');
+  // Ordinary creation should require only an MP4: A/B/C labels are automatic.
+  assert.equal(await page.locator('#ux-version-advanced').evaluate(el=>el.open),false);
+  assert.equal(await page.locator('#ux-version-zh').inputValue(),'版本 C');
+  assert.equal(await page.locator('#ux-version-en').inputValue(),'Version C');
   await page.locator('#ux-version-submit').click();
   await page.waitForFunction(()=>document.querySelectorAll('#ux-variant-chips .ux-variant').length===3,null,{timeout:90000});
   assert((await page.locator('#ux-stage-version').textContent()).includes('版本 C'));
@@ -123,7 +126,8 @@ try{
   assert((await fs.stat(path.join(tmp,'assets/videos/works',updated.variants.at(-1).localVideoPath))).size>1000);
   console.log('INLINE_MP4_VERSION_CREATION_PASS');
 
-  await page.locator('#ux-url-readonly').dblclick();
+  await page.locator('[data-ux-panel=details]').click();
+  await page.locator('#ux-url-readonly').click();
   const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/test-version-c.mp4';
   await page.locator('#ux-url-value').fill(url);
   await page.locator('#ux-url-value').press('Enter');

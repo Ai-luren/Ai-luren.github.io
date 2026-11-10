@@ -52,6 +52,7 @@ try{
  await studioPage.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
  await studioPage.locator('#ux-search').fill('岳阳楼');
  await studioPage.locator('.ux-project .ux-project-image').click();
+ await studioPage.locator('[data-ux-panel=artwork]').click();
  await studioPage.locator('#ux-change-cover').click();
  await studioPage.waitForFunction(()=>!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});
  await studioPage.locator('#ux-inline-last').click();

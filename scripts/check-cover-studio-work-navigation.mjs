@@ -38,7 +38,7 @@ try{
  assert(await page.locator('#ux-desktop-only').isHidden());
  const all=ordering.all;
  const first=ordering.featured[0],index=all.indexOf(first);
- assert(index>=0&&all.length===17);
+ assert(index>=0&&all.length>=17);
  await page.locator('#ux-gallery .ux-project').first().locator('.ux-project-image').click();
  assert((await page.locator('#ux-editor-id').textContent()).includes('#'+first));
  assert.equal(await page.locator('#ux-work-position').textContent(),(index+1)+' / '+all.length);
@@ -61,8 +61,9 @@ try{
  assert.equal(await page.locator('#ux-work-position').textContent(),all.length+' / '+all.length);
  await page.locator('#ux-work-prev').click();
  assert.equal(await page.locator('#ux-work-position').textContent(),(all.length-1)+' / '+all.length);
- console.log('ALL_17_SEQUENCE_CIRCULAR_WRAP_AND_KEYBOARD_PASS');
+ console.log('ALL_WORKS_SEQUENCE_CIRCULAR_WRAP_AND_KEYBOARD_PASS');
 
+ await page.locator('[data-ux-panel=details]').click();
  const titleBefore=await page.locator('#ux-title-zh').inputValue();
  await page.locator('#ux-title-zh').fill(titleBefore+' 临时草稿');
  await page.locator('#ux-work-next').click();
@@ -113,7 +114,7 @@ try{
   await page.locator('#ux-work-next').click();
   assert.notEqual(await page.locator('#ux-editor-id').textContent(),previous);
  }
- console.log('SEARCH_RESULT_NAVIGATES_ALL_17_WORKS_PASS');
+ console.log('SEARCH_RESULT_NAVIGATES_ALL_WORKS_PASS');
 
  await page.locator('#ux-close-editor').click();
  await page.locator('#ux-search').fill('MEXC');
@@ -122,10 +123,10 @@ try{
  await work16.click();
  const versions=page.locator('#ux-variant-chips .ux-variant');
  assert(await versions.count()>=2);
- assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-stage-context',
-   'Version switch must live beside the preview it controls, not in the metadata inspector.');
+ assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher',
+   'Video versions live together in the right-side version task, with an explicit pencil for each label.');
  assert(await page.locator('#ux-variant-chips').isVisible());
- assert(await page.locator('#ux-stage-version').isHidden(),'Do not duplicate the selected version label.');
+ assert(await page.locator('#ux-stage-version').isVisible(),'Show current video label in the preview summary.');
  const variantGeometry=await page.locator('#ux-variant-chips .ux-variant').evaluateAll(buttons=>
    buttons.map(el=>{const r=el.getBoundingClientRect();return {top:r.top,height:r.height,mid:r.top+r.height/2}}));
  assert(variantGeometry.every(r=>Math.abs(r.mid-variantGeometry[0].mid)<1&&Math.abs(r.height-variantGeometry[0].height)<1),

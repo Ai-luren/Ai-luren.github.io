@@ -52,10 +52,11 @@ try{
  await page.locator('.ux-project[data-id="03"] .ux-project-image').click();
  await page.locator('#ux-add-variant').click();
  await page.locator('#ux-version-file').setInputFiles(fixture);
+ await page.locator('#ux-version-advanced summary').click();
  await page.locator('#ux-version-zh').fill('版本 B');
  await page.locator('#ux-version-en').fill('Version B');
  await page.locator('#ux-version-submit').click();
- await page.waitForFunction(()=>document.querySelectorAll('#ux-variant-chips button').length===2||
+ await page.waitForFunction(()=>document.querySelectorAll('#ux-variant-chips .ux-variant').length===2||
   document.querySelector('#ux-version-status')?.textContent.startsWith('添加失败：'),
   null,{timeout:35000});
  const status=await page.locator('#ux-version-status').textContent();
@@ -70,7 +71,7 @@ try{
  const poster=path.join(tmp,'assets/images/player-posters',saved.posterFile);
  assert((await fs.stat(localVideo)).size>0);
  assert((await fs.stat(poster)).size>0);
- assert.equal(await page.locator('#ux-variant-chips button').count(),2);
+ assert.equal(await page.locator('#ux-variant-chips .ux-variant').count(),2);
  assert((await page.locator('#ux-stage-version').textContent()).includes('版本 B'));
  assert.equal(getSafeMediaReport(page).urls.length,0);
  assert.deepEqual(errors,[]);

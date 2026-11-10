@@ -13,13 +13,6 @@
     "playerPosterTime": 11.232399,
     "playerPosterTimeSource": "confirmed-poster-selection"
   },
-  "12": {
-    "videoWidth": 617,
-    "videoHeight": 1080,
-    "playerPoster": "social/Car Seat Cushion Demo.webp",
-    "playerPosterTime": 0.45249998999999996,
-    "playerPosterTimeSource": "confirmed-cover-selection"
-  },
   "13": {
     "videoWidth": 608,
     "videoHeight": 1080,
@@ -53,6 +46,20 @@
     "videoHeight": 720,
     "playerPoster": "commercial/MEXC No More Waiting.webp",
     "playerPosterTime": 15.183781470909091,
+    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+  },
+  "18": {
+    "videoWidth": 1708,
+    "videoHeight": 960,
+    "playerPoster": "social/FormFunk Product Film - Version A.webp",
+    "playerPosterTime": 10.678518,
+    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+  },
+  "19": {
+    "videoWidth": 607,
+    "videoHeight": 1080,
+    "playerPoster": "commercial/FormFunk Creative Commercial.webp",
+    "playerPosterTime": 4.068457,
     "playerPosterTimeSource": "cover-studio-confirmed-selection"
   },
   "01": {

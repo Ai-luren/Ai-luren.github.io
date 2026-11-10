@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI路人 · 本地封面工作台</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/workbench-enhancements.css"></head>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AI路人 · 本地作品工作台</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/workbench-enhancements.css"></head>
 <body data-workflow="library" data-manage-action="overview" data-media-stage="empty">
 <div id="ux-desktop-only" class="ux-desktop-only" role="status" aria-label="本地工作台电脑专用">
   <div class="ux-desktop-only-inner">
@@ -8,21 +8,24 @@
     <p>本地作品管理只提供桌面版。请使用电脑浏览器，并将窗口宽度调整到 921px 以上。</p>
     <span>作品集公开网站的手机端不受影响。</span>
   </div>
-</div><header><div><span class="eyebrow">AI路人 / LOCAL COVER STUDIO</span><h1>作品管理工作台</h1><p id="workflow-intro">新增作品、维护视频和调整封面，按需选择一个任务即可。</p></div><span class="local-badge">本机运行 · 不自动发布</span></header>
+</div><header><div><span class="eyebrow">AI路人 / LOCAL COVER STUDIO</span><h1>本地作品工作台</h1><p id="workflow-intro">新增作品、维护视频和调整封面，按需选择一个任务即可。</p></div><span class="local-badge">本机运行 · 不自动发布</span></header>
 <div class="workflow-helper"><button id="ux-return-library" type="button" hidden>← 返回作品库</button><p id="workflow-guide">选择一部作品进行管理。</p><button id="return-manage" type="button" hidden>← 返回作品管理</button></div>
 <div id="status" role="status" aria-live="polite">正在连接本地 FFmpeg…</div>
 <main><section id="ux-library" class="ux-library" aria-label="统一作品管理">
   <div class="ux-library-heading">
     <div><h2>我的作品</h2><p id="ux-overview" class="muted">正在读取作品库…</p></div>
     <div class="ux-heading-actions">
+      <button id="ux-create-quick" type="button" class="primary" title="新增作品：导入 MP4、设置双封面、保存">＋ 新增作品</button>
+      <button id="ux-open-trash" type="button" class="button secondary ux-trash-link" aria-pressed="false">回收站 <span id="ux-trash-count">0</span></button>
       <a href="http://127.0.0.1:5174/works.html" target="_blank" rel="noopener" class="button secondary">预览网站</a>
     </div>
   </div>
   <div class="ux-toolbar">
     <div id="ux-categories" class="ux-categories" role="group" aria-label="筛选作品"></div>
-    <label class="ux-search"><span class="sr-only">搜索作品</span>
-      <input id="ux-search" type="search" placeholder="搜索 17 部作品…" autocomplete="off">
-    </label>
+    <div class="ux-search"><label for="ux-search" class="sr-only">搜索全部作品</label>
+      <input id="ux-search" type="search" placeholder="搜索全部作品…" autocomplete="off" aria-label="跨分类搜索全部作品" title="按 / 或 ⌘K 快速搜索，Esc 清除">
+      <button id="ux-search-clear" type="button" class="ux-search-clear" aria-label="清除搜索关键词" hidden>清除</button>
+    </div>
   </div>
   <div class="ux-list-meta"><p id="ux-sort-hint" class="muted">点击封面编辑 · 按住封面拖动即可排序，松手自动保存</p><span id="ux-sort-state" class="ux-sort-state"></span><button id="ux-sort-undo" type="button" class="ux-sort-undo" hidden>撤销上次排序</button></div>
   <div id="ux-gallery" class="ux-gallery" aria-live="polite"></div>
@@ -47,6 +50,22 @@
     <div class="ux-new-editor-footer">
       <div class="ux-new-status-stack"><span id="ux-new-progress" class="ux-new-progress" aria-live="polite">1/3 · 等待导入视频</span><span id="ux-new-status" role="status" aria-live="polite">导入视频后，在同一页选择封面并保存作品。</span></div>
       <div class="ux-new-footer-actions"><span>仅保存本地 · 不自动发布</span><button id="ux-new-save" type="button" class="primary" disabled>保存作品</button></div>
+    </div>
+  </section>
+</div>
+<div id="ux-archive-dialog" class="ux-archive-dialog" hidden>
+  <div class="ux-archive-backdrop"></div>
+  <section class="ux-archive-pane" role="alertdialog" aria-modal="true" aria-labelledby="ux-archive-title" tabindex="-1">
+    <div class="ux-archive-symbol" aria-hidden="true">▤</div>
+    <h2 id="ux-archive-title">移入回收站？</h2>
+    <p id="ux-archive-message">只隐藏作品并保留全部文件，可以随时恢复。</p>
+    <label id="ux-archive-phrase-row" hidden>为了防止误操作，输入「归档」以继续
+      <input type="text" id="ux-archive-phrase" autocomplete="off" spellcheck="false" placeholder="归档">
+    </label>
+    <p id="ux-archive-error" role="status" aria-live="polite" hidden></p>
+    <div class="ux-archive-buttons">
+      <button type="button" id="ux-archive-cancel" class="secondary">取消，保留作品</button>
+      <button type="button" id="ux-archive-confirm" class="ux-danger-confirm" disabled>确认移入回收站</button>
     </div>
   </section>
 </div>
@@ -82,10 +101,9 @@
     <div class="ux-editor-body">
       <section class="ux-studio-stage" aria-label="视频播放与选帧">
         <div class="ux-stage-header">
-          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span></div>
+          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span><button type="button" id="ux-edit-current-version" class="ux-version-edit-current" aria-label="编辑当前视频版本名称" hidden>编辑名称</button></div>
           <div class="ux-stage-context">
-            <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="切换视频版本" hidden></div>
-            <span class="ux-stage-video-label">来自本地 MP4 · 不使用线上流量</span>
+<span class="ux-stage-video-label">本地 MP4 · 选版本请使用右侧「视频版本」</span>
           </div>
         </div>
         <div class="ux-stage-player">
@@ -139,15 +157,20 @@
           <span id="ux-context-version">主版本</span>
           <p id="ux-context-hint">3:4 封面属于整部作品；播放器海报和视频地址属于当前视频版本。</p><p id="ux-context-save" role="status">已保存到本地 · 未发布网站</p>
         </div>
-        <section class="ux-edit-section ux-name-section">
-          <div class="ux-section-heading"><h3>作品名称</h3></div>
+        <nav class="ux-detail-tabs" aria-label="选择编辑任务">
+          <button type="button" data-ux-panel="versions" aria-pressed="true">视频版本</button>
+          <button type="button" data-ux-panel="artwork" aria-pressed="false">封面与海报</button>
+          <button type="button" data-ux-panel="details" aria-pressed="false">作品设置</button>
+        </nav>
+        <section class="ux-edit-section ux-name-section" data-ux-section="details">
+          <div class="ux-section-heading"><h3>作品名称</h3><span class="muted">整部作品共用 · A / B / C 不随版本改变</span></div>
           <form id="ux-title-form">
             <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
             <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
             <button id="ux-title-save" type="submit" class="primary" hidden>保存名称</button>
           </form>
         </section>
-        <section class="ux-edit-section ux-cover-section">
+        <section class="ux-edit-section ux-cover-section" data-ux-section="artwork">
           <div class="ux-section-heading"><h3>封面与海报</h3><span class="muted" id="ux-preview-guidance">选择一种封面修改</span></div>
           <div class="ux-preview-pair">
             <div class="ux-asset-card" id="ux-card-cover">
@@ -168,28 +191,55 @@
             </div>
           </div>
         </section>
-        <section class="ux-edit-section ux-version-section">
+        <section class="ux-edit-section ux-version-section" data-ux-section="versions">
           <div class="ux-section-heading">
             <h3>视频版本</h3>
-            <button type="button" id="ux-add-variant" class="ux-subtle-button" hidden>＋ 添加视频版本</button>
+            <button type="button" id="ux-add-variant" class="ux-subtle-button" hidden>＋ 添加版本</button>
+          </div>
+          <div class="ux-version-switcher">
+            <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="选择视频版本"></div>
+            <p class="ux-version-tip">单击名称切换视频，点击铅笔修改版本名称。</p>
+          </div>
+          <div class="ux-version-quick-actions">
+            <button type="button" id="ux-rename-current" class="secondary">重命名当前版本</button>
+            <button type="button" id="ux-archive-version" class="ux-danger-subtle">移入回收站</button>
           </div>
           <p id="ux-version-label" class="ux-version-label"></p>
+        <form id="ux-version-label-form" class="ux-version-label-form" hidden>
+          <div class="ux-version-label-heading"><strong>重命名当前版本</strong><span id="ux-version-label-current"></span></div>
+          <div class="ux-version-fields">
+            <label>中文标签 <input id="ux-version-label-zh" type="text" maxlength="50" required></label>
+            <label>英文标签 <input id="ux-version-label-en" type="text" maxlength="50" required></label>
+          </div>
+          <p id="ux-version-label-status" role="status">只修改这个版本的标签，不改整部作品的名称。</p>
+          <div class="ux-version-form-actions">
+            <button id="ux-version-label-cancel" type="button" class="secondary">取消</button>
+            <button id="ux-version-label-save" type="submit" class="primary">保存名称</button>
+          </div>
+        </form>
+
           <form id="ux-version-form" class="ux-version-form" hidden>
-            <label>添加一个新的 MP4 版本
-              <input type="file" id="ux-version-file" accept=".mp4,video/mp4" required>
+            <div class="ux-version-new-heading"><strong>添加视频版本</strong><span id="ux-version-proposed">自动命名：版本 B</span></div>
+            <label class="ux-version-file-picker" for="ux-version-file">
+              <span class="ux-version-file-icon" aria-hidden="true">＋</span>
+              <span class="ux-version-file-content"><strong id="ux-version-file-name">选择 MP4 视频</strong><small id="ux-version-file-hint">点击选择 · 添加后保留原版本</small></span>
+              <input type="file" id="ux-version-file" accept=".mp4,video/mp4" required aria-describedby="ux-version-file-hint ux-version-status">
             </label>
-            <div class="ux-version-fields">
-              <label>中文版本名称 <input id="ux-version-zh" type="text" maxlength="50" value="版本 B" required></label>
-              <label>英文版本名称 <input id="ux-version-en" type="text" maxlength="50" value="Version B" required></label>
-            </div>
-            <p id="ux-version-status" class="muted" aria-live="polite">新版本独立保存，不会覆盖旧视频。添加后可设置该版本的播放器海报。</p>
+            <details id="ux-version-advanced" class="ux-version-advanced">
+              <summary>自定义版本名称 <span>可选</span></summary>
+              <div class="ux-version-fields">
+                <label>中文标签 <input id="ux-version-zh" type="text" maxlength="50" value="版本 B" required></label>
+                <label>英文标签 <input id="ux-version-en" type="text" maxlength="50" value="Version B" required></label>
+              </div>
+            </details>
+            <p id="ux-version-status" class="muted" role="status" aria-live="polite">选择视频后可在左侧预览；默认按版本编号命名。</p>
             <div class="ux-version-form-actions">
               <button id="ux-version-cancel" type="button" class="secondary">取消</button>
-              <button id="ux-version-submit" type="submit" class="primary">添加这个版本</button>
+              <button id="ux-version-submit" type="submit" class="primary" disabled>保存新版本</button>
             </div>
           </form>
         </section>
-        <section class="ux-edit-section ux-publish-section">
+        <section class="ux-edit-section ux-publish-section" data-ux-section="details">
           <div class="ux-section-heading"><h3>发布与预览</h3>
             <div class="ux-publish-heading-actions">
               <span id="ux-cloud-badge" class="ux-cloud-badge">正在检查</span>
@@ -209,9 +259,13 @@
             <p id="ux-url-validation" class="ux-url-validation" role="status" hidden></p>
           </form>
         </section>
-        <section class="ux-edit-section ux-featured-detail">
+        <section class="ux-edit-section ux-featured-detail" data-ux-section="details">
           <div><strong>首页精选</strong><p class="muted">固定八部作品</p></div>
           <button id="ux-featured-action" type="button" class="secondary">☆ 加入精选</button>
+        </section>
+        <section class="ux-edit-section ux-safe-archive" data-ux-section="details">
+          <div><strong>整理作品</strong><p>移入回收站后可恢复；不会删除视频、图片或线上 ImageKit 文件。</p></div>
+          <button id="ux-archive-work" type="button" class="ux-danger-subtle">移入回收站</button>
         </section>
       </div>
     </div>
@@ -274,7 +328,7 @@
   </div>
 </div>
 <section class="panel order-work" aria-labelledby="order-heading">
-  <div class="order-heading"><div><h2 id="order-heading">拖拽调整作品顺序</h2><p class="muted">与网站一致的 3:4 封面布局。拖拽封面调整顺序；双击中文或英文标题直接修改。</p></div><span class="order-draft-state" id="order-draft-state" aria-live="polite">顺序未修改</span></div>
+  <div class="order-heading"><div><h2 id="order-heading">拖拽调整作品顺序</h2><p class="muted">与网站一致的 3:4 封面布局。拖拽封面调整顺序；单击中文或英文标题直接修改。</p></div><span class="order-draft-state" id="order-draft-state" aria-live="polite">顺序未修改</span></div>
   <div class="order-scope-tabs" role="group" aria-label="选择排序范围">
     <button type="button" data-order-scope="featured" aria-pressed="true">首页精选 <span id="order-featured-count">8</span></button>
     <button type="button" data-order-scope="all" aria-pressed="false">全部作品 <span id="order-all-count">17</span></button>
@@ -303,7 +357,7 @@
   </section>
   <div class="order-actions"><button type="button" id="order-reset" class="secondary">恢复原始顺序</button><button type="button" id="order-save" class="primary" disabled>保存当前顺序</button><a href="http://127.0.0.1:5174/" target="_blank" rel="noopener" class="button secondary" id="order-preview">预览网页 ↗</a></div>
   <p id="order-message" class="muted" role="status" aria-live="polite">拖动后点击「保存当前顺序」，才会更新本地网页。</p>
-  <p class="muted">排序单独保存；双击中文或英文标题即可原位编辑。修改英文名称会同步重命名作品库中的本地 MP4 并更新路径，不影响 ImageKit 线上视频、原始素材、作品 ID 或排序。</p>
+  <p class="muted">排序单独保存；单击中文或英文标题即可原位编辑（Enter 保存，Esc 取消）。修改英文名称会同步重命名作品库中的本地 MP4 并更新路径，不影响 ImageKit 线上视频、原始素材、作品 ID 或排序。</p>
 </section><section class="panel association target-panel" aria-labelledby="association-heading">
   <div class="step-head"><span class="step-number">01</span><div><h2 id="association-heading">选择要更换封面的作品</h2><p class="muted">精选作品与全部作品都可以修改，先选好目标再导入素材。</p></div></div>
   <div class="cover-kind-switch" role="group" aria-label="选择需要替换的封面类型">
@@ -343,12 +397,15 @@
     <strong>拖入 MP4，或点击选择文件</strong>
     <span>本地处理，不会上传视频或自动发布网站</span>
   </button>
+  <details id="ux-local-import-details" class="ux-local-import-details">
+    <summary>从默认素材目录选视频 <small>可选</small></summary>
   <div class="local-video-picker">
-<div class="local-video-heading"><strong>从默认视频目录选择 MP4</strong><button id="refresh-local-videos" type="button" class="secondary small-button">刷新文件列表</button></div>
+<div class="local-video-heading"><strong>本机 MP4 列表</strong><button id="refresh-local-videos" type="button" class="secondary small-button">刷新文件列表</button></div>
 <p id="local-video-directory" class="file-path">正在读取默认目录…</p>
 <div class="local-video-controls"><label class="sr-only" for="local-video-select">从默认目录选择 MP4 视频</label><select id="local-video-select" aria-label="从默认目录选择 MP4"><option value="">正在加载…</option></select><button id="import-local-video" type="button" class="primary" disabled>导入选中 MP4</button></div>
 <p id="local-video-hint" class="muted">仅列出默认文件夹中的 MP4，不自动上传或关联到作品集。</p>
 </div>
+  </details>
 <div class="import-actions"><label class="button secondary">选择 MP4 文件<input id="video-file" type="file" accept=".mp4,video/mp4"></label><label class="button secondary">导入现成封面<input id="image-file" type="file" accept=".jpg,.jpeg,.png,.webp"></label></div><p class="muted">原始 MP4 保持不变，单个视频文件最大 2GB。</p><progress id="upload-progress" max="100" value="0" hidden></progress><p id="metadata">尚未导入素材</p><video id="source-video" controls playsinline preload="metadata" hidden></video></section>
 <div class="workspace"><section class="frame-panel panel" aria-labelledby="frames-heading"><h2 id="frames-heading">02 / 选择封面画面</h2><p class="muted">播放视频或拖动时间轴，停在希望用作封面的画面。</p><div id="timeline" hidden><details class="fine-tune"><summary>精确选帧（可选）</summary><div class="time-controls"><label>时间点（秒）<input id="time-input" type="number" min="0" step="0.001" value="0"></label><button id="seek-frame" type="button">提取该时间点</button><button id="prev-frame" type="button" aria-label="前一帧">−1 帧</button><button id="next-frame" type="button" aria-label="后一帧">+1 帧</button></div><label class="range-label">时间轴 <output id="time-label">00:00.000</output><input id="time-range" type="range" min="0" step="0.001" value="0"></label></details></div><div id="candidate-grid" class="candidates" hidden></div>
   <div class="ux-new-frame-jog" role="group" aria-label="精确选择视频画面">
@@ -388,7 +445,7 @@
 <p id="cover-confirm-result" class="cover-confirm-result" role="status" hidden></p>
 </section></div>
 <section class="panel create-work" aria-labelledby="create-heading"><div class="ux-new-step-heading"><span class="ux-new-step-number">03</span><div><h2 id="create-heading">填写作品信息</h2><p>核对分类、中英文名称及封面，一次保存到本地作品库。</p></div></div>
-<p class="muted">没有登记过的新作品从这里开始。选择一个画面，填写中英文标题和分类；即使你没点“导出”，确认新增时也会自动生成 <strong>3:4 封面 + 原比例播放器海报</strong>，并把 MP4 副本放进本地作品库。</p>
+<p class="muted">作品名称对后续 A/B/C 版本通用；保存时自动生成 3:4 封面、播放器海报与本地 MP4 副本。</p>
 <div class="create-form">
 <label>中文作品名称 <input id="new-title-zh" type="text" maxlength="80" placeholder="例如：MEXC AI 品牌概念广告" autocomplete="off"></label>
 <label>英文作品名称 <input id="new-title-en" type="text" maxlength="80" placeholder="例如：MEXC AI Concept Ad" autocomplete="off"></label>

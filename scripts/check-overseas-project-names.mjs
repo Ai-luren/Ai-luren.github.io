@@ -12,7 +12,7 @@ const localPaths=read('src/data/local-video-paths.json');
 const meta=read('src/data/project-video-metadata.json');
 const covers=read('src/data/project-cover-overrides.json');
 const cases=[
-  ['09','commercial'],['10','social'],['11','social'],['12','social'],['13','social'],
+  ['09','commercial'],['10','social'],['11','social'],['13','social'],
 ].map(([id,category])=>[id,titleOverrides[id].zh,titleOverrides[id].en,category]);
 for(const [id,zh,en] of cases){
   assert.deepEqual(titleOverrides[id],{zh,en});
@@ -25,11 +25,11 @@ for(const [id,zh,en] of cases){
 }
 const source=readFileSync(path.join(root,'src/data/projects.js'),'utf8');
 const cdnURLs=Object.values(read('src/data/legacy-imagekit-urls.json'));
-assert.equal(cdnURLs.length,15,'Keep all 15 existing published ImageKit URLs');
-assert.equal(new Set(cdnURLs).size,15,'Existing CDN URLs must remain distinct');
+assert.equal(cdnURLs.length,14,'Keep all remaining published ImageKit URLs');
+assert.equal(new Set(cdnURLs).size,14,'Existing CDN URLs must remain distinct');
 assert(cdnURLs.every(u=>u.startsWith('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/')&&u.endsWith('.mp4')));
 assert(source.includes('legacyVideoUrls['),'Published project URLs must use the editable legacy URL map');
-console.log('PASS local 5 MP4 paths, bilingual title data, untouched CDN URLs and preserved posters');
+console.log('PASS local 4 MP4 paths, bilingual title data, untouched CDN URLs and preserved posters');
 const executablePath=['/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge','/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(existsSync);
 const browser=await chromium.launch({executablePath,headless:true});
 const preview=process.env.PORTFOLIO_URL||'http://127.0.0.1:5181/';

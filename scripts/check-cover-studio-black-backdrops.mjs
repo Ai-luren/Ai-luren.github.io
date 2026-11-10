@@ -43,6 +43,7 @@ try {
   await page.locator('#ux-gallery .ux-project-image').first().click();
   await checkBackground('#ux-editor .ux-cover-picture', '#ux-editor .ux-poster-picture',
     '#ux-editor .ux-cover-picture>img', '#ux-editor .ux-poster-picture>img');
+  await page.locator('[data-ux-panel=artwork]').click();
   await page.locator('#ux-history-cover').click();
   await checkBackground('#ux-history-dialog .ux-history-image');
   await page.locator('#ux-history-close').click();

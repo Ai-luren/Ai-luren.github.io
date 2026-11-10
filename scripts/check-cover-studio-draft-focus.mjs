@@ -29,6 +29,7 @@ try{
  await page.locator('#ux-search').fill('岳阳楼');
  const card=page.locator('.ux-project[data-id="06"]');
  await card.locator('.ux-project-image').click();
+ await page.locator('[data-ux-panel=details]').click();
  const before=await page.locator('#ux-title-zh').inputValue();
  await page.locator('#ux-title-zh').fill(before+'（未保存）');
  await page.locator('#ux-close-editor').click();
@@ -45,7 +46,7 @@ try{
  }
  await page.locator('#ux-unsaved-keep').click();
  assert.equal(await page.locator('#ux-title-zh').inputValue(),before+'（未保存）');
- await page.locator('#ux-history-cover').click();
+ await page.locator('[data-ux-panel=artwork]').click();
  assert(await page.locator('#ux-unsaved-dialog').isVisible(),
    'Switching to history must not discard an unsaved title.');
  await page.locator('#ux-unsaved-keep').click();
@@ -56,6 +57,7 @@ try{
  assert.equal(await fs.readFile(titlesFile,'utf8'),original.toString());
  await card.locator('.ux-project-image').click();
  assert.equal(await page.locator('#ux-title-zh').inputValue(),before);
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-history-cover').click();
  await page.waitForFunction(()=>document.querySelector('#ux-history-dialog')?.hidden===false);
  for(let i=0;i<25;i++){
@@ -66,7 +68,8 @@ try{
  assert(await page.locator('#ux-history-dialog').isHidden());
  assert.equal(await page.locator('#ux-title-zh').inputValue(),before);
  console.log('NESTED_MODAL_FOCUS_AND_DISCARD_PASS');
- await page.locator('#ux-url-readonly').dblclick();
+ await page.locator('[data-ux-panel=details]').click();
+ await page.locator('#ux-url-readonly').click();
  const url=await page.locator('#ux-url-value').inputValue();
  await page.locator('#ux-url-value').fill(url+'?draft-only=1');
  await page.locator('#ux-close-editor').click();

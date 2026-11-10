@@ -4,11 +4,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const read=file=>JSON.parse(readFileSync(path.join(root,'src/data',file),'utf8'));
-const titles=read('project-title-overrides.json');
-const covers=read('project-cover-overrides.json');
+const auto=read('auto-projects.json');
+// Auto projects own their titles and artwork paths. Overrides are optional;
+// validate all works, not just the ones that happen to have overrides.
+const titles={...Object.fromEntries(auto.map(p=>[p.id,p.title])),...read('project-title-overrides.json')};
+const covers={...Object.fromEntries(auto.map(p=>[p.id,p.coverFile])),...read('project-cover-overrides.json')};
 const metadata=read('project-video-metadata.json');
 const paths=read('local-video-paths.json');
-const auto=read('auto-projects.json');
 const source=readFileSync(path.join(root,'src/data/projects.js'),'utf8');
 const cats={};
 for(const match of source.matchAll(/\{ id: '(\d+)', category: '([^']+)'/g)) cats[match[1]]=match[2];

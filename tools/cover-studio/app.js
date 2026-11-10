@@ -44,6 +44,17 @@ function syncButtons() {
   $('create-project').disabled = state.busy || !state.frame || state.session?.kind !== 'video' ||
     !!state.created || !$('new-title-zh').value.trim() || !$('new-title-en').value.trim() || !$('create-consent').checked || Boolean(newImagekitError);
   $('ux-new-save').disabled=$('create-project').disabled;
+  if(state.workflow==='new'&&!$('ux-new-editor').hidden){
+    const hasVideo=state.session?.kind==='video';
+    const missing=[!$('new-title-zh').value.trim()&&'中文名称',!$('new-title-en').value.trim()&&'英文名称'].filter(Boolean);
+    const next=state.busy?'正在处理文件…':!hasVideo?'1/3 · 先导入 MP4 视频':
+      !state.frame?'2/3 · 从视频中选择封面画面':
+      missing.length?'3/3 · 还需填写'+missing.join('和'):newImagekitError?'3/3 · 检查 ImageKit 文件名':
+      '3/3 · 已准备好，可以保存';
+    $('ux-new-progress').textContent=next;
+    $('ux-new-progress').dataset.complete=String(!$('create-project').disabled&&!state.busy);
+    $('ux-new-save').title=$('create-project').disabled?next:'保存视频及两种封面到本地作品库，不上传云端';
+  }
   const managed = state.managed.find(p => p.id === $('managed-project').value);
   $('start-add-version').disabled = state.busy || !managed || managed.legacy;
   $('start-cover-for-managed').disabled = state.busy || !managed;
@@ -92,7 +103,7 @@ async function refreshLocalVideos() {
 async function bootstrap() {
   const response = await fetch('/api/bootstrap'); const data = await response.json();
   if (!response.ok) throw new Error(data.error);
-  state.token = data.token; state.projects = data.projects; state.overrides = data.overrides || {};
+  state.token = data.token; state.projects = data.projects; state.archived = data.archived || {works:[],versions:[]}; state.overrides = data.overrides || {};
   state.managed = data.managedProjects || [];
   state.posterVersions = data.posterVersions || [];
   state.ordering = data.ordering;
@@ -680,14 +691,16 @@ document.addEventListener('keydown',event=>{
   }else requestCloseNewProject();
 },true);
 document.addEventListener('keydown',event=>{
-  if(newModal.hidden||!newDiscard.hidden||event.key!=='Tab')return;
-  const dialog=newModal.querySelector('.ux-new-editor-pane');
-  const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[href]')]
-    .filter(x=>x.getClientRects().length);
-  const first=focusable[0],last=focusable.at(-1);
-  if(!first)return;
-  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  if(newModal.hidden||event.key!=='Tab')return;
+  const dialog=newDiscard.hidden?newModal.querySelector('.ux-new-editor-pane'):
+    newDiscard.querySelector('.ux-unsaved-panel');
+  const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[href],[tabindex]:not([tabindex="-1"])')]
+    .filter(el=>el.getClientRects().length&&!el.closest('[hidden],[inert]')&&getComputedStyle(el).visibility!=='hidden');
+  const first=focusable[0],last=focusable.at(-1),active=document.activeElement;
+  if(!first){event.preventDefault();dialog.focus();return;}
+  if(!dialog.contains(active)||(event.shiftKey&&active===first)||(!event.shiftKey&&active===last)){
+    event.preventDefault();(event.shiftKey?last:first).focus({preventScroll:true});
+  }
 },true);
 function setManageAction(action) {
   if (!['overview', 'cloud'].includes(action)) return;

@@ -32,16 +32,17 @@ try {
   await page.goto(studio.url);
   await page.locator('#ux-categories [data-filter="commercial"]').click();
   await page.locator('.ux-project[data-id="16"] .ux-project-image').click();
-  assert.equal(await page.locator('#ux-variant-chips button').count(),2);
-  await page.locator('#ux-variant-chips button').nth(1).click();
-  assert.equal(await page.locator('#ux-variant-chips button').nth(1).getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('#ux-variant-chips .ux-variant').count(),2);
+  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+  assert.equal(await page.locator('#ux-variant-chips .ux-variant').nth(1).getAttribute('aria-pressed'),'true');
   await page.locator('#ux-add-variant').click();
   assert(await page.locator('#ux-version-form').isVisible());
   await page.locator('#ux-version-file').setInputFiles(path.join(root,'scripts/fixtures/test-portrait.mp4'));
+  await page.locator('#ux-version-advanced summary').click();
   await page.locator('#ux-version-zh').fill('版本 C');
   await page.locator('#ux-version-en').fill('Version C');
   await page.locator('#ux-version-submit').click();
-  await page.waitForFunction(()=>document.querySelectorAll('#ux-variant-chips button').length===3 ||
+  await page.waitForFunction(()=>document.querySelectorAll('#ux-variant-chips .ux-variant').length===3 ||
     document.querySelector('#ux-version-status')?.textContent.startsWith('添加失败：'),
     null,{timeout:50000});
   const msg=await page.locator('#ux-version-status').textContent();
@@ -55,8 +56,8 @@ try {
     assert((await fs.stat(path.join(sandbox,'assets/videos/works',rel))).size>1000);
   }
   assert((await fs.stat(path.join(sandbox,'assets/images/player-posters',saved.variants[1].posterFile))).size>500);
-  await page.locator('#ux-variant-chips button').nth(2).click();
-  assert.equal(await page.locator('#ux-variant-chips button').nth(2).getAttribute('aria-pressed'),'true');
+  await page.locator('#ux-variant-chips .ux-variant').nth(2).click();
+  assert.equal(await page.locator('#ux-variant-chips .ux-variant').nth(2).getAttribute('aria-pressed'),'true');
   const boot=await (await fetch(studio.url+'/api/bootstrap')).json();
   const bad=await fetch(studio.url+'/api/bind-imagekit',{
     method:'POST',headers:{'X-Cover-Token':boot.token,'Content-Type':'application/json'},

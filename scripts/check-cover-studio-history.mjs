@@ -49,6 +49,7 @@ try{
  await page.locator('[data-filter="commercial"]').click();
  await page.locator('.ux-project[data-id="16"] .ux-project-image').click();
  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-history-poster').click();
  await page.waitForFunction(()=>document.querySelectorAll('#ux-history-list button').length===1);
  assert(await page.locator('#ux-history-dialog').isVisible());

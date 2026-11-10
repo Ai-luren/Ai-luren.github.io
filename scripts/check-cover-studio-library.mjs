@@ -31,7 +31,7 @@ try{
  assert.equal(await page.locator('#ux-categories .ux-filter').count(),5);
  assert.equal(await page.locator('#ux-categories [data-filter="all"]').count(),0);
  assert.equal(await page.locator('#ux-categories [data-filter="featured"]').getAttribute('aria-pressed'),'true');
- for(const [category,count] of [['commercial',8],['short-film',3],['social',4],['visual',2],['featured',8]]){
+ for(const [category,count] of [['commercial',9],['short-film',3],['social',4],['visual',2],['featured',8]]){
   await page.locator('#ux-categories [data-filter="'+category+'"]').click();
   assert.equal(await page.locator('#ux-gallery .ux-project').count(),count,'Wrong '+category+' count');
  }
@@ -46,13 +46,14 @@ try{
  await card16.locator('.ux-project-image img').click();
  assert(await page.locator('#ux-editor').isVisible());
  assert.equal(await page.locator('#ux-editor-title').textContent(),'MEXC 会员权益');
- assert.equal(await page.locator('#ux-variant-chips button').count(),2);
- assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-stage-context');
+ assert.equal(await page.locator('#ux-variant-chips .ux-variant').count(),2);
+ assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher');
  assert(await page.locator('#ux-variant-chips').isVisible());
  await page.locator('#ux-cover-img').evaluate(img=>img.decode());
  await page.locator('#ux-poster-img').evaluate(img=>img.decode());
- await page.locator('#ux-variant-chips button').nth(1).click();
- assert.equal(await page.locator('#ux-variant-chips button').nth(1).getAttribute('aria-pressed'),'true');
+ await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+ assert.equal(await page.locator('#ux-variant-chips .ux-variant').nth(1).getAttribute('aria-pressed'),'true');
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-change-cover').click();
  assert.equal(await page.locator('body').getAttribute('data-workflow'),'library');
  assert(await page.locator('#ux-inline-cover').isVisible());
@@ -60,7 +61,7 @@ try{
  assert(await page.locator('body>header').isHidden());
  assert(await page.locator('.workflow-tabs').isHidden());
  assert(await page.locator('#ux-editor').isVisible());
- assert.equal(await page.locator('#ux-variant-chips button').nth(1).getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('#ux-variant-chips .ux-variant').nth(1).getAttribute('aria-pressed'),'true');
  await page.locator('#ux-inline-cancel').click();
  await page.locator('#ux-close-editor').click();
  console.log('ONE_WORK_TWO_PREVIEWS_AND_DIRECT_VIDEO_PASS');
@@ -105,20 +106,23 @@ try{
 
  await page.locator('#ux-categories [data-filter="commercial"]').click();
  await page.locator('#ux-gallery .ux-project[data-id="16"] .ux-project-image img').click();
- await page.locator('#ux-variant-chips button').nth(1).click();
+ await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
+ await page.locator('[data-ux-panel=details]').click();
  await page.locator('#ux-url-readonly').click();
  const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/verified-unified-workbench.mp4';
  await page.locator('#ux-url-value').fill(url);
  await page.locator('#ux-url-value').press('Enter');
  await page.waitForFunction(()=>document.querySelector('#ux-url-readonly')?.textContent.includes('verified-unified-workbench.mp4'));
  assert.equal((await read('auto-projects')).find(p=>p.id==='16').variants[0].videoUrl,url);
- // The original 15 works are managed in a separate source map, never rewriting their MP4s.
+ // The original 14 works are managed in a separate source map, never rewriting their MP4s.
  await page.locator('#ux-close-editor').click();
  await page.locator('#ux-gallery .ux-project[data-id="01"] .ux-project-image img').click();
+ await page.locator('[data-ux-panel=details]').click();
  assert(await page.locator('#ux-url-readonly').isVisible());
  const originalLegacy=(await read('legacy-imagekit-urls'))['01'];
  assert(originalLegacy.startsWith('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/'));
  assert((await page.locator('#ux-url-readonly').textContent()).includes('watsons-commercial.mp4'));
+ await page.locator('[data-ux-panel=details]').click();
  await page.locator('#ux-url-readonly').click();
  const legacyNew='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/test-watsons-legacy-connection.mp4';
  await page.locator('#ux-url-value').fill(legacyNew);

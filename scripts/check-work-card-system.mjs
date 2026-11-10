@@ -174,7 +174,7 @@ try{
           for(const f of filters) assert(f.w>=43.5&&f.h>=43.5,`${tag}: filter ${f.label} is less than 44px target (${f.w}×${f.h})`);
         }
         assert.deepEqual(errors,[],`${tag}: page errors`);
-        console.log(`PASS ${tag}: shared 3:4 / 18px covers, type, gaps, 8/15 works, filter targets`);
+        console.log(`PASS ${tag}: shared 3:4 / 18px covers, type, gaps, 8/18 works, filter targets`);
       } finally{await home.close();await works.close()}
     }
   }finally{await browser.close()}
