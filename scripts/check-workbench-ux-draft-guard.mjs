@@ -52,7 +52,8 @@ try{
 
  await p.locator('#ux-search').fill('MEXC 会员权益');
  await p.locator('.ux-project .ux-project-image').first().click();
- await p.locator('#ux-url-edit').click();
+ await p.locator('#ux-url-readonly').click();
+ assert(await p.locator('#ux-url-form').isVisible());
  await p.locator('#ux-url-value').fill('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/temp-review-file.mp4');
  await p.locator('#ux-close-editor').click();
  assert(await p.locator('#ux-unsaved-save').isVisible());

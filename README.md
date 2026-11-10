@@ -17,7 +17,7 @@
   <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
 </p>
 
-<p align="center"><sub>8 部首页精选　/　17 部作品 · 18 条视频（本地版本）　/　中英双语</sub></p>
+<p align="center"><sub>8 部首页精选　/　18 部作品 · 21 条本地视频　/　中英双语</sub></p>
 
 > 作品数量和图片以本地项目为准；线上页面是否包含这些更新，应以实际部署版本为准。
 
@@ -47,7 +47,7 @@
 
 ## 02 / 创作方向 · Creative Fields
 
-- **AI 商业广告 / Commercials · 8**：品牌形象、TVC、产品推广与文旅宣传。
+- **AI 商业广告 / Commercials · 9**：品牌形象、TVC、产品推广与文旅宣传。
 - **AI 创意短片 / Short Films · 3**：故事、人物、情绪与概念影像。
 - **AI 海外产品广告 / Product & Social Ads · 4**：产品展示、生活场景与社媒短视频。
 - **AI 视觉实验 / Visual Experiments · 2**：风格探索、视觉特效与实验短片。
@@ -101,7 +101,7 @@ npm run covers
 
 工作台：<http://127.0.0.1:5190/>
 
-**媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。
+**媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。 多次编辑的同内容临时视频会在本机使用只读共享存储，查看与验证命令见 [工作台使用教程](./docs/本地封面工作台使用教程.md#本地空间维护可选)。
 
 </details>
 
@@ -113,6 +113,7 @@ index.html · works.html           首页与作品库入口
 src/components/                  作品卡片、播放器与交互组件
 src/data/projects.js             原有作品与作品数据汇总
 src/data/auto-projects.json      新增作品及视频 A/B 版本
+src/data/legacy-video-variants.json 旧作品追加的视频版本
 src/data/project-order.json      首页精选与完整作品独立排序
 assets/images/project-covers/    四分类下的 3:4 视频封面，文件名与英文作品名一致
 assets/images/player-posters/    同分类、同英文文件名的原比例播放器海报
@@ -121,13 +122,13 @@ docs/                            设计规范与维护说明
 ~~~
 
 ~~~bash
-npm run build
-npm run check:i18n
-npm run check:curated-order
-npm run check:work-cards
-npm run check:asset-catalog
-npm run check:media-safety
-node scripts/check-cover-studio-order.mjs
+npm run check:smoke          # 构建、素材、精选顺序和媒体安全
+npm run check:workbench-core # 工作台核心流程、存储和视觉回归
+npm run check:project        # 依次运行上述两组快速检查
+npm run check:site-full      # 独立生产预览下逐项检查公开网页
+npm run check:workbench-full # 隔离项目逐项检查工作台
+npm run check:adversarial    # 网站和工作台全量深测，记录到本地 .audit
+npm run check:i18n           # 需要时额外检查中英文
 ~~~
 
 [文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [工作台使用教程](./docs/本地封面工作台使用教程.md) · [开发约定](./AGENTS.md)

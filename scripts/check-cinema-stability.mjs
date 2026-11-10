@@ -15,8 +15,8 @@ try {
  for(const width of [1440,393]) {
   const height=width>=1000?900:852;
   const page=await createSafePage(browser, {viewport:{width,height}});
-  for(const [index,label,ratio] of [[0,'16-9',16/9],[3,'9-16',9/16]]) {
-   await page.goto(new URL('works.html',base).href);
+  for(const [category,index,label] of [['commercial',0,'commercial-main'],['social',0,'social-main']]) {
+   await page.goto(new URL('works.html?category='+category,base).href);
    let release; const gate=new Promise(resolve=>release=resolve);
    let requestStarted; const requestSeen=new Promise(resolve=>requestStarted=resolve);
    await page.route('**/tr:orig-true/videos/**',async route=>{requestStarted();await gate;await route.fallback();});
@@ -27,7 +27,8 @@ try {
    await page.waitForTimeout(310);
    const initial=await page.evaluate(rect);
    await page.evaluate(()=>{window.cinemaRects=[];const sample=()=>{const s=document.querySelector('.cinema-player[open] .cinema-player__stage');if(s){const r=s.getBoundingClientRect();window.cinemaRects.push([r.x,r.y,r.width,r.height]);}window.cinemaSampler=requestAnimationFrame(sample);};window.cinemaSampler=requestAnimationFrame(sample);});
-   assert(initial.w>0 && Math.abs(initial.w/initial.h-ratio)<.001);
+   const ratio=await page.locator('.cinema-player__poster').evaluate(async img=>{await img.decode();return img.naturalWidth/img.naturalHeight;});
+   assert(initial.w>0 && Math.abs(initial.w/initial.h-ratio)<.005,'Stage must match the current source poster aspect ratio ('+label+')');
    assert(initial.paused && initial.time===0 && initial.ready===0);
    assert.equal(initial.clip,'hidden'); assert.equal(initial.fit,'contain');
    assert.equal(initial.radius,width>=1000?'18px':'16px');

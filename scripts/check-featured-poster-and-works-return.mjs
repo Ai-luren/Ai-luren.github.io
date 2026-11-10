@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import path from 'node:path';
 import {chromium} from 'playwright-core';
 import {createSafePage, getSafeMediaReport} from './lib/safe-media.mjs';
 
@@ -7,12 +9,22 @@ const browser = await chromium.launch({
   headless: true,
 });
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
+const featuredId=JSON.parse(readFileSync(new URL('../src/data/project-order.json',import.meta.url),'utf8')).featured[0];
+const sourcePoster=JSON.parse(readFileSync(new URL('../src/data/project-video-metadata.json',import.meta.url),'utf8'))[featuredId]?.playerPoster;
+assert(sourcePoster,'First featured work must have a player poster');
+const posterStem=path.basename(sourcePoster,'.webp');
 try{
  for(const width of [390,1440]){
   const p=await createSafePage(browser,{viewport:{width,height:880}});
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
-  await p.route(/\/player-posters\//i, async route=>{
-    await new Promise(resolve=>setTimeout(resolve,700));
+  // In a production build, poster files are fingerprinted into /assets/,
+  // not served from the original /player-posters/ directory. Delay the
+  // first featured work's actual poster, not an obsolete URL.
+  await p.route(/\.webp(?:\?|$)/i, async route=>{
+    const filename=decodeURIComponent(new URL(route.request().url()).pathname);
+    if(filename.includes(posterStem)) {
+      await new Promise(resolve=>setTimeout(resolve,900));
+    }
     try { await route.fallback(); }catch {}
   });
   await p.goto(base,{waitUntil:'domcontentloaded'});
@@ -28,7 +40,7 @@ try{
   await p.locator('.cinema-player__close').click();
   await p.locator('.cinema-player').waitFor({state:'detached'});
   assert.deepEqual(errors,[]);
-  console.log('PASS',width,'slow 16:9 player poster waits for decode, 3:4 cover stays visible until ready');
+  console.log('PASS',width,'slow player poster '+posterStem+' waits for decode, 3:4 cover stays visible until ready');
   await p.close();
  }
  for(const [width,lang] of [[320,'zh'],[320,'en'],[390,'zh'],[390,'en'],[760,'en'],[1440,'zh']]){

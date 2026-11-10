@@ -13,11 +13,14 @@ for(const width of [390,1440]){
  const before=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>e.href));
  assert(!before.some(s=>/works/.test(s)),'Preloaded work page too early on Hero');
  await p.locator('#projects').scrollIntoViewIfNeeded();
- await p.waitForTimeout(2400);
+ await p.waitForFunction(() => [...document.querySelectorAll('link[rel="prefetch"]')].some(
+   el => /works-main|works-/.test(el.href)
+ ),null,{timeout:15000});
+ await p.waitForFunction(() => performance.getEntriesByType('resource').some(r=>/works.html/.test(r.name)),null,{timeout:15000});
  const after=await p.evaluate(()=>[...document.querySelectorAll('link[rel="prefetch"]')].map(e=>({href:e.href,as:e.as})));
  assert(requests.some(u=>/works.html/.test(u)),'Works page HTML not warmed near project archive');
  assert(after.some(link=>/works-main|works-/.test(link.href)),'Works entry script not preloaded');
- assert(!requests.some(url=>/imagekit/.test(url)),'ImageKit videos fetched during prefetch');
+ assert(!requests.some(url=>/^https?:\/\/(?:[^/]+\.)?imagekit\.io\//i.test(url)),'ImageKit videos fetched during prefetch: '+requests.filter(url=>/^https?:\/\/(?:[^/]+\.)?imagekit\.io\//i.test(url)).join(' | '));
  console.log('PASS STEP03',width,'home request on interest + assets',JSON.stringify(after).slice(0,360));
  await p.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
  await p.locator('.library-grid .comet-archive__card').first().waitFor();

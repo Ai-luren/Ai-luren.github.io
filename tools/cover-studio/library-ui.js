@@ -26,6 +26,15 @@ const createPlusIcon=()=>{
   svg.append(path);
   return svg;
 };
+const createEditIcon=()=>{
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+  const path=document.createElementNS(ns,'path');
+  path.setAttribute('d','m14 5 5 5M4 20l4.2-.8L19 8.4a2.1 2.1 0 0 0-3-3L5.2 16.2 4 20Z');
+  path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
+  svg.append(path);return svg;
+};
 const createStarIcon=()=>{
   // A font's ☆ / ★ has a baseline and inconsistent ink bounds across OSes.
   // The vector's path spans equal x/y extents around (12,12), so it centers.
@@ -41,7 +50,7 @@ const createStarIcon=()=>{
   return svg;
 };
 export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkflow,openPosterWorkflow,showManaged,openNewProject}){
- let filter='featured',search='',selectedId=null,selectedVersion='main',swapping=null,drag=null,busy=false;
+ let filter='featured',search='',selectedId=null,selectedVersion='main',editingVersionId=null,swapping=null,drag=null,busy=false;
  let notificationTimer=null,suppressDragClickUntil=0,suppressDragClickId=null,undoLast=null;
  let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null;
  let suppressUrlBlur=false,urlSaving=false;
@@ -75,6 +84,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  const isFeatured=id=>state.orderDraft?.featured.includes(id);
  const managed=id=>state.managed.find(p=>p.id===id);
  const versions=id=>state.posterVersions.find(p=>p.id===id)?.versions||[];
+ const versionById=(id,versionId)=>versions(id).find(v=>v.id===versionId);
  const poster=id=>versions(id).find(v=>v.id===selectedVersion)||versions(id)[0];
  const editableURL=()=>{
    const value=$('ux-url-value').value.trim();
@@ -105,6 +115,12 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-context-hint').hidden=!message;
    $('ux-context-save').textContent='已保存到本地 · 未发布网站';
  };
+ const syncVersionLabelDraftStatus=()=>{
+   if(!editingVersionId||$('ux-version-label-form').hidden)return;
+   const current=versionById(selectedId,editingVersionId)?.label||{zh:'',en:''};
+   const changed=$('ux-version-label-zh').value.trim()!==current.zh||$('ux-version-label-en').value.trim()!==current.en;
+   $('ux-context-save').textContent=changed?'视频版本名称有未保存修改':'已保存到本地 · 未发布网站';
+ };
 
  const catName=id=>categories.find(x=>x[0]===id)?.[1]||'作品';
  const changed=scope=>!same(state.orderDraft[scope],state.orderBaseline[scope]);
@@ -118,6 +134,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        $('ux-title-en').value.trim()!==(p.titleEn||''))),
      url:!$('ux-url-form').hidden&&editableURL()!==(actual||''),
      version:!$('ux-version-form').hidden&&Boolean($('ux-version-file').files?.length),
+      versionLabel:!$('ux-version-label-form').hidden&&Boolean(editingVersionId)&&(()=>{
+        const current=versionById(selectedId,editingVersionId)?.label||{zh:'',en:''};
+        return $('ux-version-label-zh').value.trim()!==current.zh||$('ux-version-label-en').value.trim()!==current.en;
+      })(),
      cover:Boolean(inlineCover?.hasDraft?.()),
    };
  };
@@ -137,13 +157,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(!Object.values(issues).some(Boolean)){action();return;}
    pendingNavigation={action,issues};
    unsavedOrigin=document.activeElement;
-   const labels=[issues.title&&'作品名称',issues.url&&'ImageKit 地址',
+   const labels=[issues.title&&'作品名称',issues.versionLabel&&'视频版本名称',issues.url&&'ImageKit 地址',
      issues.version&&'尚未添加的视频',issues.cover&&'已选中的封面'].filter(Boolean);
    $('ux-unsaved-description').textContent='这些修改尚未保存：'+labels.join('、')+'。可以继续编辑，或放弃本次草稿。';
-   const savable=(issues.title||issues.url)&&!issues.version&&!issues.cover &&
-     Number(issues.title)+Number(issues.url)===1;
+   const savable=(issues.title||issues.url||issues.versionLabel)&&!issues.version&&!issues.cover &&
+     Number(issues.title)+Number(issues.url)+Number(issues.versionLabel)===1;
    $('ux-unsaved-save').hidden=!savable;
-   $('ux-unsaved-save').textContent=issues.title?'保存名称并继续':'保存地址并继续';
+   $('ux-unsaved-save').textContent=issues.title?'保存作品名称并继续':issues.versionLabel?'保存版本名称并继续':'保存地址并继续';
    $('ux-unsaved-dialog').hidden=false;
    $('ux-editor').inert=true;
    $('ux-unsaved-keep').focus({preventScroll:true});
@@ -160,6 +180,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-sort-state').textContent=busy?'正在保存顺序…':undoLast?'顺序已保存到本地':'';
    $('ux-sort-undo').hidden=!undoLast;
    $('ux-sort-undo').disabled=busy;
+ }
+ function syncVersionActions(){
+   const disabled=busy||!managed(selectedId);
+   $('ux-add-variant').disabled=disabled;
  }
  $('ux-sort-undo').addEventListener('click',undoSort);
 
@@ -402,7 +426,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  }
  function askFeatured(id){
    if(busy)return;
-   if(!$('ux-editor').hidden&&(draftSections().title||draftSections().url||
+   if(!$('ux-editor').hidden&&(draftSections().title||draftSections().versionLabel||draftSections().url||
       draftSections().version||draftSections().cover)){
      navigateWithDraft(()=>askFeatured(id));return;
    }
@@ -457,7 +481,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      applyOrder(result);closeFavorite();renderGallery();renderEditor();
      notify('已将「'+byId(incoming).title+'」加入首页精选，替换「'+byId(outgoing).title+'」。');
    }catch(e){notify('精选调整失败：'+e.message,true);}
-   finally{busy=false;}
+   finally{busy=false;syncVersionActions();}
  }
  async function saveTitle(p,zh,en){
    if(busy)return false;
@@ -474,7 +498,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      notify('已保存作品名称：本地视频、封面和海报文件名已同步；线上 ImageKit 地址未更改。');
      return true;
    }catch(e){notify('保存名称失败：'+e.message,true);return false;}
-   finally{busy=false;}
+   finally{busy=false;syncVersionActions();}
  }
  function editInlineName(p,language,label){
    if(busy||dirty()){if(dirty())notify('请先保存当前排序。',true);return;}
@@ -579,7 +603,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(history.isOpen()){history.close();return;}
    navigateWithDraft(finishCloseEditor);
  }
- function renderEditor(){
+ function renderEditor({preserveVersionChips=false}={}){
    if(!selectedId||!byId(selectedId))return;
    const p=byId(selectedId),work=managed(selectedId);
    const options=versions(selectedId);
@@ -604,24 +628,45 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-cover-img').src='/project-cover/'+p.id+'?v='+Date.now();
    $('ux-poster-img').src='/project-poster/'+p.id+'/'+encodeURIComponent(v?.id||'main')+'?v='+Date.now();
    $('ux-poster-size').textContent=v?v.width+' × '+v.height:'原比例';
-   const chips=$('ux-variant-chips');chips.replaceChildren();
-   for(const option of options){
-     const b=node('button','ux-variant',option.label?.zh||'主版本');
-     b.type='button';b.setAttribute('aria-pressed',String(option.id===selectedVersion));
-     b.addEventListener('click',()=>{
-       if(option.id===selectedVersion)return;
-       navigateWithDraft(()=>{
-         if(history.isOpen())history.close();
-         inlineCover.cancel();
-         cancelVersion();
-         selectedVersion=option.id;
-         renderEditor();
+   const chips=$('ux-variant-chips');
+   if(!preserveVersionChips){
+     chips.replaceChildren();
+     for(const option of options){
+       const item=node('div','ux-variant-item');
+       const b=node('button','ux-variant',option.label?.zh||'主版本');
+       b.type='button';b.dataset.version=option.id;b.setAttribute('aria-pressed',String(option.id===selectedVersion));
+       b.title='单击切换；双击编辑这个版本的中英文名称';
+       b.addEventListener('dblclick',event=>{event.preventDefault();startVersionLabelEdit(option.id);});
+       b.addEventListener('click',()=>{
+         if(option.id===selectedVersion)return;
+         navigateWithDraft(()=>{
+           if(history.isOpen())history.close();
+           inlineCover.cancel();
+           cancelVersion();
+           cancelVersionLabel();
+           selectedVersion=option.id;
+           renderEditor({preserveVersionChips:true});
+         });
        });
-     });
-     chips.append(b);
+       const edit=node('button','ux-variant-edit');edit.type='button';edit.append(createEditIcon());
+       edit.setAttribute('aria-label','编辑「'+(option.label?.zh||'主版本')+'」的中英文版本名称');
+       edit.title='编辑这个视频版本的中英文名称';
+       edit.addEventListener('click',()=>startVersionLabelEdit(option.id));
+       item.append(b,edit);chips.append(item);
+     }
+   }else{
+     chips.querySelectorAll('.ux-variant').forEach(button=>
+       button.setAttribute('aria-pressed',String(button.dataset.version===selectedVersion)));
    }
    chips.hidden=options.length<2;
    $('ux-stage-version').hidden=options.length>1;
+   $('ux-edit-current-version').hidden=options.length>1;
+   $('ux-edit-current-version').onclick=()=>startVersionLabelEdit(selectedVersion);
+   $('ux-stage-version').title='双击编辑当前视频版本的中英文名称';
+   $('ux-stage-version').ondblclick=()=>startVersionLabelEdit(selectedVersion);
+   syncVersionActions();
+   $('ux-version-label-form').hidden=true;
+   editingVersionId=null;
    const url=online?.videoUrl||null;
    $('ux-cloud-badge').textContent=url?'已配置 ImageKit 地址':'未配置线上视频';
    $('ux-cloud-badge').dataset.connected=String(Boolean(url));
@@ -629,6 +674,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      ' · '+(v?.width||'-')+' × '+(v?.height||'-');
    $('ux-url-readonly').textContent=url||'未设置线上视频地址 · 点击填写 ImageKit 链接';
    $('ux-url-readonly').title='单击编辑 ImageKit 地址；进入编辑后可复制或修改';
+   $('ux-add-variant').replaceChildren(createPlusIcon(),document.createTextNode('添加视频版本'));
    $('ux-add-variant').hidden=false;
    {
      const index=String.fromCharCode(65+Math.min(options.length,25));
@@ -648,7 +694,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  }
  function launchEditor(kind){
    if(!selectedId)return;
-   if(draftSections().title||draftSections().url||draftSections().version){
+   if(draftSections().title||draftSections().versionLabel||draftSections().url||draftSections().version){
      navigateWithDraft(()=>launchEditor(kind));return;
    }
    if(dirty()){notify('请先保存排序，再编辑封面。',true);return;}
@@ -663,10 +709,67 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(selectedId)player.setSource(selectedId,selectedVersion);
    const current=poster(selectedId);
    if(current)$('ux-stage-version').textContent=(current.label?.zh||'主版本')+' · '+current.width+' × '+current.height;
+   if(selectedId)syncContext();
+ }
+ function cancelVersionLabel(){
+   $('ux-version-label-form').hidden=true;
+   editingVersionId=null;
+   if(selectedId)syncContext();
+ }
+ function startVersionLabelEdit(variantId){
+   if(!selectedId||busy)return;
+   navigateWithDraft(()=>{
+     cancelVersion();
+     if(variantId!==selectedVersion){
+       cancelVersionLabel();selectedVersion=variantId;renderEditor();
+     }
+     const version=versionById(selectedId,variantId);
+     if(!version)return;
+     editingVersionId=variantId;
+     $('ux-version-label-zh').value=version.label?.zh||'';
+     $('ux-version-label-en').value=version.label?.en||'';
+     $('ux-version-label-current').textContent='当前：'+(version.label?.zh||'主版本');
+     $('ux-version-label-status').textContent='保存后，版本切换按钮和当前版本标题会同步更新。';
+     $('ux-version-label-form').hidden=false;
+     syncContext('正在编辑这个视频版本的中英文名称；作品卡片标题保持独立。');
+     syncVersionLabelDraftStatus();
+     $('ux-version-label-zh').focus();
+   });
+ }
+ async function saveVersionLabel(event){
+   event.preventDefault();
+   if(busy||!selectedId||!editingVersionId)return;
+   if(dirty()){notify('请先保存排序，再修改版本名称。',true);return;}
+   const version=versionById(selectedId,editingVersionId);
+   if(!version)return;
+   const labelZh=$('ux-version-label-zh').value.trim();
+   const labelEn=$('ux-version-label-en').value.trim();
+   if(!labelZh||!labelEn){notify('请填写中英文版本名称。',true);return;}
+   const duplicate=versions(selectedId).some(item=>item.id!==editingVersionId&&
+     (item.label?.zh===labelZh||item.label?.en===labelEn));
+   if(duplicate){notify('同一作品的中英文版本名称都需要与其他版本区分。',true);return;}
+   const projectId=selectedId,variantId=editingVersionId;
+   busy=true;$('ux-version-label-save').disabled=true;
+   $('ux-version-label-status').textContent='正在保存中英文版本名称…';
+   try{
+     await api('/api/update-version-label',{
+       projectId,variantId,labelZh,labelEn,
+       expectedLabel:version.label||{zh:'主版本',en:'Main version'},confirmed:true,
+     });
+     await bootstrap();
+     selectedId=projectId;selectedVersion=variantId;editingVersionId=null;
+     renderGallery();renderEditor();
+     notify('版本名称已保存到本地；切换按钮和当前版本标题已同步，网站尚未发布。');
+   }catch(error){
+     $('ux-version-label-status').textContent='保存失败：'+error.message;
+     notify('保存视频版本名称失败：'+error.message,true);
+   }finally{
+     busy=false;$('ux-version-label-save').disabled=false;syncVersionActions();
+   }
  }
  function launchHistory(kind,opener){
    if(!selectedId||busy)return;
-   if(draftSections().title||draftSections().url||draftSections().version){
+   if(draftSections().title||draftSections().versionLabel||draftSections().url||draftSections().version){
      navigateWithDraft(()=>launchHistory(kind,opener));return;
    }
    if(inlineCover.active()){
@@ -681,11 +784,12 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      title:p?.title||'作品',opener});
  }
  function launchVersion(){
-   if(draftSections().title||draftSections().url){
+   if(draftSections().title||draftSections().versionLabel||draftSections().url){
      navigateWithDraft(()=>launchVersion());return;
    }
    const work=managed(selectedId);
    if(!work){notify('此作品暂时无法管理版本。',true);return;}
+   cancelVersionLabel();
    if(inlineCover.active())inlineCover.cancel();
    const form=$('ux-version-form');
    if(!form.hidden){cancelVersion();return;}
@@ -734,7 +838,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      $('ux-version-status').textContent='添加失败：'+e.message;
      notify('添加视频版本失败：'+e.message,true);
    }finally{
-     busy=false;$('ux-version-submit').disabled=false;
+     busy=false;$('ux-version-submit').disabled=false;syncVersionActions();
    }
  }
  async function saveURL(){
@@ -753,7 +857,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      notify('已保存：'+(v.label?.zh||'主版本')+' 的 ImageKit 地址（仅本地配置，尚未发布网站）。');
      return true;
    }catch(e){notify('保存线上地址失败：'+e.message,true);return false;}
-   finally{busy=false;}
+   finally{busy=false;syncVersionActions();}
  }
  $('ux-search').addEventListener('input',event=>{
    search=event.target.value.trim();renderGallery();
@@ -813,6 +917,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-url-readonly').hidden=false;
    syncContext();
    cancelVersion();
+   cancelVersionLabel();
    inlineCover.cancel();
  };
  $('ux-unsaved-keep').addEventListener('click',dismissUnsaved);
@@ -831,6 +936,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-unsaved-save').disabled=true;
    try{
      const saved=pending.issues.title?await saveTitle(p,fields.titleZh,fields.titleEn):
+       pending.issues.versionLabel?await saveVersionLabel(new Event('submit',{cancelable:true})).then(()=>!anyDraft()):
        pending.issues.url?await saveURL():false;
      if(saved){
        dismissUnsaved();
@@ -863,6 +969,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  $('ux-history-poster').addEventListener('click',()=>launchHistory('poster',$('ux-history-poster')));
  $('ux-add-variant').addEventListener('click',launchVersion);
  $('ux-version-cancel').addEventListener('click',cancelVersion);
+ $('ux-version-label-cancel').addEventListener('click',cancelVersionLabel);
+ $('ux-version-label-form').addEventListener('submit',saveVersionLabel);
+ $('ux-version-label-zh').addEventListener('input',syncVersionLabelDraftStatus);
+ $('ux-version-label-en').addEventListener('input',syncVersionLabelDraftStatus);
  $('ux-version-file').addEventListener('change',event=>{
    const file=event.target.files?.[0];
    if(!file)return;

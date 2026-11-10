@@ -1,8 +1,10 @@
 import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import {chromium} from 'playwright-core';
 import assert from 'node:assert/strict';
-import {mkdirSync} from 'node:fs';
+import {mkdirSync,readFileSync} from 'node:fs';
 const base=process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
+const featured=JSON.parse(readFileSync(new URL('../src/data/project-order.json',import.meta.url),'utf8')).featured;
+assert.equal(featured.length,8);
 const out=process.env.NAV_SCREENSHOTS;
 if(out)mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
@@ -33,7 +35,7 @@ try{
   if([393,1440].includes(width))await shot(p,`${width}-home-navigation`);
   await p.locator('#projects').scrollIntoViewIfNeeded();
   for(const index of [0,3]){
-   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,['01','02','06','03','04','07','08','05'][index]);assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(220);
+   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,featured[index]);assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(220);
    same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
    await arrows(p,width);await p.keyboard.press('Escape');await p.locator('.cinema-player').waitFor({state:'detached'});
   }

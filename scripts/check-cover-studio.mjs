@@ -15,7 +15,7 @@ await fs.symlink(path.join(root,'node_modules'),path.join(fixture,'node_modules'
 const read=async name=>JSON.parse(await fs.readFile(path.join(fixture,'src/data',name+'.json'),'utf8'));
 const paths=await read('local-video-paths'),covers=await read('project-cover-overrides'),metadata=await read('project-video-metadata');
 const sha=async file=>createHash('sha256').update(await fs.readFile(file)).digest('hex');
-const testCases=[['10','640x360'],['12','360x640']];
+const testCases=[['10','640x360'],['13','360x640']];
 for(const [id,dims] of testCases){const file=path.join(fixture,'assets/videos/works',paths[id]);await fs.mkdir(path.dirname(file),{recursive:true});execFileSync('ffmpeg',['-v','error','-f','lavfi','-i',`testsrc2=s=${dims}:d=2:r=12`,'-c:v','libx264','-preset','ultrafast','-pix_fmt','yuv420p','-movflags','+faststart','-y',file],{timeout:60000});}
 let studio,browser;
 try{

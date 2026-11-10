@@ -33,7 +33,10 @@ async function catalog(root) {
     read(data(root,'local-video-paths')),
   ]);
   const legacyVariants=await read(data(root,'legacy-video-variants'));
-  return {metadata,auto,paths,legacyVariants};
+  const legacyMainLabels=await read(data(root,'legacy-main-version-labels')).catch(error=>{
+    if(error.code==='ENOENT')return {};throw error;
+  });
+  return {metadata,auto,paths,legacyVariants,legacyMainLabels};
 }
 function versionFromCatalog(project,versionId,c) {
   const work=c.auto.find(p=>p.id===project.id);
@@ -50,7 +53,7 @@ function versionFromCatalog(project,versionId,c) {
   if(!(width>0&&height>0))throw fail('视频显示比例元数据缺失。',422);
   safeVideoPath(video);
   safePosterPath(poster,project.category);
-  return {id:versionId,label:other?.label || (isMain ? (work?.mainVersionLabel||{zh:'主版本',en:'Main version'}) : null),
+  return {id:versionId,label:other?.label || (isMain ? (work?.mainVersionLabel||c.legacyMainLabels[project.id]||{zh:'主版本',en:'Main version'}) : null),
     poster,video,width,height,time:isMain?(meta.playerPosterTime??null):(other.posterTime??null),
     timeSource:isMain?(meta.playerPosterTimeSource??null):(other.posterTimeSource??null),
     main:isMain,work,other};
