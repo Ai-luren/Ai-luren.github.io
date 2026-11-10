@@ -40,6 +40,7 @@
     "check:impact-polish": "node scripts/check-impact-evidence-polish.mjs",
     "check:curated-order": "node scripts/check-curated-order.mjs",
     "check:mobile-scroll-response": "node scripts/check-mobile-scroll-response.mjs",
+    "check:home-scroll": "node scripts/check-home-scroll-stability.mjs",
     "check:gallery-no-black": "node scripts/check-gallery-no-black.mjs",
     "check:mobile-gestures": "node scripts/check-mobile-project-gestures.mjs",
     "check:award-hover-radius": "node scripts/check-award-hover-radius.mjs",
