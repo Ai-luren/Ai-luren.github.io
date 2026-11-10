@@ -18,7 +18,7 @@ const renderTitle = (raw) => {
   );
 };
 
-export default function ProjectCard({ project, lang, onClick }) {
+export default function ProjectCard({ project, lang, onClick, coverPriority = 'auto' }) {
   const previewRevision=useLocalArtworkRevision('cover',project.id);
   const cover=revisionedArtworkUrl(project.cover,previewRevision);
   const detail = project.award[lang] || PROJECT_CATEGORIES.find(item => item.id === project.category)?.label[lang];
@@ -36,7 +36,8 @@ export default function ProjectCard({ project, lang, onClick }) {
         style={{ '--comet-cover': `url(${cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>
         <span className="comet-archive__image">
           <img className="comet-archive__cover" src={cover} alt="" width="600" height="800"
-            loading={project.featured ? 'eager' : 'lazy'} decoding="async"
+            loading={coverPriority === 'high' || (coverPriority === 'auto' && project.featured) ? 'eager' : 'lazy'}
+            fetchPriority={coverPriority === 'auto' ? undefined : coverPriority} decoding="async"
             style={{ objectFit: project.featured ? 'cover' : 'contain' }} />
           <span className="comet-archive__play-badge" aria-hidden="true">{status}</span>
         </span>

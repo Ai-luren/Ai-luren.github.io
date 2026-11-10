@@ -28,6 +28,10 @@ export default function WorksLibrary() {
   useEffect(() => { selectionTokenRef.current += 1; }, [category]);
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
   const visible = PROJECTS.filter(project => project.category === category);
+  // Prioritize the actual first row, not the homepage's unrelated Featured flag.
+  // Later rows stay lazy/low priority so they do not compete on a cold visit.
+  const firstRowCount = matchMedia('(min-width: 1280px)').matches ? 4
+    : matchMedia('(min-width: 900px)').matches ? 3 : 2;
 
   // Direct preview from Studio opens the right category and finds the exact card.
   useEffect(() => {
@@ -105,7 +109,7 @@ export default function WorksLibrary() {
         <p className="library-category-note" aria-live="polite" aria-atomic="true">
           {activeCategory?.description?.[lang] || '\u00a0'}
         </p>
-        {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map(project => <ProjectCard key={project.id} project={project} lang={lang} onClick={(event, item) => {
+        {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map((project, index) => <ProjectCard key={project.id} project={project} lang={lang} coverPriority={index < firstRowCount ? 'high' : 'low'} onClick={(event, item) => {
           const trigger = event.target.closest('.comet-archive__card');
           const token = ++selectionTokenRef.current;
           cinemaReturnFocusRef.current = trigger;

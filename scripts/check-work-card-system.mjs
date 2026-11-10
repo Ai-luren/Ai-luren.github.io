@@ -61,6 +61,19 @@ try{
         await works.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
         await home.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
         await works.locator('.library-grid .comet-archive__card').first().waitFor({state:'attached'});
+        // First-row priority is viewport-based, never inherited from Featured.
+        const firstRowCount = width >= 1280 ? 4 : width >= 900 ? 3 : 2;
+        const coverLoads = await works.locator('.library-grid img.comet-archive__cover')
+          .evaluateAll(imgs => imgs.map(img => ({loading:img.loading, priority:img.fetchPriority})));
+        coverLoads.forEach((cover, index) => {
+          assert.equal(cover.loading, index < firstRowCount ? 'eager' : 'lazy', `${width}px ${lang}: cover ${index} loading`);
+          assert.equal(cover.priority, index < firstRowCount ? 'high' : 'low', `${width}px ${lang}: cover ${index} priority`);
+        });
+        const preloadStates = await works.locator('link[data-library-cover-category]')
+          .evaluateAll(links => links.map(link => ({category:link.dataset.libraryCoverCategory, media:link.media})));
+        assert(preloadStates.length >= firstRowCount, `${width}px ${lang}: no HTML cover preload`);
+        assert(preloadStates.every(item => item.category === 'commercial' ? item.media !== 'not all' : item.media === 'not all'),
+          `${width}px ${lang}: unrelated category must not preload`);
         if (width >= 721) {
           const columns = await home.locator('#projects .comet-archive').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
           assert.equal(columns, 4, `${width}px ${lang}: Featured must use four columns`);
