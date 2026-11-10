@@ -46,6 +46,7 @@
     "check:profile-no-flash": "node scripts/check-profile-no-flash.mjs",
     "check:motion-polish": "node scripts/check-motion-polish.mjs",
     "check:poster-return": "node scripts/check-featured-poster-and-works-return.mjs",
+    "check:cinema-local": "node scripts/check-cinema-no-black-transitions.mjs",
     "check:asset-catalog": "node scripts/check-asset-catalog.mjs",
     "check:cover-poster": "node scripts/check-cover-studio-poster.mjs",
     "check:workbench-ux": "node scripts/check-cover-studio-library.mjs",

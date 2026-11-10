@@ -1,11 +1,23 @@
 import { createPortal } from 'react-dom';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
 import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { WORKS_HREF } from '../navigation/links.js';
-import {useLocalArtworkRevision,revisionedArtworkUrl} from '../utils/localPreviewArtwork.js';
+import {useLocalArtworkRevision,revisionedArtworkUrl,currentLocalArtworkRevision} from '../utils/localPreviewArtwork.js';
+import { warmImage } from '../utils/warmImage.js';
+
+// A stale or unreachable asset must not strand the viewer indefinitely.
+async function readyArtwork(url, deadline = 8000) {
+  let timeout;
+  try {
+    return await Promise.race([
+      warmImage(url),
+      new Promise(resolve => { timeout = window.setTimeout(() => resolve(false), deadline); }),
+    ]);
+  } finally { window.clearTimeout(timeout); }
+}
 
 export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
   const lang = useLang();
@@ -18,6 +30,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const navRef = useRef(null);
   const switchingRef = useRef(false);
   const switchFocusRef = useRef(null);
+  const versionRequestRef = useRef(0);
+  const [versionPendingIndex, setVersionPendingIndex] = useState(null);
+  const [fallbackVersionPoster, setFallbackVersionPoster] = useState(null);
   const [switching, setSwitching] = useState(false);
   const [versionSelection, setVersionSelection] = useState({ projectId: project?.id, index: 0 });
   const versions = project ? [{
@@ -29,8 +44,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const currentVersion = versions[versionIndex] || versions[0];
   const coverRevision=useLocalArtworkRevision('cover',project?.id);
   const posterRevision=useLocalArtworkRevision('poster',project?.id,currentVersion?.id||'main');
-  const versionPoster = revisionedArtworkUrl(currentVersion?.playerPoster || project?.cover,
-    currentVersion?.playerPoster?posterRevision:coverRevision);
+  const fallbackForCurrentVersion = fallbackVersionPoster?.projectId === project?.id
+    && fallbackVersionPoster?.versionId === currentVersion?.id;
+  const versionPoster = revisionedArtworkUrl(
+    fallbackForCurrentVersion ? project?.cover : currentVersion?.playerPoster || project?.cover,
+    fallbackForCurrentVersion || !currentVersion?.playerPoster ? coverRevision : posterRevision,
+  );
   const [dimensions, setDimensions] = useState(() => project?.videoWidth > 0 && project?.videoHeight > 0
     ? { width: project.videoWidth, height: project.videoHeight } : null);
   const cancelFrameRef = useRef(null);
@@ -103,6 +122,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   }, [Boolean(project)]);
 
   useLayoutEffect(() => {
+    versionRequestRef.current++;
+    setVersionPendingIndex(null);
+    setFallbackVersionPoster(null);
+  }, [project?.id]);
+
+  useLayoutEffect(() => {
     if (!project) return;
     const video = videoRef.current;
     setDimensions(currentVersion?.videoWidth > 0 && currentVersion?.videoHeight > 0 ? {width:currentVersion.videoWidth,height:currentVersion.videoHeight}:null);
@@ -171,18 +196,15 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     };
   }, [dimensions, lang, project?.id]);
 
-  useEffect(() => {
-    // Closed viewers must not fetch the first project's poster during page load.
-    if (!project) return;
-    for(const next of [projects[index-1],projects[index+1]]) {
-      if(next){const image=new Image();image.src=next.playerPoster || next.cover;}
-    }
-  }, [project?.id]);
+  // Don't preload neighboring posters while the visitor is about to play a
+  // film. On slower networks those image requests compete with the MP4 first
+  // frame. Navigation controls warm the target when the visitor shows intent.
 
   if (!project) return null;
   const dismiss = () => {
     if (closingRef.current) return;
     closingRef.current = true;
+    versionRequestRef.current++;
     stop(); // Release media immediately; the visual exit is video-free.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       onClose();
@@ -196,15 +218,27 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     if(nextIndex < 0 || nextIndex >= projects.length || !onSelect || switchingRef.current || closingRef.current) return;
     const controls=dialogRef.current?.querySelectorAll('.cinema-player__sequence button');
     switchFocusRef.current=document.activeElement===controls?.[1]?'next':document.activeElement===controls?.[0]?'previous':null;
-    switchingRef.current=true;setSwitching(true);
+    switchingRef.current = true;
+    setSwitching(true);
+    versionRequestRef.current++; // Cancel any pending A/B poster switch.
+    setVersionPendingIndex(null);
     videoRef.current?.pause();
-    const next=projects[nextIndex];
-    const image=new Image();image.src=next.playerPoster || next.cover;
-    let timer;
-    try { await Promise.race([image.decode().catch(()=>{}),new Promise(resolve=>{timer=setTimeout(resolve,1500);})]); }
-    finally { clearTimeout(timer);switchingRef.current=false; }
-    if(!dialogRef.current?.open || closingRef.current)return;
-    stop();setSwitching(false);onSelect(next);
+    const next = projects[nextIndex];
+    // Keep the outgoing frame visible until the incoming poster is decoded.
+    // The old 1.5-second deadline could force a black screen on slow networks.
+    let prepared = next;
+    try {
+      if (!await readyArtwork(next.playerPoster || next.cover)) {
+        if (!await readyArtwork(next.cover)) return;
+        prepared = { ...next, playerPoster: next.cover };
+      }
+      if (!dialogRef.current?.open || closingRef.current) return;
+      stop();
+      onSelect(prepared);
+    } finally {
+      switchingRef.current = false;
+      if (!closingRef.current && dialogRef.current?.open) setSwitching(false);
+    }
   };
   const play = async (reload = false) => {
     const video = videoRef.current;
@@ -238,12 +272,38 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     }
   };
   const retry = () => play(true);
-  const chooseVersion = nextIndex => {
-    if (nextIndex === versionIndex || nextIndex < 0 || nextIndex >= versions.length || closingRef.current) return;
-    stop();
+  const chooseVersion = async nextIndex => {
+    if (closingRef.current || switchingRef.current || nextIndex < 0 || nextIndex >= versions.length) return;
+    if (nextIndex === versionIndex) {
+      // Tapping the active version while another is pending cancels that swap.
+      versionRequestRef.current++;
+      setVersionPendingIndex(null);
+      return;
+    }
+    const token = ++versionRequestRef.current;
     const next = versions[nextIndex];
+    setVersionPendingIndex(nextIndex);
+    videoRef.current?.pause();
+    const src = next.playerPoster || project.cover;
+    const revision = next.playerPoster
+      ? currentLocalArtworkRevision('poster', project.id, next.id)
+      : coverRevision;
+    const targetPoster = revisionedArtworkUrl(src, revision);
+    let fallback = false;
+    if (!await readyArtwork(targetPoster)) {
+      // When the poster is missing, use a decoded cover, never an empty stage.
+      if (!await readyArtwork(revisionedArtworkUrl(project.cover, coverRevision))) {
+        if (token === versionRequestRef.current) setVersionPendingIndex(null);
+        return;
+      }
+      fallback = true;
+    }
+    if (token !== versionRequestRef.current || closingRef.current || !dialogRef.current?.open) return;
+    stop();
+    setFallbackVersionPoster(fallback ? { projectId: project.id, versionId: next.id } : null);
     setDimensions(next.videoWidth > 0 && next.videoHeight > 0 ? { width: next.videoWidth, height: next.videoHeight } : null);
     setVersionSelection({ projectId: project.id, index: nextIndex });
+    setVersionPendingIndex(null);
   };
   const focusLastControl = () => dialogRef.current?.querySelector('.cinema-player__return')?.focus();
 
@@ -302,8 +362,11 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <img key={`poster-${project.id}-${currentVersion?.id}`} className={`cinema-player__poster${started ? ' is-revealed' : ''}`}
               src={versionPoster} alt=""
               onError={event => { if (event.currentTarget.getAttribute('src') !== project.cover) event.currentTarget.src = project.cover; }} />
-            {status === 'loading' && <span className="cinema-player__loading" role="status">{lang === 'en' ? 'Loading film…' : '影片加载中…'}</span>}
-            {!failed && !playing && status !== 'loading' && <div className="cinema-player__start">
+            {(switching || versionPendingIndex !== null) && <span className="cinema-player__loading" role="status" aria-live="polite">
+              {lang === 'en' ? 'Preparing next image…' : '正在准备画面…'}
+            </span>}
+            {status === 'loading' && !switching && versionPendingIndex === null && <span className="cinema-player__loading" role="status">{lang === 'en' ? 'Loading film…' : '影片加载中…'}</span>}
+            {!failed && !playing && status !== 'loading' && !switching && versionPendingIndex === null && <div className="cinema-player__start">
               <button className="cinema-player__play" type="button" onClick={() => play()}
                 aria-label={lang === 'en' ? 'Play film' : '播放影片'}>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
@@ -325,7 +388,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           {versions.length > 1 && <div className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
             {versions.map((version, i) => (
               <button key={version.id} type="button" className="cinema-player__version"
-                aria-pressed={i === versionIndex} onClick={() => chooseVersion(i)}>
+                aria-pressed={i === versionIndex} aria-busy={versionPendingIndex === i}
+                onPointerEnter={() => warmImage(revisionedArtworkUrl(version.playerPoster || project.cover,
+                  version.playerPoster ? currentLocalArtworkRevision('poster', project.id, version.id) : coverRevision))}
+                onFocus={() => warmImage(revisionedArtworkUrl(version.playerPoster || project.cover,
+                  version.playerPoster ? currentLocalArtworkRevision('poster', project.id, version.id) : coverRevision))}
+                onClick={() => chooseVersion(i)}>
                 {version.label?.[lang] || (lang === 'en' ? `Version ${i + 1}` : `版本 ${i + 1}`)}
               </button>
             ))}
@@ -336,9 +404,15 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           </div>
           <div className="cinema-player__work-nav" role="group" aria-busy={switching} aria-label={lang === 'en' ? 'Work navigation' : '作品切换'}>
             <div className="cinema-player__sequence">
-              <button type="button" onClick={() => switchWork(index-1)} disabled={switching || index <= 0} aria-label={lang==='en'?'Previous work':'上一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
+              <button type="button" onClick={() => switchWork(index-1)} disabled={switching || index <= 0}
+                onPointerEnter={() => warmImage(projects[index-1]?.playerPoster || projects[index-1]?.cover)}
+                onFocus={() => warmImage(projects[index-1]?.playerPoster || projects[index-1]?.cover)}
+                aria-label={lang==='en'?'Previous work':'上一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
               <span className="cinema-player__count" aria-live="polite">{index+1} / {projects.length}</span>
-              <button type="button" onClick={() => switchWork(index+1)} disabled={switching || index < 0 || index >= projects.length-1} aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
+              <button type="button" onClick={() => switchWork(index+1)} disabled={switching || index < 0 || index >= projects.length-1}
+                onPointerEnter={() => warmImage(projects[index+1]?.playerPoster || projects[index+1]?.cover)}
+                onFocus={() => warmImage(projects[index+1]?.playerPoster || projects[index+1]?.cover)}
+                aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
             </div>
           </div>
             {context === 'library' ? (

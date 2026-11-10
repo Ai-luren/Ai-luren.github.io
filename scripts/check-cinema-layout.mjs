@@ -15,7 +15,7 @@ async function measure(page) {
     const video = document.querySelector('.cinema-player video');
     const layoutStyle = getComputedStyle(document.querySelector('.cinema-player__layout'));
     const stage = document.querySelector('.cinema-player__stage').getBoundingClientRect();
-    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:stage.width/stage.height, paused:video.paused, time:video.currentTime, hasSource:video.hasAttribute('src'), readyState:video.readyState, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
+    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), versions:document.querySelector('.cinema-player__versions') ? rect('.cinema-player__versions') : null, title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:stage.width/stage.height, paused:video.paused, time:video.currentTime, hasSource:video.hasAttribute('src'), readyState:video.readyState, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
   });
 }
 function check(m) {
@@ -28,7 +28,14 @@ function check(m) {
   assert(Math.abs(m.stage.x-m.caption.x)<1);
   assert(m.caption.width<=m.stage.width+1);
   assert(Math.abs(m.title.x-m.stage.x)<1);
-  assert(m.caption.y-m.stage.bottom >= 12 && m.caption.y-m.stage.bottom <= 20);
+  // On phones the version selector sits between the poster and the caption;
+  // single-version projects retain the original 14px/16px caption gap.
+  if (m.versions && m.viewport[0] <= 760) {
+    assert(m.versions.y-m.stage.bottom >= 12 && m.versions.y-m.stage.bottom <= 20);
+    assert(m.caption.y-m.versions.bottom >= 12 && m.caption.y-m.versions.bottom <= 20);
+  } else {
+    assert(m.caption.y-m.stage.bottom >= 12 && m.caption.y-m.stage.bottom <= 20);
+  }
   assert(m.stage.x>=0 && m.stage.right<=m.viewport[0]+1);
   assert(m.body.bottom<=m.viewport[1]+1 || m.scrollHeight>=m.body.bottom-1, 'Overflowing information must remain reachable by modal scrolling');
   assert(m.close.x>=0 && m.close.right<=m.viewport[0] && m.close.y>=0 && m.close.bottom<=m.viewport[1]);
