@@ -49,6 +49,7 @@
 ```bash
 npm run build
 npm run check:media-safety
+npm run check:image-loading
 npm run check:curated-order
 npm run check:asset-catalog
 npm run check:modal-motion

@@ -24,6 +24,9 @@ try{
       await page.goto(new URL('index.html',base).href,{waitUntil:'domcontentloaded'});
       const cover=page.locator('#projects .comet-archive__cover');
       await cover.first().waitFor({state:'attached'});
+      // Offscreen covers are intentionally deferred until approaching the
+      // archive; verify decoded readiness after navigating to that section.
+      await page.locator('#projects').scrollIntoViewIfNeeded();
       await page.waitForFunction(()=>[...document.querySelectorAll('#projects .comet-archive__cover')].every(img=>img.complete && img.naturalWidth>0),null,{timeout:15000});
       assert.equal(await cover.count(),4);
       const first=await page.locator('#projects .comet-archive__title').first().textContent();

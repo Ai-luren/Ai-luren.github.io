@@ -66,8 +66,10 @@ try{
         const coverLoads = await works.locator('.library-grid img.comet-archive__cover')
           .evaluateAll(imgs => imgs.map(img => ({loading:img.loading, priority:img.fetchPriority})));
         coverLoads.forEach((cover, index) => {
-          assert.equal(cover.loading, index < firstRowCount ? 'eager' : 'lazy', `${width}px ${lang}: cover ${index} loading`);
-          assert.equal(cover.priority, index < firstRowCount ? 'high' : 'low', `${width}px ${lang}: cover ${index} priority`);
+          const first = index < firstRowCount;
+          const second = !first && index < firstRowCount * 2;
+          assert.equal(cover.loading, first || second ? 'eager' : 'lazy', `${width}px ${lang}: cover ${index} loading`);
+          assert.equal(cover.priority, first ? 'high' : second ? 'auto' : 'low', `${width}px ${lang}: cover ${index} priority`);
         });
         const preloadStates = await works.locator('link[data-library-cover-category]')
           .evaluateAll(links => links.map(link => ({category:link.dataset.libraryCoverCategory, media:link.media})));

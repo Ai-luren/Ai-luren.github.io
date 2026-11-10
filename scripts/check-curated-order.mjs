@@ -70,6 +70,11 @@ try{
      await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(0,4),{timeout:10000});
      assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1 return');
      assert.deepEqual(await readAwards(),awards[lang],tag+': mobile award order');
+     // Gallery thumbnails are deferred until nearby, so compare their real
+     // loaded sources after bringing the award section into view.
+     await page.locator('#impact-awards').scrollIntoViewIfNeeded();
+     await page.waitForFunction(()=>[...document.querySelectorAll('#impact-awards .impact-award-grid-card img')]
+       .every(image=>Boolean(image.getAttribute('src'))),null,{timeout:8000});
      const urls=await page.locator('#impact-awards .impact-award-grid-card img').evaluateAll(images=>images.map(image=>image.getAttribute('src')));
      assert.notEqual(urls[5],urls[6],tag+': distinct Haina proof images mixed together');
    }

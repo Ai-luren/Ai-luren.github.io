@@ -17,6 +17,7 @@
     "check:impact-platform": "node scripts/check-impact-platform-breakpoints.mjs",
     "check:typography": "node scripts/check-typography-system.mjs",
     "check:work-cards": "node scripts/check-work-card-system.mjs",
+    "check:image-loading": "node scripts/check-image-loading-strategy.mjs",
     "check:work-media": "node scripts/check-work-media-consistency.mjs",
     "check:interaction": "node scripts/check-interaction-contract.mjs",
     "check:nav-scroll": "node scripts/check-navigation-scroll-intent.mjs",

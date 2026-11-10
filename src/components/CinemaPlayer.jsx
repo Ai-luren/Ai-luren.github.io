@@ -172,6 +172,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   }, [dimensions, lang, project?.id]);
 
   useEffect(() => {
+    // Closed viewers must not fetch the first project's poster during page load.
+    if (!project) return;
     for(const next of [projects[index-1],projects[index+1]]) {
       if(next){const image=new Image();image.src=next.playerPoster || next.cover;}
     }
