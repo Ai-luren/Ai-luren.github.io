@@ -31,6 +31,7 @@ function validateArtwork(type,rel,id,name) {
   (type==='cover'?activeCover:activePoster).add(rel);
 }
 for(const [id,title] of Object.entries(titles)) {
+  if(auto.some(project=>project.id===id))continue;
   assert(allowed.includes(cats[id]),'Invalid/missing category for '+id);
   assert.equal(title.en,title.en.trim(),'Whitespace in English name '+id);
   assert(!/\s{2,}/.test(title.en),'Repeated spaces in '+id);
@@ -51,7 +52,29 @@ for(const [id,title] of Object.entries(titles)) {
     videoCount++;
   }
 }
-assert.equal(activeCover.size,Object.keys(titles).length,'Cover filenames collided');
+for(const project of auto) {
+  const {id,title}=project;
+  assert(allowed.includes(project.category),'Invalid/missing category for '+id);
+  assert.equal(title.en,title.en.trim(),'Whitespace in English name '+id);
+  assert(!/\s{2,}/.test(title.en),'Repeated spaces in '+id);
+  validateArtwork('cover',project.coverFile,id,title.en);
+  const versions=[project.localVideoPath,...(project.variants||[]).map(variant=>variant.localVideoPath)];
+  const posters=[metadata[id]?.playerPoster,...(project.variants||[]).map(variant=>variant.posterFile)];
+  assert(versions.every(Boolean),'Missing MP4 path for '+id);
+  assert.equal(posters.length,versions.length,'MP4 version/poster count differs for '+id);
+  for(let i=0;i<versions.length;i++){
+    const video=versions[i];
+    const name=path.posix.basename(video,'.mp4');
+    assert(name.startsWith(title.en),'English MP4 basename mismatch: '+id);
+    const full=path.join(root,'assets/videos/works',video);
+    assert(existsSync(full),'MP4 missing: '+full);
+    assert(statSync(full).size>800,'MP4 empty: '+full);
+    validateArtwork('poster',posters[i],id,name);
+    videoCount++;
+  }
+}
+const projectCount=Object.keys(titles).filter(id=>!auto.some(project=>project.id===id)).length+auto.length;
+assert.equal(activeCover.size,projectCount,'Cover filenames collided');
 assert.equal(activePoster.size,videoCount,'Player poster filenames collided');
 for(const [type,dir] of Object.entries(imageRoots)){
   for(const entry of readdirSync(dir,{withFileTypes:true})){
@@ -71,5 +94,5 @@ for(const [type,dir] of Object.entries(imageRoots)){
 assert(!source.includes('project-covers/library/'));
 assert(!source.includes('project-covers/custom/'));
 assert(!source.includes('player-posters/*.webp'));
-console.log('ASSET_CATALOG_PASS',Object.keys(titles).length,'projects',videoCount,'MP4s',
+console.log('ASSET_CATALOG_PASS',projectCount,'projects',videoCount,'MP4s',
   activeCover.size,'named 3:4 covers',activePoster.size,'named full-aspect posters; four category folders; no public UUID files');

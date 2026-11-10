@@ -58,5 +58,81 @@
       "zh": "主版本",
       "en": "Main version"
     }
+  },
+  {
+    "id": "18",
+    "category": "social",
+    "featured": false,
+    "title": {
+      "zh": "FormFunk 餐具美学短片",
+      "en": "FormFunk Product Film"
+    },
+    "award": {
+      "zh": "",
+      "en": ""
+    },
+    "sourceUrl": null,
+    "caseStudy": null,
+    "localVideoPath": "AI Overseas Product Ads/FormFunk Product Film - Version A.mp4",
+    "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-A.mp4",
+    "coverFile": "social/FormFunk Product Film.webp",
+    "mainVersionLabel": {
+      "zh": "蓝色生长",
+      "en": "Blue in Bloom"
+    },
+    "variants": [
+      {
+        "id": "e9571c0f-aca1-43c6-bfdd-9cea34d2d7b2",
+        "label": {
+          "zh": "枝影成盘",
+          "en": "From Pattern to Plate"
+        },
+        "localVideoPath": "AI Overseas Product Ads/FormFunk Product Film - FormFunk Product Film B.mp4",
+        "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-B.mp4",
+        "videoWidth": 1708,
+        "videoHeight": 960,
+        "posterFile": "social/FormFunk Product Film - FormFunk Product Film B.webp",
+        "posterTime": 10.54,
+        "posterTimeSource": "confirmed-poster-selection"
+      }
+    ]
+  },
+  {
+    "id": "19",
+    "category": "commercial",
+    "featured": false,
+    "title": {
+      "zh": "FormFunk 餐具创意广告",
+      "en": "FormFunk Creative Commercial"
+    },
+    "award": {
+      "zh": "",
+      "en": ""
+    },
+    "sourceUrl": null,
+    "caseStudy": null,
+    "localVideoPath": "AI Commercials/FormFunk Creative Commercial.mp4",
+    "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-C.mp4",
+    "coverFile": "commercial/FormFunk Creative Commercial.webp",
+    "mainVersionLabel": {
+      "zh": "千万别摔！",
+      "en": "Don't Drop It!"
+    },
+    "variants": [
+      {
+        "id": "be383e18-09d7-4d8e-9650-3c457dfdd6a9",
+        "label": {
+          "zh": "谁才是主角？",
+          "en": "Who's the Star?"
+        },
+        "localVideoPath": "AI Commercials/FormFunk Creative Commercial - Version B.mp4",
+        "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-D.mp4",
+        "videoWidth": 960,
+        "videoHeight": 1708,
+        "posterFile": "commercial/FormFunk Creative Commercial - Version B.webp",
+        "posterTime": 8.08,
+        "posterTimeSource": "confirmed-poster-selection"
+      }
+    ]
   }
 ]

@@ -62,6 +62,13 @@ try {
         assert.equal(layout.columns,width<=720?1:width<=1100?2:4,`${tag}: unexpected column count`);
         assert(layout.panelOverflow<=2 && layout.pageOverflow<=2,`${tag}: horizontal overflow`);
         if(width<=720) assert(layout.rows.every((r,i)=>i===0||r.y>layout.rows[i-1].y),`${tag}: mobile account order`);
+        // domcontentloaded does not mean the async CSS chunk is fully applied.
+        // Wait for the mobile 44px accessibility token before measuring targets.
+        if(width<=720)await page.waitForFunction(
+          ()=>[...document.querySelectorAll('#impact-reach .impact-reach-action')].length===7 &&
+            [...document.querySelectorAll('#impact-reach .impact-reach-action')].every(
+              el=>getComputedStyle(el).minHeight==='44px'
+            ),null,{timeout:12000});
         const actions=page.locator('#impact-reach .impact-reach-action');
         assert.equal(await actions.count(),7,`${tag}: missing actions`);
         const actionGeometry=await page.locator('#impact-reach .impact-reach-compact-account').evaluateAll(cards=>cards.map(card=>({

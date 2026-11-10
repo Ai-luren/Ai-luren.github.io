@@ -2,8 +2,11 @@ import { createSafePage, createSafeContext } from './lib/safe-media.mjs';
 import assert from 'node:assert/strict';
 import { existsSync, mkdirSync } from 'node:fs';
 import { chromium } from 'playwright-core';
+import { spawn } from 'node:child_process';
 
-const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5183/';
+const port=5392;
+const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:'+port+'/';
+let localServer;
 const screenshots = process.env.NAV_DESKTOP_SCREENSHOTS;
 if (screenshots) mkdirSync(screenshots, { recursive: true });
 const executablePath = [
@@ -18,6 +21,16 @@ const expected = {
 };
 
 try {
+  if (!process.env.PORTFOLIO_URL) {
+    localServer=spawn(process.execPath,['./node_modules/vite/bin/vite.js',
+      '--host','127.0.0.1','--port',String(port),'--strictPort'],{stdio:'ignore'});
+    let online=false;
+    for(let i=0;i<80;i++){
+      try{if((await fetch(base,{signal:AbortSignal.timeout(700)})).ok){online=true;break;}}catch{}
+      await new Promise(resolve=>setTimeout(resolve,150));
+    }
+    assert(online,'Standalone navigation QA Vite failed to start');
+  }
   for (const width of [761, 768, 820, 912, 1023, 1024, 1102, 1440, 1920]) {
     const page = await createSafePage(browser, { viewport: { width, height: 900 } });
     const errors = [];
@@ -91,4 +104,8 @@ try {
   console.log('390px: hamburger menu and four unified primary entries');
 } finally {
   await browser.close();
+  if(localServer){
+    localServer.kill('SIGTERM');
+    await new Promise(resolve=>setTimeout(resolve,130));
+  }
 }

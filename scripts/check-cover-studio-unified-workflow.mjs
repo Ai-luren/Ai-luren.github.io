@@ -71,7 +71,7 @@ try{
   await page.locator('#ux-video-timeline').dispatchEvent('change');
   assert(Math.abs(await page.locator('#ux-video-preview').evaluate(v=>v.currentTime)-.8)<.15);
   console.log('VIDEO_PLAY_AND_SCRUB_PASS');
-  await page.locator('#ux-variant-chips button').nth(1).click();
+  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
   await page.locator('#ux-change-poster').click();
   await page.waitForFunction(()=>!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});
   assert.equal(await page.locator('#ux-poster-img').getAttribute('data-pending'),null);

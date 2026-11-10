@@ -7,6 +7,7 @@ import projectTitleOverrides from './project-title-overrides.json';
 import localVideoPaths from './local-video-paths.json';
 import legacyVideoUrls from './legacy-imagekit-urls.json';
 import legacyVideoVariants from './legacy-video-variants.json';
+import legacyMainVersionLabels from './legacy-main-version-labels.json';
 
 const playerPosters = import.meta.glob('../../assets/images/player-posters/*/*.webp', { eager: true, query: '?url', import: 'default' });
 
@@ -46,7 +47,6 @@ const BASE_PROJECTS = [
   { id: '09', category: 'commercial', featured: false, videoUrl: videoSource('AI Commercials/海外无线耳机 AI 场景广告.mp4', legacyVideoUrls['09'], '09'), caseStudy: null, title: { zh: "无线耳机场景广告", en: "Wireless Earbuds Lifestyle Ad" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
   { id: '10', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/Wireless Earbuds Product Showcase.mp4', legacyVideoUrls['10'], '10'), caseStudy: null, title: { zh: "无线耳机产品展示", en: "Wireless Earbuds Product Showcase" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
   { id: '11', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外无线耳机 AI 社媒创意广告.mp4', legacyVideoUrls['11'], '11'), caseStudy: null, title: { zh: "无线耳机搞笑广告", en: "Wireless Earbuds Comedy Ad" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
-  { id: '12', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外车载坐垫 AI 产品体验广告.mp4', legacyVideoUrls['12'], '12'), caseStudy: null, title: { zh: "车载坐垫体验广告", en: "Car Seat Cushion Demo" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
   { id: '13', category: 'social', featured: false, videoUrl: videoSource('AI Overseas Product Ads/海外宠物红光护理仪 AI 产品广告.mp4', legacyVideoUrls['13'], '13'), caseStudy: null, title: { zh: "宠物红光护理仪广告", en: "Pet Red Light Therapy Ad" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
   { id: '14', category: 'visual', featured: false, videoUrl: videoSource('AI Visual Experiments/AI 创意短片-中式国风巨物美学.mp4', legacyVideoUrls['14'], '14'), caseStudy: null, title: { zh: "国风巨物美学", en: "Monumental Chinese Visuals" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
   { id: '15', category: 'visual', featured: false, videoUrl: videoSource('AI Visual Experiments/AI 创意短片-最难的告别.mp4', legacyVideoUrls['15'], '15'), caseStudy: null, title: { zh: "最难的告别", en: "The Hardest Goodbye" }, award: { zh: '', en: '' }, cover: null, sourceUrl: null },
@@ -68,7 +68,10 @@ const BASE_PROJECTS = [
     videoUrl:videoSource(localVideoPath,variant.videoUrl||null),
     playerPoster:playerPosters[`../../assets/images/player-posters/${posterFile}`]||null,
   }));
-  return { ...project, variants, ...(projectTitleOverrides[project.id] ? {title:projectTitleOverrides[project.id]} : {}), ...(cover ? { cover } : {}),
+  return { ...project, variants,
+    ...(project.mainVersionLabel || legacyMainVersionLabels[project.id]
+      ? {mainVersionLabel:project.mainVersionLabel || legacyMainVersionLabels[project.id]} : {}),
+    ...(projectTitleOverrides[project.id] ? {title:projectTitleOverrides[project.id]} : {}), ...(cover ? { cover } : {}),
     videoWidth: media.videoWidth, videoHeight: media.videoHeight,
     playerPoster: playerPosters[`../../assets/images/player-posters/${media.playerPoster}`] || null,
   };

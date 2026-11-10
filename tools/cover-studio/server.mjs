@@ -9,11 +9,12 @@ import { pipeline } from 'node:stream/promises';
 import { Transform } from 'node:stream';
 import { createServer as createViteServer } from 'vite';
 import { createNewCoverStudioProject } from './project-publisher.mjs';
-import { listManagedVersions, appendVideoVersion, bindImageKitUrl } from './project-versions.mjs';
+import { listManagedVersions, appendVideoVersion, bindImageKitUrl, updateVideoVersionLabel } from './project-versions.mjs';
 import { describeProjectOrder, saveProjectOrder } from './project-order.mjs';
 import { saveProjectTitle, artworkPath } from './project-titles.mjs';
 import { listPosterVersions, currentPoster, currentVideo, replacePoster } from './project-poster.mjs';
 import {listArtworkHistory,artworkHistoryImage,restoreArtwork,pruneArtworkHistory,pruneAllArtworkHistory} from './artwork-history.mjs';
+import { deduplicateSessionSource } from './session-storage.mjs';
 
 const TOOL_DIR = path.dirname(fileURLToPath(import.meta.url));
 const fail = (message, status = 400) => Object.assign(new Error(message), { status });
@@ -115,6 +116,11 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
       }
     }
     await writeJSON(path.join(dir, 'session.json'), data, true);
+    if (kind === 'video') {
+      // Reuse immutable video bytes across sessions. Failure never loses an import.
+      try { await deduplicateSessionSource({ workspace, sessionId: id }); }
+      catch (error) { console.warn('会话视频复用失败，已保留完整独立副本：', error.message); }
+    }
     return { ...data, sourceUrl: `/media/${id}/${source}` };
   }
   async function defaultVideos() {
@@ -286,7 +292,7 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
         if (!stat.isFile() || stat.size <= 0 || stat.size > 2 * 1024 ** 3) throw fail('文件无效或超过 2GB。');
         const id = randomUUID(), dir = path.join(sessionsDir, id);
         await fs.mkdir(dir);
-        await fs.copyFile(file, path.join(dir, 'source.mp4'), constants.COPYFILE_EXCL);
+        await fs.copyFile(file, path.join(dir, 'source.mp4'), constants.COPYFILE_EXCL | constants.COPYFILE_FICLONE);
         respond(res, await finishImport(id, dir, 'video', name, 'source.mp4',
           {candidates:input.candidates!==false})); return;
       }
@@ -420,6 +426,16 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
           respond(res, result);
           announcePreview('reload');return;
         } finally { await fs.rm(draft,{force:true}); }
+      }
+      if (pathname === '/api/update-version-label') {
+        const updated=await updateVideoVersionLabel({
+          projectRoot,workspace,projectId:String(input.projectId||''),variantId:String(input.variantId||'main'),
+          labelZh:input.labelZh,labelEn:input.labelEn,expectedLabel:input.expectedLabel,
+          confirmed:input.confirmed,existingProjects:await projects(),
+        });
+        respond(res,updated);
+        announcePreview('reload',input.projectId);
+        return;
       }
       if (pathname === '/api/bind-imagekit') {
         const bound=await bindImageKitUrl({

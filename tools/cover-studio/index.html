@@ -21,7 +21,7 @@
   <div class="ux-toolbar">
     <div id="ux-categories" class="ux-categories" role="group" aria-label="筛选作品"></div>
     <label class="ux-search"><span class="sr-only">搜索作品</span>
-      <input id="ux-search" type="search" placeholder="搜索 17 部作品…" autocomplete="off">
+      <input id="ux-search" type="search" placeholder="搜索 18 部作品…" autocomplete="off">
     </label>
   </div>
   <div class="ux-list-meta"><p id="ux-sort-hint" class="muted">点击封面编辑 · 按住封面拖动即可排序，松手自动保存</p><span id="ux-sort-state" class="ux-sort-state"></span><button id="ux-sort-undo" type="button" class="ux-sort-undo" hidden>撤销上次排序</button></div>
@@ -82,12 +82,26 @@
     <div class="ux-editor-body">
       <section class="ux-studio-stage" aria-label="视频播放与选帧">
         <div class="ux-stage-header">
-          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span></div>
+          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span><button type="button" id="ux-edit-current-version" class="ux-version-edit-current" aria-label="编辑当前视频版本名称">编辑名称</button></div>
           <div class="ux-stage-context">
-            <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="切换视频版本" hidden></div>
+            <div class="ux-version-toolbar">
+              <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="切换视频版本" hidden></div>
+            </div>
             <span class="ux-stage-video-label">来自本地 MP4 · 不使用线上流量</span>
           </div>
         </div>
+        <form id="ux-version-label-form" class="ux-version-label-form" hidden>
+          <div class="ux-version-label-heading"><strong>编辑视频版本名称</strong><span id="ux-version-label-current"></span></div>
+          <div class="ux-version-fields">
+            <label>中文版本名称 <input id="ux-version-label-zh" type="text" maxlength="50" required></label>
+            <label>英文版本名称 <input id="ux-version-label-en" type="text" maxlength="50" required></label>
+          </div>
+          <p id="ux-version-label-status" role="status">保存后，版本切换按钮和当前版本标题会同步更新。</p>
+          <div class="ux-version-form-actions">
+            <button id="ux-version-label-cancel" type="button" class="secondary">取消</button>
+            <button id="ux-version-label-save" type="submit" class="primary">保存版本名称</button>
+          </div>
+        </form>
         <div class="ux-stage-player">
           <video id="ux-video-preview" playsinline preload="metadata" tabindex="0" aria-label="当前作品视频预览，点击可播放或暂停"></video>
           <div id="ux-video-error" class="ux-video-error" hidden>浏览器暂无法播放此视频，可以输入时间或导入图片。</div>
@@ -140,7 +154,7 @@
           <p id="ux-context-hint">3:4 封面属于整部作品；播放器海报和视频地址属于当前视频版本。</p><p id="ux-context-save" role="status">已保存到本地 · 未发布网站</p>
         </div>
         <section class="ux-edit-section ux-name-section">
-          <div class="ux-section-heading"><h3>作品名称</h3></div>
+          <div class="ux-section-heading"><h3>作品名称</h3><span class="muted">作品卡片标题；视频版本名称单独设置</span></div>
           <form id="ux-title-form">
             <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
             <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
@@ -171,7 +185,7 @@
         <section class="ux-edit-section ux-version-section">
           <div class="ux-section-heading">
             <h3>视频版本</h3>
-            <button type="button" id="ux-add-variant" class="ux-subtle-button" hidden>＋ 添加视频版本</button>
+            <button type="button" id="ux-add-variant" class="ux-subtle-button" hidden>添加视频版本</button>
           </div>
           <p id="ux-version-label" class="ux-version-label"></p>
           <form id="ux-version-form" class="ux-version-form" hidden>

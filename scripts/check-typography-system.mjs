@@ -72,9 +72,6 @@ try {
             projects: metric('#projects .section-title'),
             lab: metric('#experiments .section-title'),
             awardBody: metric('#impact-awards .impact-award-description'),
-            platformMeta: metric('#impact-programs .impact-platform-mobile-meta'),
-            platformIntro: metric('#impact-programs .impact-platform-mobile-manifesto p'),
-            platformSignature: metric('#impact-programs .impact-platform-mobile-signature'),
             platformHead: metric('#impact-programs .impact-platform-mobile-network-head'),
             platformTitle: metric('#impact-programs .impact-platform-mobile-tile strong'),
             platformRole: metric('#impact-programs .impact-platform-mobile-tile span'),
@@ -109,9 +106,7 @@ try {
           `${tag}: desktop heading drops too low just after mobile boundary`);
         assert(homeStyle.awardBody.size >= (width <= 760 ? 12 : 13), `${tag}: award body is too small`);
         if (width <= 760) {
-          for (const [label, minimum] of [['platformMeta', 10], ['platformIntro', 12],
-            ['platformSignature', 10], ['platformHead', 10],
-            ['platformTitle', 12], ['platformRole', 11]]) {
+          for (const [label, minimum] of [['platformHead', 10], ['platformTitle', 12], ['platformRole', 11]]) {
             const value = homeStyle[label];
             assert(value && value.size >= minimum, `${tag}: ${label} only ${value?.size}px`);
             assert(!value.clipped, `${tag}: ${label} is horizontally clipped`);

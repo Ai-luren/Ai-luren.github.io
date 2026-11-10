@@ -21,7 +21,6 @@ Object.assign(titles, {
  '09': {zh:'海外无线耳机 AI 场景广告',en:'Wireless Earbuds · AI Lifestyle Ad'},
  '10': {zh:'海外无线耳机 AI 产品展示广告',en:'Wireless Earbuds · AI Product Showcase'},
  '11': {zh:'无线耳机 AI 社媒创意广告',en:'Wireless Earbuds · AI Social Media Ad'},
- '12': {zh:'车载坐垫 AI 产品体验广告',en:'Car Seat Cushion · AI Product Demo'},
  '13': {zh:'宠物红光护理仪 AI 产品广告',en:'Pet Red Light Therapy Device · AI Ad'},
  '14': {zh:'中式国风巨物美学',en:'Chinese-Inspired Giant-Scale Visuals'},
  '15': {zh:'最难的告别',en:'The Hardest Goodbye'},

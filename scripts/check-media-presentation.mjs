@@ -5,7 +5,11 @@ import {mkdirSync,readFileSync} from 'node:fs';
 const base=process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 const autoWorks=JSON.parse(readFileSync(new URL('../src/data/auto-projects.json',import.meta.url)));
 const workCount=15+autoWorks.length;
-const defaultCount=7+autoWorks.filter(work=>work.category==='commercial').length;
+// Compare visible cards against the current project catalogue, not a stale hardcoded count.
+const baseCommercialCount=(readFileSync(new URL('../src/data/projects.js',import.meta.url),'utf8')
+ .match(/\{\s*id:\s*'\d{2}',\s*category:\s*'commercial'/g)||[]).length;
+assert(baseCommercialCount>0,'Could not discover original commercial projects');
+const defaultCount=baseCommercialCount+autoWorks.filter(work=>work.category==='commercial').length;
 const out=process.env.MEDIA_SCREENSHOTS;
 if(out)mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
@@ -33,6 +37,8 @@ try{
   await p.goto(new URL('works.html',base).href);
   for(const [index,format]of [[0,'landscape'],[3,'portrait']]){
    await p.locator('.library-grid .comet-archive__card').nth(index).click();await p.waitForFunction(()=>!!document.querySelector('.cinema-player video'));
+   await p.waitForFunction(() => document.querySelector('.cinema-player[open]')?.classList.contains('is-motion-visible'));
+   await p.waitForTimeout(320);
    const initial=await videoState(p);videoCheck(initial,width,height);
    const bg=await p.locator('.cinema-player').evaluate(el=>getComputedStyle(el,'::backdrop').backgroundColor);assert.equal(bg,mode==='normal'?'rgba(12, 12, 13, 0.9)':'rgb(12, 12, 13)');
    if(out&&lang==='zh'&&[393,1440].includes(width))await shot(p,`${width}-${mode}-video-${format}`);
@@ -51,7 +57,7 @@ try{
   }else{
     await p.locator('#impact-awards').scrollIntoViewIfNeeded();
   }
-  await p.waitForTimeout(450);await p.locator('.impact-award-grid-card').first().click();
+  await p.waitForTimeout(450);await p.locator('.impact-award-grid-card').first().click();await p.waitForTimeout(350);
   const originals=[];
   for(let index=0;index<8;index++){
    await p.waitForFunction(()=>{const img=document.querySelector('#impact-award-lightbox figure>img');return img?.complete&&img.naturalWidth>0;});await p.waitForTimeout(80);
@@ -67,6 +73,9 @@ try{
    if(width>760){assert(m.image.x-m.arrows[0].right<=24);assert(m.arrows[1].x-m.image.right<=24);}
    if(out&&lang==='zh'&&[393,1440].includes(width)&&[1,3,4,6].includes(index))await shot(p,`${width}-${mode}-award-${index+1}`);
    await p.locator('.impact-award-lightbox-nav--next').click();
+   // Decoded image is checked before every measurement; allow the 180ms
+   // certificate swap transition without extending each of 224 cases.
+   await p.waitForTimeout(180);
   }
   const decodedOriginals=originals.map(src=>decodeURIComponent(src));
   assert.equal(new Set(decodedOriginals).size,8);assert(decodedOriginals.some(src=>src.includes('影视级特效小赛'))&&decodedOriginals.some(src=>src.includes('未来AI设计大赛')));

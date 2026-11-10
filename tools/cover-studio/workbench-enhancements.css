@@ -81,3 +81,73 @@
 #ux-new-editor #ux-new-progress[data-complete=true]{color:#a5dec9}
 #ux-new-editor #ux-new-status{font-size:10px;color:#8daac3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:920px){#ux-new-editor .ux-new-status-stack{flex-basis:100%}}
+
+
+/* Cover-media surfaces: one neutral black letterbox for every aspect ratio.
+   Do not change card framing or force artwork to crop/stretch. */
+#ux-gallery .ux-project-image,
+#ux-editor .ux-asset-picture,
+#ux-inline-cover .ux-inline-compare figure>div,
+#ux-history-dialog .ux-history-image,
+#ux-new-editor .ux-new-player-picture,
+#ux-new-editor #preview-wrap,
+.order-grid .order-image-wrap,
+.ux-drag-ghost,
+.ux-replace-item img,
+.target-selected img,
+.cover-comparison img,
+#current-cover,
+#poster-image,
+#export-image {
+  background: #000 !important;
+}
+#ux-gallery .ux-project-image>img,
+#ux-editor .ux-asset-picture>img,
+#ux-inline-cover .ux-inline-compare img,
+#ux-history-dialog .ux-history-image img,
+#ux-new-editor .ux-new-player-picture img,
+#ux-new-editor #preview-wrap img,
+.order-grid .order-thumb,
+.ux-drag-ghost img,
+.ux-replace-item img {
+  background-color: #000 !important;
+  object-fit: contain;
+}
+
+/* Version labels stay editable beside the switcher; adding a version is one click away. */
+#ux-editor .ux-stage-header .ux-version-toolbar {
+  display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0;
+}
+#ux-editor .ux-stage-header .ux-variant-item {
+  display:inline-flex;align-items:center;flex:0 0 auto;gap:1px;
+}
+#ux-editor .ux-stage-header .ux-variant-edit {
+  display:grid;place-items:center;box-sizing:border-box;
+  width:23px;height:26px;min-width:23px;min-height:26px;padding:0;
+  color:#a9bfd4;background:transparent;border:0;border-radius:5px;
+}
+#ux-editor .ux-stage-header .ux-variant-edit svg {width:13px;height:13px}
+#ux-editor .ux-stage-header .ux-variant-edit:hover {color:#fff;background:#38536e}
+#ux-editor #ux-edit-current-version {
+  min-height:23px;padding:2px 7px;color:#bfd0e1;background:#213245;
+  border:1px solid #667f9b66;border-radius:6px;font-size:10px;white-space:nowrap;
+}
+#ux-editor #ux-stage-version[title] {cursor:pointer}
+#ux-editor .ux-version-label-form {
+  display:grid;gap:8px;padding:10px 12px;margin:0 0 2px;
+  border:1px solid #6986aa75;border-radius:10px;background:#1b2938;
+}
+#ux-editor .ux-version-label-heading {display:flex;align-items:center;justify-content:space-between;gap:8px}
+#ux-editor .ux-version-label-heading strong {font-size:12px}
+#ux-editor .ux-version-label-heading span,
+#ux-editor .ux-version-label-form p {margin:0;color:#9fb4c8;font-size:10px;line-height:1.4}
+#ux-editor .ux-version-label-form label {display:grid;gap:5px;color:#b9cce0;font-size:10px}
+#ux-editor .ux-version-label-form input {
+  min-height:32px;width:100%;padding:6px 8px;color:#eef3fb;
+  border:1px solid #ffffff32;border-radius:7px;background:#111d2b;font-size:11px;
+}
+#ux-editor .ux-version-label-form .ux-version-form-actions {display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px}
+#ux-editor .ux-version-label-form .ux-version-form-actions button {min-height:32px;margin:0;font-size:11px}
+#ux-editor .ux-version-label-form .ux-version-form-actions .primary {background:#edf4fd;color:#192536}
+#ux-editor .ux-name-section .ux-section-heading {flex-wrap:wrap;gap:4px 8px}
+#ux-editor .ux-name-section .ux-section-heading .muted {font-size:9px;color:#8197ad}

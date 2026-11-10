@@ -63,6 +63,7 @@ try{
    await page.locator('.comet-archive__card').nth(index).click();
    assert.deepEqual(await page.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState,v.preload]),[true,0,false,0,'none']);
    await page.locator('.cinema-player__poster').evaluate(img=>img.decode());
+   await page.waitForFunction(() => getComputedStyle(document.querySelector('.cinema-player[open]'), '::backdrop').opacity === '1');
    checkSurface(await page.evaluate(`(${surface.toString()})('.cinema-player','::backdrop')`),mode);
    const before=await page.evaluate(box);
    assert(await page.locator('.cinema-player video').evaluate(v=>v.paused&&v.currentTime===0));

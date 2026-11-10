@@ -63,7 +63,13 @@ try {
         assert.equal(state.pending, 0, 'Interrupted pending decoder seek');
         assert(state.stableMobileHeightRule, 'Missing stable 100lvh mobile background');
       }
-      assert(state.fixedBg && state.overflow <= 1 && state.videoUrl.includes('assets/videos/hero/'));
+      // DEV serves the original assets/videos/hero path; production Vite emits
+      // fingerprinted assets/hero-*.mp4. Both refer to the same local Hero.
+      const heroPath=new URL(state.videoUrl).pathname;
+      assert(state.fixedBg && state.overflow <= 1 &&
+        /(?:^|\/)hero(?:-mobile)?(?:-[a-zA-Z0-9_-]+)?\.mp4$/.test(heroPath) &&
+        new URL(state.videoUrl).origin===new URL(base).origin,
+        'Hero must remain fixed, in bounds and serve a same-origin video: '+JSON.stringify(state));
       assert.equal(getSafeMediaReport(page).urls.length, 0);
       assert.deepEqual(errors, [], 'Browser errors');
       if (mobile) {

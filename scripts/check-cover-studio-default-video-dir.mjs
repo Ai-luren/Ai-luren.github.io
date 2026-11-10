@@ -33,7 +33,9 @@ try {
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(server.url);
   await page.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('已载入') || document.querySelector('#status')?.textContent.includes('就绪'));
-  await page.locator('[data-workflow-target="new"]').click();
+  await page.locator('#ux-categories [data-filter="commercial"]').click();
+  await page.locator('.ux-new-project-tile').click();
+  assert(await page.locator('#ux-new-editor').isVisible());
   const options=await page.locator('#local-video-select option').allTextContents();
   assert.equal(options.length,2,JSON.stringify(options));
   assert(options[1].includes('MEXC-StandardCabin Perks-Version A.mp4'));
@@ -41,15 +43,17 @@ try {
   await page.locator('#local-video-select').selectOption('MEXC-StandardCabin Perks-Version A.mp4');
   assert.equal(await page.locator('#import-local-video').isEnabled(),true);
   await page.locator('#import-local-video').click();
-  await page.waitForFunction(()=>document.querySelectorAll('.candidates button').length===12 && !document.querySelector('#import-local-video').disabled,null,{timeout:120000});
+  await page.waitForFunction(()=>document.querySelector('#source-video')?.readyState>=1 && !document.querySelector('#ux-new-use-frame').disabled,null,{timeout:120000});
   assert((await page.locator('#metadata').textContent()).includes('MEXC-StandardCabin Perks-Version A.mp4'));
-  await page.locator('.candidates button').nth(4).click();
-  await page.waitForFunction(()=>!document.querySelector('#export-cover').disabled);
+  assert.equal(await page.locator('#candidate-grid button').count(),0);
+  await page.locator('#ux-new-use-frame').click();
+  await page.waitForFunction(()=>!document.querySelector('#ux-new-save').disabled===false || document.querySelector('#ux-new-player-poster')?.naturalWidth>0,null,{timeout:45000});
   const sessions=await fs.readdir(path.join(fixture,'.cover-studio/sessions'));
   assert.equal(sessions.length,1);
   const session=JSON.parse(await fs.readFile(path.join(fixture,'.cover-studio/sessions',sessions[0],'session.json'),'utf8'));
   assert.equal(session.name,'MEXC-StandardCabin Perks-Version A.mp4');
-  assert.equal(session.candidates.length,12);
+  assert.equal(session.kind,'video');
+  assert.equal(session.source,'source.mp4');
   const afterHash=createHash('sha256').update(await fs.readFile(mp4)).digest('hex');
   assert.equal(afterHash,beforeHash,'Original MP4 must remain untouched');
   const boot=await (await fetch(server.url+'/api/bootstrap')).json();
@@ -57,7 +61,7 @@ try {
   assert.equal(forbidden.status,400);
   assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(fixture,'default-directory-picker.png')});
-  console.log('PASS default MP4 folder select, 12 frames, original unchanged, path traversal rejected');
+  console.log('PASS default MP4 folder select, precise frame, original unchanged, path traversal rejected');
   console.log('ISOLATED_FIXTURE',fixture);
   await page.close();
 }finally{

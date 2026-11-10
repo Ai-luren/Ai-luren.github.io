@@ -8,6 +8,7 @@ const fail = (message, status = 400) => Object.assign(new Error(message), { stat
 const json = value => JSON.stringify(value, null, 2) + '\n';
 const dataPath = root => path.join(root, 'src/data/auto-projects.json');
 const legacyVariantsPath=root=>path.join(root,'src/data/legacy-video-variants.json');
+const legacyMainLabelsPath=root=>path.join(root,'src/data/legacy-main-version-labels.json');
 const safeUuid = value => /^[0-9a-f-]{36}$/i.test(String(value || ''));
 const DEFAULT_ENDPOINT = 'https://ik.imagekit.io/Ailuren/';
 
@@ -46,13 +47,16 @@ export async function listManagedVersions(projectRoot, existingProjects = []) {
   const legacyURLs=JSON.parse(await fsp.readFile(path.join(projectRoot,'src/data/legacy-imagekit-urls.json'),'utf8'));
   const generated = new Map(all.map(p => [p.id, p]));
   const legacyVariants=JSON.parse(await fsp.readFile(legacyVariantsPath(projectRoot),'utf8'));
+  const legacyMainLabels=JSON.parse(await fsp.readFile(legacyMainLabelsPath(projectRoot),'utf8').catch(error=>{
+    if(error.code==='ENOENT')return '{}';throw error;
+  }));
   return existingProjects.map(existing => {
     const p = generated.get(existing.id);
     if (!p) {
       return {
         id: existing.id, title: existing.title, legacy: true, featured: existing.featured,
         versions: [{
-          id: 'main', label: { zh: '主版本', en: 'Main version' },
+          id: 'main', label: legacyMainLabels[existing.id] || { zh: '主版本', en: 'Main version' },
           videoUrl: legacyURLs[existing.id] || null, sourceName: existing.videoFileName || '',
         }, ...(legacyVariants[existing.id]||[]).map(v=>({
           id:v.id,label:v.label,videoUrl:v.videoUrl||null,
@@ -69,6 +73,44 @@ export async function listManagedVersions(projectRoot, existingProjects = []) {
       }))],
     };
   });
+}
+export async function updateVideoVersionLabel({projectRoot,workspace,projectId,variantId='main',labelZh,labelEn,expectedLabel,confirmed,existingProjects=[]}){
+  if(confirmed!==true)throw fail('请确认修改此视频版本名称。');
+  if(!existingProjects.some(item=>item.id===projectId))throw fail('作品不存在。',404);
+  const next={zh:label(labelZh,'中文版本名称'),en:label(labelEn,'英文版本名称')};
+  const autoFile=dataPath(projectRoot),legacyFile=legacyVariantsPath(projectRoot);
+  const auto=JSON.parse(await fsp.readFile(autoFile,'utf8'));
+  const work=auto.find(item=>item.id===projectId);
+  let current,writeFile,writeValue,action;
+  if(work){
+    const variant=variantId==='main'?work:(work.variants||[]).find(item=>item.id===variantId);
+    if(!variant)throw fail('没有找到这个视频版本。',404);
+    current=variantId==='main'?(work.mainVersionLabel||{zh:'主版本',en:'Main version'}):variant.label;
+    if(!current)current={zh:'主版本',en:'Main version'};
+    if(current.zh!==expectedLabel?.zh||current.en!==expectedLabel?.en)throw fail('版本名称已有更新，请刷新后重试。',409);
+    if(variantId==='main')work.mainVersionLabel=next;else variant.label=next;
+    writeFile=autoFile;writeValue=auto;action='update-auto-version-label';
+  }else if(variantId==='main'){
+    const file=legacyMainLabelsPath(projectRoot);
+    const labels=JSON.parse(await fsp.readFile(file,'utf8').catch(error=>{
+      if(error.code==='ENOENT')return '{}';throw error;
+    }));
+    current=labels[projectId]||{zh:'主版本',en:'Main version'};
+    if(current.zh!==expectedLabel?.zh||current.en!==expectedLabel?.en)throw fail('版本名称已有更新，请刷新后重试。',409);
+    labels[projectId]=next;writeFile=file;writeValue=labels;action='update-legacy-main-version-label';
+  }else{
+    const variants=JSON.parse(await fsp.readFile(legacyFile,'utf8'));
+    const variant=(variants[projectId]||[]).find(item=>item.id===variantId);
+    if(!variant)throw fail('没有找到这个视频版本。',404);
+    current=variant.label;
+    if(current?.zh!==expectedLabel?.zh||current?.en!==expectedLabel?.en)throw fail('版本名称已有更新，请刷新后重试。',409);
+    variant.label=next;writeFile=legacyFile;writeValue=variants;action='update-legacy-version-label';
+  }
+  const revision=path.join(workspace,'project-revisions','version-label-'+projectId+'-'+randomUUID()+'.json');
+  await fsp.mkdir(path.dirname(revision),{recursive:true});
+  await fsp.writeFile(revision,json({at:new Date().toISOString(),action,projectId,variantId,previous:current,next}),{flag:'wx'});
+  await writeAtomically(writeFile,writeValue);
+  return {projectId,variantId,label:next};
 }
 export async function appendVideoVersion({ projectRoot, workspace, sessionsDir, sessionId, projectId, time, labelZh, labelEn, posterSource, confirmed, existingProjects=[] }) {
   if (confirmed !== true) throw fail('请确认将此视频加入选中的作品。');
@@ -104,7 +146,7 @@ export async function appendVideoVersion({ projectRoot, workspace, sessionsDir, 
   const sourcePath=path.join(sessionsDir,sessionId,session.source);
   const created=[];
   try {
-    await fsp.copyFile(sourcePath,videoPath,constants.COPYFILE_EXCL); created.push(videoPath);
+    await fsp.copyFile(sourcePath,videoPath,constants.COPYFILE_EXCL); await fsp.chmod(videoPath,0o644); created.push(videoPath);
     await fsp.copyFile(posterSource,posterPath,constants.COPYFILE_EXCL); created.push(posterPath);
     const variant={
       id,label:{zh:label(labelZh,'中文版本名称'),en:label(labelEn,'英文版本名称')},
