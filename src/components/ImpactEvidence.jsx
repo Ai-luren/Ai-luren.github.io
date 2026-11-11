@@ -595,6 +595,8 @@ function ReachDossier() {
       </button>
       {card.link && <a className="impact-reach-action impact-reach-action--external"
         href={card.link} target="_blank" rel="noopener noreferrer"
+        data-external-label-zh={`${card.platform.zh}主页`}
+        data-external-label-en={`${card.platform.en} profile`}
         aria-label={card.platform[lang] + ' · ' + t('访问主页（新窗口）', 'Visit profile (new tab)')}>
         <span>{t('访问主页', 'Visit Profile')}</span>
         <span className="impact-reach-external-arrow" aria-hidden="true">↗</span>

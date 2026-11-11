@@ -221,3 +221,51 @@
     align-self: center;
   }
 }
+
+
+/* Explicit mobile fullscreen entry: directly below the film, not competing
+   with the small native Safari controls overlaid on the footage. Its height is
+   included in the measured information group, so portrait videos still fit. */
+.cinema-player__fullscreen-action-group { display: none; }
+@media (max-width: 760px) {
+  .cinema-player[data-format="portrait"] .cinema-player__information {
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .cinema-player__fullscreen-action-group {
+    display: flex;
+    flex-direction: column;
+    order: -1;
+    align-items: stretch;
+    width: 100%;
+  }
+  .cinema-player__fullscreen-action {
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--portfolio-icon-border);
+    border-radius: var(--portfolio-control-radius);
+    background: var(--portfolio-tile-surface);
+    color: var(--apple-text);
+    font: 500 12px/1.4 var(--font-body);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .cinema-player__fullscreen-action svg { width: 17px; height: 17px; flex: none; }
+  .cinema-player__fullscreen-action:active { background: var(--portfolio-icon-active-surface); }
+  .cinema-player__fullscreen-action:disabled { opacity: .45; cursor: not-allowed; }
+  .cinema-player__fullscreen-action:focus-visible { outline: 2px solid var(--apple-blue, #2997ff); outline-offset: 3px; }
+  .cinema-player__fullscreen-hint {
+    padding: 6px 2px 0;
+    color: var(--apple-secondary);
+    font: 12px/1.55 var(--font-body);
+    text-align: center;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-player__fullscreen-action { transition: none; }
+}
