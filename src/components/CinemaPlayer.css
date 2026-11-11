@@ -194,3 +194,30 @@
     grid-row:3;
   }
 }
+
+/* Portrait films on desktop have a narrow measured body. A two-column
+   caption/return grid can leave only ~70px for an English title and grow the
+   whole player taller than the viewport. Keep each control on its own row. */
+@media (min-width: 761px) {
+  .cinema-player[data-format="portrait"] .cinema-player__information {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .cinema-player[data-format="portrait"] .cinema-player__caption {
+    order: 0;
+    width: 100%;
+    min-width: 0;
+  }
+  .cinema-player[data-format="portrait"] .cinema-player__versions {
+    order: 1;
+  }
+  .cinema-player[data-format="portrait"] .cinema-player__work-nav {
+    order: 2;
+  }
+  .cinema-player[data-format="portrait"] .cinema-player__return {
+    order: 3;
+    align-self: center;
+  }
+}

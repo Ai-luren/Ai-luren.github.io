@@ -171,7 +171,11 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
         // Only genuinely short viewports scroll; normal phones fit every action.
         // In very short views, scroll instead of squeezing the circular controls
         // and centered count into a media column narrower than their touch areas.
-        const minimumHeight = ratio < 1 ? Math.min(maxWidth / ratio, Math.max(240, Math.min(200, maxWidth) / ratio)) : 120;
+        // Portrait films may narrow on short screens without shrinking the
+        // 44px+ navigation buttons. 176px still fits their 168px group and
+        // avoids cutting off the lower controls on a 360x740 phone.
+        const portraitMinWidth = 176;
+        const minimumHeight = ratio < 1 ? Math.min(maxWidth / ratio, Math.max(240, Math.min(portraitMinWidth, maxWidth) / ratio)) : 120;
         const nextWidth = Math.min(maxWidth, Math.min(880, Math.max(minimumHeight, availableHeight)) * ratio);
         if (Math.abs(nextWidth - fittedWidth) < .1) break;
         fittedWidth = nextWidth;

@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import {mkdirSync,readFileSync} from 'node:fs';
 const base=process.env.PORTFOLIO_URL || 'http://127.0.0.1:5181/';
 const autoWorks=JSON.parse(readFileSync(new URL('../../../src/data/auto-projects.json',import.meta.url)));
-const workCount=15+autoWorks.length;
 // Compare visible cards against the current project catalogue, not a stale hardcoded count.
 const baseCommercialCount=(readFileSync(new URL('../../../src/data/projects.js',import.meta.url),'utf8')
  .match(/\{\s*id:\s*'\d{2}',\s*category:\s*'commercial'/g)||[]).length;
@@ -26,7 +25,7 @@ function videoCheck(m,width,height){
  assert(!m.overflow);assert(m.paused&&m.time===0);assert(!m.hasSource&&m.readyState===0,'Opening/switching must remain lazy');assert.equal(m.fit,'contain');
  assert(Math.abs(m.stage.w/m.stage.h-m.ratio)<.002);
  assert(m.stage.y>=m.nav.bottom+10);assert(Math.abs(m.caption.x-m.stage.x)<1);assert(m.caption.w<=m.stage.w+1);
- assert(m.body.bottom<=height-m.paddingBottom+1,'The complete video + information + navigation group must fit normal viewports');
+ assert(m.body.bottom<=height-m.paddingBottom+1,'The complete video + information + navigation group must fit normal viewports: '+JSON.stringify({width,height,body:m.body,stage:m.stage,caption:m.caption,nav:m.nav,paddingBottom:m.paddingBottom}));
  for(const b of m.actions){assert(b.h>=44&&b.w>=44);assert(b.x>=0&&b.right<=width+.5&&b.y>=m.nav.bottom&&b.bottom<=height-m.paddingBottom+1);assert(b.right<=m.stage.x||b.x>=m.stage.right||b.y>=m.stage.bottom,'Controls cover film');}
 }
 try{
