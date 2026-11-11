@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom';
+import { motion, useReducedMotion } from 'motion/react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
@@ -22,6 +23,7 @@ async function readyArtwork(url, deadline = 8000) {
 
 export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
   const lang = useLang();
+  const reducedMotion = useReducedMotion();
   const dialogRef = useRef(null);
   const videoRef = useRef(null);
   const closeRef = useRef(null);
@@ -39,6 +41,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const versions = projectVideoVersions(project);
   const versionIndex = versionSelection.projectId === project?.id ? versionSelection.index : 0;
   const currentVersion = versions[versionIndex] || versions[0];
+  // Slide the version selection immediately on intent; the actual film and
+  // aria-pressed state change only after its poster has decoded.
+  const visualVersionIndex = versionPendingIndex ?? versionIndex;
   const coverRevision=useLocalArtworkRevision('cover',project?.id);
   const posterRevision=useLocalArtworkRevision('poster',project?.id,currentVersion?.id||'main');
   const fallbackForCurrentVersion = fallbackVersionPoster?.projectId === project?.id
@@ -172,10 +177,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
         // Only genuinely short viewports scroll; normal phones fit every action.
         // In very short views, scroll instead of squeezing the circular controls
         // and centered count into a media column narrower than their touch areas.
-        // Portrait films may narrow on short screens without shrinking the
-        // 44px+ navigation buttons. 168px fits their arrow/count group and
-        // keeps the independent fullscreen action within small phones.
-        const portraitMinWidth = 168;
+        // Portrait films on short phones may narrow slightly; film navigation
+        // remains a separate 44px+ touch-control row, never shrunk to fit video.
+        const portraitMinWidth = 160;
         const minimumHeight = ratio < 1 ? Math.min(maxWidth / ratio, Math.max(240, Math.min(portraitMinWidth, maxWidth) / ratio)) : 120;
         const nextWidth = Math.min(maxWidth, Math.min(880, Math.max(minimumHeight, availableHeight)) * ratio);
         if (Math.abs(nextWidth - fittedWidth) < .1) break;
@@ -432,23 +436,27 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
               {lang === 'en' ? 'Fullscreen is unavailable here. Play the video and use its native controls.' : '暂时无法进入全屏，请先播放后使用视频自带的全屏按钮。'}
             </span>}
           </div>}
+          <div className="cinema-player__caption">
+            <h2 id="cinema-player-title">{project.title[lang]}</h2>
+            {secondaryLabel && <p>{secondaryLabel}</p>}
+          </div>
           {versions.length > 1 && <div className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
             {versions.map((version, i) => (
               <button key={version.id} type="button" className="cinema-player__version"
                 aria-pressed={i === versionIndex} aria-busy={versionPendingIndex === i}
+                data-visual-selected={i === visualVersionIndex}
                 onPointerEnter={() => warmImage(revisionedArtworkUrl(version.playerPoster || project.cover,
                   version.playerPoster ? currentLocalArtworkRevision('poster', project.id, version.id) : coverRevision))}
                 onFocus={() => warmImage(revisionedArtworkUrl(version.playerPoster || project.cover,
                   version.playerPoster ? currentLocalArtworkRevision('poster', project.id, version.id) : coverRevision))}
                 onClick={() => chooseVersion(i)}>
-                {version.label?.[lang] || (lang === 'en' ? `Version ${i + 1}` : `版本 ${i + 1}`)}
+                {i === visualVersionIndex && <motion.span className="cinema-player__version-thumb"
+                  layoutId={`cinema-version-thumb-${project.id}`} aria-hidden="true"
+                  transition={reducedMotion ? { duration: 0 } : { duration: .33, ease: [.32, .72, .28, 1] }} />}
+                <span className="cinema-player__version-label">{version.label?.[lang] || (lang === 'en' ? `Version ${i + 1}` : `版本 ${i + 1}`)}</span>
               </button>
             ))}
           </div>}
-          <div className="cinema-player__caption">
-            <h2 id="cinema-player-title">{project.title[lang]}</h2>
-            {secondaryLabel && <p>{secondaryLabel}</p>}
-          </div>
           <div className="cinema-player__work-nav" role="group" aria-busy={switching} aria-label={lang === 'en' ? 'Work navigation' : '作品切换'}>
             <div className="cinema-player__sequence">
               <button type="button" onClick={() => switchWork(index-1)} disabled={switching || index <= 0}

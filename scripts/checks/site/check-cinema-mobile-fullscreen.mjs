@@ -44,7 +44,7 @@ try {
     });
     assert(!before.src && before.ready===0,'No MP4 loaded before user asks to play/fullscreen');
     assert(before.rootScrollHeight<=height+1,
-      `Normal mobile viewport should not need scrolling for the new action: ${width}×${height}`);
+      `Normal mobile viewport should not need scrolling for the new action: ${width}×${height} ${JSON.stringify(before)}`);
     assert(before.button.height>=44,'Fullscreen tap target >=44px');
     assert(before.button.left>=0 && before.button.right<=width+1,'Fullscreen button within viewport');
     assert(before.button.top>=before.stage.bottom,'Fullscreen action follows the video, not native controls');
