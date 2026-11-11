@@ -7,7 +7,12 @@ import {createSafePage,getSafeMediaReport} from '../../lib/safe-media.mjs';
 
 const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:5174/';
 const hero=readFileSync('src/components/HeroTitle.jsx','utf8');
-const workCount=15+JSON.parse(readFileSync('src/data/auto-projects.json','utf8')).length;
+// Count the actual numeric-ID base projects instead of assuming 15 legacy works.
+// New additions are stored independently by the local workbench.
+const baseWorkSource=readFileSync('src/data/projects.js','utf8');
+const baseWorkCount=[...baseWorkSource.matchAll(/^\s*\{\s*id:\s*'\d+'/gm)].length;
+assert(baseWorkCount>0,'No original work records found in src/data/projects.js');
+const workCount=baseWorkCount+JSON.parse(readFileSync('src/data/auto-projects.json','utf8')).length;
 assert(hero.includes("en: ['Video Design', 'Image Design', 'Vibe Coding']"),'Hero word order must remain Video → Image → Vibe Coding');
 assert(hero.includes("zh: ['视频设计', '图像设计', '氛围编程']"),'Chinese Hero order must match English');
 assert(hero.includes("lang === 'en' ? 'AI Creative'"),'Do not modify the AI Creative prefix');
