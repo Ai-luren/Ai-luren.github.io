@@ -1,12 +1,12 @@
 import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'motion/react';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
 import {projectVideoVersions,initialProjectPoster} from '../data/version-order.js';
 import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
-import { WORKS_HREF } from '../navigation/links.js';
+import MobilePlaybackControls from './MobilePlaybackControls.jsx';
 import {useLocalArtworkRevision,revisionedArtworkUrl,currentLocalArtworkRevision} from '../utils/localPreviewArtwork.js';
 import { warmImage } from '../utils/warmImage.js';
 
@@ -35,6 +35,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const switchFocusRef = useRef(null);
   const versionRequestRef = useRef(0);
   const [versionPendingIndex, setVersionPendingIndex] = useState(null);
+  // After decoding the incoming poster, briefly dissolve the outgoing image.
+  // This remains visual-only: playback and video source switching stay unchanged.
+  const [outgoingVersionPoster, setOutgoingVersionPoster] = useState(null);
   const [fallbackVersionPoster, setFallbackVersionPoster] = useState(null);
   const [switching, setSwitching] = useState(false);
   const [versionSelection, setVersionSelection] = useState({ projectId: project?.id, index: 0 });
@@ -64,8 +67,27 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [size, setSize] = useState(null);
   const [status, setStatus] = useState('idle');
   const [started, setStarted] = useState(false);
+  const [playbackFeedback, setPlaybackFeedback] = useState(null);
+  const feedbackSequenceRef = useRef(0);
   const [playBlocked, setPlayBlocked] = useState(false);
   const [fullscreenUnavailable, setFullscreenUnavailable] = useState(false);
+  const [nativeFullscreenControls, setNativeFullscreenControls] = useState(false);
+  const [mobilePlayback, setMobilePlayback] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 760px)');
+    const update = () => setMobilePlayback(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      // A standard fullscreen request targets the video element alone. Restore
+      // the custom mobile bar on exit after native video controls take over.
+      if (!document.fullscreenElement) setNativeFullscreenControls(false);
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', onFullscreenChange);
+  }, []);
   const [motionVisible, setMotionVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const closingRef = useRef(false);
@@ -130,6 +152,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   useLayoutEffect(() => {
     versionRequestRef.current++;
     setVersionPendingIndex(null);
+    setOutgoingVersionPoster(null);
     setFallbackVersionPoster(project?.preparedVersionPosterFallback
       ? {projectId:project.id,versionId:projectVideoVersions(project)[0]?.id} : null);
   }, [project?.id]);
@@ -140,12 +163,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     setDimensions(currentVersion?.videoWidth > 0 && currentVersion?.videoHeight > 0 ? {width:currentVersion.videoWidth,height:currentVersion.videoHeight}:null);
     attemptRef.current++;
     requestedRef.current = false;
-    setStarted(false);setStatus('idle');setPlayBlocked(false);setFullscreenUnavailable(false);frameReadyRef.current=false;
+    setStarted(false);setStatus('idle');setPlaybackFeedback(null);setPlayBlocked(false);setFullscreenUnavailable(false);setNativeFullscreenControls(false);frameReadyRef.current=false;
     // No src until an explicit play action: opening/switching costs no video bytes.
     if(video){video.pause();video.removeAttribute('src');video.load();}
     if(dialogRef.current) dialogRef.current.scrollTop=0;
     if(switchFocusRef.current) {
-      const buttons=dialogRef.current?.querySelectorAll('.cinema-player__sequence button');
+      const buttons=dialogRef.current?.querySelectorAll('.cinema-player__sequence > button');
       const target=buttons?.[switchFocusRef.current==='next'?1:0];
       (target && !target.disabled ? target : Array.from(buttons || []).find(button=>!button.disabled) || closeRef.current)?.focus({preventScroll:true});
       switchFocusRef.current=null;
@@ -166,6 +189,31 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       const ratio = dimensions.width / dimensions.height;
       const maxWidth = Math.max(1, Math.min(980, width - horizontalPadding));
       const body = bodyRef.current;
+      if (mobilePlayback) {
+        // Mobile keeps the film's native aspect ratio. On regular-height phones
+        // a portrait film with multiple versions needs a modest reserved space
+        // for the 44px work arrows, otherwise the arrow row starts below the
+        // first viewport (observed on iPhone 16). Short phones still scroll,
+        // rather than making the film unwatchably small.
+        let portraitHeight = Math.min(height * .59, 600, maxWidth / ratio);
+        if (ratio < 1 && versions.length > 1 && width <= 760 && height >= 800) {
+          const info = informationRef.current;
+          const controls = body.querySelector('.cinema-player__mobile-controls');
+          if (info && controls) {
+            const infoStyle = getComputedStyle(info);
+            const controlStyle = getComputedStyle(controls);
+            const infoTotal = info.getBoundingClientRect().height + parseFloat(infoStyle.marginTop);
+            const controlTotal = controls.getBoundingClientRect().height + parseFloat(controlStyle.marginTop);
+            const visibleBudget = height - parseFloat(layoutStyle.paddingTop) - infoTotal - controlTotal - 40;
+            portraitHeight = Math.min(portraitHeight, Math.max(height * .48, visibleBudget));
+          }
+        }
+        const stageWidth = ratio >= 1 ? maxWidth : portraitHeight * ratio;
+        body.style.width = `${maxWidth}px`;
+        setSize(previous => previous && Math.abs(previous.width - stageWidth) < .1 && Math.abs(previous.height - stageWidth / ratio) < .1
+          ? previous : {width:stageWidth,height:stageWidth/ratio});
+        return;
+      }
       let fittedWidth = maxWidth;
       // Reserve the whole information group, including the single bottom arrow
       // pair and return link, before fitting the real video ratio.
@@ -204,7 +252,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       window.removeEventListener('orientationchange', fit);
       document.removeEventListener('fullscreenchange', fit);
     };
-  }, [dimensions, lang, project?.id]);
+  }, [dimensions, lang, project?.id, mobilePlayback]);
 
   // Don't preload neighboring posters while the visitor is about to play a
   // film. On slower networks those image requests compete with the MP4 first
@@ -226,7 +274,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   };
   const switchWork = async nextIndex => {
     if(nextIndex < 0 || nextIndex >= projects.length || !onSelect || switchingRef.current || closingRef.current) return;
-    const controls=dialogRef.current?.querySelectorAll('.cinema-player__sequence button');
+    const controls=dialogRef.current?.querySelectorAll('.cinema-player__sequence > button');
     switchFocusRef.current=document.activeElement===controls?.[1]?'next':document.activeElement===controls?.[0]?'previous':null;
     switchingRef.current = true;
     setSwitching(true);
@@ -282,6 +330,22 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     }
   };
   const retry = () => play(true);
+  // The mobile film itself is a playback surface, not just a static preview.
+  // Desktop and native fullscreen retain their built-in video controls.
+  const togglePlayback = () => {
+    const video = videoRef.current;
+    if (!video || !mobilePlayback || nativeFullscreenControls || !videoUrl ||
+        switchingRef.current || versionPendingIndex !== null || failed) return;
+    if (!video.paused && !video.ended) {
+      if (started) setPlaybackFeedback({ id: ++feedbackSequenceRef.current, action: 'pause' });
+      video.pause();
+    } else if (status !== 'loading') {
+      // The centered first-play affordance already provides the initial cue;
+      // subsequent actions receive YouTube-style transient center feedback.
+      if (started) setPlaybackFeedback({ id: ++feedbackSequenceRef.current, action: 'play' });
+      void play();
+    }
+  };
   const enterFullscreen = () => {
     const video = videoRef.current;
     if (!video || !videoUrl || switchingRef.current || closingRef.current) return;
@@ -300,10 +364,18 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       try { video.webkitEnterFullscreen(); return; } catch { /* Try standard API. */ }
     }
     if (typeof video.requestFullscreen === 'function') {
+      // Standard Fullscreen API exposes only the video element, not the toolbar
+      // below it. Restore native controls for Android / Chromium fullscreen.
+      // The React flag keeps them enabled across subsequent playback renders.
+      video.controls = true;
+      setNativeFullscreenControls(true);
       try {
-        Promise.resolve(video.requestFullscreen()).catch(fallback);
+        Promise.resolve(video.requestFullscreen()).catch(() => {
+          setNativeFullscreenControls(false);
+          fallback();
+        });
         return;
-      } catch { /* Try WebKit video API as fallback. */ }
+      } catch { setNativeFullscreenControls(false); /* Try WebKit fallback. */ }
     }
     if (webkitVideo) {
       try { video.webkitEnterFullscreen(); return; } catch { /* Not supported. */ }
@@ -337,13 +409,23 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       fallback = true;
     }
     if (token !== versionRequestRef.current || closingRef.current || !dialogRef.current?.open) return;
+    // Only cross-dissolve poster-to-poster. A playing video's last frame must
+    // not be replaced by an unrelated still from earlier in the film.
+    const dissolve = !reducedMotion && !started && !frameReadyRef.current
+      && versionPoster && versionPoster !== (fallback ? revisionedArtworkUrl(project.cover, coverRevision) : targetPoster);
+    setOutgoingVersionPoster(dissolve ? {src:versionPoster, token, direction:nextIndex > versionIndex ? 1 : -1} : null);
     stop();
     setFallbackVersionPoster(fallback ? { projectId: project.id, versionId: next.id } : null);
     setDimensions(next.videoWidth > 0 && next.videoHeight > 0 ? { width: next.videoWidth, height: next.videoHeight } : null);
     setVersionSelection({ projectId: project.id, index: nextIndex });
     setVersionPendingIndex(null);
   };
-  const focusLastControl = () => dialogRef.current?.querySelector('.cinema-player__return')?.focus();
+  const focusLastControl = () => {
+    // Wrap keyboard focus to the last available work arrow, or close if the
+    // sequence has no enabled neighbours. No redundant library CTA needed.
+    const buttons = dialogRef.current?.querySelectorAll('.cinema-player__sequence > button:not(:disabled)');
+    (buttons?.[buttons.length - 1] || closeRef.current)?.focus();
+  };
 
   return createPortal(
     <dialog className={`cinema-player${motionVisible && !isClosing ? ' is-motion-visible' : ''}${isClosing ? ' is-closing' : ''}`} ref={dialogRef} aria-labelledby="cinema-player-title"
@@ -354,8 +436,13 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       <CinemaNavigation lang={lang} closeRef={closeRef} navRef={navRef} onClose={dismiss} />
       <div className="cinema-player__layout" ref={layoutRef}>
         <div ref={bodyRef} className="cinema-player__body" style={size && videoUrl ? { width: size.width, maxWidth: '100%' } : undefined}>
-          {videoUrl ? <div className="cinema-player__stage" data-playback-state={status} style={size ? { width: size.width, height: size.height } : undefined} aria-busy={status === 'loading'}>
-            <video key={`video-${project.id}-${currentVersion?.id}`} ref={videoRef} poster={versionPoster} controls playsInline preload="none"
+          {videoUrl ? <div className="cinema-player__stage" data-playback-state={status} style={size ? { width: size.width, height: size.height } : undefined} aria-busy={status === 'loading'}
+            onClick={event => {
+              // The centered first-play button owns its click; never toggle twice.
+              if (event.target.closest('button')) return;
+              togglePlayback();
+            }}>
+            <video key={`video-${project.id}-${currentVersion?.id}`} ref={videoRef} poster={versionPoster} controls={!mobilePlayback || nativeFullscreenControls} playsInline preload="none"
               aria-label={project.title[lang]} style={{ visibility: size && !failed ? 'visible' : 'hidden' }}
               onLoadedMetadata={event => {
                 const video = event.currentTarget;
@@ -389,7 +476,10 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
               }} onWaiting={event => {
                 if (event.currentTarget === videoRef.current && requestedRef.current && !event.currentTarget.paused) setStatus('loading');
               }} onPause={event => {
-                if (event.currentTarget === videoRef.current) setStatus(previous => previous === 'playing' ? 'paused' : previous);
+                // A tap during buffering must leave the controls in Paused,
+                // rather than stuck in Loading with the play button disabled.
+                if (event.currentTarget === videoRef.current && event.currentTarget.paused && requestedRef.current)
+                  setStatus(previous => previous === 'playing' || previous === 'loading' ? 'paused' : previous);
               }} onEnded={event => { if (event.currentTarget === videoRef.current) setStatus('paused'); }}
               onError={event => {
                 const video = event.currentTarget;
@@ -400,11 +490,35 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <img key={`poster-${project.id}-${currentVersion?.id}`} className={`cinema-player__poster${started ? ' is-revealed' : ''}`}
               src={versionPoster} alt=""
               onError={event => { if (event.currentTarget.getAttribute('src') !== project.cover) event.currentTarget.src = project.cover; }} />
+            {outgoingVersionPoster && !started && <img
+              key={`version-outgoing-${project.id}-${outgoingVersionPoster.token}`}
+              className="cinema-player__version-outgoing" data-direction={outgoingVersionPoster.direction}
+              src={outgoingVersionPoster.src} alt="" aria-hidden="true"
+              onAnimationEnd={event => {
+                if (event.target !== event.currentTarget) return;
+                setOutgoingVersionPoster(previous => previous?.token === outgoingVersionPoster.token ? null : previous);
+              }} />}
+            {mobilePlayback && playbackFeedback && !nativeFullscreenControls && <span
+              key={playbackFeedback.id} className="cinema-player__tap-feedback"
+              data-action={playbackFeedback.action} aria-hidden="true"
+              onAnimationEnd={event => {
+                if (event.target !== event.currentTarget) return;
+                setPlaybackFeedback(previous => previous?.id === playbackFeedback.id ? null : previous);
+              }}>
+              <span className="cinema-player__tap-feedback-disc">
+                {playbackFeedback.action === 'pause'
+                  ? <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z" /></svg>
+                  : <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4v16l13-8z" /></svg>}
+              </span>
+            </span>}
             {(switching || versionPendingIndex !== null) && <span className="cinema-player__loading" role="status" aria-live="polite">
               {lang === 'en' ? 'Preparing next image…' : '正在准备画面…'}
             </span>}
             {status === 'loading' && !switching && versionPendingIndex === null && <span className="cinema-player__loading" role="status">{lang === 'en' ? 'Loading film…' : '影片加载中…'}</span>}
-            {!failed && !playing && status !== 'loading' && !switching && versionPendingIndex === null && <div className="cinema-player__start">
+            {mobilePlayback && started && playBlocked && status === 'paused' && <span className="cinema-player__loading" role="status">
+              {lang === 'en' ? 'Playback was blocked. Tap play again.' : '播放未能开始，请再次点击播放。'}
+            </span>}
+            {!failed && !playing && (!mobilePlayback || !started) && status !== 'loading' && !switching && versionPendingIndex === null && <div className="cinema-player__start">
               <button className="cinema-player__play" type="button" onClick={() => play()}
                 aria-label={lang === 'en' ? 'Play film' : '播放影片'}>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
@@ -422,25 +536,15 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <p role="status">{lang === 'en' ? 'Video pending upload' : '视频待上传'}</p>
             <span>{lang === 'en' ? 'This work is not available for playback yet.' : '该作品暂未配置可播放的视频'}</span>
           </div>}
+          {videoUrl && <MobilePlaybackControls key={`mobile-controls-${project.id}-${currentVersion?.id}`}
+            videoRef={videoRef} lang={lang} playing={playing} started={started} busy={switching || versionPendingIndex !== null || status === 'loading'}
+            failed={failed} videoDuration={currentVersion?.videoDuration} onTogglePlayback={togglePlayback} onFullscreen={enterFullscreen} fullscreenUnavailable={fullscreenUnavailable} />}
           <div className="cinema-player__information" ref={informationRef}>
-          {videoUrl && <div className="cinema-player__fullscreen-action-group">
-            <button className="cinema-player__fullscreen-action" type="button" onClick={enterFullscreen}
-              disabled={switching || versionPendingIndex !== null || failed}
-              aria-label={lang === 'en' ? (started ? 'Watch fullscreen' : 'Play fullscreen') : (started ? '全屏观看' : '全屏播放')}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" />
-              </svg>
-              <span>{lang === 'en' ? (started ? 'Watch fullscreen' : 'Play fullscreen') : (started ? '全屏观看' : '全屏播放')}</span>
-            </button>
-            {fullscreenUnavailable && <span className="cinema-player__fullscreen-hint" role="status">
-              {lang === 'en' ? 'Fullscreen is unavailable here. Play the video and use its native controls.' : '暂时无法进入全屏，请先播放后使用视频自带的全屏按钮。'}
-            </span>}
-          </div>}
           <div className="cinema-player__caption">
             <h2 id="cinema-player-title">{project.title[lang]}</h2>
             {secondaryLabel && <p>{secondaryLabel}</p>}
           </div>
-          {versions.length > 1 && <div className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
+          {versions.length > 1 && <div key={`version-track-${project.id}`} className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
             {versions.map((version, i) => (
               <button key={version.id} type="button" className="cinema-player__version"
                 aria-pressed={i === versionIndex} aria-busy={versionPendingIndex === i}
@@ -451,8 +555,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
                   version.playerPoster ? currentLocalArtworkRevision('poster', project.id, version.id) : coverRevision))}
                 onClick={() => chooseVersion(i)}>
                 {i === visualVersionIndex && <motion.span className="cinema-player__version-thumb"
-                  layoutId={`cinema-version-thumb-${project.id}`} aria-hidden="true"
-                  transition={reducedMotion ? { duration: 0 } : { duration: .33, ease: [.32, .72, .28, 1] }} />}
+                  layoutId={`cinema-version-thumb-${project.id}`} initial={false} aria-hidden="true"
+                  transition={reducedMotion ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 34, mass: .8 }} />}
                 <span className="cinema-player__version-label">{version.label?.[lang] || (lang === 'en' ? `Version ${i + 1}` : `版本 ${i + 1}`)}</span>
               </button>
             ))}
@@ -470,15 +574,6 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
                 aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
             </div>
           </div>
-            {context === 'library' ? (
-              <button type="button" className="cinema-player__return" onClick={dismiss}>
-                <span>{lang === 'en' ? 'View all work' : '查看全部作品'}</span>
-              </button>
-            ) : (
-              <a className="cinema-player__return" href={WORKS_HREF}>
-                <span>{lang === 'en' ? 'View all work' : '查看全部作品'}</span>
-              </a>
-            )}
           </div>
         </div>
       </div>

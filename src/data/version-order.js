@@ -12,7 +12,7 @@ export function projectVideoVersions(project) {
   const main = project.mainVersionArchived ? [] : [{
     id: 'main', label: project.mainVersionLabel || {zh: '主版本', en: 'Main version'},
     videoUrl: project.videoUrl, playerPoster: project.playerPoster,
-    videoWidth: project.videoWidth, videoHeight: project.videoHeight,
+    videoWidth: project.videoWidth, videoHeight: project.videoHeight, videoDuration: project.videoDuration,
   }];
   return orderVideoVersions([...main, ...(project.variants || [])], project.versionOrder);
 }

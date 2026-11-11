@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 const suites = {
-  smoke: ['build', 'check:repo-layout', 'check:asset-catalog', 'check:curated-order', 'check:media-safety', 'check:image-loading', 'check:cinema-fullscreen', 'check:cinema-version-motion'],
+  smoke: ['build', 'check:repo-layout', 'check:asset-catalog', 'check:curated-order', 'check:featured-hover-menu', 'check:shared-mobile-menu', 'check:media-safety', 'check:image-loading', 'check:cinema-fullscreen', 'check:cinema-controls', 'check:cinema-nav-duration', 'check:cinema-version-motion'],
   workbench: [
     'check:workbench-storage', 'check:workbench-backdrops', 'check:workbench-full-flow',
     'check:workbench-ux', 'check:workbench-phase3', 'check:workbench-history',

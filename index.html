@@ -1692,6 +1692,36 @@
     #top .hero-title,
     #top .hero-subtitle { text-shadow: 0 2px 12px rgba(0, 0, 0, .42) !important; }
 
+    /* Editorial Hero readability: a feathered *local* shadow behind copy.
+       Keep the scroll-driven film and all following chapters untouched. */
+    #top .hero-copy { isolation: isolate; }
+    #top .hero-copy::before {
+      content: '';
+      display: block !important;
+      position: absolute;
+      inset: -64px -88px -60px -68px;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 34% 52%,
+        rgba(4, 7, 12, .49) 0%, rgba(4, 7, 12, .30) 46%,
+        rgba(4, 7, 12, .13) 68%, transparent 86%);
+      border: 0;
+    }
+    /* Tablet shells sit close to the viewport edge; never let the decorative
+       vignette create horizontal document overflow. */
+    @media (min-width: 761px) and (max-width: 1060px) {
+      #top .hero-copy::before { left: -16px; right: -16px; }
+    }
+    @media (max-width: 760px) {
+      #top .hero-copy::before {
+        /* Keep the vignette inside narrow 320px viewports. */
+        inset: -42px -12px -48px -12px;
+        background: radial-gradient(ellipse at 35% 50%,
+          rgba(4, 7, 12, .52) 0%, rgba(4, 7, 12, .29) 51%,
+          rgba(4, 7, 12, .1) 72%, transparent 88%);
+      }
+    }
+
   </style>
 </head>
 <body class="is-loading is-on-hero">
@@ -1718,7 +1748,7 @@
       <span class="mobile-nav-drawer-brand" data-i18n="nav.drawer.brand">AI路人 / 导航</span>
       <button class="mobile-nav-close" type="button" aria-label="关闭主导航" data-i18n-aria="nav.close.aria"><svg class="mobile-nav-close-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19" /></svg></button>
     </div>
-    <nav id="mobile-primary-nav" aria-label="主导航" data-i18n-aria="nav.aria">
+    <nav id="mobile-primary-nav" class="mobile-menu__links" aria-label="主导航" data-i18n-aria="nav.aria">
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
         <li><a href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
@@ -1726,6 +1756,10 @@
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
       </ul>
     </nav>
+    <div class="mobile-nav-drawer-foot mobile-menu__footer">
+      <div id="mobile-menu-social-root"></div>
+      <span class="mobile-menu__copyright" data-i18n="footer.copyright">© 2024-2026 AI路人 · 保留所有权利</span>
+    </div>
   </div>
 
   <main id="main-content" tabindex="-1">
@@ -1779,7 +1813,7 @@
               </div>
               <div class="about-copy reveal">
                 <h3 class="about-role" data-i18n="about.role">AI 影像创作者</h3>
-                <p class="about-description" data-i18n="about.description">从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。</p>
+                <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验。</p>
               </div>
             </div>
             <section id="contact" class="closing-contact" aria-labelledby="contact-title">
@@ -2258,8 +2292,9 @@
         mobileNavDrawer.addEventListener('click', function (event) {
           if (event.target === mobileNavDrawer) setMobileNavOpen(false, true);
         });
-        mobileNavDrawer.querySelectorAll('a').forEach(function (link) {
-          link.addEventListener('click', function () { setMobileNavOpen(false, true); });
+        // Delegation also covers the shared social links mounted later by React.
+        mobileNavDrawer.addEventListener('click', function (event) {
+          if (event.target.closest('a[href]')) setMobileNavOpen(false, true);
         });
         document.addEventListener('keydown', function (event) {
           if (!mobileNavDrawer.classList.contains('is-open') && !document.body.classList.contains('mobile-nav-closing')) return;

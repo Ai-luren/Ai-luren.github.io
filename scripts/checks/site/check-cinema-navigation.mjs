@@ -38,7 +38,7 @@ try{
     }, null, {timeout:8000});
   }
   const close=await p.locator('.cinema-player__close').evaluate(rect);if(width>=1024){assert(Math.abs(original[0]+original[2]-close[0]-close[2])<1,'Shared right edge differs');assert(Math.abs(original[1]+original[3]/2-close[1]-close[3]/2)<1,'Shared vertical center differs');}else{close.forEach((v,i)=>assert(Math.abs(v-original[i])<1,'Mobile header close geometry changed'));}
-  assert.equal(await p.locator('.cinema-player__sequence button').first().isDisabled(),true);
+  assert.equal(await p.locator('.cinema-player__sequence > button').first().isDisabled(),true);
   assert.equal(await p.locator('.cinema-player__count').textContent(),'1 / 8');
   if([393,1440,1920].includes(width))await shot(p,`${width}-landscape`);
   if(width===393){
@@ -51,15 +51,15 @@ try{
    assert.equal(await p.locator('html').getAttribute('lang'),'en');
    await shot(p,`${width}-english-playing`);
   }
-  await p.locator('.cinema-player__sequence button').last().focus();await p.keyboard.press('Enter');await ready(p,featured[1]);assert(await p.locator('.cinema-player__sequence button').last().evaluate(el=>el===document.activeElement));if(width===393)assert(await p.evaluate(()=>window.liveCinemaVideo.paused&&!window.liveCinemaVideo.getAttribute('src')));
-  await p.locator('.cinema-player__sequence button').first().click();await ready(p,featured[0]);
+  await p.locator('.cinema-player__sequence > button').last().focus();await p.keyboard.press('Enter');await ready(p,featured[1]);assert(await p.locator('.cinema-player__sequence > button').last().evaluate(el=>el===document.activeElement));if(width===393)assert(await p.evaluate(()=>window.liveCinemaVideo.paused&&!window.liveCinemaVideo.getAttribute('src')));
+  await p.locator('.cinema-player__sequence > button').first().click();await ready(p,featured[0]);
   if([393,1440,1920].includes(width)){
-   for(const id of featured.slice(1,4)){await p.locator('.cinema-player__sequence button').last().click();await ready(p,id);}
+   for(const id of featured.slice(1,4)){await p.locator('.cinema-player__sequence > button').last().click();await ready(p,id);}
    await shot(p,`${width}-portrait`);
   }
   if(width===393){
-   for(const id of featured.slice(4)){await p.locator('.cinema-player__sequence button').last().click();await ready(p,id);}
-   assert(await p.locator('.cinema-player__sequence button').last().isDisabled());assert.equal(await p.locator('.cinema-player__count').textContent(),'8 / 8');
+   for(const id of featured.slice(4)){await p.locator('.cinema-player__sequence > button').last().click();await ready(p,id);}
+   assert(await p.locator('.cinema-player__sequence > button').last().isDisabled());assert.equal(await p.locator('.cinema-player__count').textContent(),'8 / 8');
    for(let i=0;i<16;i++){await p.keyboard.press('Tab');assert(await p.evaluate(()=>!!document.activeElement.closest('.cinema-player')));}
    assert(await p.locator('body > header #nav-lang button').first().evaluate(el=>{el.focus();return !!document.activeElement.closest('.cinema-player');}));
   }else{await p.locator('.cinema-player__language [data-switch-lang="en"]').click();await p.waitForFunction(()=>document.documentElement.lang==='en');await ready(p,[1440,1920].includes(width)?featured[3]:featured[0]);}
@@ -71,20 +71,22 @@ try{
   assert(await trigger.evaluate(el=>el===document.activeElement));assert.equal(await p.locator('html').getAttribute('lang'),'en');
   if(width===393){
    await trigger.click();await ready(p,featured[0]);
-   await p.evaluate(()=>{const video=document.querySelector('.cinema-player video');window.addEventListener('pagehide',()=>sessionStorage.setItem('cinema-left-paused',String(video.paused)),{once:true});});
-   await p.locator('.cinema-player__return').click();await p.waitForURL('**/works.html');
-   assert.equal(await p.evaluate(()=>sessionStorage.getItem('cinema-left-paused')),'true');
+   const homeBeforeClose=new URL(p.url()).pathname;
+   await p.locator('.cinema-player__close').click();
+   await p.locator('.cinema-player').waitFor({state:'detached'});
+   assert.equal(new URL(p.url()).pathname,homeBeforeClose,'Closing from featured returns to featured page');
+   assert(await trigger.isVisible(),'Featured cards remain available after closing');
    assert.equal(await p.locator('html').getAttribute('lang'),'en');
   }
   await p.goto(new URL('works.html?category=visual',base).href);const listScroll=await p.evaluate(()=>scrollY);await p.locator('.library-grid .comet-archive__card').first().click();await ready(p,visual[0]);
   assert.equal(await p.locator('.cinema-player__count').textContent(),'1 / '+visual.length);
   for(const id of visual.slice(1)){
-    await p.locator('.cinema-player__sequence button').last().click();
+    await p.locator('.cinema-player__sequence > button').last().click();
     await ready(p,id);
   }
-  assert(await p.locator('.cinema-player__sequence button').last().isDisabled());
+  assert(await p.locator('.cinema-player__sequence > button').last().isDisabled());
   assert.equal(await p.locator('.cinema-player__count').textContent(),visual.length+' / '+visual.length);
-  await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();await p.locator('.cinema-player__return').click();await p.locator('.cinema-player').waitFor({state:'detached'});assert.equal(new URL(p.url()).searchParams.get('category'),'visual');assert.equal(await p.locator('.library-grid .comet-archive__card').count(),2);assert.equal(await p.locator('.cinema-player').count(),0);assert.equal(await p.evaluate(()=>scrollY),listScroll);
+  await p.locator('.cinema-player__work-nav').scrollIntoViewIfNeeded();await p.locator('.cinema-player__close').click();await p.locator('.cinema-player').waitFor({state:'detached'});assert.equal(new URL(p.url()).searchParams.get('category'),'visual');assert.equal(await p.locator('.library-grid .comet-archive__card').count(),2);assert.equal(await p.locator('.cinema-player').count(),0);assert.equal(await p.evaluate(()=>scrollY),listScroll);
   // In-page history changes retain the site's native back behavior and dismiss cinema.
   await p.evaluate(()=>history.pushState(null,'',location.href+'#history-test'));
   await p.locator('.library-grid .comet-archive__card').first().click();await ready(p,visual[0]);await p.goBack();await p.waitForSelector('.cinema-player',{state:'detached'});
@@ -95,7 +97,7 @@ try{
  const p=await createSafePage(browser, {viewport:{width:393,height:640}});await p.goto(new URL('works.html',base).href);const shortCard=p.locator('.library-grid .comet-archive__card').nth(3);
  const shortId=await shortCard.getAttribute('data-project-id');
  await shortCard.click();await ready(p,shortId);
- const top=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__return').scrollIntoViewIfNeeded();const after=await p.locator('.cinema-player__close').evaluate(rect);after.forEach((v,i)=>assert(Math.abs(v-top[i])<1));await p.locator('.cinema-player__close').click();
+ const top=await p.locator('.cinema-player__close').evaluate(rect);await p.locator('.cinema-player__work-nav').scrollIntoViewIfNeeded();const after=await p.locator('.cinema-player__close').evaluate(rect);after.forEach((v,i)=>assert(Math.abs(v-top[i])<1));await p.locator('.cinema-player__close').click();
  await p.close();
  console.log('Short viewport scrolling and fixed cinema navigation passed.');
 }finally{await browser.close();}

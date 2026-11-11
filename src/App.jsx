@@ -7,6 +7,7 @@ import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
 import VideoPostProcess from './components/VideoPostProcess.jsx';
 import FloatingDock from './components/FloatingDock.jsx';
+import MobileMenuSocialLinks from './components/MobileMenuSocialLinks.jsx';
 import SiteExternalLinkGuard from './components/SiteExternalLinkGuard.jsx';
 import ExperimentFlip from './components/ExperimentFlip.jsx';
 import HeroActions from './components/HeroActions.jsx';
@@ -33,6 +34,7 @@ export default function App() {
   const projectArchiveRoot = document.getElementById('projects-react-root');
   const impactEvidenceRoot = document.getElementById('recognition-react-root');
   const footerDockRoot = document.getElementById('footer-dock-react-root');
+  const mobileMenuSocialRoot = document.getElementById('mobile-menu-social-root');
   const experimentRoot = document.getElementById('experiments-react-root');
   const heroActionsRoot = document.getElementById('hero-actions-react-root');
   const heroTitleRoot = document.getElementById('hero-title-react-root');
@@ -46,6 +48,7 @@ export default function App() {
       <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       {footerDockRoot && createPortal(<FloatingDock />, footerDockRoot)}
+      {mobileMenuSocialRoot && createPortal(<MobileMenuSocialLinks />, mobileMenuSocialRoot)}
       {experimentRoot && createPortal(<ExperimentFlip />, experimentRoot)}
       {heroActionsRoot && createPortal(<HeroActions />, heroActionsRoot)}
       {heroTitleRoot && createPortal(<HeroTitle />, heroTitleRoot)}

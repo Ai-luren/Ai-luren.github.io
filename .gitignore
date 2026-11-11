@@ -38,3 +38,6 @@ video-compare-*.png
 
 # Local Netlify folder
 .netlify
+# User-installed agent skills for job search (not part of this website)
+/.agents/
+/skills-lock.json

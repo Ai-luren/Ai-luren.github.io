@@ -32,6 +32,7 @@ try {
     assert.equal(await button.count(),1,`Mobile fullscreen control must exist ${width}`);
     if(mode==='desktop'){
       assert.equal(await button.isVisible(),false,'Desktop must keep native fullscreen controls without extra button');
+      assert.equal(await page.locator('.cinema-player video').evaluate(v=>v.controls),true,'Desktop must keep native controls');
       assert.deepEqual(errors,[]);await page.close();continue;
     }
     await page.waitForFunction(()=>document.querySelector('.cinema-player[open]')?.classList.contains('is-motion-visible'));
@@ -43,8 +44,11 @@ try {
       return {src:video.getAttribute('src'),ready:video.readyState,stage:r(stage),button:r(button),title:r(title),rootScrollHeight:root.scrollHeight};
     });
     assert(!before.src && before.ready===0,'No MP4 loaded before user asks to play/fullscreen');
-    assert(before.rootScrollHeight<=height+1,
-      `Normal mobile viewport should not need scrolling for the new action: ${width}×${height} ${JSON.stringify(before)}`);
+    assert.equal(await page.locator('.cinema-player video').evaluate(v=>v.controls),false,'Mobile uses one custom toolbar, not duplicate native controls');
+    assert.equal(await page.locator('.cinema-player__mobile-controls').isVisible(),true,'Compact playback controls are visible');
+    // Portrait films are no longer squeezed to keep every detail in one
+    // viewport; their title/versions remain accessible by natural scrolling.
+    assert(before.rootScrollHeight>=height,'Viewer should cover the phone viewport');
     assert(before.button.height>=44,'Fullscreen tap target >=44px');
     assert(before.button.left>=0 && before.button.right<=width+1,'Fullscreen button within viewport');
     assert(before.button.top>=before.stage.bottom,'Fullscreen action follows the video, not native controls');
@@ -54,6 +58,12 @@ try {
     await page.waitForFunction(()=>document.querySelector('.cinema-player video')?.hasAttribute('src'));
     const calls=await page.evaluate(()=>window.__fullscreenCalls);
     assert.deepEqual(calls,[mode],`Fullscreen API must be called synchronously during first tap, ${width}`);
+    if(mode==='standard'){
+      assert.equal(await page.locator('.cinema-player video').evaluate(v=>v.controls),true,
+        'Android/standard fullscreen must keep native video controls accessible');
+      await page.evaluate(()=>document.dispatchEvent(new Event('fullscreenchange')));
+      await page.waitForFunction(()=>document.querySelector('.cinema-player video')?.controls===false);
+    }
     assert.equal(await page.locator('.cinema-player video').count(),1,'Native video preserved');
     assert.deepEqual(errors,[]);
     // Development deliberately prefers local MP4s and should not touch ImageKit.

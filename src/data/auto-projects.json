@@ -33,7 +33,8 @@
         "videoHeight": 720,
         "posterFile": "commercial/MEXC Member Perks - Version B.webp",
         "posterTime": 26.26,
-        "posterTimeSource": "confirmed-poster-selection"
+        "posterTimeSource": "confirmed-poster-selection",
+        "videoDuration": 34.457
       }
     ]
   },
@@ -93,7 +94,8 @@
         "videoHeight": 960,
         "posterFile": "social/FormFunk Product Film - FormFunk Product Film B.webp",
         "posterTime": 10.54,
-        "posterTimeSource": "confirmed-poster-selection"
+        "posterTimeSource": "confirmed-poster-selection",
+        "videoDuration": 15.0
       }
     ]
   },
@@ -131,7 +133,8 @@
         "videoHeight": 1708,
         "posterFile": "commercial/FormFunk Creative Commercial - Version B.webp",
         "posterTime": 8.08,
-        "posterTimeSource": "confirmed-poster-selection"
+        "posterTimeSource": "confirmed-poster-selection",
+        "videoDuration": 15.072
       },
       {
         "id": "83b47871-ac0a-4c82-82d6-56f6f9ab0faa",
@@ -145,7 +148,8 @@
         "videoHeight": 1080,
         "posterFile": "commercial/FormFunk Creative Commercial - Version C.webp",
         "posterTime": 4.825641,
-        "posterTimeSource": "confirmed-poster-selection"
+        "posterTimeSource": "confirmed-poster-selection",
+        "videoDuration": 15.102
       }
     ]
   }

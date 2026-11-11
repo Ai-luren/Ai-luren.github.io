@@ -94,7 +94,7 @@ export async function createNewCoverStudioProject({
     },
   };
   const metadata = {
-    videoWidth: session.metadata.width, videoHeight: session.metadata.height,
+    videoWidth: session.metadata.width, videoHeight: session.metadata.height, videoDuration: session.metadata.duration,
     playerPoster: posterFile, playerPosterTime: exportRecord.time,
     playerPosterTimeSource: 'cover-studio-confirmed-selection',
   };

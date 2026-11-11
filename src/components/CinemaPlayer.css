@@ -131,6 +131,57 @@
 @media (max-width: 760px) { .cinema-player__play { width: 56px; height: 56px; } }
 
 .cinema-player__poster.is-revealed { opacity: 0; }
+/* A very short directional dissolve after the replacement poster is decoded.
+   The underlying new poster is already ready; no black interstitial, zooming
+   the viewer, or network video request. Only applies to poster-to-poster cuts. */
+.cinema-player__version-outgoing {
+  position: absolute; inset: 0; z-index: 1;
+  width: 100%; height: 100%; object-fit: contain;
+  background: var(--apple-surface-solid, #1c1c1e);
+  border-radius: inherit; pointer-events: none;
+  animation: cinema-version-dissolve 340ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.cinema-player__version-outgoing[data-direction="-1"] { --version-drift: 8px; }
+.cinema-player__version-outgoing[data-direction="1"] { --version-drift: -8px; }
+@keyframes cinema-version-dissolve {
+  0% { opacity: 1; transform: translateX(0) scale(1); }
+  100% { opacity: 0; transform: translateX(var(--version-drift, -8px)) scale(1.012); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-player__version-outgoing { animation-duration: 1ms; }
+}
+/* Transient YouTube-like touch acknowledgement; it never traps taps or obscures
+   the film after the animation finishes. Desktop native video is unchanged. */
+.cinema-player__tap-feedback {
+  position: absolute; inset: 0; z-index: 3; display: grid; place-items: center;
+  pointer-events: none; animation: cinema-tap-fade 750ms linear both;
+}
+.cinema-player__tap-feedback-disc {
+  display: grid; place-items: center; width: 64px; height: 64px;
+  border-radius: 50%; background: rgba(8, 8, 10, .58);
+  color: #fff; box-shadow: 0 4px 16px rgba(0, 0, 0, .18);
+  will-change: transform; animation: cinema-tap-scale 750ms both;
+}
+.cinema-player__tap-feedback-disc svg { width: 31px; height: 31px; }
+/* Synchronized interaction (750ms): 0-150ms fade in + grow,
+   150-600ms fully visible hold, 600-750ms fade out + shrink.
+   Use two cubic-bezier segments; never grow or fade prematurely on exit.
+   Material-inspired motion, not an undocumented YouTube source extraction. */
+@keyframes cinema-tap-fade {
+  0% { opacity: 0; animation-timing-function: cubic-bezier(0, 0, .2, 1); }
+  20% { opacity: 1; }
+  80% { opacity: 1; animation-timing-function: cubic-bezier(.4, 0, 1, 1); }
+  100% { opacity: 0; }
+}
+@keyframes cinema-tap-scale {
+  0% { transform: scale(.78); animation-timing-function: cubic-bezier(0, 0, .2, 1); }
+  20% { transform: scale(1.06); }
+  80% { transform: scale(1.06); animation-timing-function: cubic-bezier(.4, 0, 1, 1); }
+  100% { transform: scale(.8); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-player__tap-feedback, .cinema-player__tap-feedback-disc { animation-duration: 1ms; }
+}
 .cinema-player__stage::after { content: ''; position: absolute; inset: 0; z-index: 1; border: 1px solid var(--portfolio-panel-border); border-radius: inherit; pointer-events: none; }
 .cinema-player__loading { position: absolute; inset: auto 12px 12px; z-index: 2; padding: 8px 12px; border-radius: 8px; color: #f5f5f7; background: #000a; font-size: 13px; text-align: center; pointer-events: none; }
 @media (max-width: 760px) { .cinema-player__stage { border-radius: clamp(14px, var(--portfolio-content-radius, 18px), 16px); } }
@@ -138,24 +189,32 @@
 
 @media (prefers-reduced-motion: reduce) { .cinema-player__play, .cinema-player__close { transition: none; } }
 
-/* Video and all controls share one measured content group. */
+/* Desktop video and metadata share one measured content group; mobile fits the film alone and scrolls its metadata naturally. */
 .cinema-player__body { position: relative; }
 .cinema-player__information { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px 20px; width: 100%; margin-top: 16px; }
 .cinema-player__caption { grid-column: 1; grid-row: 1; }
 .cinema-player__work-nav { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: center; width: 100%; }
-.cinema-player__sequence { display: grid; grid-template-columns: 48px minmax(40px, 1fr) 48px; align-items: center; gap: 16px; width: min(224px, 100%); }
-.cinema-player__count { color: var(--apple-secondary); text-align: center; font: 12px var(--font-mono); white-space: nowrap; }
-.cinema-player__return { grid-column: 2; grid-row: 1; align-self: start; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius); color: var(--apple-text); background: var(--portfolio-tile-surface); font: 500 12px/1.4 var(--font-body); text-decoration: none; cursor: pointer; white-space: nowrap; transition: background var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease); }
-.cinema-player__return:hover, .cinema-player__return:focus-visible { background: var(--portfolio-tile-surface-hover); border-color: var(--portfolio-icon-border); }
-.cinema-player__return:active { background: var(--portfolio-icon-active-surface); }
+.cinema-player__sequence { display: grid; grid-template-columns: 44px minmax(56px, 1fr) 44px; align-items: center; gap: 16px; width: min(196px, 100%); }
+.cinema-player__count { color: var(--apple-secondary); text-align: center; font: 13px/1.35 var(--font-mono); white-space: nowrap; }
+/* Work arrows are secondary ghost controls, not copies of the circular
+   navigation chrome or a third segmented toggle. */
+.cinema-player__sequence > button {
+  flex: 0 0 44px; width: 44px; height: 44px;
+  border: 0 !important; border-radius: 12px !important;
+  background: transparent !important; color: var(--apple-secondary);
+  transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
+}
+.cinema-player__sequence > button:hover:not(:disabled),
+.cinema-player__sequence > button:focus-visible {
+  color: var(--apple-text); background: var(--portfolio-icon-hover-surface) !important;
+}
+.cinema-player__sequence > button:active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
 @media (max-width: 760px) {
   .cinema-player__information { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
-  .cinema-player__sequence { width: 100%; gap: 12px; }
-  .cinema-player__return { align-self: flex-end; padding-inline: 14px; }
+  .cinema-player__sequence { width: min(196px, 100%); gap: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinema-player__return { transition: none !important; }
   .cinema-player::backdrop, .cinema-player__layout {
     transition: none !important; transform: none !important;
   }
@@ -163,73 +222,50 @@
   .cinema-player::backdrop { opacity: 1 !important; }
 }
 
-/* Film version selector uses the same quiet capsule and moving highlight
-   as the shared language switch. A single shared Motion layoutId travels
-   between labels; the actual poster still waits until decoded. */
+/* Version tabs are editorial text navigation, as in professional video
+   review tools: one understated 2px line shows the selected cut. Work-switch
+   arrows remain separate below; this track never becomes a large pill. */
 .cinema-player__versions {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  align-self: center;
-  width: fit-content;
-  max-width: 100%;
-  padding: 3px;
-  gap: 3px;
-  border: 1px solid var(--portfolio-icon-border);
-  border-radius: var(--portfolio-control-radius);
-  background: var(--portfolio-icon-surface);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+  display: flex; align-items: stretch; justify-content: center; align-self: center;
+  width: fit-content; max-width: 100%; padding: 0; gap: 6px;
+  border: 0; border-bottom: 1px solid var(--portfolio-panel-border);
+  border-radius: 0; background: transparent; box-shadow: none;
   isolation: isolate;
 }
 .cinema-player__version {
-  position: relative;
-  appearance: none;
-  display: grid;
-  place-items: center;
-  flex: 1 1 auto;
-  min-width: 82px;
-  min-height: 40px;
-  padding: 8px 14px;
-  border: 0;
-  border-radius: var(--portfolio-control-radius);
-  background: transparent;
-  color: var(--apple-secondary, #a1a1a6);
-  font: 500 12px/1.35 var(--font-body, system-ui);
-  cursor: pointer;
-  white-space: nowrap;
-  touch-action: manipulation;
+  position: relative; appearance: none; display: grid; place-items: center;
+  flex: 1 1 auto; min-width: 82px; min-height: 44px;
+  padding: 9px 13px 10px; border: 0; border-radius: 0;
+  background: transparent; color: var(--apple-secondary);
+  font: 500 12px/1.35 var(--font-body,system-ui);
+  cursor: pointer; white-space: nowrap; touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: color 265ms cubic-bezier(.32,.72,.28,1), scale 160ms ease-out;
+  transition: color 230ms cubic-bezier(.2,.75,.25,1);
 }
-.cinema-player__version-label { position: relative; z-index: 1; }
+.cinema-player__version-label {
+  position: relative; z-index: 1;
+  transition: transform 280ms cubic-bezier(.22,1,.36,1);
+}
+.cinema-player__version[data-visual-selected="true"] .cinema-player__version-label {
+  transform: translateY(-1px);
+}
 .cinema-player__version-thumb {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  border: 1px solid rgba(255,255,255,.19);
-  border-radius: inherit;
-  background: rgba(255,255,255,.16);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
-  pointer-events: none;
+  position: absolute; z-index: 0; inset: auto 14px -1px;
+  height: 2px; border: 0; border-radius: 2px 2px 0 0;
+  background: var(--apple-text); box-shadow: none; pointer-events: none;
 }
-.cinema-player__version:is(:hover,[data-visual-selected="true"]) { color: var(--apple-text,#f5f5f7); }
-.cinema-player__version:active { scale: .985; }
-.cinema-player__version:focus-visible { outline:2px solid var(--apple-blue,#2997ff); outline-offset:2px; }
-@media(max-width:760px) {
-  .cinema-player__versions { width: 100%; }
-  .cinema-player__version { min-width: 0; min-height: 44px; padding: 8px 8px; white-space: nowrap; }
-  /* A narrow 9:16 video need not force the three version labels into
-     two lines. The independently centered capsule may extend beyond the
-     film, while staying inside the phone viewport. */
+.cinema-player__version:is(:hover,[data-visual-selected="true"]) { color: var(--apple-text); }
+.cinema-player__version:focus-visible { outline: 2px solid var(--apple-blue,#2997ff); outline-offset: -3px; border-radius: 5px; }
+@media (max-width: 760px) {
+  .cinema-player__versions { width: 100%; gap: 0; }
+  .cinema-player__version { min-width: 0; padding-inline: 4px; }
   .cinema-player[data-format="portrait"] .cinema-player__versions {
-    width: min(280px, calc(100vw - 32px));
-    max-width: calc(100vw - 32px);
-    flex: none;
-    align-self: center;
+    width: 100%; max-width: 100%; align-self: stretch;
   }
 }
-@media(prefers-reduced-motion:reduce) {
-  .cinema-player__version { transition:none!important; scale:1!important; }
+@media (prefers-reduced-motion: reduce) {
+  .cinema-player__version, .cinema-player__version-label { transition: none !important; }
+  .cinema-player__version[data-visual-selected="true"] .cinema-player__version-label { transform: none; }
 }
 /* Preserve the established caption/return/nav hierarchy on desktop: the
    optional versions row belongs between caption and project arrows. */
@@ -263,87 +299,143 @@
   .cinema-player[data-format="portrait"] .cinema-player__work-nav {
     order: 2;
   }
-  .cinema-player[data-format="portrait"] .cinema-player__return {
-    order: 3;
-    align-self: center;
-  }
+
 }
 
 
-/* Explicit mobile fullscreen entry: directly below the film, not competing
-   with the small native Safari controls overlaid on the footage. Its height is
-   included in the measured information group, so portrait videos still fit. */
-.cinema-player__fullscreen-action-group { display: none; }
+/* Mobile has one compact player control surface, not native controls plus a
+   separate fullscreen pill. Desktop keeps its existing video UI unchanged. */
+.cinema-player__mobile-controls { display: none; }
+.cinema-player__visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 @media (max-width: 760px) {
-  .cinema-player[data-format="portrait"] .cinema-player__information {
-    gap: 10px;
-    margin-top: 12px;
-  }
-  .cinema-player__fullscreen-action-group {
-    display: flex;
-    flex-direction: column;
-    order: -1;
-    align-items: stretch;
-    width: 100%;
-  }
-  .cinema-player__fullscreen-action {
-    width: 100%;
-    min-height: 44px;
-    padding: 8px 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    border: 1px solid var(--portfolio-icon-border);
-    border-radius: var(--portfolio-control-radius);
-    background: var(--portfolio-tile-surface);
-    color: var(--apple-text);
-    font: 500 12px/1.4 var(--font-body);
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-  .cinema-player__fullscreen-action svg { width: 17px; height: 17px; flex: none; }
-  .cinema-player__fullscreen-action:active { background: var(--portfolio-icon-active-surface); }
-  .cinema-player__fullscreen-action:disabled { opacity: .45; cursor: not-allowed; }
-  .cinema-player__fullscreen-action:focus-visible { outline: 2px solid var(--apple-blue, #2997ff); outline-offset: 3px; }
-  .cinema-player__fullscreen-hint {
-    padding: 6px 2px 0;
-    color: var(--apple-secondary);
-    font: 12px/1.55 var(--font-body);
-    text-align: center;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cinema-player__fullscreen-action { transition: none; }
-}
-
-
-/* Cinematic reading order on phones: film → discreet fullscreen → title →
-   versions → film-to-film navigation → all work. The native video controls
-   remain untouched and every real button stays at least 44px high. */
-@media (max-width: 760px) {
-  .cinema-player__information { gap: 12px; }
-  .cinema-player[data-format="portrait"] .cinema-player__information { gap: 9px; margin-top: 11px; }
-  .cinema-player__fullscreen-action-group {
-    order: 0;
-    width: auto;
-    align-self: flex-end;
-    max-width: 100%;
-  }
-  .cinema-player__fullscreen-action {
-    width: auto;
-    min-width: 132px;
-    max-width: 100%;
-    padding: 8px 15px;
-    background: transparent;
-    border-color: var(--portfolio-panel-border);
-  }
-  .cinema-player__caption { order: 1; }
-  .cinema-player__versions { order: 2; }
-  .cinema-player__work-nav { order: 3; }
-  .cinema-player__return { order: 4; align-self: center; }
+  .cinema-player__layout,
   .cinema-player[data-format="landscape"] .cinema-player__layout {
     align-items: flex-start;
-    padding-top: max(clamp(108px, 18dvh, 154px), calc(env(safe-area-inset-top) + 75px));
+    justify-content: center;
+    padding-top: max(104px, calc(env(safe-area-inset-top) + 76px));
+    /* Keep the work-switch row clear of iPhone's bottom gesture area, even
+       after scrolling through a tall portrait film and its version tabs. */
+    padding-bottom: max(64px, calc(env(safe-area-inset-bottom) + 32px));
   }
+  .cinema-player__body { width: 100% !important; max-width: 100%; }
+  .cinema-player__stage { margin-inline: auto; }
+  .cinema-player__mobile-controls {
+    position: relative;
+    display: grid;
+    gap: 3px;
+    width: 100%;
+    min-height: 67px;
+    margin-top: 8px;
+    padding: 0 0 5px;
+    color: var(--apple-text);
+  }
+  .cinema-player__seek {
+    width: 100%; height: 22px; margin: 0; padding: 0;
+    appearance: none; -webkit-appearance: none;
+    background: transparent; touch-action: pan-x;
+    cursor: pointer;
+  }
+  .cinema-player__seek::-webkit-slider-runnable-track {
+    height: 3px; border-radius: 999px;
+    background: linear-gradient(to right, var(--apple-text) var(--seek-progress), rgba(255,255,255,.25) var(--seek-progress));
+  }
+  .cinema-player__seek::-moz-range-track { height: 3px; background: rgba(255,255,255,.25); border-radius: 999px; }
+  .cinema-player__seek::-moz-range-progress { height: 3px; background: var(--apple-text); border-radius: 999px; }
+  .cinema-player__seek::-webkit-slider-thumb {
+    appearance: none; -webkit-appearance: none;
+    width: 12px; height: 12px; margin-top: -4.5px;
+    border: 2px solid #121316; border-radius: 50%; background: var(--apple-text);
+  }
+  .cinema-player__seek::-moz-range-thumb { width: 12px; height: 12px; border: 2px solid #121316; border-radius: 50%; background: var(--apple-text); }
+  .cinema-player__seek:disabled { opacity: .45; cursor: default; }
+  .cinema-player__seek:focus-visible { outline: 2px solid var(--apple-blue,#2997ff); outline-offset: 2px; }
+  .cinema-player__mobile-control-row { display: flex; align-items: center; width: 100%; gap: 5px; }
+  .cinema-player__mobile-icon {
+    display: grid; place-items: center; flex: 0 0 44px;
+    width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+    padding: 10px; border: 0; border-radius: 10px;
+    color: var(--apple-text); background: transparent;
+    cursor: pointer; touch-action: manipulation;
+  }
+  .cinema-player__mobile-icon svg { display: block; width: 21px; height: 21px; }
+  /* The 44px transport control occupies the same position before and after play. */
+  .cinema-player__stage:not([aria-busy="true"]) video:not([controls]) { cursor: pointer; }
+  .cinema-player__mobile-icon:active { background: var(--portfolio-icon-active-surface); }
+  .cinema-player__mobile-icon:disabled { opacity: .4; cursor: default; }
+  .cinema-player__mobile-icon:focus-visible,
+  .cinema-player__mobile-rate-trigger:focus-visible,
+  .cinema-player__mobile-rate-option:focus-visible { outline: 2px solid var(--apple-blue,#2997ff); outline-offset: 2px; }
+  .cinema-player__mobile-time { color: var(--apple-secondary); font: 500 11px/1.3 var(--font-mono, monospace); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cinema-player__mobile-spacer { flex: 1 1 auto; min-width: 0; }
+  .cinema-player__mobile-rate { display: flex; flex: 0 0 auto; }
+  .cinema-player__mobile-rate-trigger {
+    display: grid; place-items: center; min-width: 51px; min-height: 44px;
+    padding: 0 7px; border: 0; border-radius: 9px; background: transparent;
+    color: var(--apple-text); font: 500 12px var(--font-body);
+    cursor: pointer; touch-action: manipulation;
+  }
+  .cinema-player__mobile-rate-trigger:active,
+  .cinema-player__mobile-rate-trigger[aria-expanded="true"] { background: var(--portfolio-icon-active-surface); }
+  /* Center the short segmented popover to the film/toolbar, not the trigger.
+     Four landscape choices obscure far less of a portrait film than a vertical list. */
+  .cinema-player__mobile-rate-menu {
+    position: absolute; z-index: 8; left: 50%; bottom: calc(100% + 8px);
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px;
+    width: min(300px, calc(100% - 16px)); padding: 5px;
+    border: 1px solid var(--portfolio-panel-border);
+    border-radius: 17px;
+    /* Same cinematic content-glass tokens used by the rest of the site. */
+    background: var(--portfolio-glass-surface, rgba(26,27,31,.82));
+    backdrop-filter: var(--portfolio-glass-blur, blur(22px) saturate(1.04));
+    -webkit-backdrop-filter: var(--portfolio-glass-blur, blur(22px) saturate(1.04));
+    box-shadow: 0 10px 32px rgba(0,0,0,.38);
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+    animation: cinema-rate-menu-enter 180ms cubic-bezier(0,0,.2,1) both;
+  }
+  .cinema-player__mobile-rate-option {
+    display: grid; place-items: center;
+    width: 100%; min-width: 0; min-height: 44px; padding: 0 3px;
+    border: 0; border-radius: 12px; background: transparent;
+    color: var(--apple-text); text-align: center;
+    font: 500 13px/1 var(--font-body); cursor: pointer; touch-action: manipulation;
+  }
+  .cinema-player__mobile-rate-option.is-selected {
+    background: var(--portfolio-icon-surface, rgba(255,255,255,.1));
+    font-weight: 600;
+  }
+  .cinema-player__mobile-rate-option:active { background: var(--portfolio-icon-active-surface); }
+  @media (hover: hover) { .cinema-player__mobile-rate-option:hover { background: var(--portfolio-icon-hover-surface); } }
+  @keyframes cinema-rate-menu-enter {
+    from { opacity: 0; transform: translateX(-50%) translateY(6px) scale(.97); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) { .cinema-player__mobile-rate-menu { animation-duration: 1ms; } }
+  @media (prefers-reduced-transparency: reduce) {
+    .cinema-player__mobile-rate-menu {
+      background: var(--portfolio-glass-solid, #1c1c1e);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .cinema-player__mobile-rate-menu {
+      background: var(--portfolio-glass-solid, #1c1c1e);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+  .cinema-player__fullscreen-hint { margin: 0; padding: 3px; color: var(--apple-secondary); font: 12px/1.5 var(--font-body); text-align: center; }
+  .cinema-player__information { gap: 13px; margin-top: 15px; }
+  .cinema-player[data-format="portrait"] .cinema-player__information { gap: 12px; margin-top: 12px; }
+  .cinema-player__caption { order: 0; }
+  .cinema-player__versions { order: 1; }
+  .cinema-player__work-nav { order: 2; }
+
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-player__mobile-icon, .cinema-player__seek { transition: none !important; }
 }

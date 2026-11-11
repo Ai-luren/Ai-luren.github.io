@@ -10,6 +10,9 @@
   --portfolio-tile-radius: 12px;
   --portfolio-control-radius: 999px;
   --portfolio-panel-surface: rgba(28, 28, 30, .72);
+  /* Higher-opacity chrome is shared by the scrolled homepage and Works
+     landing; the Hero and viewer chrome retain the lightweight .72 layer. */
+  --portfolio-panel-scrolled-surface: rgba(28, 28, 30, .96);
   --portfolio-panel-solid: #1c1c1e;
   --portfolio-panel-border: rgba(255, 255, 255, .14);
   --portfolio-panel-blur: blur(22px) saturate(1.08);

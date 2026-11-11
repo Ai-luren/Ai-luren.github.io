@@ -237,12 +237,6 @@ export default function ExperimentFlip() {
                   onClick={event => openProject(i, event.currentTarget)}>
                   {lang === 'en' ? 'View project' : '查看项目'}
                 </button>
-                <a className="flip-experiment__link" href={item.href} target="_blank" rel="noopener noreferrer"
-                  aria-label={lang === 'en' ? item.title.en + ' GitHub source (new tab)' : item.title.zh + ' GitHub 源码（新标签页）'}
-                  onClick={event => handleSource(event, item)}>
-                  {lang === 'en' ? 'Source' : '源码'} <span aria-hidden="true">↗</span>
-                  <span className="flip-experiment__tooltip" role="tooltip">{lang === 'en' ? 'Open GitHub in a new tab' : '在新标签页打开 GitHub'}</span>
-                </a>
               </div>
             </article>
           ))}
@@ -266,9 +260,9 @@ export default function ExperimentFlip() {
               <div className="lab-project-actions">
                 {active.liveUrl && <a className="lab-project-source lab-project-source--primary" href={active.liveUrl} target="_blank" rel="noopener noreferrer" onClick={event => intercept(event, {
                   href: active.liveUrl, zh: '图片对比工具 · 在线体验', en: 'Image Comparison Tool · Live demo'
-                })}>{lang === 'zh' ? '在线体验' : 'Try online'} <span aria-hidden="true">↗</span></a>}
+                })}>{lang === 'zh' ? '在线体验' : 'Try online'}</a>}
                 <a className="lab-project-source" href={active.href} target="_blank" rel="noopener noreferrer" onClick={event => handleSource(event, active)}>
-                  {lang === 'en' ? 'GitHub source' : 'GitHub 源码'} <span aria-hidden="true">↗</span>
+                  {lang === 'en' ? 'GitHub source' : 'GitHub 源码'}
                 </a>
               </div>
             </div>

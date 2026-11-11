@@ -4,125 +4,143 @@
     "videoHeight": 720,
     "playerPoster": "social/Wireless Earbuds Product Showcase.webp",
     "playerPosterTime": 11.99,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 15.069
   },
   "11": {
     "videoWidth": 617,
     "videoHeight": 1080,
     "playerPoster": "social/Wireless Earbuds Comedy Ad.webp",
     "playerPosterTime": 11.232399,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 15.138
   },
   "13": {
     "videoWidth": 608,
     "videoHeight": 1080,
     "playerPoster": "social/Pet Red Light Therapy Ad.webp",
     "playerPosterTime": 13.924,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPosterTimeSource": "confirmed-cover-selection",
+    "videoDuration": 30.185
   },
   "14": {
     "videoWidth": 1280,
     "videoHeight": 720,
     "playerPoster": "visual/Monumental Chinese Visuals.webp",
     "playerPosterTime": 29.164666989999997,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPosterTimeSource": "confirmed-cover-selection",
+    "videoDuration": 30.092
   },
   "15": {
     "videoWidth": 966,
     "videoHeight": 720,
     "playerPoster": "visual/The Hardest Goodbye.webp",
     "playerPosterTime": 22.51,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 29.024
   },
   "16": {
     "videoWidth": 1282,
     "videoHeight": 720,
     "playerPoster": "commercial/MEXC Member Perks - Version A.webp",
     "playerPosterTime": 12.924028925454547,
-    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+    "playerPosterTimeSource": "cover-studio-confirmed-selection",
+    "videoDuration": 34.759
   },
   "17": {
     "videoWidth": 1692,
     "videoHeight": 720,
     "playerPoster": "commercial/MEXC No More Waiting.webp",
     "playerPosterTime": 15.183781470909091,
-    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+    "playerPosterTimeSource": "cover-studio-confirmed-selection",
+    "videoDuration": 24.171
   },
   "18": {
     "videoWidth": 1708,
     "videoHeight": 960,
     "playerPoster": "social/FormFunk Product Film - Version A.webp",
     "playerPosterTime": 10.678518,
-    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+    "playerPosterTimeSource": "cover-studio-confirmed-selection",
+    "videoDuration": 15.115
   },
   "19": {
     "videoWidth": 607,
     "videoHeight": 1080,
     "playerPoster": "commercial/FormFunk Creative Commercial.webp",
     "playerPosterTime": 4.068457,
-    "playerPosterTimeSource": "cover-studio-confirmed-selection"
+    "playerPosterTimeSource": "cover-studio-confirmed-selection",
+    "videoDuration": 15.102
   },
   "01": {
     "videoWidth": 1280,
     "videoHeight": 720,
     "playerPoster": "commercial/Watsons Brand Commercial.webp",
     "playerPosterTime": 54.666,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 61.46
   },
   "02": {
     "videoWidth": 1276,
     "videoHeight": 652,
     "playerPoster": "commercial/Lenovo Brand Commercial.webp",
     "playerPosterTime": 22.4,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 74.698
   },
   "03": {
     "videoWidth": 1291,
     "videoHeight": 720,
     "playerPoster": "commercial/Wan2.2 Promotional Film.webp",
     "playerPosterTime": 26.29,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 45.069
   },
   "04": {
     "videoWidth": 405,
     "videoHeight": 720,
     "playerPoster": "commercial/CHAGEE Brand Commercial.webp",
     "playerPosterTime": 17.9,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 28.815
   },
   "05": {
     "videoWidth": 609,
     "videoHeight": 1080,
     "playerPoster": "short-film/A Day in a Cat's Life.webp",
     "playerPosterTime": 26.07,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 43.443
   },
   "06": {
     "videoWidth": 1280,
     "videoHeight": 720,
     "playerPoster": "commercial/Yueyang Tower Tourism Film.webp",
     "playerPosterTime": 133.86666666666667,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 133.955
   },
   "07": {
     "videoWidth": 1275,
     "videoHeight": 720,
     "playerPoster": "short-film/People, Rivers and Cities.webp",
     "playerPosterTime": 46.93,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 69.682
   },
   "08": {
     "videoWidth": 1290,
     "videoHeight": 720,
     "playerPoster": "short-film/Light.webp",
     "playerPosterTime": 12.82,
-    "playerPosterTimeSource": "confirmed-poster-selection"
+    "playerPosterTimeSource": "confirmed-poster-selection",
+    "videoDuration": 30.51
   },
   "09": {
     "videoWidth": 1280,
     "videoHeight": 720,
     "playerPoster": "commercial/Wireless Earbuds Lifestyle Ad.webp",
     "playerPosterTime": 10.130909271818181,
-    "playerPosterTimeSource": "confirmed-cover-selection"
+    "playerPosterTimeSource": "confirmed-cover-selection",
+    "videoDuration": 18.691
   }
 }

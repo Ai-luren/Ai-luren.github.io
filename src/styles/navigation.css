@@ -353,21 +353,32 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   outline-offset: 3px !important;
 }
 
-/* Both viewers use the award viewer's circular arrow language. */
-.cinema-player__sequence button, .impact-award-lightbox-nav {
-  display: grid; place-items: center; cursor: pointer; touch-action: manipulation; flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
-  border: 1px solid var(--portfolio-icon-border) !important; border-radius: var(--portfolio-icon-radius) !important;
+/* The award viewer retains its established circular arrow controls.
+   Cinema work browsing uses the quieter ghost-arrow treatment instead, and
+   its nested "all work" link must never inherit these icon button styles. */
+.impact-award-lightbox-nav {
+  display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
+  flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
+  border: 1px solid var(--portfolio-icon-border) !important;
+  border-radius: var(--portfolio-icon-radius) !important;
   background: var(--portfolio-icon-surface) !important; color: var(--apple-text);
   transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
 }
-.cinema-player__sequence button svg { width: 20px; height: 20px; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
+.cinema-player__sequence > button {
+  display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
+  flex: 0 0 44px; width: 44px; height: 44px; padding: 0;
+  border: 0 !important; border-radius: 12px !important;
+  background: transparent !important; color: var(--apple-secondary);
+  transition: background-color 180ms ease, color 180ms ease, opacity 180ms ease;
+}
+.cinema-player__sequence > button svg { width: 20px; height: 20px; }
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
 /* The rail arrow uses translateY for its fixed vertical position. Do not
    overwrite that transform on hover, or the button visibly drops. */
 .impact-award-rail-nav:hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
-:is(.cinema-player__sequence button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
-.cinema-player__sequence button:disabled { opacity: .32; cursor: default; }
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
+.cinema-player__sequence > button:disabled { opacity: .32; cursor: default; }
 .impact-award-rail-nav:disabled { opacity: .32; cursor: default; }
 @media (max-width:760px) {
   body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }
@@ -457,4 +468,204 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 @media (prefers-reduced-motion:reduce) {
   .shared-menu-links *, .cinema-player__navigation *, .nav-toggle-line { transition: none !important; }
   .impact-award-lightbox figure { animation: none; transition: none; }
+}
+
+/* Homepage floating navigation: keep the blurred-glass shape, but make the
+   capsule sufficiently opaque off the Hero so passing section labels cannot
+   visually overlap its language and menu controls on narrow screens. */
+body:not(.is-on-hero) > header,
+body:not(.is-on-hero) > header.is-condensed,
+.library-page-navigation .cinema-player__navigation {
+  background: var(--portfolio-panel-scrolled-surface) !important;
+}
+/* A menu owns the whole backdrop: its chrome returns to the same .72 glass
+   role as the Works menu header and cinema viewer. */
+body.mobile-nav-open > header {
+  background: var(--portfolio-panel-surface) !important;
+}
+/* Material fallback must also cover this higher-opacity navigation token. */
+@media (prefers-reduced-transparency: reduce) {
+  body:not(.is-on-hero) > header,
+  body:not(.is-on-hero) > header.is-condensed,
+  .library-page-navigation .cinema-player__navigation,
+  body.mobile-nav-open > header { background: var(--portfolio-panel-solid) !important; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body:not(.is-on-hero) > header,
+  body:not(.is-on-hero) > header.is-condensed,
+  .library-page-navigation .cinema-player__navigation,
+  body.mobile-nav-open > header { background: var(--portfolio-panel-solid) !important; }
+}
+
+/* Shared editorial menu: the static homepage drawer and React Works dialog
+   have independent modal lifecycles, but identical content, spacing and tokens.
+   Buck is a layout reference only; existing dark glass and site capsule remain. */
+@media (max-width: 760px) {
+  #mobile-nav-drawer.mobile-nav-drawer,
+  #library-menu.library-menu[open] {
+    box-sizing: border-box;
+    padding: clamp(148px, 19dvh, 196px) max(28px, calc(env(safe-area-inset-right) + 28px))
+      max(28px, calc(env(safe-area-inset-bottom) + 28px))
+      max(28px, calc(env(safe-area-inset-left) + 28px));
+  }
+  #library-menu.library-menu[open] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0;
+    width: 100%;
+    height: 100dvh;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: transparent;
+    -webkit-overflow-scrolling: touch;
+  }
+  #mobile-nav-drawer .mobile-menu__links,
+  #library-menu .mobile-menu__links {
+    display: block !important;
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    transform: none;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list,
+  #library-menu .mobile-menu__links .nav-list {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(4px, 1vh, 10px);
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list li,
+  #library-menu .mobile-menu__links .nav-list li {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list a,
+  #library-menu .mobile-menu__links .nav-list a,
+  #mobile-nav-drawer .mobile-menu__links .nav-list a.nav-contact {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: clamp(72px, 9.6dvh, 84px);
+    padding: 0 4px;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--apple-secondary) !important;
+    font: 600 clamp(33px, 10.2vw, 44px)/1.13 var(--font-display);
+    letter-spacing: -.055em;
+    text-decoration: none;
+    text-align: left;
+    white-space: nowrap;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list a:hover,
+  #library-menu .mobile-menu__links .nav-list a:hover,
+  #mobile-nav-drawer .mobile-menu__links .nav-list a.is-active,
+  #library-menu .mobile-menu__links .nav-list a.is-active {
+    color: var(--apple-text) !important;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list a:focus-visible,
+  #library-menu .mobile-menu__links .nav-list a:focus-visible {
+    outline: 2px solid var(--apple-blue) !important;
+    outline-offset: 2px;
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list a.is-active > span:not(.nav-short),
+  #library-menu .mobile-menu__links .nav-list a.is-active > span {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 9px;
+  }
+  /* BUCK-style social destination block; text links instead of extra icon tiles.
+     Two columns retain 44px touch targets on short iPhone viewports. */
+  #mobile-nav-drawer .mobile-menu__footer,
+  #library-menu .mobile-menu__footer {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 11px;
+    min-width: 0;
+    width: 100%;
+    margin-top: auto;
+    padding: clamp(18px, 3dvh, 26px) 0 0;
+    border-top: 1px solid var(--apple-hairline-soft);
+    font: 400 11px/1.45 var(--font-body);
+    letter-spacing: 0;
+  }
+  #mobile-nav-drawer .mobile-menu__social,
+  #library-menu .mobile-menu__social { width: 100%; }
+  #mobile-nav-drawer .mobile-menu__social-label,
+  #library-menu .mobile-menu__social-label {
+    margin: 0 0 6px;
+    color: var(--apple-tertiary);
+    font: 500 11px/1.3 var(--font-body);
+    letter-spacing: .02em;
+  }
+  #mobile-nav-drawer .mobile-menu__social-list,
+  #library-menu .mobile-menu__social-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 clamp(16px, 5vw, 28px);
+  }
+  #mobile-nav-drawer .mobile-menu__social-list a,
+  #library-menu .mobile-menu__social-list a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    width: max-content;
+    max-width: 100%;
+    color: var(--apple-secondary);
+    font: 500 clamp(15px, 4.2vw, 17px)/1.2 var(--font-body);
+    text-decoration: none;
+    transition: color var(--apple-duration-control) var(--apple-ease);
+  }
+  #mobile-nav-drawer .mobile-menu__social-list a:hover,
+  #library-menu .mobile-menu__social-list a:hover { color: var(--apple-text); }
+  #mobile-nav-drawer .mobile-menu__social-list a:focus-visible,
+  #library-menu .mobile-menu__social-list a:focus-visible {
+    color: var(--apple-text);
+    outline: 2px solid var(--apple-blue);
+    outline-offset: 2px;
+  }
+  #mobile-nav-drawer .mobile-menu__copyright,
+  #library-menu .mobile-menu__copyright {
+    display: block;
+    margin: 0;
+    color: var(--apple-tertiary);
+    font: 400 10px/1.4 var(--font-body);
+  }
+}
+@media (max-width: 760px) and (max-height: 700px) {
+  #mobile-nav-drawer.mobile-nav-drawer,
+  #library-menu.library-menu[open] {
+    padding-top: max(112px, calc(env(safe-area-inset-top) + 90px));
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+  }
+  #mobile-nav-drawer .mobile-menu__links .nav-list,
+  #library-menu .mobile-menu__links .nav-list { gap: 2px; }
+  #mobile-nav-drawer .mobile-menu__links .nav-list a,
+  #library-menu .mobile-menu__links .nav-list a,
+  #mobile-nav-drawer .mobile-menu__links .nav-list a.nav-contact {
+    min-height: 62px;
+    font-size: clamp(30px, 9vw, 38px);
+  }
+  #mobile-nav-drawer .mobile-menu__footer,
+  #library-menu .mobile-menu__footer { padding-top: 12px; gap: 6px; }
+  #mobile-nav-drawer .mobile-menu__social-list a,
+  #library-menu .mobile-menu__social-list a { min-height: 44px; }
+}
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  #mobile-nav-drawer .mobile-menu__social-list a,
+  #library-menu .mobile-menu__social-list a { transition: none; }
 }

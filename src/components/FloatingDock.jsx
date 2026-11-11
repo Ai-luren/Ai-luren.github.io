@@ -2,6 +2,7 @@ import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useLang } from '../i18n/index.js';
+import { SOCIAL_PROFILES } from '../navigation/socialProfiles.js';
 import './FloatingDock.css';
 import ExternalLinkSheet, { useTouchExternalLink } from './ExternalLinkSheet.jsx';
 
@@ -165,10 +166,10 @@ export default function FloatingDock() {
   const items = [
     { contactAction: 'email', label: lang === 'en' ? (hasFinePointer ? 'Copy email' : 'Email contact') : (hasFinePointer ? '复制邮箱' : '邮箱联系'), href: 'mailto:1746850550@qq.com', address: '1746850550@qq.com', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
     { contactAction: 'wechat', label: lang === 'en' ? (hasFinePointer ? 'View WeChat QR code' : 'WeChat contact') : (hasFinePointer ? '查看微信二维码' : '微信联系'), href: wechatQrCode, wechatId: '15580714085', download: 'wechat-qr-code.webp', qrHeading: lang === 'en' ? 'Scan with WeChat' : '微信扫码联系', qrAlt: lang === 'en' ? 'WeChat contact QR code' : '微信联系二维码', qrCaption: lang === 'en' ? 'WeChat ID: 15580714085' : '微信号：15580714085', icon: <DockIcon name="wechat" /> },
-    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, zh: 'GitHub 主页', en: 'GitHub profile', icon: <DockIcon name="github" /> },
-    { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, zh: '小红书主页', en: 'REDnote profile', icon: <DockIcon name="xiaohongshu" /> },
-    { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, zh: '抖音主页', en: 'Douyin profile', icon: <DockIcon name="douyin" /> },
-    { label: lang === 'en' ? 'Feishu portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Feishu portfolio' : '打开飞书作品集', href: 'https://my.feishu.cn/wiki/ZmHdwRlU4iIGz5kDIvJcwo7Snkf', external: true, zh: '飞书作品集', en: 'Feishu portfolio', icon: <DockIcon name="feishu" /> }
+    { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'github').href, external: true, zh: 'GitHub 主页', en: 'GitHub profile', icon: <DockIcon name="github" /> },
+    { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'rednote').href, external: true, zh: '小红书主页', en: 'REDnote profile', icon: <DockIcon name="xiaohongshu" /> },
+    { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'douyin').href, external: true, zh: '抖音主页', en: 'Douyin profile', icon: <DockIcon name="douyin" /> },
+    { label: lang === 'en' ? 'Feishu portfolio' : '飞书作品集', hoverLabel: lang === 'en' ? 'Open Feishu portfolio' : '打开飞书作品集', href: SOCIAL_PROFILES.find(profile => profile.id === 'feishu').href, external: true, zh: '飞书作品集', en: 'Feishu portfolio', icon: <DockIcon name="feishu" /> }
   ];
 
   return (
