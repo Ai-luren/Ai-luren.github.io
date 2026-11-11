@@ -23,6 +23,11 @@ try{
   await page.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
   await page.locator('[data-filter="commercial"]').click();
   await page.locator('.ux-new-project-tile').click();
+  assert.equal(await page.locator('#ux-local-import-details').getAttribute('open'),null,
+    'Optional local MP4 directory starts collapsed');
+  assert(await page.locator('#ux-new-left .frame-panel').isHidden(),
+    'Disabled frame tools must be hidden before import');
+  await page.locator('#ux-local-import-details > summary').click();
   const result=await page.evaluate(()=>{
    const box=sel=>{
     const e=document.querySelector(sel),r=e.getBoundingClientRect();
@@ -58,7 +63,10 @@ try{
   await page.locator('#ux-new-close').click();
   assert(await page.locator('#ux-new-editor').isHidden());
   await page.locator('.ux-new-project-tile').click();
-  assert(await page.locator('#local-video-select').isVisible(),'picker hidden on reopen');
+  assert.equal(await page.locator('#ux-local-import-details').getAttribute('open'),null,
+    'Optional MP4 directory starts collapsed on reopen');
+  await page.locator('#ux-local-import-details > summary').click();
+  assert(await page.locator('#local-video-select').isVisible(),'picker cannot be expanded after reopen');
   await page.close();
  }
 }finally{

@@ -47,10 +47,10 @@ function syncButtons() {
   if(state.workflow==='new'&&!$('ux-new-editor').hidden){
     const hasVideo=state.session?.kind==='video';
     const missing=[!$('new-title-zh').value.trim()&&'中文名称',!$('new-title-en').value.trim()&&'英文名称'].filter(Boolean);
-    const next=state.busy?'正在处理文件…':!hasVideo?'1/3 · 先导入 MP4 视频':
-      !state.frame?'2/3 · 从视频中选择封面画面':
-      missing.length?'3/3 · 还需填写'+missing.join('和'):newImagekitError?'3/3 · 检查 ImageKit 文件名':
-      '3/3 · 已准备好，可以保存';
+    const next=state.busy?'正在处理本地素材…':!hasVideo?'请先导入 MP4 视频':
+      !state.frame?'正在准备默认封面；也可手动选帧':
+      missing.length?'封面已就绪 · 请填写'+missing.join('和'):newImagekitError?'请检查 ImageKit 文件名':
+      '已准备好 · 可以保存作品';
     $('ux-new-progress').textContent=next;
     $('ux-new-progress').dataset.complete=String(!$('create-project').disabled&&!state.busy);
     $('ux-new-save').title=$('create-project').disabled?next:'保存视频及两种封面到本地作品库，不上传云端';
@@ -273,8 +273,16 @@ async function importMedia(file, kind, loader = null) {
       const max = Math.max(0, m.duration - 1 / m.fps);
       $('time-input').max = $('time-range').max = max; $('time-input').value = $('time-range').value = 0; $('time-label').textContent = timeLabel(0);
       if(state.workflow==='new'){
-        $('timeline').querySelector('details').open=true;
-        status('视频已载入。播放或拖动时间轴，再点击「使用当前画面」。');
+        // An initial frame belongs to the same explicit /api/frame pipeline
+        // as manual selection. No new media format or persistence path.
+        // If extracting fails, keep the imported MP4 available for manual jog.
+        const initialTime=Math.min(.5,Math.max(0,max));
+        try {
+          await selectFrame(initialTime);
+          status('视频已导入，默认封面和播放器海报已生成。可调整画面或直接填写名称保存。');
+        } catch(frameError) {
+          status('视频已导入，但默认选帧失败：'+frameError.message+'。可手动调整视频画面并重试。',true);
+        }
       }else{
         for (const frame of session.candidates||[]) {
           const button = document.createElement('button'); button.type = 'button'; button.dataset.time = frame.time; button.setAttribute('aria-pressed', 'false'); button.setAttribute('aria-label', '选择画面');
@@ -465,6 +473,12 @@ function validateNewImagekitFilename(){
   return imageKitVideoError($('new-imagekit-url').value,{optional:true});
 }
 $('new-imagekit-url').addEventListener('input',()=>{normalizeNewImagekitFilename();syncButtons();});
+$('new-category').addEventListener('change',()=>{
+  if($('ux-new-editor').hidden)return;
+  $('ux-new-category-label').textContent='新增作品 · '+({
+    commercial:'商业广告','short-film':'创意短片',social:'海外产品广告',visual:'视觉实验'
+  }[$('new-category').value]||'作品库');
+});
 $('ux-new-imagekit-copy').addEventListener('click',async()=>{
   try{
     await navigator.clipboard.writeText(IMAGEKIT_URL_PREFIX);
@@ -509,7 +523,7 @@ function setWorkflow(mode, { scroll = false } = {}) {
   const copy = {
     'library': ['所有作品、封面、精选和发布信息集中在这里。', '选择一部作品直接编辑；封面和播放器海报都能在同一个面板里看到。'],
     'manage': ['集中查看作品、视频版本与播放地址，快速进入封面修改。', '选择作品后可管理版本、修改封面，或预览网站。'],
-    'new': ['导入视频、选择封面并填写作品信息。所有修改都只保存在本机。', '三个步骤：导入素材 → 选定封面 → 填写信息并保存'],
+    'new': ['导入视频后自动准备封面，核对名称即可本地保存。', '导入 MP4 后自动生成双封面预览；你可以分别调整或替换图片。'],
     'cover': ['给任何作品更新 3:4 卡片封面，包括首页精选。原封面会保留。', '直接从当前作品的视频选帧，也可以导入新图片。调整后确认替换。'],
     'poster': ['单独更换播放器原比例海报，支持逐个视频版本选择。', '选择作品及版本 → 从当前 MP4 选帧 → 比较原比例画面 → 确认应用'],
     'add-version': ['给现有作品添加另一条 MP4，原有封面和视频都不变。', '① 选另一条 MP4  →  ② 选播放器海报  →  ③ 确认追加版本'],
@@ -655,8 +669,10 @@ function openNewProject(category='commercial'){
   }[$('new-category').value]);
   $('source-heading').textContent='导入视频';
   $('frames-heading').textContent='选择封面画面';
-  $('crop-heading').textContent='选择双封面';
-  $('ux-new-status').textContent='导入视频 → 选择双封面 → 填写资料 → 保存';
+  $('crop-heading').textContent='封面与播放器海报';
+  $('ux-new-status').textContent='导入视频后自动生成封面预览；核对名称即可保存。';
+  $('ux-new-imagekit-details').open=false;
+  $('ux-local-import-details').open=false;
   newModal.querySelector('.ux-new-editor-pane').focus({preventScroll:true});
   syncButtons();
 }

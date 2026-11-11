@@ -38,17 +38,22 @@
         <span id="ux-new-category-label" class="ux-overline">新增作品 · 商业广告</span>
         <h2 id="ux-new-modal-title">新增作品</h2>
       </div>
-      <div class="ux-new-editor-note">从视频到作品 · 本地保存</div>
+      <div class="ux-new-editor-note">导入视频 · 确认信息 · 本地保存</div>
       <button id="ux-new-close" class="ux-icon-button" type="button" aria-label="关闭新增作品并返回作品库">
         <svg class="ux-close-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </button>
     </header>
     <div class="ux-new-editor-body">
       <div id="ux-new-left" class="ux-new-editor-stage" aria-label="导入视频与选择画面"></div>
-      <div id="ux-new-right" class="ux-new-editor-inspector" aria-label="作品名称、分类与封面预览"></div>
+      <div id="ux-new-right" class="ux-new-editor-inspector" aria-label="作品名称、分类与封面预览">
+        <div id="ux-new-preimport-note" class="ux-new-preimport-note">
+          <div class="ux-new-preimport-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2"/><path d="m4 17 5-5 4 4 3-3 4 5"/></svg></div>
+          <div><strong>封面将在导入后自动生成</strong><p>分别提供 3:4 作品封面与原比例播放器海报。两者可以独立选帧或替换，不会拉伸画面。</p></div>
+        </div>
+      </div>
     </div>
     <div class="ux-new-editor-footer">
-      <div class="ux-new-status-stack"><span id="ux-new-progress" class="ux-new-progress" aria-live="polite">1/3 · 等待导入视频</span><span id="ux-new-status" role="status" aria-live="polite">导入视频后，在同一页选择封面并保存作品。</span></div>
+      <div class="ux-new-status-stack"><span id="ux-new-progress" class="ux-new-progress" aria-live="polite">请先导入 MP4 视频</span><span id="ux-new-status" role="status" aria-live="polite">导入视频后，在同一页选择封面并保存作品。</span></div>
       <div class="ux-new-footer-actions"><span>仅保存本地 · 不自动发布</span><button id="ux-new-save" type="button" class="primary" disabled>保存作品</button></div>
     </div>
   </section>
@@ -391,10 +396,10 @@
 </section>
 
 <section class="source-panel panel" aria-labelledby="source-heading">
-  <div class="ux-new-step-heading"><span class="ux-new-step-number">01</span><div><h2 id="source-heading">导入视频</h2><p>将 MP4 放到这里，或从本机视频目录中选择。</p></div></div>
+  <div class="ux-new-step-heading"><span class="ux-new-step-number">01</span><div><h2 id="source-heading">导入视频</h2><p>拖入 MP4，或从本机选择。导入后自动生成默认封面。</p></div></div>
   <button id="ux-new-dropzone" class="ux-new-dropzone" type="button" aria-label="从电脑选择 MP4 视频，或将文件拖到此处">
     <span class="ux-new-dropzone-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
-    <strong>拖入 MP4，或点击选择文件</strong>
+    <strong>拖入 MP4，或点击选择视频</strong>
     <span>本地处理，不会上传视频或自动发布网站</span>
   </button>
   <details id="ux-local-import-details" class="ux-local-import-details">
@@ -408,15 +413,15 @@
   </details>
 <div class="import-actions"><label class="button secondary">选择 MP4 文件<input id="video-file" type="file" accept=".mp4,video/mp4"></label><label class="button secondary">导入现成封面<input id="image-file" type="file" accept=".jpg,.jpeg,.png,.webp"></label></div><p class="muted">原始 MP4 保持不变，单个视频文件最大 2GB。</p><progress id="upload-progress" max="100" value="0" hidden></progress><p id="metadata">尚未导入素材</p><video id="source-video" controls playsinline preload="metadata" hidden></video></section>
 <div class="workspace"><section class="frame-panel panel" aria-labelledby="frames-heading"><h2 id="frames-heading">02 / 选择封面画面</h2><p class="muted">播放视频或拖动时间轴，停在希望用作封面的画面。</p><div id="timeline" hidden><details class="fine-tune"><summary>精确选帧（可选）</summary><div class="time-controls"><label>时间点（秒）<input id="time-input" type="number" min="0" step="0.001" value="0"></label><button id="seek-frame" type="button">提取该时间点</button><button id="prev-frame" type="button" aria-label="前一帧">−1 帧</button><button id="next-frame" type="button" aria-label="后一帧">+1 帧</button></div><label class="range-label">时间轴 <output id="time-label">00:00.000</output><input id="time-range" type="range" min="0" step="0.001" value="0"></label></details></div><div id="candidate-grid" class="candidates" hidden></div>
-  <div class="ux-new-frame-jog" role="group" aria-label="精确选择视频画面">
+  <div class="ux-new-frame-jog" role="group" aria-label="精确调整视频画面">
     <button id="ux-new-jog-first" type="button" aria-label="跳到视频首帧" disabled>首帧</button>
     <button id="ux-new-jog-prev" type="button" aria-label="后退一帧，快捷键左箭头" disabled><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>上一帧</button>
     <button id="ux-new-jog-next" type="button" aria-label="前进一帧，快捷键右箭头" disabled>下一帧<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9.5 5 7 7-7 7"/></svg></button>
     <button id="ux-new-jog-last" type="button" aria-label="跳到视频尾帧" disabled>尾帧</button>
   </div>
-  <button id="ux-new-use-frame" type="button" class="primary ux-new-use-frame" disabled>使用当前画面</button></section>
+  <button id="ux-new-use-frame" type="button" class="primary ux-new-use-frame" disabled>使用当前帧更新封面预览</button><p class="ux-new-frame-note">默认使用导入后提取的画面；调整时间轴后点击更新。已手动导入的图片不会被覆盖。</p></section>
 <section class="crop-panel panel" aria-labelledby="crop-heading">
-  <div class="ux-new-cover-heading"><div class="ux-new-step-heading"><span class="ux-new-step-number">02</span><div><h2 id="crop-heading">选择双封面</h2><p>卡片和播放器海报可分别导入，互不覆盖。</p></div></div></div><div class="modes" role="group" aria-label="封面处理模式"><button type="button" data-mode="cover" aria-pressed="true">填满封面 · 可调整裁切</button><button type="button" data-mode="contain-blur" aria-pressed="false">保留全画面 · 模糊背景</button></div><div class="preview-tabs" role="group" aria-label="切换封面预览比例"><button type="button" data-preview-view="cover" aria-pressed="true">作品封面 · 3:4</button><button type="button" data-preview-view="original" aria-pressed="false">原比例选帧预览</button></div><div class="ux-new-cover-comparison">
+  <div class="ux-new-cover-heading"><div class="ux-new-step-heading"><span class="ux-new-step-number">02</span><div><h2 id="crop-heading">封面与播放器海报</h2><p>默认从视频自动生成；可分别选帧或导入，不会互相覆盖。</p></div></div></div><div class="modes" role="group" aria-label="封面处理模式"><button type="button" data-mode="cover" aria-pressed="true">填满封面 · 可调整裁切</button><button type="button" data-mode="contain-blur" aria-pressed="false">保留全画面 · 模糊背景</button></div><div class="preview-tabs" role="group" aria-label="切换封面预览比例"><button type="button" data-preview-view="cover" aria-pressed="true">作品封面 · 3:4</button><button type="button" data-preview-view="original" aria-pressed="false">原比例选帧预览</button></div><div class="ux-new-cover-comparison">
   <div class="ux-new-compare-item ux-new-card-preview">
     <div class="ux-new-compare-label">作品卡片 <span>3:4</span></div><label class="ux-new-custom-cover">导入 3:4 图片<input id="ux-new-cover-file" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"></label>
     <div class="preview-wrap" id="preview-wrap" data-preview="cover"><canvas id="cover-preview" width="900" height="1200" tabindex="0" aria-label="3 比 4 封面预览，可拖动画面或使用方向键调整位置"></canvas><img id="original-preview" alt="当前选帧的原始比例画面，不进行裁切" hidden><p id="preview-placeholder">先选择一张画面</p></div>
@@ -444,20 +449,22 @@
 </div>
 <p id="cover-confirm-result" class="cover-confirm-result" role="status" hidden></p>
 </section></div>
-<section class="panel create-work" aria-labelledby="create-heading"><div class="ux-new-step-heading"><span class="ux-new-step-number">03</span><div><h2 id="create-heading">填写作品信息</h2><p>核对分类、中英文名称及封面，一次保存到本地作品库。</p></div></div>
-<p class="muted">作品名称对后续 A/B/C 版本通用；保存时自动生成 3:4 封面、播放器海报与本地 MP4 副本。</p>
+<section class="panel create-work" aria-labelledby="create-heading"><div class="ux-new-step-heading"><span class="ux-new-step-number">03</span><div><h2 id="create-heading">作品统一名称</h2><p>所有 A/B/C 视频版本共用。分类默认来自当前作品列表，可直接修改。</p></div></div>
+<p class="muted">保存后将建立一部作品；封面与播放器海报分别保存，本地 MP4 保留原始素材。</p>
 <div class="create-form">
-<label>中文作品名称 <input id="new-title-zh" type="text" maxlength="80" placeholder="例如：MEXC AI 品牌概念广告" autocomplete="off"></label>
-<label>英文作品名称 <input id="new-title-en" type="text" maxlength="80" placeholder="例如：MEXC AI Concept Ad" autocomplete="off"></label>
-<label>分类 <select id="new-category"><option value="commercial">AI 商业广告</option><option value="short-film">AI 创意短片</option><option value="social">AI 海外产品广告</option><option value="visual">AI 视觉实验</option></select></label>
+<label>中文统一名称 <input id="new-title-zh" type="text" maxlength="80" placeholder="例如：MEXC AI 品牌概念广告" autocomplete="off"></label>
+<label>英文统一名称 <input id="new-title-en" type="text" maxlength="80" placeholder="例如：MEXC AI Concept Ad" autocomplete="off"></label>
+<label>作品分类 · 默认沿用当前列表 <select id="new-category"><option value="commercial">AI 商业广告</option><option value="short-film">AI 创意短片</option><option value="social">AI 海外产品广告</option><option value="visual">AI 视觉实验</option></select></label>
 </div>
-<div class="ux-new-imagekit">
+<details id="ux-new-imagekit-details" class="ux-new-imagekit"><summary>线上视频地址（ImageKit · 可选）<span>不影响本地保存</span></summary>
+  <div class="ux-new-imagekit-inner">
   <div class="ux-new-imagekit-heading"><label for="new-imagekit-url">ImageKit 视频直链 <span>选填</span></label><a href="https://imagekit.io/dashboard/media-library" target="_blank" rel="noopener noreferrer" title="新窗口打开 ImageKit 媒体库">打开 ImageKit ↗</a></div>
   <div class="ux-imagekit-prefix-row"><span class="ux-imagekit-prefix-label">固定前缀</span><code id="ux-new-imagekit-prefix">https://ik.imagekit.io/Ailuren/tr:orig-true/videos/</code><button id="ux-new-imagekit-copy" type="button" class="secondary" aria-label="复制 ImageKit 固定前缀">复制</button></div>
   <label class="ux-imagekit-filename-label" for="new-imagekit-url">视频文件名（可直接粘贴 ImageKit 原始链接）</label>
   <input id="new-imagekit-url" type="text" inputmode="text" spellcheck="false" autocomplete="off" placeholder="例如：FormFunk-E（自动补 .mp4）" aria-describedby="ux-new-imagekit-help">
   <p id="ux-new-imagekit-help">前缀已固定，粘贴原始 /videos/ 或带 tr:orig-true 的地址都会提取文件名、去掉 .mp4；保存时自动补回 .mp4。可留空，不自动上传。</p><p id="ux-new-imagekit-error" role="status" hidden></p>
-</div>
+  </div>
+</details>
 <input type="checkbox" id="create-consent" checked hidden>
 <button id="create-project" type="button" class="primary" disabled hidden>保存作品到本地作品库</button>
 <div id="created-result" class="created-result" hidden><h3>作品已加入本地作品库</h3><p id="created-summary"></p><p class="muted">可通过 <code>npm run dev</code> 在本地作品库播放。正式线上发布前还要为新视频配置可访问的 HTTPS 视频地址；系统不会使用 ImageKit 或其他云服务自动上传。</p></div>

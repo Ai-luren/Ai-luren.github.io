@@ -66,6 +66,7 @@
     "check:workbench-precision-frames": "node scripts/check-cover-studio-precision-frames.mjs",
     "check:workbench-fast-jog": "node scripts/check-cover-studio-fast-jog.mjs",
     "check:workbench-import-ui": "node scripts/check-cover-studio-import-ui.mjs",
+    "check:workbench-create": "node scripts/check-cover-studio-create-modal.mjs && node scripts/check-cover-studio-import-ui.mjs && node scripts/check-cover-studio-default-video-dir.mjs && node scripts/check-cover-studio-add-work.mjs",
     "check:workbench-icon-alignment": "node scripts/check-cover-studio-icon-alignment.mjs",
     "check:workbench-phase3": "node scripts/check-cover-studio-phase3-layout.mjs",
     "check:workbench-live": "node scripts/check-cover-studio-live.mjs",

@@ -40,6 +40,7 @@ try{
   const errors=[];p.on('pageerror',e=>errors.push(e.message));
   await p.goto(app.url);
   await p.waitForFunction(()=>document.querySelector('#status')?.textContent.includes('已载入'));
+  const initialProjectCount=(await(await fetch(app.url+'/api/bootstrap')).json()).projects.length;
   await p.locator('#ux-categories [data-filter="commercial"]').click();
   await p.locator('.ux-new-project-tile').click();
   assert(await p.locator('#ux-new-editor').isVisible());
@@ -73,7 +74,8 @@ try{
   console.log('CREATED',JSON.stringify({id:newItems[0].id,video,cover,poster}));
   // SSR project list should update without restarting the workbench.
   const response=await (await fetch(app.url+'/api/bootstrap')).json();
-  assert.equal(response.projects.length,16,'Workbench must list newly added project');
+  assert.equal(response.projects.length,initialProjectCount+1,'Workbench must list one more project after saving');
+  assert(response.projects.some(project=>project.id===newItems[0].id),'Newly created project must be available in refreshed library');
   console.log('PROJECTS_AFTER_CREATE',response.projects.length);
   // Browser should show real local video via Vite, not a remote CDN.
   vite=await createServer({root:fixture,configFile:path.join(root,'vite.config.js'),

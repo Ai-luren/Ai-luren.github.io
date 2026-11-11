@@ -42,6 +42,12 @@ try{
  assert.equal(await p.locator('#ux-new-left .frame-panel').count(),1);
  assert.equal(await p.locator('#ux-new-right .crop-panel').count(),1);
  assert.equal(await p.locator('#ux-new-right .create-work').count(),1);
+ assert(await p.locator('#ux-new-right .create-work').isVisible(),'Shared title and category must be visible before import');
+ assert(await p.locator('#ux-new-left .frame-panel').isHidden(),'No disabled frame controls before video import');
+ assert(await p.locator('#ux-new-right .crop-panel').isHidden(),'No empty cover previews before video import');
+ assert(await p.locator('#ux-new-preimport-note').isVisible(),'Explain automatic two-cover previews before import');
+ assert.equal(await p.locator('#ux-new-imagekit-details').getAttribute('open'),null,'ImageKit must start collapsed');
+ assert(!(await p.locator('#ux-new-progress').textContent()).includes('/3'),'No false three-step counter');
  assert(await p.locator('#ux-library').isVisible(),'library stays visible behind modal');
  assert(!await p.locator('#ux-new-editor').evaluate(e=>e.closest('body').inert));
  await p.locator('#ux-new-close').click();
@@ -67,6 +73,11 @@ try{
  await p.locator('#video-file').setInputFiles(fixture);
  await p.waitForFunction(()=>document.querySelector('#source-video').readyState>=1
    && document.querySelector('#ux-new-use-frame').disabled===false,null,{timeout:45000});
+ await p.waitForFunction(()=>document.querySelector('#ux-new-player-poster')?.naturalWidth>0 &&
+   document.querySelector('#preview-placeholder')?.hidden===true,null,{timeout:18000});
+ assert(await p.locator('#ux-new-left .frame-panel').isVisible(),'Frame tools appear after importing');
+ assert(await p.locator('#ux-new-right .crop-panel').isVisible(),'Auto-selected frame reveals two previews');
+ assert(await p.locator('#ux-new-preimport-note').isHidden());
  assert.equal(await p.locator('#candidate-grid button').count(),0,'No hidden candidate sampling on new uploads');
  assert.equal(await p.locator('#new-category').inputValue(),'short-film');
  await p.locator('#source-video').evaluate(async v=>{
@@ -97,6 +108,8 @@ try{
  await p.waitForFunction(()=>document.querySelector('#ux-new-poster-meta').textContent.includes('自定义'),null,{timeout:15000});
  assert((await p.locator('#ux-new-player-poster').getAttribute('src')).startsWith('blob:'),'poster should preview imported image');
  console.log('INDEPENDENT_POSTER_PREVIEW_PASS');
+ await p.locator('#ux-new-imagekit-details > summary').click();
+ assert(await p.locator('#new-imagekit-url').isVisible(),'Optional ImageKit settings must open on demand');
  await p.locator('#new-imagekit-url').fill('https://wrong.example/video.mp4');
  assert.equal(await p.locator('#new-imagekit-url').getAttribute('aria-invalid'),'true');
  assert(await p.locator('#ux-new-imagekit-error').isVisible());

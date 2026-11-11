@@ -103,10 +103,28 @@ try{
   assert(await page.locator('#ux-url-form').isVisible(),'ImageKit 地址编辑框打不开');
   // No save call: checking the real production workbench must never mutate data.
   await page.locator('#ux-url-cancel').click();
+  await page.locator('#ux-close-editor').click();
+  await page.locator('[data-filter="commercial"]').click();
+  await page.locator('.ux-new-project-tile').click();
+  assert(await page.locator('#ux-new-editor').isVisible(),'新增作品弹层打不开');
+  assert(await page.locator('#ux-new-left .ux-new-dropzone').isVisible(),'导入 MP4 入口不可见');
+  assert(await page.locator('#ux-new-right .create-work').isVisible(),'作品统一名称不可见');
+  assert(await page.locator('#ux-new-left .frame-panel').isHidden(),
+    '导入前不应展示不可用的逐帧按钮');
+  assert(await page.locator('#ux-new-right .crop-panel').isHidden(),
+    '导入前不应展示空白双封面');
+  assert(await page.locator('#ux-new-preimport-note').isVisible(),
+    '导入前必须提示会自动准备两张封面');
+  assert.equal(await page.locator('#ux-new-imagekit-details').getAttribute('open'),null,
+    '可选 ImageKit 设置在打开时必须收起');
+  assert(!(await page.locator('#ux-new-progress').textContent()).includes('/3'),
+    '状态文案不应恢复伪三步流程');
+  await page.locator('#ux-new-close').click();
+  assert(await page.locator('#ux-new-editor').isHidden(),'新增作品无法关闭');
   assert.deepEqual(errors,[],'页面 JavaScript 出错');
   assert.deepEqual(failed,[],'本地页面有资源返回错误状态');
   assert.equal(getSafeMediaReport(page).urls.length,0,'禁止真实 ImageKit 请求');
   console.log('LIVE_BROWSER_READY',JSON.stringify(state),'0 JS errors, 0 HTTP errors, 0 ImageKit requests');
   await page.close();
 }finally{await browser.close();}
-console.log('WORKBENCH_LIVE_PASS — 运行中的真实工作台可正常打开、浏览与编辑地址');
+console.log('WORKBENCH_LIVE_PASS — 正在运行的真实工作台可打开既有作品和渐进式新增作品弹窗');
