@@ -152,7 +152,7 @@ function AwardGallery() {
   const [awardMotionVisible, setAwardMotionVisible] = useState(false);
   const viewerTargetIndexRef = useRef(0);
   const viewerRequestRef = useRef(0);
-  const railRef = useRef(null);
+  const [railRef, awardGridNear] = useNearViewport('350px');
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
@@ -212,10 +212,8 @@ function AwardGallery() {
     window.clearTimeout(closeTimerRef.current);
   }, []);
 
-  useEffect(() => warmNear(
-    document.getElementById('impact-awards') || railRef.current,
-    awards.map(award => award.thumbnail),
-  ), []);
+  // Only discover gallery thumbnails when the section approaches. Native
+  // lazy-loading alone requests them too early behind the mobile Hero.
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -334,7 +332,7 @@ function AwardGallery() {
             <button type="button" className="impact-award-grid-card"
               aria-label={lang === 'en' ? `Zoom in: ${award.title.en}, ${award.meta.en}` : `放大查看：${award.title.zh}，${award.meta.zh}`}
               aria-haspopup="dialog" aria-controls="impact-award-lightbox" onClick={(event) => open(index, event)}>
-              <img src={award.thumbnail} alt="" width="540" height="960" loading="lazy" decoding="async" />
+              <img src={awardGridNear ? award.thumbnail : undefined} alt="" width="540" height="960" loading="lazy" fetchPriority="low" decoding="async" />
               <span className="impact-award-grid-caption" aria-hidden="true"><strong>{award.title[lang]}</strong><small>{award.meta[lang]}</small></span>
             </button>
           </li>

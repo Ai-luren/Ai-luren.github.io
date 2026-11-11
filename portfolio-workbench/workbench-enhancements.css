@@ -1,0 +1,418 @@
+/* Post-base enhancements: creation flow, ImageKit controls, detail status and drag feedback.
+   Keep cascade order after style.css. Avoid modifying legacy .workspace styles. */
+/* 2026-11 workbench creation: step order, separate artwork inputs, fixed save */
+#ux-new-editor #ux-new-right>.crop-panel{order:0;flex:0 0 auto!important;overflow:visible!important}
+#ux-new-editor #ux-new-right>.create-work{order:1;flex:0 0 auto!important}
+#ux-new-editor .ux-new-editor-footer{gap:14px;min-height:56px}
+#ux-new-editor .ux-new-footer-actions{display:flex;align-items:center;justify-content:flex-end;gap:15px;margin-left:auto;flex-shrink:0}
+#ux-new-editor #ux-new-save{min-width:148px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;padding:8px 18px;font-size:12px;border-radius:9px}
+#ux-new-editor #ux-new-right>.crop-panel .ux-new-cover-heading{margin-bottom:10px}
+#ux-new-editor .ux-new-cover-heading .ux-new-step-heading{margin:0}
+#ux-new-editor .ux-new-compare-item{display:flex;flex-direction:column;align-items:stretch;gap:7px}
+#ux-new-editor .ux-new-compare-item>.ux-new-custom-cover{order:3;display:flex;align-items:center;justify-content:center;width:100%;min-height:35px;font-size:11px}
+#ux-new-editor .ux-new-card-preview #preview-wrap{order:2}
+#ux-new-editor .ux-new-player-picture{order:2}
+#ux-new-editor .ux-new-poster-meta{order:4}
+#ux-new-editor #create-consent,#ux-new-editor #create-project{display:none!important}
+#ux-new-editor #ux-new-left .source-panel:not(:has(#source-video:not([hidden])))>.ux-new-dropzone{flex:0 0 auto!important;min-height:110px!important}
+#ux-new-editor #ux-new-left .source-panel{overflow-y:auto!important}
+#ux-new-editor .ux-new-custom-cover:has(input:disabled){opacity:.5;cursor:not-allowed}
+@media(max-width:920px){#ux-new-editor .ux-new-editor-footer{flex-wrap:wrap}#ux-new-editor .ux-new-footer-actions{width:100%;justify-content:space-between}}
+
+/* ImageKit URL composition: protected prefix + editable filename */
+#ux-new-editor .ux-imagekit-prefix-row{display:flex;align-items:center;gap:7px;min-width:0;border:1px solid #617d9870;background:#101e2d;border-radius:8px;padding:6px 7px}
+#ux-new-editor .ux-imagekit-prefix-label{flex-shrink:0;font-size:10px;color:#93b0c9}
+#ux-new-editor #ux-new-imagekit-prefix{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#b5d0e6;font:10px/1.5 ui-monospace,SFMono-Regular,monospace;user-select:all}
+#ux-new-editor #ux-new-imagekit-copy{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:49px;height:28px;min-height:28px;padding:0 5px;margin:0;border-radius:6px;font-size:10px}
+#ux-new-editor .ux-imagekit-filename-label{color:#c2d8ed;font-size:10px;font-weight:550;margin:1px 0 0}
+#ux-new-editor .ux-new-player-picture{background:#000!important}
+#ux-new-editor .ux-new-card-preview #preview-wrap{background:#000!important}
+
+/* Local-first validation feedback for optional ImageKit filename */
+#ux-new-editor #new-imagekit-url[aria-invalid="true"]{border-color:#dd8b8b!important;outline-color:#dd8b8b!important}
+#ux-new-editor #ux-new-imagekit-error{margin:0;font-size:10px;color:#ffb6b6;line-height:1.45}
+#ux-new-editor .ux-new-editor-footer #ux-new-status{min-width:0;overflow-wrap:anywhere}
+#ux-new-editor #ux-new-save:disabled{cursor:not-allowed}
+
+/* Detail context: compact one-screen display; explanations expand only while editing. */
+#ux-editor .ux-edit-context{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;
+  gap:2px 10px;padding:5px 9px;
+  border:1px solid #6383a16e;border-radius:10px;background:#1c3044;
+}
+#ux-editor .ux-edit-context>div{display:flex;flex-direction:row;align-items:center;gap:7px;min-width:0}
+#ux-editor .ux-edit-context-kicker{flex:none;font-size:9px;color:#8dabc6}
+#ux-editor #ux-context-work{
+  font-size:11px;color:#eaf4fc;max-width:100%;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;
+}
+#ux-editor #ux-context-version{
+  font-size:10px;font-weight:650;color:#d0e7f9;background:#314b64;
+  border:1px solid #6d91b066;border-radius:6px;padding:2px 7px;
+}
+#ux-editor #ux-context-hint{flex:0 0 100%;font-size:10px;line-height:1.45;color:#99b8d0;margin:0}
+#ux-editor #ux-context-hint:not([hidden]){grid-column:1/-1}
+#ux-editor #ux-context-hint[hidden]{display:none!important}
+#ux-editor #ux-context-save{
+  grid-column:1/-1;flex:0 0 100%;font-size:9px;line-height:1.1;
+  color:#9abed9;margin:0;padding-top:0;border:0;
+}
+
+/* Existing-work ImageKit editor: non-editable endpoint, editable filename. */
+#ux-editor .ux-url-fixed{display:flex;align-items:center;gap:7px;min-width:0;padding:6px 7px;border:1px solid #56738e78;border-radius:8px;background:#101c2a}
+#ux-editor .ux-url-fixed span{font-size:10px;color:#94aec7;white-space:nowrap}
+#ux-editor .ux-url-fixed code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:10px/1.5 ui-monospace,SFMono-Regular,monospace;color:#c4dbee;user-select:all}
+#ux-editor #ux-url-copy{flex:0 0 auto;width:45px;height:27px;min-height:27px;padding:0;display:flex;align-items:center;justify-content:center;font-size:10px}
+#ux-editor .ux-url-filename-label{display:block;margin:4px 0;font-size:10px;color:#a6bed5}
+#ux-editor #ux-url-form .ux-url-edit-row input[aria-invalid=true]{border-color:#d98787!important}
+#ux-editor .ux-url-validation{margin:3px 0 0;font-size:10px;line-height:1.35;color:#ffb1b1}
+
+/* Phase 2: undo stays discoverable, drag previews have a visible label */
+#ux-library .ux-list-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+#ux-library #ux-sort-state{margin-left:auto;font-size:11px;color:#9bc6df}
+#ux-library #ux-sort-undo{display:inline-flex;align-items:center;justify-content:center;min-height:28px;height:28px;padding:4px 11px;border-radius:7px;border:1px solid #6484a4;color:#dceaf8;background:#243a4f;white-space:nowrap;font-size:11px;flex:none}
+#ux-library #ux-sort-undo[hidden]{display:none!important}
+.ux-drag-ghost{overflow:visible}
+.ux-drag-ghost .ux-drag-label{position:absolute;left:50%;bottom:-31px;transform:translateX(-50%);background:#e5eff9;color:#122336;font-size:10px;font-weight:650;padding:4px 8px;border-radius:5px;white-space:nowrap;box-shadow:0 2px 10px #0006}
+#ux-gallery .ux-project.ux-drop-target{outline:3px solid #a4d2fa;outline-offset:3px;box-shadow:0 0 0 4px #5279a83d}
+#ux-feature-dialog .ux-feature-compare{padding:9px 12px;margin:12px 0 0;border-radius:8px;border:1px solid #607d9a78;background:#15273a;color:#d2e9fa;font-size:11px;line-height:1.5}
+#ux-new-editor .ux-new-status-stack{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0;flex:1}
+#ux-new-editor #ux-new-progress{font-size:11px;font-weight:650;color:#bfd5e8}
+#ux-new-editor #ux-new-progress[data-complete=true]{color:#a5dec9}
+#ux-new-editor #ux-new-status{font-size:10px;color:#8daac3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:920px){#ux-new-editor .ux-new-status-stack{flex-basis:100%}}
+
+
+/* Cover-media surfaces: one neutral black letterbox for every aspect ratio.
+   Do not change card framing or force artwork to crop/stretch. */
+#ux-gallery .ux-project-image,
+#ux-editor .ux-asset-picture,
+#ux-inline-cover .ux-inline-compare figure>div,
+#ux-history-dialog .ux-history-image,
+#ux-new-editor .ux-new-player-picture,
+#ux-new-editor #preview-wrap,
+.order-grid .order-image-wrap,
+.ux-drag-ghost,
+.ux-replace-item img,
+.target-selected img,
+.cover-comparison img,
+#current-cover,
+#poster-image,
+#export-image {
+  background: #000 !important;
+}
+#ux-gallery .ux-project-image>img,
+#ux-editor .ux-asset-picture>img,
+#ux-inline-cover .ux-inline-compare img,
+#ux-history-dialog .ux-history-image img,
+#ux-new-editor .ux-new-player-picture img,
+#ux-new-editor #preview-wrap img,
+.order-grid .order-thumb,
+.ux-drag-ghost img,
+.ux-replace-item img {
+  background-color: #000 !important;
+  object-fit: contain;
+}
+
+/* Video version selection and inline name fields; no redundant rename buttons. */
+#ux-editor .ux-stage-header .ux-version-toolbar {
+  display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0;
+}
+#ux-editor .ux-stage-header .ux-variant-item {
+  display:inline-flex;align-items:center;flex:0 0 auto;gap:1px;
+}
+#ux-editor .ux-version-label-form {
+  display:grid;gap:8px;padding:10px 0 0;margin:0;
+  border:0;border-top:1px solid #ffffff18;border-radius:0;background:transparent;
+}
+#ux-editor .ux-version-label-heading {display:flex;align-items:center;justify-content:space-between;gap:8px}
+#ux-editor .ux-version-label-heading strong {font-size:12px}
+#ux-editor .ux-version-label-heading span,
+#ux-editor .ux-version-label-form p {margin:0;color:#9fb4c8;font-size:10px;line-height:1.4}
+#ux-editor .ux-version-label-form label {display:grid;gap:5px;color:#b9cce0;font-size:10px}
+#ux-editor .ux-version-label-form input {
+  min-height:32px;width:100%;padding:6px 8px;color:#eef3fb;
+  border:1px solid #ffffff32;border-radius:7px;background:#111d2b;font-size:11px;
+}
+#ux-editor .ux-version-label-form .ux-version-form-actions {display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px}
+#ux-editor .ux-version-label-form .ux-version-form-actions button {min-height:32px;margin:0;font-size:11px}
+#ux-editor .ux-version-label-form .ux-version-form-actions .primary {background:#edf4fd;color:#192536}
+#ux-editor .ux-name-section .ux-section-heading {flex-wrap:wrap;gap:4px 8px}
+#ux-editor .ux-name-section .ux-section-heading .muted {font-size:9px;color:#8197ad}
+
+/* Work library: discoverable creation and unambiguous cross-category search. */
+body[data-workflow='library'] #ux-create-quick{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:6px;white-space:nowrap;min-width:128px;
+}
+#ux-library .ux-search{position:relative;display:block;min-width:195px}
+#ux-library .ux-search input{padding-right:59px}
+#ux-library .ux-search-clear{
+  position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;justify-content:center;
+  height:27px;min-height:27px;padding:0 9px;
+  border:1px solid #647e9966;border-radius:6px;
+  background:#263649;color:#d7e8f6;font-size:11px;
+}
+#ux-library .ux-search-clear[hidden]{display:none!important}
+#ux-library .ux-search-clear:hover{background:#38516d;color:#fff}
+#ux-library .ux-empty{display:flex;flex-direction:column;align-items:center;gap:13px}
+#ux-library .ux-empty p{margin:0}
+#ux-library .ux-empty button{width:auto;min-height:34px;margin:0;padding:7px 13px;font-size:12px}
+#ux-library #ux-create-quick:focus-visible,
+#ux-library .ux-search-clear:focus-visible,
+#ux-library .ux-empty button:focus-visible{
+  outline:2px solid #9dc9f0;outline-offset:3px;
+}
+
+/* Version management: choose a video first; names are optional advanced detail.
+   Shared work title stays outside this area and is reused across A/B/C. */
+#ux-editor .ux-version-section .ux-section-heading{align-items:center;justify-content:space-between}
+#ux-editor .ux-version-section #ux-add-variant{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#ux-editor .ux-version-section .ux-version-label{margin:2px 0 0;line-height:1.45}
+#ux-editor .ux-version-form{gap:11px;margin-top:10px;padding:14px;background:#172432;border-color:#546d8680}
+#ux-editor .ux-version-new-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#ux-editor .ux-version-new-heading strong{font-size:12px;color:#f1f5fa}
+#ux-editor .ux-version-new-heading span{font-size:11px;color:#abc8de}
+#ux-editor .ux-version-file-picker{
+  display:flex;position:relative;align-items:center;gap:12px;min-height:76px;
+  padding:12px 14px;border:1px dashed #86acc88c;border-radius:10px;
+  background:#102030;cursor:pointer;
+}
+#ux-editor .ux-version-file-picker:focus-within{outline:2px solid #9dc9f0;outline-offset:2px}
+#ux-editor .ux-version-file-picker:hover{background:#1d344a;border-color:#a1c9e9}
+#ux-editor .ux-version-file-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:9px;background:#2c445c;color:#d5eafb;font-size:22px;flex:none}
+#ux-editor .ux-version-file-content{display:flex;flex-direction:column;gap:4px;min-width:0}
+#ux-editor .ux-version-file-content strong{color:#eaf3fa;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#ux-editor .ux-version-file-content small{color:#94afc5;font-size:10px;line-height:1.35}
+#ux-editor .ux-version-file-picker input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+#ux-editor .ux-version-advanced{border-top:1px solid #58728a47;padding-top:8px}
+#ux-editor .ux-version-advanced-heading{color:#bfd4e5;font-size:11px;line-height:1.7;font-weight:600}
+#ux-editor .ux-version-advanced-heading span{color:#7f9eb6;margin-left:5px;font-size:10px;font-weight:400}
+#ux-editor .ux-version-advanced .ux-version-fields{margin-top:10px}
+#ux-editor .ux-version-form p{margin:0;font-size:11px;line-height:1.5}
+#ux-editor .ux-version-form-actions{grid-template-columns:84px minmax(0,1fr)}
+#ux-editor .ux-version-form-actions .primary:disabled{opacity:.4;cursor:not-allowed}
+#ux-editor .ux-version-section .ux-version-label-form{
+  gap:7px;margin:10px 0 0;padding:11px 0 0;background:transparent;
+  border:0;border-top:1px solid #ffffff20;border-radius:0;
+}
+#ux-editor .ux-version-section .ux-version-label-heading{align-items:center}
+#ux-editor .ux-version-section .ux-version-label-heading span{font-size:10px;color:#91adc6}
+#ux-editor .ux-version-section .ux-version-label-form .ux-version-fields{gap:8px}
+#ux-editor .ux-version-section .ux-version-label-form .ux-version-form-actions{grid-template-columns:84px minmax(0,1fr)}
+#ux-editor .ux-version-section .ux-version-label-form .ux-version-form-actions button{height:34px;min-height:34px;max-height:34px}
+#ux-editor .ux-version-section .ux-version-label-form label{font-size:11px;color:#abc6da}
+#ux-editor .ux-name-section .ux-section-heading .muted{font-size:10px;color:#a0b7cd}
+#ux-library .ux-project-name .ux-name-zh,#ux-library .ux-project-name .ux-name-en{cursor:text;border-radius:4px}
+#ux-library .ux-project-name .ux-name-zh:hover,#ux-library .ux-project-name .ux-name-en:hover{color:#fff;text-decoration:underline;text-decoration-color:#8baac670;text-underline-offset:3px}
+#ux-library .ux-project-name [role=button]:focus-visible{outline:2px solid #99c6e9;outline-offset:3px}
+#ux-editor #ux-context-save[data-save-state='dirty']{color:#ffcf8c}
+#ux-editor #ux-context-save[data-save-state='saving']{color:#aad6f6}
+#ux-editor #ux-context-save[data-save-state='error']{color:#ffa9a9}
+#ux-editor #ux-context-save[data-save-state='saved']{color:#a5d7c8}
+
+/* Workbench IA v2: task-specific panels instead of a long stack of unrelated forms. */
+#ux-editor .ux-detail-tabs{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
+ margin:13px 0 14px;padding:5px;border:1px solid #5f77914f;
+ background:#0c1520;border-radius:11px;
+}
+#ux-editor .ux-detail-tabs button{
+ display:flex;align-items:center;justify-content:center;min-height:39px;
+ margin:0;padding:8px 5px;font-size:12px;line-height:1.3;font-weight:650;
+ background:transparent;border:1px solid transparent;border-radius:8px;color:#aebfd0;
+ white-space:nowrap;transition:background .16s,border-color .16s,color .16s;
+}
+#ux-editor .ux-detail-tabs button[aria-pressed=true]{
+ background:#354d67;color:#f5f9ff;border-color:#7494b45b;
+ box-shadow:inset 0 1px #ffffff15;
+}
+#ux-editor .ux-detail-tabs button:hover:not([aria-pressed=true]){background:#1d2e3f;color:#ecf6ff}
+#ux-editor .ux-detail-tabs button:focus-visible{outline:2px solid #a6d1f4;outline-offset:2px}
+#ux-editor [data-ux-section][hidden]{display:none!important}
+#ux-editor .ux-version-section{border-top:0;padding-top:6px}
+#ux-editor .ux-cover-section{border-top:0;padding-top:6px}
+#ux-editor .ux-name-section{border-top:0;padding-top:6px}
+#ux-editor .ux-version-section>.ux-section-heading{margin-bottom:17px}
+#ux-editor .ux-version-section .ux-section-heading h3{font-size:15px}
+#ux-editor #ux-add-variant{min-height:37px;font-size:12px;padding:7px 12px;background:#30475f;color:#edf5fe;border:1px solid #7695b65d;border-radius:8px}
+#ux-editor #ux-add-variant:hover{background:#3d6080}
+#ux-editor .ux-version-switcher{padding:13px;background:#101b27;border:1px solid #607a9455;border-radius:11px}
+#ux-editor .ux-version-switcher-row{display:flex;align-items:flex-start;gap:9px;min-width:0}
+#ux-editor .ux-version-switcher .ux-variant-chips{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;overflow:visible;gap:8px;min-height:38px}
+#ux-editor .ux-version-switcher .ux-variant-item{display:inline-flex;align-items:center;border:1px solid #586d865e;background:#213245;border-radius:9px;padding:3px 4px;min-height:37px}
+#ux-editor .ux-version-switcher .ux-variant{min-height:31px;padding:6px 11px;border:0;background:transparent;color:#c3d1df;font-size:12px}
+#ux-editor .ux-version-switcher .ux-variant[aria-pressed=true]{background:#456b91;color:#fff}
+#ux-editor .ux-version-archive-icon{
+  display:grid;place-items:center;flex:0 0 39px;box-sizing:border-box;
+  width:39px;height:39px;min-height:39px;margin:0;padding:0;
+  border:1px solid #80545e6e;border-radius:9px;
+  color:#d9a0a9;background:#2b222c;cursor:pointer;
+}
+#ux-editor .ux-version-archive-icon svg{display:block;width:18px;height:18px}
+#ux-editor .ux-version-archive-icon:hover:not(:disabled){background:#50313b;color:#ffdfde;border-color:#b87883}
+#ux-editor .ux-version-archive-icon:focus-visible{outline:2px solid #b5d4f2;outline-offset:2px}
+#ux-editor .ux-version-archive-icon:disabled{color:#8494a6;background:#18222e;border-color:#5d6b7a5c;opacity:.65;cursor:not-allowed}
+#ux-editor .ux-version-tip{font-size:10px;line-height:1.45;color:#92aac1;margin:7px 2px 0}
+#ux-editor #ux-version-label-actions[hidden]{display:none!important}
+#ux-editor .ux-version-label-form .ux-version-form-actions{justify-self:end;display:flex;gap:8px}
+#ux-editor .ux-version-label-form .ux-version-form-actions button{width:auto;min-width:86px}
+#ux-editor .ux-version-label-form .ux-version-form-actions .primary{min-width:116px}
+#ux-editor .ux-danger-subtle{background:transparent;color:#d49a9d;border:1px solid #8f535761;border-radius:9px}
+#ux-editor .ux-danger-subtle:hover:not(:disabled){background:#452b34;color:#ffe2e2;border-color:#c0717c}
+#ux-editor .ux-danger-subtle:disabled{opacity:.52;cursor:not-allowed}
+#ux-editor .ux-safe-archive{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:18px 0;border-top:1px solid #ffffff1a}
+#ux-editor .ux-safe-archive>div{min-width:0}
+#ux-editor .ux-safe-archive strong{font-size:13px;color:#cfdce9}
+#ux-editor .ux-safe-archive p{margin:5px 0 0;max-width:320px;font-size:11px;color:#8ba6ba;line-height:1.65}
+#ux-editor #ux-archive-work{min-width:125px;width:auto;min-height:36px;padding:7px 13px;font-size:11px;white-space:nowrap}
+#ux-editor .ux-stage-summary #ux-stage-version{display:inline-flex!important;font-size:11px;color:#b1c7dd}
+#ux-editor .ux-stage-context .ux-stage-video-label{font-size:10px;color:#8099b0}
+#ux-editor .ux-context-save{font-size:11px}
+#ux-library .ux-trash-link{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-color:#52647866;color:#c0cfdc}
+#ux-library .ux-trash-link[aria-pressed=true]{background:#38536b;border-color:#7fa5c9;color:#f5faff}
+#ux-library #ux-trash-count{color:inherit;font-size:10px;font-variant-numeric:tabular-nums}
+#ux-library .ux-recycle-section{max-width:900px;margin:0 auto}
+#ux-library .ux-recycle-intro{margin:12px 0 18px}
+#ux-library .ux-recycle-intro h3{margin:0 0 8px;font-size:18px}
+#ux-library .ux-recycle-intro p{margin:0;font-size:12px;color:#a5b8ca;line-height:1.7}
+#ux-library .ux-recycle-item{display:flex;align-items:center;gap:16px;margin:10px 0;padding:12px 16px;background:#151e2a;border:1px solid #536a814c;border-radius:12px}
+#ux-library .ux-recycle-info{flex:1;display:flex;flex-direction:column;gap:6px;min-width:0}
+#ux-library .ux-recycle-info strong{font-size:14px;line-height:1.4;color:#eef5fc}
+#ux-library .ux-recycle-info span{font-size:11px;color:#9db3c8}
+#ux-library .ux-recycle-item>button{width:auto;flex:none;min-width:80px;min-height:37px;font-size:12px;padding:8px 15px;border-radius:8px}
+#ux-library .ux-recycle-empty{padding:38px 0;font-size:13px;color:#9aafbf;text-align:center}
+#ux-archive-dialog[hidden]{display:none!important}
+#ux-archive-dialog{position:fixed;inset:0;z-index:130;display:grid;place-items:center;padding:20px}
+#ux-archive-dialog .ux-archive-backdrop{position:absolute;inset:0;background:#050910cf;backdrop-filter:blur(5px)}
+#ux-archive-dialog .ux-archive-pane{position:relative;box-sizing:border-box;width:min(480px,100%);padding:27px 28px;border:1px solid #647a906b;border-radius:16px;background:#172231;color:#edf4fb;box-shadow:0 30px 100px #000b;outline:none}
+#ux-archive-dialog .ux-archive-symbol{display:grid;place-items:center;width:42px;height:42px;border-radius:10px;margin-bottom:14px;background:#333a44;color:#d9c5ab;font-size:24px}
+#ux-archive-dialog h2{margin:0 0 11px;font-size:20px;line-height:1.4}
+#ux-archive-dialog p{font-size:12px;color:#b7c6d4;line-height:1.75;margin:0 0 16px}
+#ux-archive-dialog label{display:grid;gap:8px;font-size:12px;color:#d1dde7}
+#ux-archive-dialog input{width:100%;min-height:41px;border:1px solid #7994aa80;border-radius:8px;background:#0e1823;color:white;padding:9px 12px;font-size:13px}
+#ux-archive-dialog #ux-archive-error{color:#ffb4b6;margin-top:12px}
+#ux-archive-dialog .ux-archive-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+#ux-archive-dialog .ux-archive-buttons button{display:flex;align-items:center;justify-content:center;min-height:43px;border-radius:9px;margin:0;padding:8px 10px;font-size:12px}
+#ux-archive-dialog .ux-danger-confirm{background:#82434b;color:#fff0f0;border:1px solid #bc7780}
+#ux-archive-dialog .ux-danger-confirm:hover:not(:disabled){background:#994b56}
+#ux-archive-dialog .ux-danger-confirm:disabled{opacity:.35;cursor:not-allowed}
+@media(max-width:1090px) and (min-width:921px){
+ #ux-editor .ux-detail-tabs button{font-size:11px;padding-inline:2px}
+ #ux-editor .ux-version-switcher .ux-variant-chips{gap:5px}
+ #ux-editor .ux-safe-archive{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){#ux-editor .ux-detail-tabs button{transition:none}}
+
+/* New-work flow: file picker is permanently available; no disclosure gate. */
+#ux-new-editor .ux-local-import-details{border:1px solid #50678168;border-radius:10px;background:#102030;overflow:visible}
+#ux-new-editor .ux-local-import-heading{display:flex;align-items:center;gap:8px;padding:9px 13px;font-size:12px;font-weight:600;color:#c9dbea;min-height:34px}
+#ux-new-editor .ux-local-import-heading small{font-size:10px;font-weight:400;color:#91adc4}
+#ux-new-editor .ux-local-import-heading #refresh-local-videos{
+  flex:none;display:inline-flex;align-items:center;justify-content:center;
+  min-height:28px;height:28px;padding:0 9px;font-size:10px;line-height:1;
+  border:1px solid #657f9a78;border-radius:7px;background:#23384b;color:#d5e9fa;
+}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker{padding:7px 18px!important}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker .file-path{margin:0 0 4px!important}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker #local-video-hint{
+  margin:4px 0 0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left .ux-new-dropzone{
+  height:37px!important;min-height:37px!important;max-height:37px!important;
+}
+/* Once a video is imported, the directory picker stays usable; only its
+   redundant explanatory sentence is omitted to make room for frame controls. */
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #local-video-hint{display:none!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker{padding:5px 18px!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left #metadata{margin:2px 0!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left>.source-panel{
+  overflow-y:auto!important;overscroll-behavior:contain;
+}
+#ux-new-editor .ux-local-import-details .local-video-picker{margin:0;border:0;border-top:1px solid #57708a60;border-radius:0;background:transparent}
+#ux-new-editor .source-panel>.import-actions{display:none!important}
+#ux-library .ux-recycle-thumb{width:57px;height:74px;flex:none;overflow:hidden;border-radius:7px;background:#000;border:1px solid #50657b}
+#ux-library .ux-recycle-thumb img{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+
+/* Video-version sequence: drag without extra management buttons. */
+#ux-editor .ux-version-switcher .ux-variant-item{position:relative;transition:border-color .12s,background .12s}
+#ux-editor .ux-version-switcher .ux-variant{cursor:grab;touch-action:pan-y}
+#ux-editor .ux-version-switcher .ux-variant:active{cursor:grabbing}
+#ux-editor .ux-version-switcher .ux-variant-item.ux-version-drag-source{opacity:.38}
+#ux-editor .ux-version-switcher .ux-variant-item.ux-version-drop-target{border-color:#a4d2fa;background:#385574;box-shadow:0 0 0 2px #a4d2fa60}
+body.ux-version-dragging,body.ux-version-dragging *{cursor:grabbing!important;user-select:none!important}
+.ux-version-ghost{position:fixed;z-index:250;pointer-events:none;left:0;top:0;max-width:240px;padding:8px 12px;border:1px solid #a4d2fa;border-radius:9px;color:#edf6ff;background:#294967;font-size:12px;box-shadow:0 8px 25px #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Two-task layout: shared work title first, then per-video settings. */
+#ux-editor .ux-version-section{padding-bottom:10px;border-top:1px solid #ffffff20}
+#ux-editor .ux-name-section,#ux-editor .ux-publish-section{padding-block:12px}
+#ux-editor .ux-name-section{border-top:0}
+#ux-editor .ux-publish-section{border-top:1px solid #ffffff20}
+#ux-editor .ux-featured-detail{padding-block:10px}
+#ux-editor .ux-safe-archive{margin-top:0;padding:12px 0 5px}
+#ux-editor .ux-version-switcher .ux-variant-chips{min-height:37px}
+
+/* New-project progressive disclosure (2026-11-11): one-page flow rather than
+   three simultaneously visible pseudo-steps. CSS only: no media/write changes. */
+#ux-new-editor .ux-new-step-number{display:none!important}
+#ux-new-editor .ux-new-step-heading{gap:0}
+#ux-new-editor #ux-new-right>.create-work{order:0!important;flex:0 0 auto!important}
+#ux-new-editor #ux-new-right>.crop-panel{order:2!important;flex:1 1 auto!important}
+#ux-new-editor .ux-new-preimport-note{
+  display:none;order:1;align-items:flex-start;gap:13px;
+  padding:17px 15px;border:1px dashed #617c9670;border-radius:11px;
+  background:linear-gradient(145deg,#1b2a3a,#111f2e);
+}
+#ux-new-editor .ux-new-preimport-icon{
+  flex:0 0 41px;height:41px;display:grid;place-items:center;
+  color:#a8c6df;background:#2a4055;border-radius:10px;
+}
+#ux-new-editor .ux-new-preimport-note strong{display:block;color:#d5e6f5;font-size:13px}
+#ux-new-editor .ux-new-preimport-note p{margin:6px 0 0;font-size:11px;color:#92aec5;line-height:1.65}
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor .ux-new-preimport-note{display:flex}
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .frame-panel,
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-right>.crop-panel,
+body[data-new-open=true][data-media-stage='imported'] #ux-new-editor #ux-new-right>.crop-panel{display:none!important}
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left{
+  justify-content:center!important;
+}
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left>.source-panel{
+  flex:0 0 auto!important;width:min(100%,730px)!important;
+  min-height:0!important;margin:auto!important;
+  padding:20px!important;overflow:visible!important;
+}
+body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .ux-new-dropzone,
+#ux-new-editor #ux-new-left .source-panel:not(:has(#source-video:not([hidden])))>.ux-new-dropzone{
+  flex:0 0 auto!important;min-height:166px!important;
+  background:radial-gradient(ellipse at center,#34577536,transparent 76%),#132536;
+}
+#ux-new-editor .ux-new-imagekit{margin-top:13px;border-top:1px solid #536c8257;padding:10px 0 0}
+#ux-new-editor .ux-new-imagekit-title{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:8px;min-height:25px;color:#bed3e7;font-size:12px;font-weight:600;
+}
+#ux-new-editor .ux-new-imagekit-title span{font-size:10px;font-weight:400;color:#8faabe;margin-left:auto}
+#ux-new-editor .ux-new-imagekit-inner{display:flex;flex-direction:column;gap:8px;padding-top:11px}
+#ux-new-editor .ux-new-frame-note{font-size:10px;line-height:1.45;color:#89a6bc;margin:0}
+#ux-new-editor .create-work>.ux-new-step-heading{margin-bottom:9px}
+#ux-new-editor #ux-new-right>.crop-panel .ux-new-step-heading p{max-width:450px}
+@media (min-width:921px) and (max-height:780px){
+  body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left>.source-panel{padding:13px!important}
+  body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .ux-new-dropzone{min-height:127px!important}
+  #ux-new-editor .ux-new-frame-note{display:none}
+}
+
+/* No accordion and no clipped crop tuning: after the MP4 auto-frame is ready,
+   the 3:4 position sliders remain directly accessible. The right inspector
+   scrolls naturally on short laptop displays rather than hiding controls. */
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-right>.crop-panel{
+  flex:0 0 auto!important;min-height:0!important;overflow:visible!important;
+}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-right .crop-panel>.fine-tune{
+  display:block!important;flex:0 0 auto!important;margin:9px 0 0!important;
+  padding:9px!important;border:1px solid #6686a154;border-radius:8px;
+}
+#ux-new-editor .crop-panel .fine-tune-heading{font-size:11px;font-weight:600;margin-bottom:7px;color:#b9d2e8}
+#ux-new-editor .crop-panel .position-controls{gap:8px}
+#ux-new-editor .crop-panel .position-controls button{min-height:30px;height:30px;padding:4px 9px;font-size:11px}

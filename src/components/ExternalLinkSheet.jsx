@@ -9,9 +9,10 @@ export function useTouchExternalLink() {
   const closeLink = useCallback(() => setPendingLink(null), []);
   const isTouchSurface = () => window.matchMedia?.('(hover: none), (pointer: coarse)').matches ?? false;
   const intercept = (event, link) => {
-    if (!isTouchSurface() || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!isTouchSurface() || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return false;
     event.preventDefault();
     setPendingLink(link);
+    return true;
   };
   return { pendingLink, closeLink, intercept };
 }
@@ -51,15 +52,53 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
 
   useEffect(() => { setCopied(false); }, [link?.href]);
   if (!link) return null;
-  const domain = new URL(link.href).hostname.replace(/^www\./, '');
+  const contact = link.contactAction;
+  const domain = contact ? null : new URL(link.href).hostname.replace(/^www\./, '');
   const isGitHub = domain === 'github.com';
   const title = lang === 'en' ? 'Open external website?' : '即将前往站外网站';
   const destination = lang === 'en' ? (link.en || link.zh) : (link.zh || link.en);
+
+  const contactTitle = contact === 'email'
+    ? (lang === 'en' ? 'Contact by email' : '邮箱联系')
+    : (lang === 'en' ? 'Connect on WeChat' : '微信联系');
+  const copyContact = async () => {
+    try {
+      await navigator.clipboard.writeText(contact === 'email' ? link.address : link.wechatId);
+      setCopied(true);
+    } catch { setCopied(false); }
+  };
 
   return createPortal(
     <div className="external-link-sheet" role="dialog" aria-modal="true" aria-labelledby="external-link-title" onClick={event => { if (event.currentTarget === event.target) onClose(); }}>
       <div className="external-link-sheet__panel">
         <span className="external-link-sheet__handle" aria-hidden="true" />
+        {contact ? (
+          <>
+            <p className="external-link-sheet__eyebrow">{lang === 'en' ? 'CONTACT' : '联系方式'}</p>
+            <h2 id="external-link-title">{contactTitle}</h2>
+            {contact === 'wechat' ? (
+              <>
+                <div className="external-link-sheet__qr"><img src={link.href} alt={lang === 'en' ? 'WeChat QR code' : '微信联系二维码'} width="200" height="200" /></div>
+                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Scan with another device, or copy the WeChat ID below.' : '可使用另一台设备扫码，或复制微信号后在微信中搜索添加。'}</p>
+                <p className="external-link-sheet__contact-value">{link.wechatId}</p>
+              </>
+            ) : (
+              <>
+                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Copy the address or open your email app to write a message.' : '可以复制邮箱地址，或打开邮件应用发送邮件。'}</p>
+                <p className="external-link-sheet__contact-value">{link.address}</p>
+              </>
+            )}
+            <div className="external-link-sheet__actions">
+              <button className="external-link-sheet__continue" type="button" onClick={copyContact}>{copied ? (lang === 'en' ? (contact === 'email' ? 'Email copied' : 'WeChat ID copied') : (contact === 'email' ? '邮箱已复制' : '微信号已复制')) : (lang === 'en' ? (contact === 'email' ? 'Copy email address' : 'Copy WeChat ID') : (contact === 'email' ? '复制邮箱地址' : '复制微信号'))}</button>
+              {contact === 'email' ? (
+                <a className="external-link-sheet__cancel" href={link.href} onClick={onClose}>{lang === 'en' ? 'Open mail app' : '打开邮件应用'}</a>
+              ) : (
+                <a className="external-link-sheet__cancel" href={link.href} download={link.download}>{lang === 'en' ? 'Save QR image' : '保存二维码图片'}</a>
+              )}
+              <button className="external-link-sheet__dismiss" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Close' : '关闭'}</button>
+            </div>
+          </>
+        ) : <>
         <p className="external-link-sheet__eyebrow">{lang === 'en' ? 'EXTERNAL LINK' : '站外访问'}</p>
         <h2 id="external-link-title">{title}</h2>
         <p className="external-link-sheet__destination">{destination}</p>
@@ -73,6 +112,7 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
           try { await navigator.clipboard.writeText(link.href); setCopied(true); }
           catch { setCopied(false); }
         }}>{copied ? (lang === 'en' ? 'Link copied' : '已复制链接') : (lang === 'en' ? 'Copy link instead' : '复制 GitHub 链接')}</button>}
+        </>}
       </div>
     </div>,
     document.body

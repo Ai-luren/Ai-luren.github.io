@@ -104,10 +104,12 @@ export default function MagneticProjectArchive({ onSelect }) {
     window.clearTimeout(pageTransitionTimer.current);
   }, []);
 
-  useEffect(() => warmNear(
-    document.getElementById('projects') || archiveRef.current,
-    FEATURED_PROJECTS.map(item => item.cover),
-  ), []);
+  // The mobile second page is not rendered until selected. Decode it only
+  // when readers approach the featured cards, not while they watch the Hero.
+  useEffect(() => {
+    if (!isMobile) return undefined;
+    return warmNear(archiveRef.current, FEATURED_PROJECTS.slice(4).map(item => item.cover), '80px');
+  }, [isMobile]);
 
   const handlePageKeyDown = (event) => {
     if (!isMobile) return;
@@ -198,8 +200,9 @@ export default function MagneticProjectArchive({ onSelect }) {
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
       </button>
       <div key={isMobile ? mobilePage : 'desktop'} ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} tabIndex={isMobile ? 0 : undefined} onKeyDown={handlePageKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging}>
-      {visibleArchives.map(project => (
-        <ProjectCard key={project.id} project={project} lang={lang} onClick={handleCardClick} />
+      {visibleArchives.map((project, index) => (
+        <ProjectCard key={project.id} project={project} lang={lang} onClick={handleCardClick}
+          coverPriority={isMobile || index < 4 ? 'normal' : 'low'} deferUntilNear />
       ))}
       </div>
       <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={() => changeMobilePage(mobilePage + 1, 1)}>

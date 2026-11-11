@@ -3,11 +3,13 @@ import coverOverrides from './project-cover-overrides.json';
 import videoMetadata from './project-video-metadata.json';
 import autoProjects from './auto-projects.json';
 import projectOrder from './project-order.json';
+import projectVersionOrder from './project-version-order.json';
 import projectTitleOverrides from './project-title-overrides.json';
 import localVideoPaths from './local-video-paths.json';
 import legacyVideoUrls from './legacy-imagekit-urls.json';
 import legacyVideoVariants from './legacy-video-variants.json';
 import legacyMainVersionLabels from './legacy-main-version-labels.json';
+import archived from './archive-state.json';
 
 const playerPosters = import.meta.glob('../../assets/images/player-posters/*/*.webp', { eager: true, query: '?url', import: 'default' });
 
@@ -68,14 +70,16 @@ const BASE_PROJECTS = [
     videoUrl:videoSource(localVideoPath,variant.videoUrl||null),
     playerPoster:playerPosters[`../../assets/images/player-posters/${posterFile}`]||null,
   }));
-  return { ...project, variants,
+  return { ...project, variants: variants.filter(v=>!archived.versions?.[project.id]?.[v.id]),
+    mainVersionArchived: Boolean(archived.versions?.[project.id]?.main),
+    versionOrder: projectVersionOrder[project.id] || [],
     ...(project.mainVersionLabel || legacyMainVersionLabels[project.id]
       ? {mainVersionLabel:project.mainVersionLabel || legacyMainVersionLabels[project.id]} : {}),
     ...(projectTitleOverrides[project.id] ? {title:projectTitleOverrides[project.id]} : {}), ...(cover ? { cover } : {}),
     videoWidth: media.videoWidth, videoHeight: media.videoHeight,
     playerPoster: playerPosters[`../../assets/images/player-posters/${media.playerPoster}`] || null,
   };
-});
+}).filter(project=>!archived.works?.[project.id]);
 
 // Two independent, local-workbench-managed display orders. Never change stable
 // project IDs, image/video references, metadata or a project's category.

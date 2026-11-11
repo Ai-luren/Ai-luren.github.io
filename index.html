@@ -1850,18 +1850,12 @@
         window.dispatchEvent(new CustomEvent('video-scrub-state', { detail: { active: active } }));
       }
 
-      // 直接打开或 #top 刷新时始终从 Hero 开始；其他章节锚点仍按原目标定位。
+      // Native browser navigation opens a fresh URL at the Hero; existing
+      // section hashes are aligned below after the dynamic layout mounts.
+      // Never force scrollTo(0,0) during parse, load or pageshow: readers can
+      // scroll before the Hero finishes loading, or return through history.
       var hasInitialSectionAnchor = Boolean(window.location.hash && window.location.hash !== '#top');
-      if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
-      function resetToHeroOnDirectOpen() {
-        if (!hasInitialSectionAnchor) {
-          window.scrollTo(0, 0);
-          window.requestAnimationFrame(function () { window.scrollTo(0, 0); });
-        }
-      }
-      resetToHeroOnDirectOpen();
-      window.addEventListener('load', resetToHeroOnDirectOpen, { once: true });
-      window.addEventListener('pageshow', resetToHeroOnDirectOpen);
+      if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'auto';
 
       function revealPage() {
         if (loaded) return;

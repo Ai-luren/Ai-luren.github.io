@@ -4,7 +4,7 @@ import { PROJECTS, PROJECT_CATEGORIES } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
 import CinemaPlayer from './CinemaPlayer.jsx';
 import LibraryNavigation from './LibraryNavigation.jsx';
-import { prepareProjectPoster } from '../utils/warmImage.js';
+import { prepareProjectPoster, warmImage } from '../utils/warmImage.js';
 import './WorksLibrary.css';
 
 // The All Work page uses the four real category tabs, never a redundant All filter.
@@ -28,6 +28,22 @@ export default function WorksLibrary() {
   useEffect(() => { selectionTokenRef.current += 1; }, [category]);
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
   const visible = PROJECTS.filter(project => project.category === category);
+  const directProjectId = new URLSearchParams(location.search).get('project');
+  // Prioritize the actual library grid, not the homepage Featured flag.
+  // Keep the priority tiers accurate after phone rotation or desktop resizing.
+  const columnsForViewport = () => matchMedia('(min-width: 1280px)').matches ? 4
+    : matchMedia('(min-width: 900px)').matches ? 3 : 2;
+  const [firstRowCount, setFirstRowCount] = useState(columnsForViewport);
+  useEffect(() => {
+    const update = () => setFirstRowCount(columnsForViewport());
+    window.addEventListener('resize', update, { passive: true });
+    return () => window.removeEventListener('resize', update);
+  }, []);
+  const warmCategoryFirstRow = nextCategory => {
+    if (nextCategory === category) return;
+    PROJECTS.filter(project => project.category === nextCategory).slice(0, 2)
+      .forEach(project => warmImage(project.cover));
+  };
 
   // Direct preview from Studio opens the right category and finds the exact card.
   useEffect(() => {
@@ -100,12 +116,18 @@ export default function WorksLibrary() {
       <main id="library-main">
         <div className="library-intro"><h1 className="page-title">{lang === 'en' ? 'All Work' : '全部作品'}</h1><p>{lang === 'en' ? `${PROJECTS.length} Works · ${activeCategory?.label.en || 'Category'} (${visible.length})` : `共 ${PROJECTS.length} 部作品 · 当前：${activeCategory?.label.zh || '分类'} ${visible.length} 部`}</p></div>
         <div className="library-filters" role="group" aria-label={lang === 'en' ? 'Filter work by category' : '按作品类别筛选'}>
-          {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id} onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
+          {PROJECT_CATEGORIES.map(item => <button type="button" key={item.id} data-category={item.id} aria-pressed={category === item.id}
+            onPointerEnter={() => warmCategoryFirstRow(item.id)}
+            onPointerDownCapture={() => warmCategoryFirstRow(item.id)}
+            onFocus={() => warmCategoryFirstRow(item.id)}
+            onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>
         <p className="library-category-note" aria-live="polite" aria-atomic="true">
           {activeCategory?.description?.[lang] || '\u00a0'}
         </p>
-        {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map(project => <ProjectCard key={project.id} project={project} lang={lang} onClick={(event, item) => {
+        {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map((project, index) => <ProjectCard key={project.id} project={project} lang={lang}
+          coverPriority={project.id === directProjectId || index < firstRowCount ? 'high' : index < firstRowCount * 2 ? 'normal' : 'low'}
+          deferUntilNear={index >= firstRowCount * 2 && project.id !== directProjectId} onClick={(event, item) => {
           const trigger = event.target.closest('.comet-archive__card');
           const token = ++selectionTokenRef.current;
           cinemaReturnFocusRef.current = trigger;

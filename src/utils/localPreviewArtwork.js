@@ -57,6 +57,9 @@ export function useLocalArtworkRevision(kind,id,variant='main'){
   const getSnapshot=useCallback(()=>revisions.get(key)||'', [key]);
   return useSyncExternalStore(subscribe,getSnapshot,()=> '');
 }
+export function currentLocalArtworkRevision(kind,id,variant='main'){
+  return revisions.get(keyFor(kind,id,variant)) || '';
+}
 export function revisionedArtworkUrl(url,revision){
   if(!url||!revision||!enabled)return url;
   const separator=url.includes('?')?'&':'?';

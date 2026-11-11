@@ -1,11 +1,12 @@
 import { spawnSync } from 'node:child_process';
 
 const suites = {
-  smoke: ['build', 'check:asset-catalog', 'check:curated-order', 'check:media-safety'],
+  smoke: ['build', 'check:repo-layout', 'check:asset-catalog', 'check:curated-order', 'check:media-safety', 'check:image-loading'],
   workbench: [
     'check:workbench-storage', 'check:workbench-backdrops', 'check:workbench-full-flow',
     'check:workbench-ux', 'check:workbench-phase3', 'check:workbench-history',
     'check:workbench-icon-alignment', 'check:workbench-preview-sync', 'check:workbench-version-labels',
+    'check:workbench-simple-versions', 'check:workbench-recycle',
   ],
 };
 const preset = process.argv[2] || 'smoke';

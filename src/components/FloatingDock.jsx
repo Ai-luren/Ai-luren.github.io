@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { useLang } from '../i18n/index.js';
@@ -28,9 +28,8 @@ function DockIcon({ name }) {
   return <img src={iconPaths[name]} alt="" width="23" height="23" aria-hidden="true" />;
 }
 
-function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer, onExternalClick }) {
+function DockItem({ item, index, activeTooltip, setActiveTooltip, mouseX, distance, magnification, baseItemSize, spring, reducedMotion, hasFinePointer, onExternalClick }) {
   const ref = useRef(null);
-  const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const mouseDistance = useTransform(mouseX, (value) => {
     const rect = ref.current?.getBoundingClientRect() ?? { x: 0, width: baseItemSize };
@@ -39,23 +38,39 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
   const targetScale = useTransform(mouseDistance, [-distance, 0, distance], [1, reducedMotion ? 1 : magnification / baseItemSize, 1]);
   const scale = useSpring(targetScale, spring);
   // Coarse-pointer screens use the explicit bottom sheet, not a floating Hover label.
-  const showLabel = hasFinePointer && (hovered || focused);
+  const showLabel = hasFinePointer && activeTooltip === index && item.contactAction !== 'wechat';
+  const showWechatQr = hasFinePointer && activeTooltip === index && item.contactAction === 'wechat';
 
   return (
     <motion.a
       ref={ref}
-      href={item.href || '#'}
+      href={item.contactAction === 'wechat' ? '#wechat-qr' : (item.href || '#')}
       download={item.download}
       target={item.external ? '_blank' : undefined}
       rel={item.external ? 'noopener noreferrer' : undefined}
       aria-label={item.label}
       className="floating-dock-item"
       style={{ width: baseItemSize, height: baseItemSize }}
-      onMouseEnter={() => { if (hasFinePointer) setHovered(true); }}
-      onMouseLeave={() => { if (hasFinePointer) setHovered(false); }}
-      onFocus={() => { setFocused(true); setHovered(true); }}
-      onBlur={() => { setFocused(false); setHovered(false); }}
+      onMouseEnter={() => { if (hasFinePointer) setActiveTooltip(index); }}
+      onMouseLeave={() => { if (hasFinePointer) setActiveTooltip(current => current === index ? null : current); }}
+      onFocus={(event) => {
+        // Pointer clicks (including file downloads) retain DOM focus after the
+        // cursor leaves. Only keyboard focus should keep a tooltip visible.
+        const keyboardFocus = event.currentTarget.matches(':focus-visible');
+        setFocused(keyboardFocus);
+        if (keyboardFocus && hasFinePointer) setActiveTooltip(index);
+      }}
+      onBlur={() => {
+        setFocused(false);
+        setActiveTooltip(current => current === index ? null : current);
+      }}
       onClick={(event) => {
+        if (item.contactAction) {
+          // Touch visitors choose their next action in the contact sheet.
+          if (onExternalClick(event, item)) return;
+          // Desktop WeChat is a QR preview, never an implicit download.
+          if (item.contactAction === 'wechat') { event.preventDefault(); return; }
+        }
         if (item.onClick) {
           event.preventDefault();
           item.onClick();
@@ -65,13 +80,24 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
       }}
     >
       <motion.span className="floating-dock-icon" style={{ scale: focused ? (reducedMotion ? 1 : 1.18) : scale }}>{item.icon}</motion.span>
-      <AnimatePresence>
-        {showLabel && (
+      {showWechatQr && (
+        <motion.span
+          className="floating-dock-qr"
+          initial={reducedMotion ? false : { opacity: 0, y: 5, x: '-50%' }}
+          animate={{ opacity: 1, y: 0, x: '-50%' }}
+          transition={{ duration: reducedMotion ? 0 : .16 }}
+          role="tooltip"
+        >
+          <span className="floating-dock-qr__heading">{item.qrHeading}</span>
+          <span className="floating-dock-qr__image"><img src={item.href} alt={item.qrAlt} width="164" height="164" /></span>
+          <span className="floating-dock-qr__caption">{item.qrCaption}</span>
+        </motion.span>
+      )}
+      {showLabel && (
           <motion.span
             className="floating-dock-label"
             initial={reducedMotion ? false : { opacity: 0, y: 4, x: '-50%' }}
             animate={{ opacity: 1, y: 0, x: '-50%' }}
-            exit={reducedMotion ? { opacity: 1, y: 0, x: '-50%' } : { opacity: 0, y: 4, x: '-50%' }}
             transition={{ duration: reducedMotion ? 0 : 0.18 }}
             style={{ left: '50%' }}
             role="tooltip"
@@ -79,7 +105,6 @@ function DockItem({ item, mouseX, distance, magnification, baseItemSize, spring,
             {item.hoverLabel || item.label}
           </motion.span>
         )}
-      </AnimatePresence>
     </motion.a>
   );
 }
@@ -95,6 +120,8 @@ export default function FloatingDock() {
     typeof window !== 'undefined'
       && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
   ));
+  // One dock-wide tooltip avoids lingering focused labels and overlapping exit animations.
+  const [activeTooltip, setActiveTooltip] = useState(null);
   const [status, setStatus] = useState('');
   const lang = useLang();
   const { pendingLink, closeLink, intercept } = useTouchExternalLink();
@@ -111,7 +138,7 @@ export default function FloatingDock() {
     if (!media) return undefined;
     const updatePointerMode = () => {
       setHasFinePointer(media.matches);
-      if (!media.matches) mouseX.set(Infinity);
+      if (!media.matches) { mouseX.set(Infinity); setActiveTooltip(null); }
     };
     updatePointerMode();
     media.addEventListener?.('change', updatePointerMode);
@@ -136,8 +163,8 @@ export default function FloatingDock() {
   };
 
   const items = [
-    { label: lang === 'en' ? 'Copy email' : '复制邮箱', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
-    { label: lang === 'en' ? 'Save WeChat QR code' : '保存微信二维码', hoverLabel: lang === 'en' ? 'Save WeChat QR' : '保存微信二维码', href: wechatQrCode, download: 'wechat-qr-code.webp', icon: <DockIcon name="wechat" /> },
+    { contactAction: 'email', label: lang === 'en' ? (hasFinePointer ? 'Copy email' : 'Email contact') : (hasFinePointer ? '复制邮箱' : '邮箱联系'), href: 'mailto:1746850550@qq.com', address: '1746850550@qq.com', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
+    { contactAction: 'wechat', label: lang === 'en' ? (hasFinePointer ? 'View WeChat QR code' : 'WeChat contact') : (hasFinePointer ? '查看微信二维码' : '微信联系'), href: wechatQrCode, wechatId: '15580714085', download: 'wechat-qr-code.webp', qrHeading: lang === 'en' ? 'Scan with WeChat' : '微信扫码联系', qrAlt: lang === 'en' ? 'WeChat contact QR code' : '微信联系二维码', qrCaption: lang === 'en' ? 'WeChat ID: 15580714085' : '微信号：15580714085', icon: <DockIcon name="wechat" /> },
     { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: 'https://github.com/Ai-luren', external: true, zh: 'GitHub 主页', en: 'GitHub profile', icon: <DockIcon name="github" /> },
     { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: 'https://www.xiaohongshu.com/user/profile/5eff691a000000000101c470', external: true, zh: '小红书主页', en: 'REDnote profile', icon: <DockIcon name="xiaohongshu" /> },
     { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: 'https://v.douyin.com/idVkRoxL/', external: true, zh: '抖音主页', en: 'Douyin profile', icon: <DockIcon name="douyin" /> },
@@ -151,10 +178,13 @@ export default function FloatingDock() {
         role="toolbar"
         aria-label={lang === 'en' ? 'Contact and portfolio links' : '联系方式与作品集链接'}
         onMouseMove={(event) => { if (hasFinePointer) mouseX.set(event.clientX); }}
-        onMouseLeave={() => mouseX.set(Infinity)}
+        onMouseLeave={() => { mouseX.set(Infinity); setActiveTooltip(null); }}
       >
-        {items.map((item) => <DockItem
+        {items.map((item, index) => <DockItem
           key={item.label}
+          index={index}
+          activeTooltip={activeTooltip}
+          setActiveTooltip={setActiveTooltip}
           item={item}
           mouseX={mouseX}
           distance={isCompact ? 120 : 155}

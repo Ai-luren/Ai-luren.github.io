@@ -1,3 +1,4 @@
+import {initialProjectPoster} from '../data/version-order.js';
 // Decode an image before replacing a visible card. Keep a bounded set of decoded
 // images while navigating, so iOS Safari does not have to rediscover each frame.
 const cache = new Map();
@@ -62,7 +63,7 @@ export function warmNear(element, sources, margin = '1100px') {
  */
 export async function prepareProjectPoster(project) {
   if (!project) return project;
-  const src = project.playerPoster || project.cover;
+  const src = initialProjectPoster(project);
   const ready = await warmImage(src);
-  return ready ? project : { ...project, playerPoster: project.cover };
+  return ready ? project : { ...project, preparedVersionPosterFallback: true };
 }

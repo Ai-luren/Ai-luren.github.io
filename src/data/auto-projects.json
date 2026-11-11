@@ -115,15 +115,15 @@
     "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-C.mp4",
     "coverFile": "commercial/FormFunk Creative Commercial.webp",
     "mainVersionLabel": {
-      "zh": "千万别摔！",
-      "en": "Don't Drop It!"
+      "zh": "千万别摔",
+      "en": "Don't Drop It"
     },
     "variants": [
       {
         "id": "be383e18-09d7-4d8e-9650-3c457dfdd6a9",
         "label": {
-          "zh": "谁才是主角？",
-          "en": "Who's the Star?"
+          "zh": "谁是主角",
+          "en": "Who's the Star"
         },
         "localVideoPath": "AI Commercials/FormFunk Creative Commercial - Version B.mp4",
         "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-D.mp4",
@@ -131,6 +131,20 @@
         "videoHeight": 1708,
         "posterFile": "commercial/FormFunk Creative Commercial - Version B.webp",
         "posterTime": 8.08,
+        "posterTimeSource": "confirmed-poster-selection"
+      },
+      {
+        "id": "83b47871-ac0a-4c82-82d6-56f6f9ab0faa",
+        "label": {
+          "zh": "精密入席",
+          "en": "Precision Served"
+        },
+        "localVideoPath": "AI Commercials/FormFunk Creative Commercial - Version C.mp4",
+        "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-E.mp4",
+        "videoWidth": 607,
+        "videoHeight": 1080,
+        "posterFile": "commercial/FormFunk Creative Commercial - Version C.webp",
+        "posterTime": 4.825641,
         "posterTimeSource": "confirmed-poster-selection"
       }
     ]
