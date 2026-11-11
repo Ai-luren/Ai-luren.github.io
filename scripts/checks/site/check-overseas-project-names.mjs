@@ -44,7 +44,14 @@ try{
       await page.locator('[data-category="'+category+'"]').click();
       const card=page.locator('.library-grid .comet-archive__card').filter({hasText:zh}).first();
       assert((await card.innerText()).includes(zh),id+' Chinese title');
-      await card.locator('.comet-archive__cover').evaluate(image=>image.decode());
+      // Deferred artwork has no src until its card approaches the viewport.
+      // Scroll into the load window and assert a genuinely decoded asset;
+      // calling decode() on the empty lazy placeholder is an EncodingError.
+      await card.scrollIntoViewIfNeeded();
+      await page.waitForFunction(workId=>{
+        const image=document.querySelector(`.library-grid [data-project-id="${workId}"] .comet-archive__cover`);
+        return Boolean(image?.getAttribute('src') && image.complete && image.naturalWidth>0);
+      },id,{timeout:15000});
     }
     await page.locator('[data-category="social"]').click();
     assert((await page.locator('.library-grid [data-project-id="10"]').innerText()).includes('AI 海外产品广告'));
