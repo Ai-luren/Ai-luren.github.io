@@ -47,7 +47,8 @@ try{
  assert(await page.locator('#ux-editor').isVisible());
  assert.equal(await page.locator('#ux-editor-title').textContent(),'MEXC 会员权益');
  assert.equal(await page.locator('#ux-variant-chips .ux-variant').count(),2);
- assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher');
+ assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher-row');
+ assert.equal(await page.locator('#ux-archive-version').evaluate(el=>el.parentElement.className),'ux-version-switcher-row','The active-video trash must share the chip row');
  assert(await page.locator('#ux-variant-chips').isVisible());
  await page.locator('#ux-cover-img').evaluate(img=>img.decode());
  await page.locator('#ux-poster-img').evaluate(img=>img.decode());

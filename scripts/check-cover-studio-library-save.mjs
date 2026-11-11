@@ -40,14 +40,14 @@ try{
  await page.locator('#ux-categories [data-filter="commercial"]').click();
  await page.locator('#ux-gallery .ux-project[data-id="16"] .ux-project-image img').click();
  const titleBefore={zh:await page.locator('#ux-title-zh').inputValue(),en:await page.locator('#ux-title-en').inputValue()};
- await page.locator('#ux-variant-chips .ux-variant-edit').nth(0).click();
- assert(await page.locator('#ux-version-label-form').isVisible());
+ assert(await page.locator('#ux-version-label-form').isVisible(),'Current version name editor should be inline');
  await page.locator('#ux-version-label-zh').fill('会员权益 A 测试名');
  await page.locator('#ux-version-label-en').fill('Member Perks A Test Name');
  await page.locator('#ux-version-label-form').evaluate(form=>form.requestSubmit());
  await page.waitForFunction(()=>document.querySelector('#ux-variant-chips .ux-variant')?.textContent==='会员权益 A 测试名'
   &&document.querySelector('#ux-context-version')?.textContent==='会员权益 A 测试名');
- assert.equal(await page.locator('#ux-version-label').textContent().then(text=>text.includes('会员权益 A 测试名')),true);
+ assert.equal(await page.locator('#ux-version-label-zh').inputValue(),'会员权益 A 测试名');
+ assert.match(await page.locator('#ux-version-label').textContent(),/仅此视频/);
  assert.deepEqual({zh:await page.locator('#ux-title-zh').inputValue(),en:await page.locator('#ux-title-en').inputValue()},titleBefore);
  assert.equal((await data('auto-projects')).find(p=>p.id==='16').mainVersionLabel.en,'Member Perks A Test Name');
  await page.locator('#ux-add-variant').click();

@@ -101,7 +101,7 @@
     <div class="ux-editor-body">
       <section class="ux-studio-stage" aria-label="视频播放与选帧">
         <div class="ux-stage-header">
-          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span><button type="button" id="ux-edit-current-version" class="ux-version-edit-current" aria-label="编辑当前视频版本名称" hidden>编辑名称</button></div>
+          <div class="ux-stage-summary"><strong>视频预览</strong><span id="ux-stage-version">主版本</span></div>
           <div class="ux-stage-context">
 <span class="ux-stage-video-label">本地 MP4 · 选版本请使用右侧「视频版本」</span>
           </div>
@@ -182,32 +182,40 @@
             </div>
           </div>
         </section>
+        <section class="ux-edit-section ux-name-section" data-ux-section="versions">
+          <div class="ux-section-heading"><h3>作品统一名称</h3><span class="muted">所有视频版本共用 · 修改后整部作品同步更名</span></div>
+          <form id="ux-title-form">
+            <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
+            <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
+            <button id="ux-title-save" type="submit" class="primary" hidden>保存名称</button>
+          </form>
+        </section>
         <section class="ux-edit-section ux-version-section" data-ux-section="versions">
           <div class="ux-section-heading">
             <h3>视频版本</h3>
             <button type="button" id="ux-add-variant" class="ux-subtle-button" hidden>＋ 添加版本</button>
           </div>
           <div class="ux-version-switcher">
-            <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="选择视频版本"></div>
-            <p id="ux-version-tip" class="ux-version-tip">按住标签拖动调整版本顺序，松手自动保存；第一个版本将优先播放。</p>
+            <div class="ux-version-switcher-row">
+              <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="选择和拖拽排序视频版本"></div>
+              <button type="button" id="ux-archive-version" class="ux-version-archive-icon" aria-label="将当前视频版本移入回收站" title="当前视频版本移入回收站（可以恢复）">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6.5 6l.8 14h9.4l.8-14M10 10v7M14 10v7"/></svg>
+              </button>
+            </div>
+            <p id="ux-version-tip" class="ux-version-tip">点击切换 · 拖动排序，松手自动保存 · 最右侧仅归档当前视频</p>
           </div>
-          <div class="ux-version-quick-actions">
-            <button type="button" id="ux-rename-current" class="secondary">重命名当前版本</button>
-            <button type="button" id="ux-archive-version" class="ux-danger-subtle">归档当前视频</button>
-          </div>
-          <p id="ux-version-label" class="ux-version-label"></p>
-        <form id="ux-version-label-form" class="ux-version-label-form" hidden>
-          <div class="ux-version-label-heading"><strong>重命名当前版本</strong><span id="ux-version-label-current"></span></div>
-          <div class="ux-version-fields">
-            <label>中文标签 <input id="ux-version-label-zh" type="text" maxlength="50" required></label>
-            <label>英文标签 <input id="ux-version-label-en" type="text" maxlength="50" required></label>
-          </div>
-          <p id="ux-version-label-status" role="status">只修改这个版本的标签，不改整部作品的名称。</p>
-          <div class="ux-version-form-actions">
-            <button id="ux-version-label-cancel" type="button" class="secondary">取消</button>
-            <button id="ux-version-label-save" type="submit" class="primary">保存名称</button>
-          </div>
-        </form>
+          <form id="ux-version-label-form" class="ux-version-label-form" aria-label="当前视频版本名称">
+            <div class="ux-version-label-heading"><strong>当前视频名称</strong><span id="ux-version-label">仅影响当前视频</span></div>
+            <div class="ux-version-fields">
+              <label>中文名称 <input id="ux-version-label-zh" type="text" maxlength="50" required autocomplete="off"></label>
+              <label>英文名称 <input id="ux-version-label-en" type="text" maxlength="50" required autocomplete="off"></label>
+            </div>
+            <p id="ux-version-label-status" role="status">只影响当前视频，不改变上方作品统一名称。</p>
+            <div id="ux-version-label-actions" class="ux-version-form-actions" hidden>
+              <button id="ux-version-label-cancel" type="button" class="secondary">撤销修改</button>
+              <button id="ux-version-label-save" type="submit" class="primary">保存视频名称</button>
+            </div>
+          </form>
 
           <form id="ux-version-form" class="ux-version-form" hidden>
             <div class="ux-version-new-heading"><strong>添加视频版本</strong><span id="ux-version-proposed">自动命名：版本 B</span></div>
@@ -228,14 +236,6 @@
               <button id="ux-version-cancel" type="button" class="secondary">取消</button>
               <button id="ux-version-submit" type="submit" class="primary" disabled>保存新版本</button>
             </div>
-          </form>
-        </section>
-        <section class="ux-edit-section ux-name-section" data-ux-section="versions">
-          <div class="ux-section-heading"><h3>作品名称</h3><span class="muted">整部作品共用 · A / B / C 不随版本改变</span></div>
-          <form id="ux-title-form">
-            <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
-            <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
-            <button id="ux-title-save" type="submit" class="primary" hidden>保存名称</button>
           </form>
         </section>
         <section class="ux-edit-section ux-publish-section" data-ux-section="versions">
@@ -264,8 +264,8 @@
           <button id="ux-featured-action" type="button" class="secondary">☆ 加入精选</button>
         </section>
         <section class="ux-edit-section ux-safe-archive" data-ux-section="versions">
-          <div><strong>整理作品</strong><p>移入回收站后可恢复；不会删除视频、图片或线上 ImageKit 文件。</p></div>
-          <button id="ux-archive-work" type="button" class="ux-danger-subtle">归档整部作品</button>
+          <div><strong>整部作品归档</strong><p>隐藏这部作品及全部视频版本，可从回收站恢复；不删除任何本地或线上文件。</p></div>
+          <button id="ux-archive-work" type="button" class="ux-danger-subtle">整部移入回收站</button>
         </section>
       </div>
     </div>

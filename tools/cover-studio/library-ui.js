@@ -27,15 +27,6 @@ const createPlusIcon=()=>{
   svg.append(path);
   return svg;
 };
-const createEditIcon=()=>{
-  const ns='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(ns,'svg');
-  svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
-  const path=document.createElementNS(ns,'path');
-  path.setAttribute('d','m14 5 5 5M4 20l4.2-.8L19 8.4a2.1 2.1 0 0 0-3-3L5.2 16.2 4 20Z');
-  path.setAttribute('fill','none');path.setAttribute('stroke','currentColor');path.setAttribute('stroke-width','1.8');path.setAttribute('stroke-linecap','round');path.setAttribute('stroke-linejoin','round');
-  svg.append(path);return svg;
-};
 const createStarIcon=()=>{
   // A font's ☆ / ★ has a baseline and inconsistent ink bounds across OSes.
   // The vector's path spans equal x/y extents around (12,12), so it centers.
@@ -53,7 +44,7 @@ const createStarIcon=()=>{
 export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkflow,openPosterWorkflow,showManaged,openNewProject}){
  let filter='featured',search='',selectedId=null,selectedVersion='main',editingVersionId=null,swapping=null,drag=null,busy=false,activePanel='versions',archivePending=null;
  let notificationTimer=null,suppressDragClickUntil=0,suppressDragClickId=null,undoLast=null,inlineNameTimer=null;
- let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null,versionLabelOpener=null;
+ let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null;
  let suppressUrlBlur=false,urlSaving=false;
  let versionDrag=null,versionSortBusy=false,suppressVersionClickUntil=0;
  // A stable image URL lets the browser reuse decoded thumbnails between tabs/searches.
@@ -147,9 +138,13 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    syncSaveIndicator();
  };
  const syncVersionLabelDraftStatus=()=>{
-   if(!editingVersionId||$('ux-version-label-form').hidden)return;
+   if(!editingVersionId)return;
    const current=versionById(selectedId,editingVersionId)?.label||{zh:'',en:''};
    const changed=$('ux-version-label-zh').value.trim()!==current.zh||$('ux-version-label-en').value.trim()!==current.en;
+   $('ux-version-label-actions').hidden=!changed;
+   $('ux-version-label-status').textContent=changed
+     ? '名称尚未保存；只修改当前视频，不影响作品统一名称。'
+     : '只影响当前视频，不改变上方作品统一名称。';
    syncSaveIndicator();
  };
 
@@ -173,6 +168,46 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    };
  };
  const anyDraft=()=>Object.values(draftSections()).some(Boolean);
+ // Multiple fields are now in the same management panel. Persisting one must
+ // not silently reset the unsaved draft in another when bootstrap re-renders.
+ const preserveOtherTextDrafts=except=>{
+   if($('ux-editor').hidden)return {};
+   const pending=draftSections();
+   return {
+     title:except!=='title'&&pending.title
+       ? {zh:$('ux-title-zh').value,en:$('ux-title-en').value} : null,
+     versionLabel:except!=='versionLabel'&&pending.versionLabel
+       ? {id:editingVersionId,zh:$('ux-version-label-zh').value,en:$('ux-version-label-en').value} : null,
+     url:except!=='url'&&pending.url
+       ? $('ux-url-value').value : null,
+   };
+ };
+ const restoreOtherTextDrafts=snapshot=>{
+   if(snapshot.title){
+     $('ux-title-zh').value=snapshot.title.zh;
+     $('ux-title-en').value=snapshot.title.en;
+     $('ux-title-save').hidden=false;
+   }
+   if(snapshot.versionLabel?.id===selectedVersion){
+     editingVersionId=selectedVersion;
+     $('ux-version-label-zh').value=snapshot.versionLabel.zh;
+     $('ux-version-label-en').value=snapshot.versionLabel.en;
+     syncVersionLabelDraftStatus();
+   }
+   if(snapshot.url!==null && snapshot.url!==undefined){
+     $('ux-url-value').value=snapshot.url;
+     $('ux-url-form').hidden=false;
+     $('ux-url-readonly').hidden=true;
+     syncUrlValidation();
+   }
+   syncSaveIndicator();
+ };
+ const hasNonTextDraft=()=>{
+   const pending=draftSections();
+   if(!pending.version&&!pending.cover)return false;
+   notify('请先完成或取消正在添加的视频／封面选帧，再保存文字信息。',true);
+   return true;
+ };
  function syncSaveIndicator({saving=false,error=false}={}){
    const indicator=$('ux-context-save');
    if(!selectedId||!indicator)return;
@@ -604,8 +639,9 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    finally{busy=false;syncVersionActions();}
  }
  async function saveTitle(p,zh,en){
-   if(busy)return false;
+   if(busy||hasNonTextDraft())return false;
    if(dirty()){notify('请先保存排序，再修改作品名称。',true);return false;}
+   const surviving=preserveOtherTextDrafts('title');
    if(!zh||!en){notify('中英文标题都不能为空。',true);return false;}
    busy=true;syncSaveIndicator({saving:true});
    try{
@@ -614,8 +650,8 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      });
      await bootstrap();
      renderGallery();renderEditor();
-     $('ux-context-save').textContent='作品名称已保存到本地 · 未发布网站';
-     notify('已保存作品名称：本地视频、封面和海报文件名已同步；线上 ImageKit 地址未更改。');
+     restoreOtherTextDrafts(surviving);
+     notify('已保存作品统一名称：各版本共享，本地媒体文件名已同步；ImageKit 地址未更改。');
      return true;
    }catch(e){syncSaveIndicator({error:true});notify('保存名称失败：'+e.message,true);return false;}
    finally{busy=false;syncVersionActions();}
@@ -841,7 +877,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        item.title='按住拖动调整视频版本顺序；第一个版本会优先播放';
        const b=node('button','ux-variant',option.label?.zh||'主版本');
        b.type='button';b.dataset.version=option.id;b.setAttribute('aria-pressed',String(option.id===selectedVersion));
-       b.title='单击切换；按住拖动排序；Shift + ←/→ 键盘调整顺序';
+       b.title='点击切换版本；拖动调整顺序；Shift + ←/→ 键盘排序';
        b.addEventListener('pointerdown',event=>startVersionDrag(event,option.id,item));
        b.addEventListener('keydown',event=>{
          if(!event.shiftKey||!['ArrowLeft','ArrowRight'].includes(event.key))return;
@@ -862,11 +898,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
            renderEditor({preserveVersionChips:true});
          });
        });
-       const edit=node('button','ux-variant-edit');edit.type='button';edit.append(createEditIcon());
-       edit.setAttribute('aria-label','编辑「'+(option.label?.zh||'主版本')+'」的中英文版本名称');
-       edit.title='编辑这个视频版本的中英文名称';
-       edit.addEventListener('click',()=>startVersionLabelEdit(option.id));
-       item.append(b,edit);chips.append(item);
+       item.append(b);chips.append(item);
      }
    }else{
      chips.querySelectorAll('.ux-variant').forEach(button=>
@@ -874,22 +906,25 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    }
    chips.hidden=false;
    $('ux-stage-version').hidden=false;
-   $('ux-edit-current-version').hidden=true;
-   $('ux-edit-current-version').onclick=()=>{selectPanel('versions');startVersionLabelEdit(selectedVersion);};
-   $('ux-rename-current').disabled=busy;
    const canArchiveSingleVersion=options.length>1;
    $('ux-archive-version').disabled=busy||!canArchiveSingleVersion;
-   $('ux-archive-version').title=canArchiveSingleVersion?'仅归档当前视频版本；其他版本继续保留，文件可恢复。':'至少保留一个视频版本；需要隐藏整部作品请使用「归档整部作品」。';
-   $('ux-stage-version').title='当前视频版本；版本切换和重命名请使用右侧「视频版本」';
+   const trashLabel=canArchiveSingleVersion
+     ?'将「'+(v?.label?.zh||'当前视频')+'」移入回收站（仅此视频，可恢复）'
+     :'至少保留一个视频；需要归档最后一条，请使用「整部移入回收站」。';
+   $('ux-archive-version').title=trashLabel;
+   $('ux-archive-version').setAttribute('aria-label',trashLabel);
+   $('ux-stage-version').title='当前视频版本；在右侧「作品管理」可直接编辑视频名称';
    $('ux-stage-version').ondblclick=null;
    syncVersionActions();
-   $('ux-version-label-form').hidden=true;
-   editingVersionId=null;
+   editingVersionId=selectedVersion;
+   $('ux-version-label-zh').value=v?.label?.zh||'';
+   $('ux-version-label-en').value=v?.label?.en||'';
+   syncVersionLabelDraftStatus();
    const url=online?.videoUrl||null;
    $('ux-cloud-badge').textContent=url?'已配置 ImageKit 地址':'未配置线上视频';
    $('ux-cloud-badge').dataset.connected=String(Boolean(url));
-   $('ux-version-label').textContent='当前：'+(v?.label?.zh||'主版本')+' · '+(v?.width||'-')+' × '+(v?.height||'-')+' · 只影响此版本';
-   $('ux-version-tip').textContent=options.length>1?'按住版本标签拖动排序，松手自动保存；第一个版本是网页默认播放版本。点标签切换，点铅笔改名。':'当前只有一个视频版本，可通过右侧添加版本。';
+   $('ux-version-label').textContent=(v?.width||'-')+' × '+(v?.height||'-')+' · 仅此视频';
+   $('ux-version-tip').textContent=options.length>1?'点击切换 · 拖动排序，松手自动保存 · 最右侧仅归档当前视频':'当前只有一个视频，无法单独归档；可在右上方添加新版本。';
    $('ux-url-readonly').textContent=url||'未设置线上视频地址 · 点击填写 ImageKit 链接';
    $('ux-url-readonly').title='单击编辑 ImageKit 地址；进入编辑后可复制或修改';
    $('ux-add-variant').replaceChildren(createPlusIcon(),document.createTextNode('添加视频版本'));
@@ -915,7 +950,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    );
    $('ux-featured-action').setAttribute('aria-pressed',String(featured));
    $('ux-archive-work').disabled=featured||busy;
-   $('ux-archive-work').textContent=featured?'请先更换首页精选':'移入回收站';
+   $('ux-archive-work').textContent=featured?'请先更换首页精选':'整部移入回收站';
    $('ux-archive-work').title=featured?'先使用上方精选按钮更换掉该作品，才能移入回收站。':'不永久删除视频、封面或线上资源';
    selectPanel(activePanel);
    syncSaveIndicator();
@@ -952,44 +987,22 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(selectedId)syncContext();
  }
  function cancelVersionLabel({restoreFocus=false}={}){
-   const origin=versionLabelOpener;
-   $('ux-version-label-form').hidden=true;
-   editingVersionId=null;versionLabelOpener=null;
+   const version=versionById(selectedId,selectedVersion);
+   editingVersionId=version?.id||null;
+   $('ux-version-label-zh').value=version?.label?.zh||'';
+   $('ux-version-label-en').value=version?.label?.en||'';
+   if(editingVersionId)syncVersionLabelDraftStatus();
    if(selectedId)syncContext();
-   if(restoreFocus&&origin?.isConnected&&!origin.closest('[inert]'))origin.focus({preventScroll:true});
- }
- function startVersionLabelEdit(variantId){
-   if(!selectedId||busy)return;
-   selectPanel('versions');
-   const opener=document.activeElement;
-   navigateWithDraft(()=>{
-     cancelVersion();
-     let focusOpener=opener;
-     if(variantId!==selectedVersion){
-       cancelVersionLabel();selectedVersion=variantId;renderEditor();
-       // Switching a version recreates the chip: restore focus to its new pencil.
-       focusOpener=[...$('ux-variant-chips').querySelectorAll('.ux-variant-item')]
-         .find(item=>item.querySelector('.ux-variant')?.dataset.version===variantId)
-         ?.querySelector('.ux-variant-edit')||opener;
-     }
-     const version=versionById(selectedId,variantId);
-     if(!version)return;
-     editingVersionId=variantId;versionLabelOpener=focusOpener;
-     $('ux-version-label-zh').value=version.label?.zh||'';
-     $('ux-version-label-en').value=version.label?.en||'';
-     $('ux-version-label-current').textContent='当前：'+(version.label?.zh||'主版本');
-     $('ux-version-label-status').textContent='保存后，版本切换按钮和当前版本标题会同步更新。';
-     $('ux-version-label-form').hidden=false;
-     $('ux-version-label-form').scrollIntoView({block:'nearest',behavior:'instant'});
-     syncContext('仅重命名当前视频版本，不改变作品名称及其他视频。');
-     syncVersionLabelDraftStatus();
-     $('ux-version-label-zh').focus();
-   });
+   if(restoreFocus){
+     const selected=$('ux-variant-chips').querySelector('.ux-variant[aria-pressed="true"]');
+     selected?.focus({preventScroll:true});
+   }
  }
  async function saveVersionLabel(event){
    event.preventDefault();
-   if(busy||!selectedId||!editingVersionId)return;
+   if(busy||!selectedId||!editingVersionId||hasNonTextDraft())return;
    if(dirty()){notify('请先保存排序，再修改版本名称。',true);return;}
+   const surviving=preserveOtherTextDrafts('versionLabel');
    const version=versionById(selectedId,editingVersionId);
    if(!version)return;
    const labelZh=$('ux-version-label-zh').value.trim();
@@ -1007,9 +1020,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        expectedLabel:version.label||{zh:'主版本',en:'Main version'},confirmed:true,
      });
      await bootstrap();
-     selectedId=projectId;selectedVersion=variantId;editingVersionId=null;versionLabelOpener=null;
+     selectedId=projectId;selectedVersion=variantId;editingVersionId=null;
      renderGallery();renderEditor();
-     notify('版本名称已保存到本地；切换按钮和当前版本标题已同步，网站尚未发布。');
+     restoreOtherTextDrafts(surviving);
+     notify('当前视频名称已保存；版本标签已同步，作品统一名称保持不变。');
    }catch(error){
      $('ux-version-label-status').textContent='保存失败：'+error.message;
      notify('保存视频版本名称失败：'+error.message,true);
@@ -1101,7 +1115,8 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  }
  async function saveURL(){
    const work=managed(selectedId),v=work?.versions.find(x=>x.id===selectedVersion);
-   if(!work||!v)return;
+   if(!work||!v||hasNonTextDraft())return false;
+   const surviving=preserveOtherTextDrafts('url');
    const url=editableURL();
    if(urlError()){notify(urlError(),true);return false;}
    if(busy)return;busy=true;syncSaveIndicator({saving:true});
@@ -1111,7 +1126,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        expectedUrl:v.videoUrl||null,confirmed:true,
      });
      v.videoUrl=result.url;renderEditor();
-     $('ux-context-save').textContent='ImageKit 地址已保存到本地 · 未发布网站';
+     restoreOtherTextDrafts(surviving);
      notify('已保存：'+(v.label?.zh||'主版本')+' 的 ImageKit 地址（仅本地配置，尚未发布网站）。');
      return true;
    }catch(e){syncSaveIndicator({error:true});notify('保存线上地址失败：'+e.message,true);return false;}
@@ -1240,8 +1255,9 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(event.key!=='Escape')return;
    if(!$('ux-archive-dialog').hidden){event.preventDefault();event.stopImmediatePropagation();closeArchiveDialog();return;}
    if(!$('ux-editor').hidden&&$('ux-unsaved-dialog').hidden&&!history.isOpen()){
-     if(!$('ux-version-label-form').hidden){
-       event.preventDefault();event.stopImmediatePropagation();cancelVersionLabel({restoreFocus:true});return;
+     if(draftSections().versionLabel||event.target.closest('#ux-version-label-form')){
+       event.preventDefault();event.stopImmediatePropagation();
+       cancelVersionLabel({restoreFocus:true});return;
      }
      if(!$('ux-version-form').hidden){
        event.preventDefault();event.stopImmediatePropagation();cancelVersion();
@@ -1318,7 +1334,6 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  $('ux-history-cover').addEventListener('click',()=>launchHistory('cover',$('ux-history-cover')));
  $('ux-history-poster').addEventListener('click',()=>launchHistory('poster',$('ux-history-poster')));
  $('ux-add-variant').addEventListener('click',launchVersion);
- $('ux-rename-current').addEventListener('click',()=>startVersionLabelEdit(selectedVersion));
  $('ux-archive-version').addEventListener('click',()=>navigateWithDraft(()=>openArchiveDialog('version')));
  $('ux-archive-work').addEventListener('click',()=>navigateWithDraft(()=>openArchiveDialog('work')));
  $('ux-version-cancel').addEventListener('click',cancelVersion);

@@ -114,28 +114,16 @@
   object-fit: contain;
 }
 
-/* Version labels stay editable beside the switcher; adding a version is one click away. */
+/* Video version selection and inline name fields; no redundant rename buttons. */
 #ux-editor .ux-stage-header .ux-version-toolbar {
   display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0;
 }
 #ux-editor .ux-stage-header .ux-variant-item {
   display:inline-flex;align-items:center;flex:0 0 auto;gap:1px;
 }
-#ux-editor .ux-stage-header .ux-variant-edit {
-  display:grid;place-items:center;box-sizing:border-box;
-  width:23px;height:26px;min-width:23px;min-height:26px;padding:0;
-  color:#a9bfd4;background:transparent;border:0;border-radius:5px;
-}
-#ux-editor .ux-stage-header .ux-variant-edit svg {width:13px;height:13px}
-#ux-editor .ux-stage-header .ux-variant-edit:hover {color:#fff;background:#38536e}
-#ux-editor #ux-edit-current-version {
-  min-height:23px;padding:2px 7px;color:#bfd0e1;background:#213245;
-  border:1px solid #667f9b66;border-radius:6px;font-size:10px;white-space:nowrap;
-}
-#ux-editor #ux-stage-version[title] {cursor:pointer}
 #ux-editor .ux-version-label-form {
-  display:grid;gap:8px;padding:10px 12px;margin:0 0 2px;
-  border:1px solid #6986aa75;border-radius:10px;background:#1b2938;
+  display:grid;gap:8px;padding:10px 0 0;margin:0;
+  border:0;border-top:1px solid #ffffff18;border-radius:0;background:transparent;
 }
 #ux-editor .ux-version-label-heading {display:flex;align-items:center;justify-content:space-between;gap:8px}
 #ux-editor .ux-version-label-heading strong {font-size:12px}
@@ -206,7 +194,8 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor .ux-version-form-actions{grid-template-columns:84px minmax(0,1fr)}
 #ux-editor .ux-version-form-actions .primary:disabled{opacity:.4;cursor:not-allowed}
 #ux-editor .ux-version-section .ux-version-label-form{
-  gap:10px;margin:10px 0 0;padding:13px;background:#192939;border:1px solid #607e9b80;
+  gap:7px;margin:10px 0 0;padding:11px 0 0;background:transparent;
+  border:0;border-top:1px solid #ffffff20;border-radius:0;
 }
 #ux-editor .ux-version-section .ux-version-label-heading{align-items:center}
 #ux-editor .ux-version-section .ux-version-label-heading span{font-size:10px;color:#91adc6}
@@ -250,28 +239,34 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor #ux-add-variant{min-height:37px;font-size:12px;padding:7px 12px;background:#30475f;color:#edf5fe;border:1px solid #7695b65d;border-radius:8px}
 #ux-editor #ux-add-variant:hover{background:#3d6080}
 #ux-editor .ux-version-switcher{padding:13px;background:#101b27;border:1px solid #607a9455;border-radius:11px}
-#ux-editor .ux-version-switcher .ux-variant-chips{display:flex;flex-wrap:wrap;overflow:visible;gap:9px;min-height:40px}
-#ux-editor .ux-version-switcher .ux-variant-item{display:inline-flex;align-items:center;border:1px solid #586d865e;background:#213245;border-radius:9px;padding:3px 4px;gap:2px;min-height:37px}
+#ux-editor .ux-version-switcher-row{display:flex;align-items:flex-start;gap:9px;min-width:0}
+#ux-editor .ux-version-switcher .ux-variant-chips{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;overflow:visible;gap:8px;min-height:38px}
+#ux-editor .ux-version-switcher .ux-variant-item{display:inline-flex;align-items:center;border:1px solid #586d865e;background:#213245;border-radius:9px;padding:3px 4px;min-height:37px}
 #ux-editor .ux-version-switcher .ux-variant{min-height:31px;padding:6px 11px;border:0;background:transparent;color:#c3d1df;font-size:12px}
 #ux-editor .ux-version-switcher .ux-variant[aria-pressed=true]{background:#456b91;color:#fff}
-#ux-editor .ux-version-switcher .ux-variant-edit{display:grid;place-items:center;min-width:31px;width:31px;height:31px;min-height:31px;padding:0;border:0;border-radius:7px;background:transparent;color:#c3d2e0}
-#ux-editor .ux-version-switcher .ux-variant-edit svg{width:14px;height:14px}
-#ux-editor .ux-version-switcher .ux-variant-edit:hover{background:#3a546f;color:white}
-#ux-editor .ux-version-tip{font-size:11px;line-height:1.6;color:#92aac1;margin:10px 2px 0}
-#ux-editor .ux-version-quick-actions{display:flex;gap:9px;align-items:center;justify-content:flex-start;flex-wrap:wrap;margin:13px 0 8px}
-#ux-editor .ux-version-quick-actions button{width:auto;min-height:35px;font-size:11px;padding:8px 12px;border-radius:8px}
-#ux-editor #ux-rename-current{background:#263c52;color:#e3eef7;border:1px solid #5f7d9e79}
-#ux-editor #ux-rename-current:hover{background:#355373}
+#ux-editor .ux-version-archive-icon{
+  display:grid;place-items:center;flex:0 0 39px;box-sizing:border-box;
+  width:39px;height:39px;min-height:39px;margin:0;padding:0;
+  border:1px solid #80545e6e;border-radius:9px;
+  color:#d9a0a9;background:#2b222c;cursor:pointer;
+}
+#ux-editor .ux-version-archive-icon svg{display:block;width:18px;height:18px}
+#ux-editor .ux-version-archive-icon:hover:not(:disabled){background:#50313b;color:#ffdfde;border-color:#b87883}
+#ux-editor .ux-version-archive-icon:focus-visible{outline:2px solid #b5d4f2;outline-offset:2px}
+#ux-editor .ux-version-archive-icon:disabled{color:#8494a6;background:#18222e;border-color:#5d6b7a5c;opacity:.65;cursor:not-allowed}
+#ux-editor .ux-version-tip{font-size:10px;line-height:1.45;color:#92aac1;margin:7px 2px 0}
+#ux-editor #ux-version-label-actions[hidden]{display:none!important}
+#ux-editor .ux-version-label-form .ux-version-form-actions{justify-self:end;display:flex;gap:8px}
+#ux-editor .ux-version-label-form .ux-version-form-actions button{width:auto;min-width:86px}
+#ux-editor .ux-version-label-form .ux-version-form-actions .primary{min-width:116px}
 #ux-editor .ux-danger-subtle{background:transparent;color:#d49a9d;border:1px solid #8f535761;border-radius:9px}
 #ux-editor .ux-danger-subtle:hover:not(:disabled){background:#452b34;color:#ffe2e2;border-color:#c0717c}
 #ux-editor .ux-danger-subtle:disabled{opacity:.52;cursor:not-allowed}
-#ux-editor .ux-version-quick-actions .ux-danger-subtle:disabled{color:#8ca0b3;border-color:#4c5d7190}
 #ux-editor .ux-safe-archive{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:18px 0;border-top:1px solid #ffffff1a}
 #ux-editor .ux-safe-archive>div{min-width:0}
 #ux-editor .ux-safe-archive strong{font-size:13px;color:#cfdce9}
 #ux-editor .ux-safe-archive p{margin:5px 0 0;max-width:320px;font-size:11px;color:#8ba6ba;line-height:1.65}
 #ux-editor #ux-archive-work{min-width:125px;width:auto;min-height:36px;padding:7px 13px;font-size:11px;white-space:nowrap}
-#ux-editor #ux-edit-current-version{display:none!important}
 #ux-editor .ux-stage-summary #ux-stage-version{display:inline-flex!important;font-size:11px;color:#b1c7dd}
 #ux-editor .ux-stage-context .ux-stage-video-label{font-size:10px;color:#8099b0}
 #ux-editor .ux-context-save{font-size:11px}
@@ -330,10 +325,10 @@ body[data-workflow='library'] #ux-create-quick{
 body.ux-version-dragging,body.ux-version-dragging *{cursor:grabbing!important;user-select:none!important}
 .ux-version-ghost{position:fixed;z-index:250;pointer-events:none;left:0;top:0;max-width:240px;padding:8px 12px;border:1px solid #a4d2fa;border-radius:9px;color:#edf6ff;background:#294967;font-size:12px;box-shadow:0 8px 25px #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Two-task layout: merge per-video editing and work-level settings. */
-#ux-editor .ux-version-section{padding-bottom:10px}
+/* Two-task layout: shared work title first, then per-video settings. */
+#ux-editor .ux-version-section{padding-bottom:10px;border-top:1px solid #ffffff20}
 #ux-editor .ux-name-section,#ux-editor .ux-publish-section{padding-block:12px}
-#ux-editor .ux-name-section{border-top:1px solid #ffffff25}
+#ux-editor .ux-name-section{border-top:0}
 #ux-editor .ux-publish-section{border-top:1px solid #ffffff20}
 #ux-editor .ux-featured-detail{padding-block:10px}
 #ux-editor .ux-safe-archive{margin-top:0;padding:12px 0 5px}

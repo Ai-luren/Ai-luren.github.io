@@ -77,6 +77,25 @@ try{
     '共享作品名称必须在作品管理面板中显示');
   assert(await page.locator('#ux-variant-chips').isVisible(),
     '视频版本必须在作品管理面板中显示');
+  assert(await page.locator('.ux-name-section').evaluate(el=>
+    el.getBoundingClientRect().bottom<=document.querySelector('.ux-version-section').getBoundingClientRect().top+1),
+    '所有视频共用名称必须展示在视频版本之前');
+  assert.equal(await page.locator('#ux-variant-chips .ux-variant-edit,#ux-rename-current').count(),0,
+    '工作台不应恢复铅笔与重复重命名按钮');
+  assert(await page.locator('#ux-version-label-form').isVisible(),
+    '所选视频的中英文名称必须直接展开');
+  assert(await page.locator('#ux-version-label-actions').isHidden(),
+    '尚未修改名称时不应占用两行保存/撤销按钮');
+  assert.equal(await page.locator('#ux-archive-version').evaluate(button=>
+    button.parentElement===document.querySelector('#ux-variant-chips').parentElement),true,
+    '当前视频归档图标必须位于版本标签同行');
+  assert.match(await page.locator('.ux-safe-archive strong').textContent(),/整部作品归档/);
+  const originalName=await page.locator('#ux-version-label-zh').inputValue();
+  await page.locator('#ux-version-label-zh').fill(originalName+' 草稿');
+  assert(await page.locator('#ux-version-label-actions').isVisible());
+  await page.locator('#ux-version-label-cancel').click();
+  assert.equal(await page.locator('#ux-version-label-zh').inputValue(),originalName);
+  assert(await page.locator('#ux-version-label-actions').isHidden());
   assert(await page.locator('#ux-open-imagekit').isVisible(),'ImageKit 快捷入口未加载');
   assert.equal(await page.locator('#ux-open-imagekit').getAttribute('href'),
     'https://imagekit.io/dashboard/media-library');
