@@ -24,7 +24,7 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
 
   useEffect(() => {
     if (!link) return undefined;
-    openerRef.current = document.activeElement;
+    openerRef.current = link.opener?.isConnected ? link.opener : document.activeElement;
     const dialog = document.querySelector('.external-link-sheet');
     const background = [...document.body.children].filter(node => node !== dialog && !node.contains(dialog));
     const previousInert = background.map(node => node.inert);
@@ -105,7 +105,7 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
         <p className="external-link-sheet__domain"><span aria-hidden="true">↗</span> {domain}</p>
         {isGitHub && <p className="external-link-sheet__hint">{lang === 'en' ? 'GitHub may load slowly on some networks. You can copy the address to open it later.' : '部分网络环境下 GitHub 可能加载较慢，可先复制链接备用'}</p>}
         <div className="external-link-sheet__actions">
-          <a className="external-link-sheet__continue" href={link.href} target="_blank" rel="noopener noreferrer" onClick={onClose}>{lang === 'en' ? 'Continue to website' : '继续访问'} <span aria-hidden="true">↗</span></a>
+          <a className="external-link-sheet__continue" href={link.href} data-external-confirmed="true" target="_blank" rel="noopener noreferrer" onClick={onClose}>{lang === 'en' ? 'Continue to website' : '继续访问'} <span aria-hidden="true">↗</span></a>
           <button className="external-link-sheet__cancel" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Stay here' : '留在作品集'}</button>
         </div>
         {isGitHub && <button type="button" className="external-link-sheet__copy" onClick={async () => {
