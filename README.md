@@ -1,156 +1,130 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人（Ai Luren）的 AI 视频作品集：商业广告、创意短片、产品影像和视觉实验" />
-</p>
-
-<h1 align="center">AI路人 · Ai Luren</h1>
-
-<p align="center">
-  聚焦 AI 商业广告、创意影像与视觉叙事。<br>
-  Commercial films, creative shorts and visual storytelling with AI.
+  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人 Ai Luren｜AI 视频创作者的商业影像、创意短片与视觉叙事作品集" />
 </p>
 
 <p align="center">
-  <a href="https://ailuren.netlify.app/"><strong>观看作品集 / View Portfolio</strong></a>
-  &nbsp; · &nbsp;
-  <a href="https://ailuren.netlify.app/works.html">按类型浏览 / Explore Films</a>
-  &nbsp; · &nbsp;
-  <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
+  以 AI 影像探索品牌表达、人物故事与电影化视觉。<br>
+  AI-assisted commercials, creative films and cinematic visual storytelling.
 </p>
-
-<p align="center"><sub>8 部首页精选　/　18 部作品 · 21 条本地视频　/　中英双语</sub></p>
-
-> 作品数量和图片以本地项目为准；线上页面是否包含这些更新，应以实际部署版本为准。
-
----
-
-## 01 / 精选影像 · Selected Films
-
-四件作品，四种影像表达：从品牌广告到视觉实验。展示顺序不代表网站首页的精选顺序。
-
-<p align="center">
-  <img src="./assets/images/project-covers/commercial/MEXC Member Perks.webp" width="49%" alt="《MEXC 会员权益》创意测试作品的 3:4 竖版封面，作品包含 A/B 双版本视频" />
-  <img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="49%" alt="《最难的告别》AI 视觉实验短片封面" />
-</p>
-
-<p align="center"><sub>01 / MEXC 会员权益（A+B）　　　02 / 最难的告别</sub></p>
-
-<p align="center">
-  <img src="./assets/images/project-covers/commercial/Watsons Brand Commercial.webp" width="49%" alt="屈臣氏 AI 品牌广告封面，像素风格的蓝色建筑场景" />
-  <img src="./assets/images/project-covers/commercial/Lenovo Brand Commercial.webp" width="49%" alt="联想 AI 品牌广告封面，电影式画面构图" />
-</p>
-
-<p align="center"><sub>03 / 屈臣氏 AI 品牌广告　　　04 / 联想 AI 品牌广告</sub></p>
-
-**作品说明**：《MEXC 会员权益》是 MEXC 相关创意测试作品，并非官方委托商业广告；同一张作品卡可在播放器内切换 A / B 版本。
-
-**[进入在线精选作品 / Explore Selected Work](https://ailuren.netlify.app/#projects)**
-
-## 02 / 创作方向 · Creative Fields
-
-- **AI 商业广告 / Commercials · 9**：品牌形象、TVC、产品推广与文旅宣传。
-- **AI 创意短片 / Short Films · 3**：故事、人物、情绪与概念影像。
-- **AI 海外产品广告 / Product & Social Ads · 4**：产品展示、生活场景与社媒短视频。
-- **AI 视觉实验 / Visual Experiments · 2**：风格探索、视觉特效与实验短片。
-
-作品库以 **3:4 竖版封面**呈现，播放时保留影片原始比例。桌面端、手机端均支持分类切换与中英文浏览；首页 8 部精选可以独立调整，不必与全部作品顺序一致。
-
-## 03 / 荣誉与展映 · Recognition
-
-作品集记录 **8 项获奖、入围或公开展映**，分别标注其真实性质，包括：
-
-- **Midjourney 官方优秀作品**、美图未来 AI 设计大赛年度入围、联想 AI 比赛创作先锋奖。
-- **海螺 AI 动物跳水 LED 大屏展映**、可灵无限剧场小赛超棒奖。
-- **中国联通「海纳星火计划」**两件独立创作的三等奖，以及 Pollo.ai 影视级特效小赛优秀奖。
-
-[查看荣誉与证明 / View Recognition](https://ailuren.netlify.app/#impact-awards) · 不将展映、转发或入围写作获奖。
-
-## 04 / 更多创作 · Beyond Video
-
-除了影片，作品集还展示 AI 创作者项目、自媒体实践与三个实际开发的 AI 工具：
-
-- **AI 新闻追踪**：[Ainews-to-Feishu](https://github.com/Ai-luren/Ainews-to-Feishu)
-- **AI 文章配图**：[Ailuren-illustrations](https://github.com/Ai-luren/Ailuren-illustrations)
-- **图片对比**：[在线体验](https://ai-luren.github.io/Image-comparison/) · [GitHub](https://github.com/Ai-luren/Image-comparison)
-
-## 05 / 网站与技术 · About This Portfolio
-
-这是一个独立的个人作品集网站，而不是 AI 视频生成服务。它使用 **Vite · React · GSAP / ScrollTrigger · OGL / WebGL · ImageKit** 构建，围绕观看影片设计：
-
-- **影院式浏览**：站内播放、上一部 / 下一部、原比例视频、同一作品的多版本切换。
-- **统一交互体验**：首页、作品库、荣誉与资料弹窗共用导航和视觉规范，兼容电脑与手机。
-- **按需获取作品视频**：影片只在访客主动点击播放后请求；首页滚动叙事的 Hero MP4 则会自动预热。开发模式使用本地作品 MP4，自动化测试拦截真实 ImageKit 流量。
-- **本地作品工作台**：在桌面浏览器管理作品、视频版本、封面、播放器海报、精选排序，以及可恢复的作品／版本回收站；更详细的操作见[使用教程](./docs/本地封面工作台使用教程.md)。
-
-<details>
-<summary><strong>本地运行 / Run Locally</strong></summary>
-
-需要 Node.js ^20.19.0 或 >=22.12.0。
-
-~~~bash
-npm ci
-npm run dev
-~~~
-
-首页：<http://127.0.0.1:5174/>　·　作品库：<http://127.0.0.1:5174/works.html>
-
-启动本地作品工作台：
-
-~~~bash
-npm run workbench
-~~~
-
-工作台：<http://127.0.0.1:5190/>（旧命令 `npm run covers` 仍可使用）。更新 `portfolio-workbench/` 后先重启旧的 5190 服务，再运行 `npm run check:workbench-live`；单纯构建通过不代表浏览器已使用新代码。
-
-**媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。 多次编辑的同内容临时视频会在本机使用只读共享存储，查看与验证命令见 [工作台使用教程](./docs/本地封面工作台使用教程.md#本地空间维护可选)。
-
-</details>
-
-<details>
-<summary><strong>项目结构、测试与维护 / Developer Notes</strong></summary>
-
-~~~text
-index.html · works.html           首页与作品库入口
-src/components/                  作品卡片、播放器与交互组件
-src/data/projects.js             原有作品与作品数据汇总
-src/data/auto-projects.json      新增作品及其 A/B/C 等视频版本
-src/data/legacy-video-variants.json 旧作品追加的视频版本
-src/data/project-order.json      首页精选与完整作品独立排序
-src/data/project-version-order.json 单部作品的 A/B/C 视频播放顺序
-src/data/archive-state.json      整部作品及单个视频的可恢复归档状态
-assets/images/project-covers/    四分类下的 3:4 视频封面，文件名与英文作品名一致
-assets/images/player-posters/    同分类、同英文文件名的原比例播放器海报
-portfolio-workbench/             作品工作台（独立本地服务，不参与网站发布）
-scripts/checks/site/              公开网站的自动化验收脚本
-scripts/checks/workbench/         本地作品工作台的隔离回归测试
-scripts/lib/                      浏览器安全拦截及共用测试组件
-scripts/fixtures/                 测试用 MP4，非正式作品素材
-docs/                             设计规范与维护说明
-~~~
-
-~~~bash
-npm run check:smoke          # 构建、目录路径、素材、精选顺序和媒体安全
-npm run check:repo-layout    # 检查目录迁移后的脚本、相对导入和配置入口
-npm run check:home-scroll    # 先 build；弱网首页滚动与浏览器返回恢复
-npm run check:workbench-core # 工作台核心流程、存储和视觉回归
-npm run check:workbench-create # 新增作品导入、双封面和本地保存
-npm run check:workbench-live # 已启动 5190 服务的真实页面、资源与异常检查
-npm run check:project        # 依次运行 smoke 和 workbench-core
-npm run check:site-full      # 独立生产预览下逐项检查公开网页
-npm run check:workbench-full # 隔离项目逐项检查工作台
-npm run check:adversarial    # 网站和工作台全量深测，记录到本地 .audit
-npm run check:i18n           # 需要时额外检查中英文
-~~~
-
-[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [工作台使用教程](./docs/本地封面工作台使用教程.md) · [开发约定](./AGENTS.md)
-
-</details>
-
----
 
 <p align="center">
   <a href="https://ailuren.netlify.app/"><strong>观看作品 / Watch Films</strong></a>
   &nbsp; · &nbsp;
+  <a href="https://ailuren.netlify.app/works.html">全部作品 / All Work</a>
+  &nbsp; · &nbsp;
   <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
+</p>
+
+<p align="center"><sub>商业影像 · 创意短片 · 海外产品广告 · 视觉实验 &nbsp; / &nbsp; 中英双语</sub></p>
+
+---
+
+## 精选影像 / Selected Films
+
+四部代表作品，涵盖产品视觉、品牌创意与情绪叙事。完整视频和多版本作品可在网站内观看。
+
+<p align="center">
+  <img src="./assets/images/project-covers/commercial/FormFunk Creative Commercial.webp" width="49%" alt="FormFunk 餐具创意影像 Demo：蓝白印花餐盘与极简视觉场景" />
+  <img src="./assets/images/project-covers/commercial/MEXC Member Perks.webp" width="49%" alt="MEXC 会员权益创意测试：商业广告概念影像" />
+</p>
+<p align="center"><sub>01 / FormFunk · Demo　　　02 / MEXC · Demo</sub></p>
+
+<p align="center">
+  <img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="49%" alt="《最难的告别》情绪叙事影像封面" />
+  <img src="./assets/images/project-covers/commercial/Lenovo Brand Commercial.webp" width="49%" alt="联想 AI 品牌创意影像封面" />
+</p>
+<p align="center"><sub>03 / 最难的告别　　　04 / 联想品牌影像</sub></p>
+
+<p align="center"><a href="https://ailuren.netlify.app/#projects"><strong>浏览精选作品 / Explore Selected Films</strong></a></p>
+
+<sub>说明：FormFunk 与 MEXC 为创意测试 / Demo，不代表相关品牌的正式委托或官方广告。网页可能尚未部署本地新增的版本。</sub>
+
+## 创作方向 / Creative Practice
+
+- **品牌与商业广告 / Commercial Films** — 品牌传播、AI TVC、视觉创意及文旅影像。
+- **创意短片 / Creative Shorts** — 人物、情绪、故事与概念叙事。
+- **海外产品与社媒影像 / Product & Social** — 产品展示、生活场景与多比例内容。
+- **视觉实验 / Visual Experiments** — 影像风格、镜头语言与视觉特效探索。
+
+作品库支持按分类浏览，保留影片原始画幅；同一作品可切换不同的视频版本，桌面与手机均支持中英文界面。
+
+## 荣誉与展映 / Recognition
+
+作品集收录 8 项独立的获奖、入围或公开展映记录，包括 Midjourney 官方优秀作品、美图未来 AI 设计大赛年度入围、联想 AI 比赛创作先锋奖、海螺 AI LED 大屏展映、可灵无限剧场小赛、中国联通「海纳星火计划」两件独立三等奖作品，以及 Pollo.ai 影视级特效小赛优秀奖。
+
+[查看荣誉与证明 / View Recognition](https://ailuren.netlify.app/#impact-awards) — 将获奖、入围和展映分别标注，不混为一谈。
+
+## 影像之外 / Beyond the Films
+
+我也在开发与创作流程有关的小工具，用于搜集资讯、制作内容和比较视觉素材。
+
+- [Ainews-to-Feishu](https://github.com/Ai-luren/Ainews-to-Feishu) — AI 资讯追踪与飞书同步。
+- [Ailuren-illustrations](https://github.com/Ai-luren/Ailuren-illustrations) — AI 文章配图。
+- [Image Comparison](https://github.com/Ai-luren/Image-comparison) — [在线比较图像](https://ai-luren.github.io/Image-comparison/)。
+
+## 关于这个网站 / About the Portfolio
+
+这是我的**个人 AI 视频作品集**，不是在线 AI 视频生成平台。网站采用 **Vite · React · GSAP / ScrollTrigger · OGL / WebGL · ImageKit**，重点是让访客快速浏览作品、播放原始画幅影像、切换视频版本，以及查看创作经历。
+
+本地还配套一个独立的 **Portfolio Workbench（作品工作台）**，用于整理作品、封面和播放器海报、拖拽排序与可恢复归档；它不参与正式网站构建。
+
+<details>
+<summary><strong>本地运行与开发 / Run Locally</strong></summary>
+
+需要 Node.js `^20.19.0` 或 `>=22.12.0`。
+
+```bash
+npm ci
+npm run dev
+```
+
+首页：<http://127.0.0.1:5174/> · 作品库：<http://127.0.0.1:5174/works.html>
+
+启动本地作品工作台（需 FFmpeg / FFprobe）：
+
+```bash
+npm run workbench
+```
+
+工作台：<http://127.0.0.1:5190/>。旧命令 `npm run covers` 保留兼容；修改工作台代码后需重启服务，并运行 `npm run check:workbench-live`。
+
+**媒体说明：** Git 仓库不包含本地原始作品 MP4（`assets/videos/works/`）。开发模式优先使用本地视频，不会在缺片时自动请求 ImageKit；正式发布版使用配置的线上视频地址。克隆仓库后若没有原片，部分视频无法在本地直接播放。
+
+</details>
+
+<details>
+<summary><strong>目录结构与测试 / Repository & Checks</strong></summary>
+
+```text
+index.html · works.html         首页与完整作品库
+src/                            网站交互组件与作品数据
+assets/                         封面、海报、视觉与媒体素材
+portfolio-workbench/            本地作品工作台（不部署）
+scripts/checks/site/            网站回归测试
+scripts/checks/workbench/       工作台隔离测试
+scripts/lib/ · scripts/fixtures/ 共用测试工具及素材
+docs/                           设计规范与维护手册
+```
+
+```bash
+npm run check:smoke            # 基础构建、目录、素材与媒体安全
+npm run check:repo-layout      # 检查目录与依赖路径
+npm run check:workbench-core   # 工作台核心回归
+npm run check:workbench-create # 新建作品与双封面保存
+npm run check:workbench-live   # 已启动工作台的真实浏览器验收
+npm run check:i18n             # 中英文界面检查
+```
+
+更多维护约定：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [工作台使用教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
+
+</details>
+
+---
+
+<p align="center">
+  <a href="https://ailuren.netlify.app/"><strong>观看完整作品集 / Full Portfolio</strong></a>
+  &nbsp; · &nbsp;
+  <a href="https://ailuren.netlify.app/#profile">联系合作 / Contact</a>
   &nbsp; · &nbsp;
   <a href="./LICENSE">MIT License</a>
 </p>
