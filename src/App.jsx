@@ -7,6 +7,7 @@ import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
 import VideoPostProcess from './components/VideoPostProcess.jsx';
 import FloatingDock from './components/FloatingDock.jsx';
+import SiteExternalLinkGuard from './components/SiteExternalLinkGuard.jsx';
 import ExperimentFlip from './components/ExperimentFlip.jsx';
 import HeroActions from './components/HeroActions.jsx';
 import HeroTitle from './components/HeroTitle.jsx';
@@ -40,6 +41,7 @@ export default function App() {
   return (
     <>
       <VideoPostProcess />
+      <SiteExternalLinkGuard />
       {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
       <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}

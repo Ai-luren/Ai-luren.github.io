@@ -43,6 +43,58 @@ try {
     await lab.waitFor({state:'detached'});
     assert.equal(await page.locator('main').evaluate(e=>e.inert),false);
 
+    // AI social profile links previously bypassed the mobile confirmation
+    // surface. The global fallback should catch them without touching desktop
+    // link navigation or duplicating existing Dock/Lab sheets.
+    const reachLinks=page.locator('#impact-reach .impact-reach-action--external');
+    assert.equal(await reachLinks.count(),3,'three clickable AI social media profiles');
+    const destinations=[
+      ['douyin.com',lang==='en'?'Douyin profile':'抖音主页'],
+      ['xiaohongshu.com',lang==='en'?'REDnote profile':'小红书主页'],
+      ['kuaishou.com',lang==='en'?'Kuaishou profile':'快手主页'],
+    ];
+    if(touch){
+      for(const [index,[domain,label]] of destinations.entries()){
+        const link=reachLinks.nth(index);
+        const actualHref=await link.getAttribute('href');
+        await link.click();
+        const sheet=page.locator('.external-link-sheet');
+        await sheet.waitFor({state:'visible'});
+        assert.equal(await sheet.count(),1,'only one external confirmation sheet is allowed');
+        assert.equal(await sheet.locator('.external-link-sheet__destination').innerText(),label);
+        assert((await sheet.locator('.external-link-sheet__domain').innerText()).includes(domain));
+        assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('href'),actualHref);
+        assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('target'),'_blank');
+        assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('data-external-confirmed'),'true');
+        await sheet.locator('.external-link-sheet__cancel').click();
+        await sheet.waitFor({state:'detached'});
+        assert(await link.isVisible(),'closing the external sheet returns to the AI media section');
+      }
+      // Regression for any future external anchor that does not have its own
+      // React onClick handler: one reusable sheet instead of silent navigation.
+      await page.evaluate(()=>{
+        const anchor=document.createElement('a');
+        anchor.id='test-future-external-link';
+        anchor.href='https://example.org/portfolio';
+        anchor.textContent='Future external resource';
+        document.body.appendChild(anchor);
+      });
+      await page.locator('#test-future-external-link').click();
+      const fallback=page.locator('.external-link-sheet');
+      await fallback.waitFor({state:'visible'});
+      assert.equal(await fallback.locator('.external-link-sheet__domain').innerText(),'↗ example.org');
+      assert.equal(await fallback.locator('.external-link-sheet__continue').getAttribute('href'),'https://example.org/portfolio');
+      await fallback.locator('.external-link-sheet__cancel').click();
+      await fallback.waitFor({state:'detached'});
+      assert.equal(await page.locator('#test-future-external-link').count(),1,'fallback must not navigate away');
+      await page.locator('#test-future-external-link').evaluate(el=>el.remove());
+    }else{
+      assert.equal(await reachLinks.first().getAttribute('target'),'_blank',
+        'desktop keeps ordinary browser external links');
+      assert.equal(await page.locator('.external-link-sheet').count(),0,
+        'no preemptive external-link sheet on desktop');
+    }
+
     const dock=page.locator('.closing-social .floating-dock-item');
     await dock.first().scrollIntoViewIfNeeded();
     if (touch) {

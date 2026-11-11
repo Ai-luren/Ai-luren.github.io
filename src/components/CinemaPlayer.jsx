@@ -60,6 +60,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [status, setStatus] = useState('idle');
   const [started, setStarted] = useState(false);
   const [playBlocked, setPlayBlocked] = useState(false);
+  const [fullscreenUnavailable, setFullscreenUnavailable] = useState(false);
   const [motionVisible, setMotionVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const closingRef = useRef(false);
@@ -134,7 +135,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     setDimensions(currentVersion?.videoWidth > 0 && currentVersion?.videoHeight > 0 ? {width:currentVersion.videoWidth,height:currentVersion.videoHeight}:null);
     attemptRef.current++;
     requestedRef.current = false;
-    setStarted(false);setStatus('idle');setPlayBlocked(false);frameReadyRef.current=false;
+    setStarted(false);setStatus('idle');setPlayBlocked(false);setFullscreenUnavailable(false);frameReadyRef.current=false;
     // No src until an explicit play action: opening/switching costs no video bytes.
     if(video){video.pause();video.removeAttribute('src');video.load();}
     if(dialogRef.current) dialogRef.current.scrollTop=0;
@@ -172,9 +173,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
         // In very short views, scroll instead of squeezing the circular controls
         // and centered count into a media column narrower than their touch areas.
         // Portrait films may narrow on short screens without shrinking the
-        // 44px+ navigation buttons. 176px still fits their 168px group and
-        // avoids cutting off the lower controls on a 360x740 phone.
-        const portraitMinWidth = 176;
+        // 44px+ navigation buttons. 168px fits their arrow/count group and
+        // keeps the independent fullscreen action within small phones.
+        const portraitMinWidth = 168;
         const minimumHeight = ratio < 1 ? Math.min(maxWidth / ratio, Math.max(240, Math.min(portraitMinWidth, maxWidth) / ratio)) : 120;
         const nextWidth = Math.min(maxWidth, Math.min(880, Math.max(minimumHeight, availableHeight)) * ratio);
         if (Math.abs(nextWidth - fittedWidth) < .1) break;
@@ -277,6 +278,34 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     }
   };
   const retry = () => play(true);
+  const enterFullscreen = () => {
+    const video = videoRef.current;
+    if (!video || !videoUrl || switchingRef.current || closingRef.current) return;
+    setFullscreenUnavailable(false);
+
+    // The first tap should be enough: load/play only on explicit intent, then
+    // request native fullscreen before the user-activation gesture expires.
+    // Never await media network work before a fullscreen request on iOS.
+    if (!video.getAttribute('src')) void play();
+    const fallback = () => setFullscreenUnavailable(true);
+    const webkitVideo = typeof video.webkitEnterFullscreen === 'function'
+      && video.webkitSupportsFullscreen !== false;
+    const coarsePointer = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+    // iPhone Safari uses native video fullscreen, not document fullscreen.
+    if (webkitVideo && coarsePointer) {
+      try { video.webkitEnterFullscreen(); return; } catch { /* Try standard API. */ }
+    }
+    if (typeof video.requestFullscreen === 'function') {
+      try {
+        Promise.resolve(video.requestFullscreen()).catch(fallback);
+        return;
+      } catch { /* Try WebKit video API as fallback. */ }
+    }
+    if (webkitVideo) {
+      try { video.webkitEnterFullscreen(); return; } catch { /* Not supported. */ }
+    }
+    fallback();
+  };
   const chooseVersion = async nextIndex => {
     if (closingRef.current || switchingRef.current || nextIndex < 0 || nextIndex >= versions.length) return;
     if (nextIndex === versionIndex) {
@@ -390,6 +419,19 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <span>{lang === 'en' ? 'This work is not available for playback yet.' : '该作品暂未配置可播放的视频'}</span>
           </div>}
           <div className="cinema-player__information" ref={informationRef}>
+          {videoUrl && <div className="cinema-player__fullscreen-action-group">
+            <button className="cinema-player__fullscreen-action" type="button" onClick={enterFullscreen}
+              disabled={switching || versionPendingIndex !== null || failed}
+              aria-label={lang === 'en' ? (started ? 'Watch fullscreen' : 'Play fullscreen') : (started ? '全屏观看' : '全屏播放')}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" />
+              </svg>
+              <span>{lang === 'en' ? (started ? 'Watch fullscreen' : 'Play fullscreen') : (started ? '全屏观看' : '全屏播放')}</span>
+            </button>
+            {fullscreenUnavailable && <span className="cinema-player__fullscreen-hint" role="status">
+              {lang === 'en' ? 'Fullscreen is unavailable here. Play the video and use its native controls.' : '暂时无法进入全屏，请先播放后使用视频自带的全屏按钮。'}
+            </span>}
+          </div>}
           {versions.length > 1 && <div className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
             {versions.map((version, i) => (
               <button key={version.id} type="button" className="cinema-player__version"
