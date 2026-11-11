@@ -90,3 +90,30 @@
     padding-inline: 6px;
   }
 }
+
+/* A scannable desktop-only WeChat card replaces the implicit file download.
+   The shared dock tooltip state ensures no neighbouring label can overlap it. */
+.floating-dock-qr {
+  position: absolute;
+  z-index: 8;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  width: 204px;
+  box-sizing: border-box;
+  padding: 13px 13px 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  border-radius: 15px;
+  border: 1px solid var(--portfolio-panel-border);
+  background: var(--portfolio-panel-solid, #1d1e21);
+  box-shadow: 0 14px 38px rgba(0,0,0,.32);
+  pointer-events: none;
+  color: var(--apple-text);
+  text-align: center;
+}
+.floating-dock-qr__heading { font: 600 13px/1.4 var(--font-body); white-space: nowrap; }
+.floating-dock-qr__image { display: block; padding: 5px; border-radius: 8px; background: #fff; }
+.floating-dock-qr__image img { display: block; width: 164px; height: 164px; object-fit: contain; }
+.floating-dock-qr__caption { font: 400 11px/1.3 var(--font-body); color: var(--apple-secondary); }

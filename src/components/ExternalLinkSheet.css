@@ -37,3 +37,37 @@
 @keyframes external-sheet-enter { from { transform: translateY(12px); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .external-link-sheet, .external-link-sheet__panel { animation: none; } }
 @media (prefers-reduced-transparency: reduce) { .external-link-sheet { backdrop-filter: none; -webkit-backdrop-filter: none; } }
+
+/* Contact sheets share the existing modal surface instead of navigating away. */
+.external-link-sheet__contact-note {
+  margin: 0 0 12px;
+  color: var(--apple-secondary);
+  font: 400 13px/1.6 var(--font-body);
+}
+.external-link-sheet__contact-value {
+  padding: 13px 10px;
+  margin: 0 0 18px;
+  color: var(--apple-text);
+  font: 600 16px/1.4 var(--font-body);
+  text-align: center;
+  border: 1px solid var(--portfolio-icon-border);
+  background: var(--portfolio-icon-surface);
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.external-link-sheet__qr {
+  margin: 0 auto 14px;
+  width: 200px;
+  max-width: 100%;
+  padding: 8px;
+  border-radius: 12px;
+  background: #fff;
+}
+.external-link-sheet__qr img { display: block; width: 100%; height: auto; object-fit: contain; }
+.external-link-sheet__dismiss {
+  display: block; min-height: 43px; width: 100%;
+  border: 0; background: transparent; color: var(--apple-secondary);
+  font: 500 13px var(--font-body); cursor: pointer;
+}
+.external-link-sheet__panel:has(.external-link-sheet__qr) { max-height: calc(100dvh - 24px); overflow-y: auto; }
