@@ -1,4 +1,5 @@
 import { createInlineCoverEditor } from './library-cover-editor.js';
+import { imageKitVideoStem, imageKitVideoError, imageKitVideoURL } from './imagekit-url.js';
 import { createLibraryPlayer } from './library-player.js';
 import {createArtworkHistoryUI} from './library-history.js';
 // Unified work-first screen. The existing media and ordering APIs remain authoritative.
@@ -54,6 +55,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  let notificationTimer=null,suppressDragClickUntil=0,suppressDragClickId=null,undoLast=null,inlineNameTimer=null;
  let beforeEditorFocus=null,pendingNavigation=null,unsavedOrigin=null,versionLabelOpener=null;
  let suppressUrlBlur=false,urlSaving=false;
+ let versionDrag=null,versionSortBusy=false,suppressVersionClickUntil=0;
  // A stable image URL lets the browser reuse decoded thumbnails between tabs/searches.
  // Increment only after an actual save/restore, not on every gallery render.
  const artworkRevision={cover:new Map(),poster:new Map()};
@@ -124,20 +126,10 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  const versions=id=>state.posterVersions.find(p=>p.id===id)?.versions||[];
  const versionById=(id,versionId)=>versions(id).find(v=>v.id===versionId);
  const poster=id=>versions(id).find(v=>v.id===selectedVersion)||versions(id)[0];
- const editableURL=()=>{
-   const value=$('ux-url-value').value.trim();
-   return value.startsWith(prefix)?value:(value?prefix+value:'');
- };
- const filenameOf=url=>url?.startsWith(prefix)?url.slice(prefix.length):url||'';
- const urlError=()=>{
-   const value=editableURL(),raw=$('ux-url-value').value.trim();
-   if(!raw)return '请填写视频文件名（.mp4）。';
-   if(!value.startsWith(prefix)||/^(?:https?:|\/\/)/i.test(raw)&&!raw.startsWith(prefix))return '只能使用当前 ImageKit 账户的固定前缀。';
-   const suffix=filenameOf(value);
-   if(!suffix.toLowerCase().endsWith('.mp4'))return '视频文件名必须以 .mp4 结尾。';
-   if(suffix.includes('..')||suffix.includes('\\')||suffix.startsWith('/')||/[?#<>\x00-\x1f]/.test(suffix))return '文件名不能包含非法字符或路径跳转。';
-   return '';
- };
+ const firstVersion=id=>versions(id)[0]?.id||'main';
+ const editableURL=()=>imageKitVideoURL($('ux-url-value').value);
+ const filenameOf=imageKitVideoStem;
+ const urlError=()=>imageKitVideoError($('ux-url-value').value);
  const syncUrlValidation=()=>{
    const error=$('ux-url-form').hidden?'':urlError();
    $('ux-url-validation').hidden=!error;$('ux-url-validation').textContent=error;
@@ -679,7 +671,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    navigateWithDraft(()=>{
      inlineCover.cancel();
      player.pause();
-     selectedId=id;selectedVersion='main';
+     selectedId=id;selectedVersion=firstVersion(id);
      // The selected work may be in a different category from the one that
      // opened the dialog. Keep the underlying library aligned so closing
      // always returns to the visible card instead of the old tab.
@@ -695,7 +687,8 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      else arrow.focus({preventScroll:true});
    });
  }
- function open(id,versionId='main'){
+ function open(id,versionId){
+   versionId ||= firstVersion(id);
    if(!byId(id))return;
    if(history.isOpen())history.close();
    if(!$('ux-editor').hidden){
@@ -713,6 +706,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-editor').querySelector('.ux-editor-pane').focus({preventScroll:true});
  }
  function finishCloseEditor(){
+   finishVersionDrag();
    inlineCover.cancel();
    player.clear();
    $('ux-version-form').hidden=true;
@@ -731,11 +725,91 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(history.isOpen()){history.close();return;}
    navigateWithDraft(finishCloseEditor);
  }
+ function finishVersionDrag(){
+   const d=versionDrag;versionDrag=null;
+   if(!d)return null;
+   d.ghost?.remove();
+   d.item?.classList.remove('ux-version-drag-source');
+   $('ux-variant-chips').querySelectorAll('.ux-variant-item').forEach(item=>item.classList.remove('ux-version-drop-target'));
+   document.body.classList.remove('ux-version-dragging');
+   return d;
+ }
+ function versionTargetAt(x,y){
+   return document.elementFromPoint(x,y)?.closest('#ux-variant-chips .ux-variant-item')||null;
+ }
+ function moveVersionGhost(x,y){
+   if(!versionDrag?.active)return;
+   versionDrag.ghost.style.left=Math.round(x+12)+'px';
+   versionDrag.ghost.style.top=Math.round(y+12)+'px';
+   $('ux-variant-chips').querySelectorAll('.ux-variant-item').forEach(item=>item.classList.remove('ux-version-drop-target'));
+   const target=versionTargetAt(x,y);
+   if(target&&target!==versionDrag.item)target.classList.add('ux-version-drop-target');
+ }
+ function startVersionDrag(event,id,item){
+   if(event.button!==0||!['mouse','pen'].includes(event.pointerType)||versionSortBusy||versionDrag||busy||
+     inlineCover.busy()||history.isBusy()||anyDraft()||versions(selectedId).length<2)return;
+   // Preserve native button click/focus on a short press. Capturing the
+   // pointer at pointerdown would retarget click to the outer div and stop
+   // version switching. Capture only when an actual drag begins.
+   versionDrag={id,item,pointerId:event.pointerId,x:event.clientX,y:event.clientY,active:false,ghost:null};
+ }
+ document.addEventListener('pointermove',event=>{
+   const d=versionDrag;
+   if(!d||d.pointerId!==event.pointerId)return;
+   if(!d.active&&Math.hypot(event.clientX-d.x,event.clientY-d.y)>7){
+     d.active=true;
+     d.item.setPointerCapture(event.pointerId);
+     d.item.classList.add('ux-version-drag-source');
+     document.body.classList.add('ux-version-dragging');
+     const ghost=node('div','ux-version-ghost',d.item.querySelector('.ux-variant')?.textContent||'视频版本');
+     d.ghost=ghost;document.body.append(ghost);
+   }
+   if(d.active){event.preventDefault();moveVersionGhost(event.clientX,event.clientY);}
+ },{passive:false});
+ document.addEventListener('pointerup',event=>{
+   const d=versionDrag;
+   if(!d||d.pointerId!==event.pointerId)return;
+   const target=d.active?versionTargetAt(event.clientX,event.clientY):null;
+   if(d.active)suppressVersionClickUntil=Date.now()+500;
+   if(d.item?.hasPointerCapture(event.pointerId))d.item.releasePointerCapture(event.pointerId);
+   finishVersionDrag();
+   if(target&&target!==d.item)void moveVersion(d.id,target.dataset.version);
+ });
+ document.addEventListener('pointercancel',event=>{
+   if(versionDrag?.pointerId===event.pointerId)finishVersionDrag();
+ });
+ async function moveVersion(sourceId,targetId){
+   const projectId=selectedId;
+   const options=versions(projectId);
+   const before=options.map(option=>option.id);
+   const from=before.indexOf(sourceId),to=before.indexOf(targetId);
+   if(from<0||to<0||from===to||versionSortBusy||busy||inlineCover.busy()||history.isBusy())return;
+   if(anyDraft()){notify('请先保存或取消未完成的修改，再调整版本顺序。',true);return;}
+   const next=[...before];next.splice(from,1);next.splice(to,0,sourceId);
+   versionSortBusy=true;
+   const chips=$('ux-variant-chips');
+   const items=new Map([...chips.children].map(item=>[item.dataset.version,item]));
+   next.forEach(id=>{if(items.get(id))chips.append(items.get(id));});
+   $('ux-version-tip').textContent='正在保存顺序…';
+   try{
+     await api('/api/save-version-order',{projectId,ids:next,expected:before,confirmed:true});
+     for(const group of [state.posterVersions,state.managed]){
+       const entry=group.find(item=>item.id===projectId);
+       if(entry)entry.versions.sort((a,b)=>next.indexOf(a.id)-next.indexOf(b.id));
+     }
+     $('ux-version-tip').textContent='顺序已自动保存 · 第一个版本将在网站中优先显示';
+     notify('视频版本顺序已自动保存到本地；发布网站后同步生效。');
+   }catch(error){
+     before.forEach(id=>{if(items.get(id))chips.append(items.get(id));});
+     $('ux-version-tip').textContent='排序未保存，可重新拖动';
+     notify('版本排序失败：'+error.message,true);
+   }finally{versionSortBusy=false;}
+ }
  function renderEditor({preserveVersionChips=false}={}){
    if(!selectedId||!byId(selectedId))return;
    const p=byId(selectedId),work=managed(selectedId);
    const options=versions(selectedId);
-   if(!options.some(v=>v.id===selectedVersion))selectedVersion='main';
+   if(!options.some(v=>v.id===selectedVersion))selectedVersion=firstVersion(selectedId);
    const v=options.find(v=>v.id===selectedVersion)||options[0];
    const online=work?.versions.find(x=>x.id===v?.id);
    if(v){
@@ -762,10 +836,21 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      chips.replaceChildren();
      for(const option of options){
        const item=node('div','ux-variant-item');
+       item.dataset.version=option.id;
+       item.title='按住拖动调整视频版本顺序；第一个版本会优先播放';
        const b=node('button','ux-variant',option.label?.zh||'主版本');
        b.type='button';b.dataset.version=option.id;b.setAttribute('aria-pressed',String(option.id===selectedVersion));
-       b.title='单击切换视频；点击右侧铅笔修改版本名称';
+       b.title='单击切换；按住拖动排序；Shift + ←/→ 键盘调整顺序';
+       b.addEventListener('pointerdown',event=>startVersionDrag(event,option.id,item));
+       b.addEventListener('keydown',event=>{
+         if(!event.shiftKey||!['ArrowLeft','ArrowRight'].includes(event.key))return;
+         event.preventDefault();event.stopPropagation();
+         const items=[...chips.querySelectorAll('.ux-variant-item')];
+         const from=items.indexOf(item),to=from+(event.key==='ArrowLeft'?-1:1);
+         if(to>=0&&to<items.length)void moveVersion(option.id,items[to].dataset.version);
+       });
        b.addEventListener('click',()=>{
+         if(Date.now()<suppressVersionClickUntil)return;
          if(option.id===selectedVersion)return;
          navigateWithDraft(()=>{
            if(history.isOpen())history.close();
@@ -802,6 +887,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-cloud-badge').textContent=url?'已配置 ImageKit 地址':'未配置线上视频';
    $('ux-cloud-badge').dataset.connected=String(Boolean(url));
    $('ux-version-label').textContent='当前：'+(v?.label?.zh||'主版本')+' · '+(v?.width||'-')+' × '+(v?.height||'-')+' · 只影响此版本';
+   $('ux-version-tip').textContent=options.length>1?'按住版本标签拖动排序，松手自动保存；第一个版本是网页默认播放版本。点标签切换，点铅笔改名。':'当前只有一个视频版本，可通过右侧添加版本。';
    $('ux-url-readonly').textContent=url||'未设置线上视频地址 · 点击填写 ImageKit 链接';
    $('ux-url-readonly').title='单击编辑 ImageKit 地址；进入编辑后可复制或修改';
    $('ux-add-variant').replaceChildren(createPlusIcon(),document.createTextNode('添加视频版本'));
@@ -1283,7 +1369,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  };
  $('ux-url-value').addEventListener('input',()=>{
    const raw=$('ux-url-value').value.trim();
-   if(raw.startsWith(prefix))$('ux-url-value').value=filenameOf(raw);
+   if(!imageKitVideoError(raw))$('ux-url-value').value=filenameOf(raw);
    syncUrlValidation();
    syncSaveIndicator();
  });

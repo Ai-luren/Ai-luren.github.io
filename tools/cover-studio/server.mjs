@@ -11,6 +11,8 @@ import { createServer as createViteServer } from 'vite';
 import { createNewCoverStudioProject } from './project-publisher.mjs';
 import { listManagedVersions, appendVideoVersion, bindImageKitUrl, updateVideoVersionLabel } from './project-versions.mjs';
 import { describeProjectOrder, saveProjectOrder } from './project-order.mjs';
+import {readVersionOrders,saveVersionOrder} from './project-version-order.mjs';
+import {orderVideoVersions} from '../../src/data/version-order.js';
 import { saveProjectTitle, artworkPath } from './project-titles.mjs';
 import { listPosterVersions, currentPoster, currentVideo, replacePoster } from './project-poster.mjs';
 import {listArtworkHistory,artworkHistoryImage,restoreArtwork,pruneArtworkHistory,pruneAllArtworkHistory} from './artwork-history.mjs';
@@ -196,12 +198,17 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
     }
     if (req.method === 'GET' && pathname === '/api/bootstrap') {
       await command('ffmpeg', ['-version']); await command('ffprobe', ['-version']);
+      const currentProjects=await projects();
+      const orders=await readVersionOrders(projectRoot);
+      const sortedList=list=>list.map(item=>({
+        ...item, versions:orderVideoVersions(item.versions,orders[item.id]),
+      }));
       respond(res, {
-        token, projects: await projects(), overrides: await readJSON(mappingFile, {}), workspace,
-        managedProjects: await listManagedVersions(projectRoot, await projects()),
-        posterVersions: await listPosterVersions(projectRoot, await projects()),
+        token, projects: currentProjects, overrides: await readJSON(mappingFile, {}), workspace,
+        managedProjects: sortedList(await listManagedVersions(projectRoot,currentProjects)),
+        posterVersions: sortedList(await listPosterVersions(projectRoot,currentProjects)),
         archived: archiveItems(await readArchive(projectRoot)),
-        ordering: await describeProjectOrder({ projectRoot, projects: await projects() }),
+        ordering: await describeProjectOrder({ projectRoot, projects: currentProjects }),
       }); return;
     }
     if (req.method === 'GET' && pathname === '/api/local-videos') {
@@ -277,6 +284,7 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
     }
     if (req.method === 'GET') {
       const filename = { '/': 'index.html', '/app.js': 'app.js',
+        '/imagekit-url.js': 'imagekit-url.js',
         '/library-ui.js': 'library-ui.js',
         '/library-cover-editor.js': 'library-cover-editor.js',
         '/library-player.js': 'library-player.js',
@@ -409,6 +417,18 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
         });
         respond(res, result);
         announcePreview('reload');return;
+      }
+      if (pathname === '/api/save-version-order') {
+        const active=await projects();
+        const updated=await saveVersionOrder({
+          projectRoot,workspace,projects:active,
+          managed:await listManagedVersions(projectRoot,active),
+          projectId:String(input.projectId||''),ids:input.ids,
+          expected:input.expected,confirmed:input.confirmed,
+        });
+        respond(res,updated);
+        if(updated.changed)announcePreview('reload',input.projectId);
+        return;
       }
       if (pathname === '/api/archive-item'||pathname === '/api/restore-item') {
         const active=await projects(),archive=await readArchive(projectRoot);

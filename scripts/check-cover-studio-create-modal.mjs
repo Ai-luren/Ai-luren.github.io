@@ -102,9 +102,13 @@ try{
  assert(await p.locator('#ux-new-imagekit-error').isVisible());
  await p.locator('#new-imagekit-url').fill('invalid-video.mov');
  assert.equal(await p.locator('#new-imagekit-url').getAttribute('aria-invalid'),'true');
- await p.locator('#new-imagekit-url').fill('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/create-modal-test.mp4');
- assert.equal(await p.locator('#new-imagekit-url').inputValue(),'create-modal-test.mp4');
+ await p.locator('#new-imagekit-url').fill('https://ik.imagekit.io/Ailuren/videos/create-modal-test.mp4');
+ assert.equal(await p.locator('#new-imagekit-url').inputValue(),'create-modal-test');
  assert.equal(await p.locator('#new-imagekit-url').getAttribute('aria-invalid'),'false');
+ await p.locator('#new-imagekit-url').fill('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/create-modal-test.mp4');
+ assert.equal(await p.locator('#new-imagekit-url').inputValue(),'create-modal-test');
+ await p.locator('#new-imagekit-url').fill('create-modal-test.mp4');
+ assert.equal(await p.locator('#new-imagekit-url').inputValue(),'create-modal-test');
 
  assert.equal(await p.locator('.ux-new-imagekit-heading a').getAttribute('href'),
    'https://imagekit.io/dashboard/media-library');

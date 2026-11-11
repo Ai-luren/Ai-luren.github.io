@@ -23,7 +23,7 @@
 
 - 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。
 - 修改 CSS 前先确认规则归属：Hero、共享 Token、导航、玻璃和作品库拥有各自文件；禁止复制旧版调参器或无必要地在 `index.html`、共享 CSS 中叠加同选择器覆盖。
-- 首页滚动位置不得重置访客动作：仅首次无锚点、非历史恢复导航可初始化 Hero 顶部；禁止在 `load` / `pageshow` 中无条件 `scrollTo(0,0)`，不要将 `history.scrollRestoration` 改回 `manual`。本地生产构建后运行 `npm run check:home-scroll`，覆盖弱网、手机桌面、浏览器返回和 `#projects` 深链。
+- 首页滚动使用浏览器原生初始定位及历史恢复；**禁止主动强制归零**，尤其不能在 `load`／`pageshow` 中重置访客位置，也不能将 `history.scrollRestoration` 改为 `manual`。生产构建后运行 `npm run check:home-scroll`，覆盖弱网、返回及 `#projects` 深链。
 - 导航响应式契约：**761px 及以上首页与全部作品页都展开同一套四项文字导航**；760px 及以下才使用汉堡菜单。作品库普通页左侧 A+ 箭头 +「首页 / Home」在双端都指向首页 Hero (./index.html)，不要误改成 #projects 或创作者头像；作品详情/获奖/账号资料弹窗仍使用共享头像品牌导航。保留 B+++ 语言切换和 = → × 动画，不为平板单独创建导航实现。
 - 获奖画廊一次显示全部 8 张，≥1280px 八列，≤1279px 四列两排；手机卡片只显示完整图片，标题和奖项信息在图片查看器中呈现。画廊不使用左右切换，查看器保留原有导航和焦点恢复。
 - AI 实验室详情保持三项目共享导航、一屏等高、真实素材与 `check:lab-showcase`；手机站外链接共用 `ExternalLinkSheet`，禁止伪造界面/绕过确认，入口和素材维护见 `docs/AI实验室与外链维护.md`。
@@ -45,49 +45,24 @@
 - 自动测试使用本地模拟媒体验证播放器状态、尺寸和导航；真实 CDN 播放检查只能在用户**明确授权**后单独手动执行，绝不自动回退到真实视频。不得改动生产环境 `tr:orig-true`、点击后加载及 `preload="none"` 的行为。
 
 
-## 验证
+## 验证与维护
 
-```bash
-npm run build
-npm run check:media-safety
-npm run check:image-loading
-npm run check:curated-order
-npm run check:asset-catalog
-npm run check:modal-motion
-npm run check:hero-published
-npm run check:hero-first-frame
-npm run check:webgl-recovery
-npm run check:clipboard
-npm run check:i18n
-node scripts/check-project-library.mjs
-git diff --check
-```
-
-工作台日常改动先运行 `npm run check:workbench-core`；涉及回收站、选帧、排序或版式时分别增加 `npm run check:workbench-recycle`、`npm run check:workbench-save`、`npm run check:workbench-drag`、`npm run check:workbench-phase3`。重大重构运行 `npm run check:workbench-full`；写入类测试必须使用隔离项目，不得修改正式素材。
-
-本地开发必须先启动 `npm run dev`，再访问固定地址 `http://127.0.0.1:5174/`（生产预览使用 `npm run preview` 和 5181 端口）；不要直接打开 `index.html`，否则 React 挂载、资源路径和动态模块可能不完整。
-
-`check:i18n` 使用 Playwright + 本机 Chrome/Edge 扫描双语手机和桌面布局，核验文案溢出、导航按钮、卡片、弹窗和影响力模块；故意溢出的视觉元素需维护测试忽略名单。
-
-## 维护验证入口
-
-- **测试分级**：日常 `npm run check:smoke`；工作台核心 `npm run check:workbench-core`；两组快速检查 `npm run check:project`。重大重构/上线前用 `npm run check:adversarial`，可按站点 `npm run check:site-full` 和工作台 `npm run check:workbench-full` 分开执行。独立 `check:*` 脚本保留；失败不得靠删除断言放行。深测在隔离项目执行写操作并阻止 ImageKit CDN 网络访问，结果只存本地 `.audit/adversarial-qa-20261108/`（不提交）。
-- `.audit/` 是 Git 忽略的本地审计与素材备份，不属于生产源码；旧报告先查 `.audit/README.md`。本地 Git 旧分支、不可达对象在核实恢复价值前不得自动删改或强制 prune。
+- **分级验证**：日常 `npm run check:smoke`；工作台 `npm run check:workbench-core`；`npm run check:project` 顺序运行两组。上线前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。失败不可删除断言；写入测试只在隔离项目执行，浏览器测试须拦截 ImageKit。
+- **专项命令**：发布前 `npm run build`；媒体安全 `npm run check:media-safety`；首页弱网滚动 `npm run check:home-scroll`（先 build）；影院真本地 MP4 `npm run check:cinema-local`（需 5174 开发服务）；双语 `npm run check:i18n`；其他按 `docs/交接说明.md` 和对应手册执行，最后 `git diff --check`。
+- **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
+- `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。
 
 ## 文档入口
 
-- `docs/文档索引.md`：**文档总导航**，区分当前维护手册和已过期历史快照。
-- `README.md`：GitHub 面向访客的真实作品展示、项目简介与最小启动说明；不是内部完整运维手册。
-- `docs/设计规范.md`：当前生效的视觉和交互规则。
-- `docs/交接说明.md`：运行时结构、关键入口和维护注意事项。
-- `.audit/docs-history/`：本地只读历史审计（设计系统验收、Step07 转化审计），**不是当前设计规范**；Git 中旧版本仍可通过提交历史找回。
-- `docs/作品库维护.md`、`docs/设计规范.md`、`docs/播放器媒体维护.md`：作品与命名、共享导航交互、媒体与影院播放状态。
-- `docs/本地封面工作流.md`、`docs/本地封面工作台使用教程.md`：本地作品工作台的技术机制与用户操作。文件名为兼容已有 GitHub 内链而保留。
+- `docs/文档索引.md` 为总导航；`README.md` 面向访客，`docs/设计规范.md` 是当前视觉规范，`docs/交接说明.md` 为开发与部署手册。
+- `docs/作品库维护.md` 管理作品及排序；`docs/播放器媒体维护.md` 管理视频和影院；`docs/本地封面工作流.md` 为工作台技术手册，`docs/本地封面工作台使用教程.md` 为操作说明。
+- `.audit/docs-history/` 为只读历史审计，不可代替当前规范；文档文件名保留以兼容已有内链。
 
 ## 作品管理工作台硬约束
 
 - **桌面限定**：`npm run covers` 只供 Mac 桌面（宽度 ≥921px）使用；公开作品集手机版保持原样。详情采用全屏双栏：左侧本地 MP4 播放/时间轴/选帧，右侧两种封面、中英文标题、版本、ImageKit 和精选。工作台不参与生产构建。
 - **版本兼容**：新作品版本保存在 `src/data/auto-projects.json`；原有 14 部作品可直接添加 B/C 版本，新增记录保存在 `src/data/legacy-video-variants.json`，**不迁移或覆盖原主视频**。每部最多 8 个版本；卡片封面属于作品，原比例海报与 ImageKit URL 属于所选视频版本。回归 `node scripts/check-cover-studio-legacy-version.mjs`。
+- **版本排序**：同一作品的视频版本可按住标签拖动，松手自动保存到 `src/data/project-version-order.json`；首个视频为公开影院默认播放版本，但 `main` 主版本身份、媒体文件、封面、各版本 ImageKit URL 不得改变。回归 `npm run check:workbench-version-order`。
 - **版本名称**：整部作品的中英文标题由所有 A/B/C 版本共用；视频版本标签与作品标题独立。右侧「视频版本」任务区单击标签切换，单击铅笔或「重命名当前版本」编辑中英文；不要恢复隐藏的双击入口。新增版本同样位于右侧。名称保存在自动作品 `mainVersionLabel`、`legacy-main-version-labels.json` 或附加版本记录中；仅监听 `127.0.0.1:5190` 的 `/api/update-version-label` 不得连接到生产页面。
 - **导航**：顶部上一部/下一部按 `src/data/project-order.json` 的 `all` 顺序跨分类、精选与搜索**首尾循环**；切换前经过 `navigateWithDraft` 草稿保护，`Option + ←/→` 仅在非输入状态使用。视频版本切换/改名统一放右侧「视频版本」任务区，左侧只负责播放、时间轴与选帧。
 - **会话存储**：工作台的 `sessions/<UUID>/source.mp4` 同内容视频通过 `.cover-studio/source-objects/` 共享 SHA-256 校验的只读硬链接；正式作品 MP4 始终保持独立可编辑文件。不得自动删除 `project-revisions/`、`sessions/` 选帧或 `exports/`。需清理时先运行 `npm run covers:storage:scan` 与 `npm run covers:storage:verify`；恢复独立会话用 `npm run covers:storage:restore -- <UUID>`。变更须通过 `npm run check:workbench-storage`。

@@ -198,7 +198,7 @@
           </div>
           <div class="ux-version-switcher">
             <div id="ux-variant-chips" class="ux-variant-chips" role="group" aria-label="选择视频版本"></div>
-            <p class="ux-version-tip">单击名称切换视频，点击铅笔修改版本名称。</p>
+            <p id="ux-version-tip" class="ux-version-tip">按住标签拖动调整版本顺序，松手自动保存；第一个版本将优先播放。</p>
           </div>
           <div class="ux-version-quick-actions">
             <button type="button" id="ux-rename-current" class="secondary">重命名当前版本</button>
@@ -243,19 +243,20 @@
           <div class="ux-section-heading"><h3>发布与预览</h3>
             <div class="ux-publish-heading-actions">
               <span id="ux-cloud-badge" class="ux-cloud-badge">正在检查</span>
-              <a id="ux-preview-current" class="ux-current-web-preview" href="http://127.0.0.1:5174/works.html" target="_blank" rel="noopener" title="在本地网页中定位当前作品，不会在线上发布">本地网页预览 ↗</a>
+              <a id="ux-open-imagekit" class="ux-publish-quicklink" href="https://imagekit.io/dashboard/media-library" target="_blank" rel="noopener noreferrer" title="在新标签页打开 ImageKit 媒体库">打开 ImageKit ↗</a>
+              <a id="ux-preview-current" class="ux-publish-quicklink ux-current-web-preview" href="http://127.0.0.1:5174/works.html" target="_blank" rel="noopener" title="在本地网页中定位当前作品，不会在线上发布">本地网页预览 ↗</a>
             </div>
           </div>
           <div id="ux-url-readonly" class="ux-url-readonly" role="button" tabindex="0" aria-label="单击编辑 ImageKit 视频地址" title="点击即可编辑或复制地址"></div>
           <form id="ux-url-form" hidden>
             <div class="ux-url-fixed"><span>固定前缀</span><code>https://ik.imagekit.io/Ailuren/tr:orig-true/videos/</code><button type="button" id="ux-url-copy" class="secondary">复制</button></div>
-            <label class="ux-url-filename-label" for="ux-url-value">视频文件名（只修改前缀后的部分，或粘贴完整链接）</label>
+            <label class="ux-url-filename-label" for="ux-url-value">视频文件名（可直接粘贴 ImageKit 原始链接，自动去掉 .mp4）</label>
             <div class="ux-url-edit-row">
-              <input type="text" id="ux-url-value" placeholder="例如：my-video.mp4" spellcheck="false" autocomplete="off" aria-label="ImageKit MP4 文件名" aria-describedby="ux-url-hint ux-url-validation">
+              <input type="text" id="ux-url-value" placeholder="例如：FormFunk-E（保存时自动补 .mp4）" spellcheck="false" autocomplete="off" aria-label="ImageKit MP4 文件名" aria-describedby="ux-url-hint ux-url-validation">
               <button id="ux-url-save" type="submit" class="primary">保存</button>
               <button id="ux-url-cancel" type="button" class="secondary">取消</button>
             </div>
-            <span id="ux-url-hint" class="sr-only">固定前缀不变；保存只更改本地配置；Enter 保存、Esc 取消。</span>
+            <span id="ux-url-hint" class="sr-only">可以粘贴同账户 ImageKit 原始链接，自动转成文件名；保存时固定添加 tr:orig-true 前缀和 .mp4 扩展名；Enter 保存、Esc 取消。</span>
             <p id="ux-url-validation" class="ux-url-validation" role="status" hidden></p>
           </form>
         </section>
@@ -454,9 +455,9 @@
 <div class="ux-new-imagekit">
   <div class="ux-new-imagekit-heading"><label for="new-imagekit-url">ImageKit 视频直链 <span>选填</span></label><a href="https://imagekit.io/dashboard/media-library" target="_blank" rel="noopener noreferrer" title="新窗口打开 ImageKit 媒体库">打开 ImageKit ↗</a></div>
   <div class="ux-imagekit-prefix-row"><span class="ux-imagekit-prefix-label">固定前缀</span><code id="ux-new-imagekit-prefix">https://ik.imagekit.io/Ailuren/tr:orig-true/videos/</code><button id="ux-new-imagekit-copy" type="button" class="secondary" aria-label="复制 ImageKit 固定前缀">复制</button></div>
-  <label class="ux-imagekit-filename-label" for="new-imagekit-url">视频文件名（只需要填写后面的部分）</label>
-  <input id="new-imagekit-url" type="text" inputmode="text" spellcheck="false" autocomplete="off" placeholder="例如：MEXC-StandardCabin-Perks-Version-A.mp4" aria-describedby="ux-new-imagekit-help">
-  <p id="ux-new-imagekit-help">前缀已固定，粘贴完整 ImageKit 链接也会自动提取文件名。留空可先保存本地，不自动上传。</p><p id="ux-new-imagekit-error" role="status" hidden></p>
+  <label class="ux-imagekit-filename-label" for="new-imagekit-url">视频文件名（可直接粘贴 ImageKit 原始链接）</label>
+  <input id="new-imagekit-url" type="text" inputmode="text" spellcheck="false" autocomplete="off" placeholder="例如：FormFunk-E（自动补 .mp4）" aria-describedby="ux-new-imagekit-help">
+  <p id="ux-new-imagekit-help">前缀已固定，粘贴原始 /videos/ 或带 tr:orig-true 的地址都会提取文件名、去掉 .mp4；保存时自动补回 .mp4。可留空，不自动上传。</p><p id="ux-new-imagekit-error" role="status" hidden></p>
 </div>
 <input type="checkbox" id="create-consent" checked hidden>
 <button id="create-project" type="button" class="primary" disabled hidden>保存作品到本地作品库</button>

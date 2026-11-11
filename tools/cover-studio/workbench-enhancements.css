@@ -320,3 +320,12 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-new-editor #ux-local-import-details:not([open]) .local-video-picker{display:none}
 #ux-library .ux-recycle-thumb{width:57px;height:74px;flex:none;overflow:hidden;border-radius:7px;background:#000;border:1px solid #50657b}
 #ux-library .ux-recycle-thumb img{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+
+/* Video-version sequence: drag without extra management buttons. */
+#ux-editor .ux-version-switcher .ux-variant-item{position:relative;transition:border-color .12s,background .12s}
+#ux-editor .ux-version-switcher .ux-variant{cursor:grab;touch-action:pan-y}
+#ux-editor .ux-version-switcher .ux-variant:active{cursor:grabbing}
+#ux-editor .ux-version-switcher .ux-variant-item.ux-version-drag-source{opacity:.38}
+#ux-editor .ux-version-switcher .ux-variant-item.ux-version-drop-target{border-color:#a4d2fa;background:#385574;box-shadow:0 0 0 2px #a4d2fa60}
+body.ux-version-dragging,body.ux-version-dragging *{cursor:grabbing!important;user-select:none!important}
+.ux-version-ghost{position:fixed;z-index:250;pointer-events:none;left:0;top:0;max-width:240px;padding:8px 12px;border:1px solid #a4d2fa;border-radius:9px;color:#edf6ff;background:#294967;font-size:12px;box-shadow:0 8px 25px #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

@@ -30,6 +30,7 @@ try{
  await page.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
  await page.locator('#ux-search').fill('岳阳楼');
  await page.locator('.ux-project[data-id="06"] .ux-project-image').click();
+ await page.locator('[data-ux-panel="details"]').click();
  assert.equal(await page.locator('#ux-frame-select').count(),0);
  const nav=await page.locator('.ux-work-nav').boundingBox();
  assert(Math.abs(nav.x+nav.width/2-720)<=5,'global navigation must be truly centered');
@@ -55,8 +56,13 @@ try{
  assert(await readonly.isVisible());
  assert.equal(await page.locator('#ux-url-value').inputValue(),old);
  await readonly.click();
- const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/precision-verified.mp4';
- await page.locator('#ux-url-value').fill(url);
+ const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/FormFunk-E.mp4';
+ const rawLibraryURL='https://ik.imagekit.io/Ailuren/videos/FormFunk-E.mp4';
+ await page.locator('#ux-url-value').fill('https://ik.imagekit.io/OtherUser/videos/NotMine.mp4');
+ assert.equal(await page.locator('#ux-url-save').isDisabled(),true,'Other accounts must be rejected');
+ await page.locator('#ux-url-value').fill(rawLibraryURL);
+ assert.equal(await page.locator('#ux-url-value').inputValue(),'FormFunk-E','Pasting raw ImageKit link should show stem');
+ assert.equal(await page.locator('#ux-url-save').isEnabled(),true);
  const urlRow=await page.locator('#ux-url-form .ux-url-edit-row').evaluate(row=>{
    const heights=[...row.children].map(x=>x.getBoundingClientRect().height);
    const tops=[...row.children].map(x=>x.getBoundingClientRect().top);
@@ -67,7 +73,14 @@ try{
  await page.locator('#ux-url-save').click();
  await page.waitForFunction(x=>document.querySelector('#ux-url-readonly')?.textContent===x,url,{timeout:10000});
  assert.equal(JSON.parse(await fs.readFile(path.join(temp,'src/data/legacy-imagekit-urls.json'),'utf8'))['06'],url);
- console.log('INLINE_URL_SINGLE_CLICK_SAVE_ESCAPE_AND_DRAFT_PASS');
+ await readonly.click();
+ assert.equal(await page.locator('#ux-url-value').inputValue(),'FormFunk-E','Saved URL must reopen as extensionless stem');
+ await page.locator('#ux-url-value').fill('FormFunk-E.mp4');
+ assert.equal(await page.locator('#ux-url-value').inputValue(),'FormFunk-E','Typed .mp4 must not be duplicated');
+ await page.locator('#ux-url-cancel').click();
+ assert.equal(JSON.parse(await fs.readFile(path.join(temp,'src/data/legacy-imagekit-urls.json'),'utf8'))['06'],url);
+ console.log('INLINE_URL_RAW_IMAGEKIT_CONVERSION_AND_DRAFT_PASS');
+ await page.locator('[data-ux-panel="artwork"]').click();
  await page.locator('#ux-change-poster').click();
  await page.waitForFunction(()=>document.querySelector('#ux-inline-save')?.disabled===false,
    null,{timeout:25000});

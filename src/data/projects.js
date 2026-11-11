@@ -3,6 +3,7 @@ import coverOverrides from './project-cover-overrides.json';
 import videoMetadata from './project-video-metadata.json';
 import autoProjects from './auto-projects.json';
 import projectOrder from './project-order.json';
+import projectVersionOrder from './project-version-order.json';
 import projectTitleOverrides from './project-title-overrides.json';
 import localVideoPaths from './local-video-paths.json';
 import legacyVideoUrls from './legacy-imagekit-urls.json';
@@ -70,6 +71,7 @@ const BASE_PROJECTS = [
     playerPoster:playerPosters[`../../assets/images/player-posters/${posterFile}`]||null,
   }));
   return { ...project, variants: variants.filter(v=>!archived.versions?.[project.id]?.[v.id]),
+    versionOrder: projectVersionOrder[project.id] || [],
     ...(project.mainVersionLabel || legacyMainVersionLabels[project.id]
       ? {mainVersionLabel:project.mainVersionLabel || legacyMainVersionLabels[project.id]} : {}),
     ...(projectTitleOverrides[project.id] ? {title:projectTitleOverrides[project.id]} : {}), ...(cover ? { cover } : {}),

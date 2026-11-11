@@ -53,6 +53,7 @@
     "check:workbench-ux": "node scripts/check-cover-studio-library.mjs",
     "check:workbench-save": "node scripts/check-cover-studio-library-save.mjs",
     "check:workbench-version-labels": "node scripts/check-cover-studio-version-labels.mjs",
+    "check:workbench-version-order": "node scripts/check-cover-studio-version-order.mjs",
     "check:workbench-simple-versions": "node scripts/check-cover-studio-simple-versions.mjs",
     "check:workbench-recycle": "node scripts/check-cover-studio-recycle-bin.mjs",
     "check:workbench-drag": "node scripts/check-cover-studio-direct-drag.mjs",

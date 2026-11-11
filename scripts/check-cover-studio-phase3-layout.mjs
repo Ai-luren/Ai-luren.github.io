@@ -39,6 +39,35 @@ try{
   assert(d.navArrowDifference<=1,'arrows mismatch sizes');
   assert(Math.abs(d.positionY-d.arrowY)<=2,'numeric position not vertically centered');
   if(width===1440)assert(d.scroll<=2,'details needs unintended scroll at 1440×900');
+  await p.locator('[data-ux-panel=details]').click();
+  const imageKitShortcut=await p.locator('#ux-open-imagekit').evaluate(link=>{
+    const bounds=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
+    const title=document.querySelector('.ux-publish-section .ux-section-heading h3');
+    const local=document.querySelector('#ux-preview-current');
+    const inspector=document.querySelector('.ux-studio-inspector');
+    return {href:link.href,target:link.target,rel:link.rel,text:link.textContent.trim(),
+      visible:getComputedStyle(link).display!=='none',link:bounds(link),local:bounds(local),
+      title:bounds(title),inspector:bounds(inspector)};
+  });
+  assert.equal(imageKitShortcut.href,'https://imagekit.io/dashboard/media-library');
+  assert.equal(imageKitShortcut.target,'_blank');
+  assert(imageKitShortcut.rel.includes('noopener')&&imageKitShortcut.rel.includes('noreferrer'));
+  assert.equal(imageKitShortcut.text,'打开 ImageKit ↗');
+  assert(imageKitShortcut.visible,'ImageKit shortcut missing in work settings');
+  assert(imageKitShortcut.title.right<=imageKitShortcut.link.left+1,'Publish heading overlaps ImageKit shortcut');
+  assert(imageKitShortcut.link.right<=imageKitShortcut.local.left+1,'ImageKit shortcut overlaps local preview');
+  assert(imageKitShortcut.local.right<=imageKitShortcut.inspector.right+1,'Shortcut clipped outside inspector');
+  assert(imageKitShortcut.link.height>=24,'ImageKit shortcut target too small');
+  // An outbound link must not open an actual external tab during local checks.
+  await p.locator('#ux-open-imagekit').evaluate(link=>link.addEventListener('click',event=>{
+    event.preventDefault();window.__imageKitShortcutClicked=true;
+  },{once:true}));
+  await p.locator('#ux-open-imagekit').click();
+  assert(await p.evaluate(()=>window.__imageKitShortcutClicked===true),'ImageKit shortcut not clickable');
+  await p.locator('#ux-url-readonly').click();
+  assert(await p.locator('#ux-url-form').isVisible(),'ImageKit address editor disrupted');
+  await p.locator('#ux-url-cancel').click();
+  console.log('IMAGEKIT_SHORTCUT_PASS',width,height,'no overlap or external requests');
   // Secondary dialogs should remain inside the same viewport and retain
   // visible close/actions at laptop heights, without requiring a real restore.
   await p.locator('[data-ux-panel=artwork]').click();

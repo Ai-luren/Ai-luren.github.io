@@ -1,6 +1,6 @@
 import { createLibraryUI } from './library-ui.js';
+import { IMAGEKIT_URL_PREFIX, imageKitVideoStem, imageKitVideoError, imageKitVideoURL } from './imagekit-url.js';
 const $ = id => document.getElementById(id);
-const IMAGEKIT_URL_PREFIX = 'https://ik.imagekit.io/Ailuren/tr:orig-true/videos/';
 const state = { token: '', session: null, frame: null, image: null, mode: 'cover', x: .5, y: .5, exported: null, created: null, projects: [], overrides: {}, managed: [], variantAddedSession: null, workflow: 'new', initialized: false, ordering: null, orderDraft: null, orderBaseline: null, orderScope: 'featured', orderCategory: 'commercial', featuredPoolCategory: 'commercial', featuredSwapTarget: null, featuredCandidate: null, previewView: 'cover', posterVersions: [], libraryReturnTarget: null, libraryReturnVariant: 'main', busy: false };
 let libraryUI=null;
 let customNewCover=null,customNewCoverUrl=null,customNewPoster=null,customNewPosterUrl=null;
@@ -457,27 +457,12 @@ for (const id of ['new-title-zh', 'new-title-en', 'new-imagekit-url', 'create-co
   $(id).addEventListener(id === 'create-consent' ? 'change' : 'input', syncButtons);
 }
 function normalizeNewImagekitFilename(){
-  const input=$('new-imagekit-url'),value=input.value.trim();
-  if(!value)return '';
-  if(value.startsWith(IMAGEKIT_URL_PREFIX)){
-    const filename=value.slice(IMAGEKIT_URL_PREFIX.length);
-    input.value=filename;
-    return filename;
-  }
-  return value;
+  const input=$('new-imagekit-url'),raw=input.value.trim();
+  if(!imageKitVideoError(raw,{optional:true}))input.value=imageKitVideoStem(raw);
+  return input.value.trim();
 }
 function validateNewImagekitFilename(){
-  const raw=$('new-imagekit-url').value.trim();
-  if(!raw)return '';
-  if(/^(?:https?:|\/\/)/i.test(raw))return '只接受当前 ImageKit 前缀下的视频，请粘贴正确链接或只填写文件名。';
-  if(!raw.toLowerCase().endsWith('.mp4'))return '视频文件名必须以 .mp4 结尾。';
-  if(raw.includes('..')||raw.includes('\\')||raw.startsWith('/')||/[?#<>\x00-\x1f]/.test(raw))
-    return '文件名不能包含路径跳转、问号、井号或非法字符。';
-  try {
-    const url=new URL(IMAGEKIT_URL_PREFIX+raw);
-    if(url.origin!=='https://ik.imagekit.io'||!url.pathname.startsWith(new URL(IMAGEKIT_URL_PREFIX).pathname))return '视频地址格式不正确。';
-  }catch{return '视频文件名格式不正确。';}
-  return '';
+  return imageKitVideoError($('new-imagekit-url').value,{optional:true});
 }
 $('new-imagekit-url').addEventListener('input',()=>{normalizeNewImagekitFilename();syncButtons();});
 $('ux-new-imagekit-copy').addEventListener('click',async()=>{
@@ -497,7 +482,7 @@ $('create-project').addEventListener('click', () => action(async () => {
   const result = await api('/api/create-project', {
     sessionId: state.session.id, exportId: state.exported.id,
     titleZh: $('new-title-zh').value.trim(), titleEn: $('new-title-en').value.trim(),
-    category: $('new-category').value, imagekitUrl: normalizeNewImagekitFilename() ? IMAGEKIT_URL_PREFIX+normalizeNewImagekitFilename() : '',
+    category: $('new-category').value, imagekitUrl: imageKitVideoURL($('new-imagekit-url').value),
     confirmed: $('create-consent').checked,
   });
   state.created = result;

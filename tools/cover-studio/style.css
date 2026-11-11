@@ -1370,15 +1370,20 @@ body.ux-dragging,body.ux-dragging *{cursor:grabbing!important}
   display:flex;align-items:center;gap:8px;margin-left:auto;min-width:0;
 }
 #ux-editor .ux-publish-heading-actions #ux-cloud-badge{margin:0}
-#ux-editor .ux-current-web-preview{
-  margin:0;padding:0 6px;min-height:25px;
+#ux-editor .ux-publish-quicklink{
+  display:inline-flex;align-items:center;justify-content:center;
+  flex:0 0 auto;white-space:nowrap;
+  margin:0;padding:0 5px;min-height:25px;
   background:transparent;border:0;border-radius:6px;
   color:#9cbce0;text-decoration:none;font-size:10px;
 }
-#ux-editor .ux-current-web-preview:hover,
-#ux-editor .ux-current-web-preview:focus-visible{
+#ux-editor .ux-publish-quicklink:hover,
+#ux-editor .ux-publish-quicklink:focus-visible{
   color:#eef7ff;background:#2b4057;border:0;
   text-decoration:underline;text-underline-offset:3px;
+}
+#ux-editor .ux-publish-quicklink:focus-visible{
+  outline:2px solid #9dc9f0;outline-offset:2px;
 }
 #ux-editor .ux-url-readonly{background:#101926;border-color:#5f7b953b}
 #ux-editor .ux-studio-stage:has(#ux-inline-cover:not([hidden])) .ux-stage-player{

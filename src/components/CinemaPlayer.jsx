@@ -2,6 +2,7 @@ import { createPortal } from 'react-dom';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
+import {projectVideoVersions,initialProjectPoster} from '../data/version-order.js';
 import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { WORKS_HREF } from '../navigation/links.js';
@@ -35,11 +36,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [fallbackVersionPoster, setFallbackVersionPoster] = useState(null);
   const [switching, setSwitching] = useState(false);
   const [versionSelection, setVersionSelection] = useState({ projectId: project?.id, index: 0 });
-  const versions = project ? [{
-    id: 'main', label: project.mainVersionLabel || { zh: '主版本', en: 'Main version' },
-    videoUrl: project.videoUrl, playerPoster: project.playerPoster,
-    videoWidth: project.videoWidth, videoHeight: project.videoHeight,
-  }, ...(project.variants || [])] : [];
+  const versions = projectVideoVersions(project);
   const versionIndex = versionSelection.projectId === project?.id ? versionSelection.index : 0;
   const currentVersion = versions[versionIndex] || versions[0];
   const coverRevision=useLocalArtworkRevision('cover',project?.id);
@@ -124,7 +121,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   useLayoutEffect(() => {
     versionRequestRef.current++;
     setVersionPendingIndex(null);
-    setFallbackVersionPoster(null);
+    setFallbackVersionPoster(project?.preparedVersionPosterFallback
+      ? {projectId:project.id,versionId:projectVideoVersions(project)[0]?.id} : null);
   }, [project?.id]);
 
   useLayoutEffect(() => {
@@ -228,9 +226,9 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     // The old 1.5-second deadline could force a black screen on slow networks.
     let prepared = next;
     try {
-      if (!await readyArtwork(next.playerPoster || next.cover)) {
+      if (!await readyArtwork(initialProjectPoster(next))) {
         if (!await readyArtwork(next.cover)) return;
-        prepared = { ...next, playerPoster: next.cover };
+        prepared = { ...next, preparedVersionPosterFallback: true };
       }
       if (!dialogRef.current?.open || closingRef.current) return;
       stop();
@@ -405,13 +403,13 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           <div className="cinema-player__work-nav" role="group" aria-busy={switching} aria-label={lang === 'en' ? 'Work navigation' : '作品切换'}>
             <div className="cinema-player__sequence">
               <button type="button" onClick={() => switchWork(index-1)} disabled={switching || index <= 0}
-                onPointerEnter={() => warmImage(projects[index-1]?.playerPoster || projects[index-1]?.cover)}
-                onFocus={() => warmImage(projects[index-1]?.playerPoster || projects[index-1]?.cover)}
+                onPointerEnter={() => warmImage(initialProjectPoster(projects[index-1]))}
+                onFocus={() => warmImage(initialProjectPoster(projects[index-1]))}
                 aria-label={lang==='en'?'Previous work':'上一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
               <span className="cinema-player__count" aria-live="polite">{index+1} / {projects.length}</span>
               <button type="button" onClick={() => switchWork(index+1)} disabled={switching || index < 0 || index >= projects.length-1}
-                onPointerEnter={() => warmImage(projects[index+1]?.playerPoster || projects[index+1]?.cover)}
-                onFocus={() => warmImage(projects[index+1]?.playerPoster || projects[index+1]?.cover)}
+                onPointerEnter={() => warmImage(initialProjectPoster(projects[index+1]))}
+                onFocus={() => warmImage(initialProjectPoster(projects[index+1]))}
                 aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
             </div>
           </div>
