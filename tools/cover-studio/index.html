@@ -229,13 +229,13 @@
               <span class="ux-version-file-content"><strong id="ux-version-file-name">选择 MP4 视频</strong><small id="ux-version-file-hint">点击选择 · 添加后保留原版本</small></span>
               <input type="file" id="ux-version-file" accept=".mp4,video/mp4" required aria-describedby="ux-version-file-hint ux-version-status">
             </label>
-            <details id="ux-version-advanced" class="ux-version-advanced">
-              <summary>自定义版本名称 <span>可选</span></summary>
+            <section id="ux-version-advanced" class="ux-version-advanced">
+              <div class="ux-version-advanced-heading">视频版本名称 <span>已自动填写，可直接修改</span></div>
               <div class="ux-version-fields">
                 <label>中文标签 <input id="ux-version-zh" type="text" maxlength="50" value="版本 B" required></label>
                 <label>英文标签 <input id="ux-version-en" type="text" maxlength="50" value="Version B" required></label>
               </div>
-            </details>
+            </section>
             <p id="ux-version-status" class="muted" role="status" aria-live="polite">选择视频后可在左侧预览；默认按版本编号命名。</p>
             <div class="ux-version-form-actions">
               <button id="ux-version-cancel" type="button" class="secondary">取消</button>
@@ -402,17 +402,16 @@
     <strong>拖入 MP4，或点击选择视频</strong>
     <span>本地处理，不会上传视频或自动发布网站</span>
   </button>
-  <details id="ux-local-import-details" class="ux-local-import-details">
-    <summary>从默认素材目录选视频 <small>可选</small></summary>
+  <section id="ux-local-import-details" class="ux-local-import-details">
+    <div class="ux-local-import-heading"><span>从默认素材目录选视频 <small>可选方式</small></span><button id="refresh-local-videos" type="button" class="secondary small-button">刷新列表</button></div>
   <div class="local-video-picker">
-<div class="local-video-heading"><strong>本机 MP4 列表</strong><button id="refresh-local-videos" type="button" class="secondary small-button">刷新文件列表</button></div>
 <p id="local-video-directory" class="file-path">正在读取默认目录…</p>
 <div class="local-video-controls"><label class="sr-only" for="local-video-select">从默认目录选择 MP4 视频</label><select id="local-video-select" aria-label="从默认目录选择 MP4"><option value="">正在加载…</option></select><button id="import-local-video" type="button" class="primary" disabled>导入选中 MP4</button></div>
 <p id="local-video-hint" class="muted">仅列出默认文件夹中的 MP4，不自动上传或关联到作品集。</p>
 </div>
-  </details>
+  </section>
 <div class="import-actions"><label class="button secondary">选择 MP4 文件<input id="video-file" type="file" accept=".mp4,video/mp4"></label><label class="button secondary">导入现成封面<input id="image-file" type="file" accept=".jpg,.jpeg,.png,.webp"></label></div><p class="muted">原始 MP4 保持不变，单个视频文件最大 2GB。</p><progress id="upload-progress" max="100" value="0" hidden></progress><p id="metadata">尚未导入素材</p><video id="source-video" controls playsinline preload="metadata" hidden></video></section>
-<div class="workspace"><section class="frame-panel panel" aria-labelledby="frames-heading"><h2 id="frames-heading">02 / 选择封面画面</h2><p class="muted">播放视频或拖动时间轴，停在希望用作封面的画面。</p><div id="timeline" hidden><details class="fine-tune"><summary>精确选帧（可选）</summary><div class="time-controls"><label>时间点（秒）<input id="time-input" type="number" min="0" step="0.001" value="0"></label><button id="seek-frame" type="button">提取该时间点</button><button id="prev-frame" type="button" aria-label="前一帧">−1 帧</button><button id="next-frame" type="button" aria-label="后一帧">+1 帧</button></div><label class="range-label">时间轴 <output id="time-label">00:00.000</output><input id="time-range" type="range" min="0" step="0.001" value="0"></label></details></div><div id="candidate-grid" class="candidates" hidden></div>
+<div class="workspace"><section class="frame-panel panel" aria-labelledby="frames-heading"><h2 id="frames-heading">02 / 选择封面画面</h2><p class="muted">播放视频或拖动时间轴，停在希望用作封面的画面。</p><div id="timeline" hidden><div class="fine-tune"><div class="fine-tune-heading">精确选帧</div><div class="time-controls"><label>时间点（秒）<input id="time-input" type="number" min="0" step="0.001" value="0"></label><button id="seek-frame" type="button">提取该时间点</button><button id="prev-frame" type="button" aria-label="前一帧">−1 帧</button><button id="next-frame" type="button" aria-label="后一帧">+1 帧</button></div><label class="range-label">时间轴 <output id="time-label">00:00.000</output><input id="time-range" type="range" min="0" step="0.001" value="0"></label></div></div><div id="candidate-grid" class="candidates" hidden></div>
   <div class="ux-new-frame-jog" role="group" aria-label="精确调整视频画面">
     <button id="ux-new-jog-first" type="button" aria-label="跳到视频首帧" disabled>首帧</button>
     <button id="ux-new-jog-prev" type="button" aria-label="后退一帧，快捷键左箭头" disabled><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 5-7 7 7 7"/></svg>上一帧</button>
@@ -434,7 +433,7 @@
     </div>
     <p id="ux-new-poster-meta" class="ux-new-poster-meta">独立于 3:4 封面，不裁切、不拉伸</p>
   </div>
-</div><p id="frame-status" class="muted">900 × 1200 · WebP · 3:4</p><p id="preview-help" class="muted">拖动画面调整 3:4 卡片封面；原比例选帧独立保留视频真实画幅。</p><details class="fine-tune"><summary>微调封面位置（可选）</summary><div class="position-controls"><label>水平位置<input id="position-x" type="range" min="0" max="1" step="0.001" value="0.5"></label><label>垂直位置<input id="position-y" type="range" min="0" max="1" step="0.001" value="0.5"></label><button id="reset-position" type="button">恢复居中</button></div></details><button id="ux-quick-save" type="button" class="primary" disabled hidden>保存封面</button>
+</div><p id="frame-status" class="muted">900 × 1200 · WebP · 3:4</p><p id="preview-help" class="muted">拖动画面调整 3:4 卡片封面；原比例选帧独立保留视频真实画幅。</p><div class="fine-tune"><div class="fine-tune-heading">微调封面位置</div><div class="position-controls"><label>水平位置<input id="position-x" type="range" min="0" max="1" step="0.001" value="0.5"></label><label>垂直位置<input id="position-y" type="range" min="0" max="1" step="0.001" value="0.5"></label><button id="reset-position" type="button">恢复居中</button></div></div><button id="ux-quick-save" type="button" class="primary" disabled hidden>保存封面</button>
 <p id="ux-quick-note" class="muted" hidden>保存后将替换当前图片并备份旧图，不影响视频文件或另一种封面。</p>
 <button id="export-cover" type="button" class="primary" disabled>确认使用此封面并导出</button><div id="export-result" hidden><h3>已导出</h3><img id="export-image" alt="实际导出的封面"><p id="export-path" class="file-path"></p><a id="download-cover" class="button" download>下载 3:4 封面</a><div id="poster-result" hidden><h3>播放器海报 · 原视频比例</h3><img id="poster-image" alt="从同一时间点提取的原比例播放器海报"><p class="muted">已自动生成 WebP，无需重新裁剪或单独运行脚本。</p></div></div>
 <div id="cover-confirm" class="cover-confirm" hidden>
@@ -456,7 +455,7 @@
 <label>英文统一名称 <input id="new-title-en" type="text" maxlength="80" placeholder="例如：MEXC AI Concept Ad" autocomplete="off"></label>
 <label>作品分类 · 默认沿用当前列表 <select id="new-category"><option value="commercial">AI 商业广告</option><option value="short-film">AI 创意短片</option><option value="social">AI 海外产品广告</option><option value="visual">AI 视觉实验</option></select></label>
 </div>
-<details id="ux-new-imagekit-details" class="ux-new-imagekit"><summary>线上视频地址（ImageKit · 可选）<span>不影响本地保存</span></summary>
+<section id="ux-new-imagekit-details" class="ux-new-imagekit"><div class="ux-new-imagekit-title">线上视频地址（ImageKit · 可选）<span>不影响本地保存</span></div>
   <div class="ux-new-imagekit-inner">
   <div class="ux-new-imagekit-heading"><label for="new-imagekit-url">ImageKit 视频直链 <span>选填</span></label><a href="https://imagekit.io/dashboard/media-library" target="_blank" rel="noopener noreferrer" title="新窗口打开 ImageKit 媒体库">打开 ImageKit ↗</a></div>
   <div class="ux-imagekit-prefix-row"><span class="ux-imagekit-prefix-label">固定前缀</span><code id="ux-new-imagekit-prefix">https://ik.imagekit.io/Ailuren/tr:orig-true/videos/</code><button id="ux-new-imagekit-copy" type="button" class="secondary" aria-label="复制 ImageKit 固定前缀">复制</button></div>
@@ -464,7 +463,7 @@
   <input id="new-imagekit-url" type="text" inputmode="text" spellcheck="false" autocomplete="off" placeholder="例如：FormFunk-E（自动补 .mp4）" aria-describedby="ux-new-imagekit-help">
   <p id="ux-new-imagekit-help">前缀已固定，粘贴原始 /videos/ 或带 tr:orig-true 的地址都会提取文件名、去掉 .mp4；保存时自动补回 .mp4。可留空，不自动上传。</p><p id="ux-new-imagekit-error" role="status" hidden></p>
   </div>
-</details>
+</section>
 <input type="checkbox" id="create-consent" checked hidden>
 <button id="create-project" type="button" class="primary" disabled hidden>保存作品到本地作品库</button>
 <div id="created-result" class="created-result" hidden><h3>作品已加入本地作品库</h3><p id="created-summary"></p><p class="muted">可通过 <code>npm run dev</code> 在本地作品库播放。正式线上发布前还要为新视频配置可访问的 HTTPS 视频地址；系统不会使用 ImageKit 或其他云服务自动上传。</p></div>

@@ -46,7 +46,8 @@ try{
  assert(await p.locator('#ux-new-left .frame-panel').isHidden(),'No disabled frame controls before video import');
  assert(await p.locator('#ux-new-right .crop-panel').isHidden(),'No empty cover previews before video import');
  assert(await p.locator('#ux-new-preimport-note').isVisible(),'Explain automatic two-cover previews before import');
- assert.equal(await p.locator('#ux-new-imagekit-details').getAttribute('open'),null,'ImageKit must start collapsed');
+ assert(await p.locator('#new-imagekit-url').isVisible(),'Optional ImageKit filename must be directly visible');
+ assert.equal(await p.locator('#ux-new-editor details').count(),0,'No collapsed controls in new work form');
  assert(!(await p.locator('#ux-new-progress').textContent()).includes('/3'),'No false three-step counter');
  assert(await p.locator('#ux-library').isVisible(),'library stays visible behind modal');
  assert(!await p.locator('#ux-new-editor').evaluate(e=>e.closest('body').inert));
@@ -77,6 +78,7 @@ try{
    document.querySelector('#preview-placeholder')?.hidden===true,null,{timeout:18000});
  assert(await p.locator('#ux-new-left .frame-panel').isVisible(),'Frame tools appear after importing');
  assert(await p.locator('#ux-new-right .crop-panel').isVisible(),'Auto-selected frame reveals two previews');
+ assert(await p.locator('#position-x').isVisible(),'Cover position adjustments must not be hidden in a disclosure');
  assert(await p.locator('#ux-new-preimport-note').isHidden());
  assert.equal(await p.locator('#candidate-grid button').count(),0,'No hidden candidate sampling on new uploads');
  assert.equal(await p.locator('#new-category').inputValue(),'short-film');
@@ -108,8 +110,7 @@ try{
  await p.waitForFunction(()=>document.querySelector('#ux-new-poster-meta').textContent.includes('自定义'),null,{timeout:15000});
  assert((await p.locator('#ux-new-player-poster').getAttribute('src')).startsWith('blob:'),'poster should preview imported image');
  console.log('INDEPENDENT_POSTER_PREVIEW_PASS');
- await p.locator('#ux-new-imagekit-details > summary').click();
- assert(await p.locator('#new-imagekit-url').isVisible(),'Optional ImageKit settings must open on demand');
+ assert(await p.locator('#new-imagekit-url').isVisible(),'ImageKit inputs remain visible after import');
  await p.locator('#new-imagekit-url').fill('https://wrong.example/video.mp4');
  assert.equal(await p.locator('#new-imagekit-url').getAttribute('aria-invalid'),'true');
  assert(await p.locator('#ux-new-imagekit-error').isVisible());

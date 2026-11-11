@@ -116,7 +116,7 @@ try{
   console.log('CROSS_FIELD_DRAFT_PRESERVATION_PASS');
   await page.locator('#ux-add-variant').click();
   assert(await page.locator('#ux-version-form').isVisible());
-  assert.equal(await page.locator('#ux-version-advanced').evaluate(el=>el.open),false);
+  assert(await page.locator('#ux-version-zh').isVisible(),'Version naming should not require an expand click');
   assert.match(await page.locator('#ux-version-proposed').textContent(),/版本 C/);
   assert(await page.locator('#ux-version-submit').isDisabled());
   await page.locator('#ux-version-file').setInputFiles(mp4);

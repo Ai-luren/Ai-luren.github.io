@@ -52,7 +52,7 @@ try{
  await page.locator('.ux-project[data-id="03"] .ux-project-image').click();
  await page.locator('#ux-add-variant').click();
  await page.locator('#ux-version-file').setInputFiles(fixture);
- await page.locator('#ux-version-advanced summary').click();
+ assert(await page.locator('#ux-version-zh').isVisible(),'Version naming fields are always visible');
  await page.locator('#ux-version-zh').fill('版本 B');
  await page.locator('#ux-version-en').fill('Version B');
  await page.locator('#ux-version-submit').click();

@@ -187,8 +187,8 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor .ux-version-file-content small{color:#94afc5;font-size:10px;line-height:1.35}
 #ux-editor .ux-version-file-picker input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
 #ux-editor .ux-version-advanced{border-top:1px solid #58728a47;padding-top:8px}
-#ux-editor .ux-version-advanced>summary{cursor:pointer;color:#bfd4e5;font-size:11px;line-height:1.7;list-style-position:inside}
-#ux-editor .ux-version-advanced>summary span{color:#7f9eb6;margin-left:5px;font-size:10px}
+#ux-editor .ux-version-advanced-heading{color:#bfd4e5;font-size:11px;line-height:1.7;font-weight:600}
+#ux-editor .ux-version-advanced-heading span{color:#7f9eb6;margin-left:5px;font-size:10px;font-weight:400}
 #ux-editor .ux-version-advanced .ux-version-fields{margin-top:10px}
 #ux-editor .ux-version-form p{margin:0;font-size:11px;line-height:1.5}
 #ux-editor .ux-version-form-actions{grid-template-columns:84px minmax(0,1fr)}
@@ -305,14 +305,33 @@ body[data-workflow='library'] #ux-create-quick{
 }
 @media(prefers-reduced-motion:reduce){#ux-editor .ux-detail-tabs button{transition:none}}
 
-/* New-work flow: one primary MP4 import surface; optional library is disclosed. */
-#ux-new-editor .ux-local-import-details{border:1px solid #50678168;border-radius:10px;background:#102030;overflow:hidden}
-#ux-new-editor .ux-local-import-details>summary{padding:11px 14px;cursor:pointer;font-size:12px;font-weight:600;color:#c9dbea;list-style-position:inside;min-height:41px}
-#ux-new-editor .ux-local-import-details>summary:hover{background:#1e3449}
-#ux-new-editor .ux-local-import-details>summary small{font-size:10px;font-weight:400;color:#91adc4;margin-left:7px}
+/* New-work flow: file picker is permanently available; no disclosure gate. */
+#ux-new-editor .ux-local-import-details{border:1px solid #50678168;border-radius:10px;background:#102030;overflow:visible}
+#ux-new-editor .ux-local-import-heading{display:flex;align-items:center;gap:8px;padding:9px 13px;font-size:12px;font-weight:600;color:#c9dbea;min-height:34px}
+#ux-new-editor .ux-local-import-heading small{font-size:10px;font-weight:400;color:#91adc4}
+#ux-new-editor .ux-local-import-heading #refresh-local-videos{
+  flex:none;display:inline-flex;align-items:center;justify-content:center;
+  min-height:28px;height:28px;padding:0 9px;font-size:10px;line-height:1;
+  border:1px solid #657f9a78;border-radius:7px;background:#23384b;color:#d5e9fa;
+}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker{padding:7px 18px!important}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker .file-path{margin:0 0 4px!important}
+#ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker #local-video-hint{
+  margin:4px 0 0!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left .ux-new-dropzone{
+  height:37px!important;min-height:37px!important;max-height:37px!important;
+}
+/* Once a video is imported, the directory picker stays usable; only its
+   redundant explanatory sentence is omitted to make room for frame controls. */
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #local-video-hint{display:none!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left .ux-local-import-details .local-video-picker{padding:5px 18px!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left #metadata{margin:2px 0!important}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-left>.source-panel{
+  overflow-y:auto!important;overscroll-behavior:contain;
+}
 #ux-new-editor .ux-local-import-details .local-video-picker{margin:0;border:0;border-top:1px solid #57708a60;border-radius:0;background:transparent}
 #ux-new-editor .source-panel>.import-actions{display:none!important}
-#ux-new-editor #ux-local-import-details:not([open]) .local-video-picker{display:none}
 #ux-library .ux-recycle-thumb{width:57px;height:74px;flex:none;overflow:hidden;border-radius:7px;background:#000;border:1px solid #50657b}
 #ux-library .ux-recycle-thumb img{display:block;width:100%;height:100%;object-fit:contain;background:#000}
 
@@ -369,16 +388,11 @@ body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .
   background:radial-gradient(ellipse at center,#34577536,transparent 76%),#132536;
 }
 #ux-new-editor .ux-new-imagekit{margin-top:13px;border-top:1px solid #536c8257;padding:10px 0 0}
-#ux-new-editor .ux-new-imagekit>summary{
-  cursor:pointer;display:flex;justify-content:space-between;align-items:center;
-  gap:8px;list-style:none;min-height:29px;
-  color:#bed3e7;font-size:12px;font-weight:600;
+#ux-new-editor .ux-new-imagekit-title{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:8px;min-height:25px;color:#bed3e7;font-size:12px;font-weight:600;
 }
-#ux-new-editor .ux-new-imagekit>summary::-webkit-details-marker{display:none}
-#ux-new-editor .ux-new-imagekit>summary:before{content:'▸';color:#9bbad4;flex:0 0 auto}
-#ux-new-editor .ux-new-imagekit[open]>summary:before{content:'▾'}
-#ux-new-editor .ux-new-imagekit>summary span{font-weight:400;font-size:10px;color:#8faabe;margin-left:auto}
-#ux-new-editor .ux-new-imagekit>summary:focus-visible{outline:2px solid #9bc4e6;outline-offset:3px;border-radius:5px}
+#ux-new-editor .ux-new-imagekit-title span{font-size:10px;font-weight:400;color:#8faabe;margin-left:auto}
 #ux-new-editor .ux-new-imagekit-inner{display:flex;flex-direction:column;gap:8px;padding-top:11px}
 #ux-new-editor .ux-new-frame-note{font-size:10px;line-height:1.45;color:#89a6bc;margin:0}
 #ux-new-editor .create-work>.ux-new-step-heading{margin-bottom:9px}
@@ -388,3 +402,17 @@ body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .
   body[data-new-open=true][data-media-stage='empty'] #ux-new-editor #ux-new-left .ux-new-dropzone{min-height:127px!important}
   #ux-new-editor .ux-new-frame-note{display:none}
 }
+
+/* No accordion and no clipped crop tuning: after the MP4 auto-frame is ready,
+   the 3:4 position sliders remain directly accessible. The right inspector
+   scrolls naturally on short laptop displays rather than hiding controls. */
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-right>.crop-panel{
+  flex:0 0 auto!important;min-height:0!important;overflow:visible!important;
+}
+body[data-new-open=true][data-media-stage='selected'] #ux-new-editor #ux-new-right .crop-panel>.fine-tune{
+  display:block!important;flex:0 0 auto!important;margin:9px 0 0!important;
+  padding:9px!important;border:1px solid #6686a154;border-radius:8px;
+}
+#ux-new-editor .crop-panel .fine-tune-heading{font-size:11px;font-weight:600;margin-bottom:7px;color:#b9d2e8}
+#ux-new-editor .crop-panel .position-controls{gap:8px}
+#ux-new-editor .crop-panel .position-controls button{min-height:30px;height:30px;padding:4px 9px;font-size:11px}

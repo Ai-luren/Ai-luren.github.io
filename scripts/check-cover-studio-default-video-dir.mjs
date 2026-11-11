@@ -40,9 +40,8 @@ try {
   assert.equal(options.length,2,JSON.stringify(options));
   assert(options[1].includes('MEXC-StandardCabin Perks-Version A.mp4'));
   assert.equal(await page.locator('#import-local-video').isDisabled(),true);
-  assert.equal(await page.locator('#ux-local-import-details').getAttribute('open'),null,
-    'Default directory selector is optional and collapsed initially');
-  await page.locator('#ux-local-import-details > summary').click();
+  assert(await page.locator('#local-video-select').isVisible(),
+    'Default directory selector is immediately available');
   await page.locator('#local-video-select').selectOption('MEXC-StandardCabin Perks-Version A.mp4');
   assert.equal(await page.locator('#import-local-video').isEnabled(),true);
   await page.locator('#import-local-video').click();

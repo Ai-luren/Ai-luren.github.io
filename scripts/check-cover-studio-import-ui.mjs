@@ -23,11 +23,10 @@ try{
   await page.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
   await page.locator('[data-filter="commercial"]').click();
   await page.locator('.ux-new-project-tile').click();
-  assert.equal(await page.locator('#ux-local-import-details').getAttribute('open'),null,
-    'Optional local MP4 directory starts collapsed');
+  assert(await page.locator('#local-video-select').isVisible(),
+    'Default material directory must be visible without clicking a disclosure');
   assert(await page.locator('#ux-new-left .frame-panel').isHidden(),
     'Disabled frame tools must be hidden before import');
-  await page.locator('#ux-local-import-details > summary').click();
   const result=await page.evaluate(()=>{
    const box=sel=>{
     const e=document.querySelector(sel),r=e.getBoundingClientRect();
@@ -40,7 +39,7 @@ try{
     picker:box('#ux-new-editor .local-video-picker'),
     select:box('#ux-new-editor #local-video-select'),
     button:box('#ux-new-editor #import-local-video'),
-    heading:box('#ux-new-editor .local-video-heading strong'),
+    heading:box('#ux-new-editor .ux-local-import-heading span'),
     refresh:box('#ux-new-editor #refresh-local-videos'),
     stage:box('#ux-new-left'),
     save:box('#ux-new-use-frame'),
@@ -63,10 +62,24 @@ try{
   await page.locator('#ux-new-close').click();
   assert(await page.locator('#ux-new-editor').isHidden());
   await page.locator('.ux-new-project-tile').click();
-  assert.equal(await page.locator('#ux-local-import-details').getAttribute('open'),null,
-    'Optional MP4 directory starts collapsed on reopen');
-  await page.locator('#ux-local-import-details > summary').click();
-  assert(await page.locator('#local-video-select').isVisible(),'picker cannot be expanded after reopen');
+  assert(await page.locator('#local-video-select').isVisible(),'Default material directory remains visible on reopen');
+  if(width===1280){
+    await page.locator('#video-file').setInputFiles(path.join(root,'scripts/fixtures/test-landscape.mp4'));
+    await page.waitForFunction(()=>document.querySelector('#ux-new-player-poster')?.naturalWidth>0&&
+      !document.querySelector('#ux-new-use-frame')?.disabled,null,{timeout:60000});
+    const dock=await page.evaluate(()=>{
+      const panel=document.querySelector('#ux-new-left .source-panel');
+      const button=document.querySelector('#ux-new-use-frame');
+      const b=button.getBoundingClientRect(),p=panel.getBoundingClientRect();
+      return {buttonBottom:b.bottom,panelBottom:p.bottom,scrollable:getComputedStyle(panel).overflowY==='auto',
+        directory:!!document.querySelector('#local-video-select')?.getClientRects().length};
+    });
+    assert(dock.directory,'Default directory remains visible after import');
+    assert(dock.scrollable,'Video workspace must allow inner scrolling on short displays');
+    assert(dock.buttonBottom<=dock.panelBottom-2,
+      'Frame apply button must not be clipped at 1280×720: '+JSON.stringify(dock));
+    console.log('IMPORTED_FRAME_CONTROLS_NOT_CLIPPED',JSON.stringify(dock));
+  }
   await page.close();
  }
 }finally{

@@ -96,6 +96,14 @@ try{
   await page.locator('#ux-version-label-cancel').click();
   assert.equal(await page.locator('#ux-version-label-zh').inputValue(),originalName);
   assert(await page.locator('#ux-version-label-actions').isHidden());
+  await page.locator('#ux-add-variant').click();
+  assert(await page.locator('#ux-version-zh').isVisible(),
+    '添加版本时中英文名称必须直接显示');
+  assert(await page.locator('#ux-version-en').isVisible(),
+    '添加版本时英文名称不能藏在折叠面板');
+  assert.equal(await page.locator('#ux-editor details').count(),0,
+    '作品设置不应出现折叠组件');
+  await page.locator('#ux-version-cancel').click();
   assert(await page.locator('#ux-open-imagekit').isVisible(),'ImageKit 快捷入口未加载');
   assert.equal(await page.locator('#ux-open-imagekit').getAttribute('href'),
     'https://imagekit.io/dashboard/media-library');
@@ -115,8 +123,12 @@ try{
     '导入前不应展示空白双封面');
   assert(await page.locator('#ux-new-preimport-note').isVisible(),
     '导入前必须提示会自动准备两张封面');
-  assert.equal(await page.locator('#ux-new-imagekit-details').getAttribute('open'),null,
-    '可选 ImageKit 设置在打开时必须收起');
+  assert(await page.locator('#new-imagekit-url').isVisible(),
+    '新增作品 ImageKit 设置应直接显示');
+  assert(await page.locator('#local-video-select').isVisible(),
+    '默认素材目录应直接显示');
+  assert.equal(await page.locator('#ux-new-editor details').count(),0,
+    '新增作品不应存在折叠控件');
   assert(!(await page.locator('#ux-new-progress').textContent()).includes('/3'),
     '状态文案不应恢复伪三步流程');
   await page.locator('#ux-new-close').click();

@@ -38,7 +38,7 @@ try {
   await page.locator('#ux-add-variant').click();
   assert(await page.locator('#ux-version-form').isVisible());
   await page.locator('#ux-version-file').setInputFiles(path.join(root,'scripts/fixtures/test-portrait.mp4'));
-  await page.locator('#ux-version-advanced summary').click();
+  assert(await page.locator('#ux-version-zh').isVisible(),'Version naming fields are always visible');
   await page.locator('#ux-version-zh').fill('版本 C');
   await page.locator('#ux-version-en').fill('Version C');
   await page.locator('#ux-version-submit').click();

@@ -112,8 +112,8 @@ try{
   assert.equal(await page.locator('#ux-video-preview').evaluate(v=>v.paused),false);
   await page.locator('#ux-play-toggle').click();
   console.log('UNSAVED_MP4_VERSION_PREVIEW_PASS');
-  // Ordinary creation should require only an MP4: A/B/C labels are automatic.
-  assert.equal(await page.locator('#ux-version-advanced').evaluate(el=>el.open),false);
+  // Labels are filled automatically and can be edited immediately.
+  assert(await page.locator('#ux-version-zh').isVisible());
   assert.equal(await page.locator('#ux-version-zh').inputValue(),'版本 C');
   assert.equal(await page.locator('#ux-version-en').inputValue(),'Version C');
   await page.locator('#ux-version-submit').click();

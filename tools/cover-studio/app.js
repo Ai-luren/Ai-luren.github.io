@@ -671,8 +671,6 @@ function openNewProject(category='commercial'){
   $('frames-heading').textContent='选择封面画面';
   $('crop-heading').textContent='封面与播放器海报';
   $('ux-new-status').textContent='导入视频后自动生成封面预览；核对名称即可保存。';
-  $('ux-new-imagekit-details').open=false;
-  $('ux-local-import-details').open=false;
   newModal.querySelector('.ux-new-editor-pane').focus({preventScroll:true});
   syncButtons();
 }

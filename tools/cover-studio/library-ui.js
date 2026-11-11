@@ -935,7 +935,6 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      $('ux-version-zh').value='版本 '+index;
      $('ux-version-en').value='Version '+index;
      $('ux-version-proposed').textContent='默认：版本 '+index;
-     $('ux-version-advanced').open=false;
      $('ux-version-file').value='';
      syncNewVersionFileState();
    }
@@ -979,7 +978,6 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  function cancelVersion(){
    $('ux-version-form').hidden=true;
    $('ux-version-file').value='';
-   $('ux-version-advanced').open=false;
    syncNewVersionFileState();
    if(selectedId)player.setSource(selectedId,selectedVersion);
    const current=poster(selectedId);
@@ -1061,7 +1059,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    form.hidden=false;
    form.scrollIntoView({block:'nearest',behavior:'instant'});
    syncContext('添加视频只在本地保存，不覆盖现有视频，也不会上传 ImageKit。');
-   $('ux-version-status').textContent='先选择 MP4，再确认左侧画面；需要个性化标签时展开「自定义版本名称」。';
+   $('ux-version-status').textContent='先选择 MP4，再确认左侧画面；中英文版本名称始终可直接修改。';
    syncNewVersionFileState();
    $('ux-version-file').focus();
  }
@@ -1076,8 +1074,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    const labelEn=$('ux-version-en').value.trim();
    if(!labelZh||!labelEn){notify('请填写中英文版本名称。',true);return;}
    if([...versions(selectedId),...reservedVersions(selectedId)].some(v=>v.label?.zh===labelZh||v.label?.en===labelEn)){
-     $('ux-version-status').textContent='当前名称已被其他版本或回收站中的版本占用，请展开「自定义版本名称」修改。';
-     $('ux-version-advanced').open=true;
+     $('ux-version-status').textContent='当前名称已被其他版本或回收站中的版本占用，请修改上方版本名称。';
      notify('版本名称不能与现有版本重复。',true);return;
    }
    if(busy)return;
@@ -1354,9 +1351,6 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-version-status').textContent='视频已在左侧加载预览；确认版本名称后可添加，不会替换原文件。';
  });
  for(const id of ['ux-version-zh','ux-version-en'])$(id).addEventListener('input',syncNewVersionFileState);
- $('ux-version-advanced').addEventListener('toggle',()=>{
-   $('ux-version-proposed').textContent=$('ux-version-advanced').open?'自定义名称':'默认：'+$('ux-version-zh').value.trim();
- });
  $('ux-version-form').addEventListener('submit',saveVersion);
  $('ux-featured-action').addEventListener('click',()=>askFeatured(selectedId));
  function closeUrlEdit({cancel=false}={}){
