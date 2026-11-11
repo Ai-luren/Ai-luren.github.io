@@ -163,26 +163,73 @@
   .cinema-player::backdrop { opacity: 1 !important; }
 }
 
-/* Version selector only appears for multi-video projects, inside the existing
-   unified film viewer. All single-video projects retain their old layout. */
-.cinema-player__versions { display:flex; justify-content:center; align-items:center;
-  align-self:center; width:fit-content; max-width:100%; gap:3px; padding:4px; flex-wrap:wrap;
-  border:1px solid var(--portfolio-panel-border,rgba(255,255,255,.14));
-  border-radius:999px; background:var(--portfolio-tile-surface,rgba(255,255,255,.06)); }
-.cinema-player__version { appearance:none; border:0; border-radius:999px;
-  background:transparent; color:var(--apple-secondary,#a1a1a6);
-  min-width:80px; min-height:40px; padding:9px 14px;
-  cursor:pointer; font:500 12px/1.25 var(--font-body,system-ui); white-space:nowrap;
-  transition:background var(--apple-duration-control,.18s),color var(--apple-duration-control,.18s); }
-.cinema-player__version:hover { color:var(--apple-text,#f5f5f7); }
-.cinema-player__version[aria-pressed=true] { color:var(--apple-text,#f5f5f7); background:rgba(255,255,255,.14); }
+/* Film version selector uses the same quiet capsule and moving highlight
+   as the shared language switch. A single shared Motion layoutId travels
+   between labels; the actual poster still waits until decoded. */
+.cinema-player__versions {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  align-self: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px;
+  gap: 3px;
+  border: 1px solid var(--portfolio-icon-border);
+  border-radius: var(--portfolio-control-radius);
+  background: var(--portfolio-icon-surface);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055);
+  isolation: isolate;
+}
+.cinema-player__version {
+  position: relative;
+  appearance: none;
+  display: grid;
+  place-items: center;
+  flex: 1 1 auto;
+  min-width: 82px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: var(--portfolio-control-radius);
+  background: transparent;
+  color: var(--apple-secondary, #a1a1a6);
+  font: 500 12px/1.35 var(--font-body, system-ui);
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 265ms cubic-bezier(.32,.72,.28,1), scale 160ms ease-out;
+}
+.cinema-player__version-label { position: relative; z-index: 1; }
+.cinema-player__version-thumb {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border: 1px solid rgba(255,255,255,.19);
+  border-radius: inherit;
+  background: rgba(255,255,255,.16);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+  pointer-events: none;
+}
+.cinema-player__version:is(:hover,[data-visual-selected="true"]) { color: var(--apple-text,#f5f5f7); }
+.cinema-player__version:active { scale: .985; }
 .cinema-player__version:focus-visible { outline:2px solid var(--apple-blue,#2997ff); outline-offset:2px; }
 @media(max-width:760px) {
-  .cinema-player__versions { width:100%; border-radius:18px; }
-  .cinema-player__version { flex:1; min-width:0; white-space:normal; }
+  .cinema-player__versions { width: 100%; }
+  .cinema-player__version { min-width: 0; min-height: 44px; padding: 8px 8px; white-space: nowrap; }
+  /* A narrow 9:16 video need not force the three version labels into
+     two lines. The independently centered capsule may extend beyond the
+     film, while staying inside the phone viewport. */
+  .cinema-player[data-format="portrait"] .cinema-player__versions {
+    width: min(280px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    flex: none;
+    align-self: center;
+  }
 }
 @media(prefers-reduced-motion:reduce) {
-  .cinema-player__version { transition:none!important; }
+  .cinema-player__version { transition:none!important; scale:1!important; }
 }
 /* Preserve the established caption/return/nav hierarchy on desktop: the
    optional versions row belongs between caption and project arrows. */
@@ -268,4 +315,35 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .cinema-player__fullscreen-action { transition: none; }
+}
+
+
+/* Cinematic reading order on phones: film → discreet fullscreen → title →
+   versions → film-to-film navigation → all work. The native video controls
+   remain untouched and every real button stays at least 44px high. */
+@media (max-width: 760px) {
+  .cinema-player__information { gap: 12px; }
+  .cinema-player[data-format="portrait"] .cinema-player__information { gap: 9px; margin-top: 11px; }
+  .cinema-player__fullscreen-action-group {
+    order: 0;
+    width: auto;
+    align-self: flex-end;
+    max-width: 100%;
+  }
+  .cinema-player__fullscreen-action {
+    width: auto;
+    min-width: 132px;
+    max-width: 100%;
+    padding: 8px 15px;
+    background: transparent;
+    border-color: var(--portfolio-panel-border);
+  }
+  .cinema-player__caption { order: 1; }
+  .cinema-player__versions { order: 2; }
+  .cinema-player__work-nav { order: 3; }
+  .cinema-player__return { order: 4; align-self: center; }
+  .cinema-player[data-format="landscape"] .cinema-player__layout {
+    align-items: flex-start;
+    padding-top: max(clamp(108px, 18dvh, 154px), calc(env(safe-area-inset-top) + 75px));
+  }
 }

@@ -50,6 +50,8 @@
     "check:poster-return": "node scripts/checks/site/check-featured-poster-and-works-return.mjs",
     "check:cinema-local": "node scripts/checks/site/check-cinema-no-black-transitions.mjs",
     "check:cinema-fullscreen": "node scripts/checks/site/check-cinema-mobile-fullscreen.mjs",
+    "check:cinema-version-motion": "node scripts/checks/site/check-cinema-version-motion.mjs",
+    "check:media-presentation": "node scripts/checks/site/check-media-presentation.mjs",
     "check:asset-catalog": "node scripts/checks/site/check-asset-catalog.mjs",
     "check:cover-poster": "node scripts/checks/workbench/check-cover-studio-poster.mjs",
     "check:workbench-ux": "node scripts/checks/workbench/check-cover-studio-library.mjs",
