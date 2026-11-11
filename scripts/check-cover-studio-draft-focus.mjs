@@ -29,7 +29,7 @@ try{
  await page.locator('#ux-search').fill('岳阳楼');
  const card=page.locator('.ux-project[data-id="06"]');
  await card.locator('.ux-project-image').click();
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  const before=await page.locator('#ux-title-zh').inputValue();
  await page.locator('#ux-title-zh').fill(before+'（未保存）');
  await page.locator('#ux-close-editor').click();
@@ -68,7 +68,7 @@ try{
  assert(await page.locator('#ux-history-dialog').isHidden());
  assert.equal(await page.locator('#ux-title-zh').inputValue(),before);
  console.log('NESTED_MODAL_FOCUS_AND_DISCARD_PASS');
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  await page.locator('#ux-url-readonly').click();
  const url=await page.locator('#ux-url-value').inputValue();
  await page.locator('#ux-url-value').fill(url+'?draft-only=1');

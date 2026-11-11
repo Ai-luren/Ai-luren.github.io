@@ -59,7 +59,7 @@ try{
   await page.locator('#ux-feature-close').click();
 
   await page.locator('#ux-gallery .ux-project-image').first().click();
-  await page.locator('[data-ux-panel=details]').click();
+  await page.locator('[data-ux-panel=versions]').click();
   const detail=await page.locator('#ux-featured-action').evaluate(button=>{
    const svg=button.querySelector('svg');
    const r=button.getBoundingClientRect(),s=svg.getBoundingClientRect();

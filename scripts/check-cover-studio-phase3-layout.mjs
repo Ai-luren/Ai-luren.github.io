@@ -39,7 +39,7 @@ try{
   assert(d.navArrowDifference<=1,'arrows mismatch sizes');
   assert(Math.abs(d.positionY-d.arrowY)<=2,'numeric position not vertically centered');
   if(width===1440)assert(d.scroll<=2,'details needs unintended scroll at 1440×900');
-  await p.locator('[data-ux-panel=details]').click();
+  await p.locator('[data-ux-panel=versions]').click();
   const imageKitShortcut=await p.locator('#ux-open-imagekit').evaluate(link=>{
     const bounds=el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};};
     const title=document.querySelector('.ux-publish-section .ux-section-heading h3');

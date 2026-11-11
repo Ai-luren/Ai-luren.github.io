@@ -42,7 +42,7 @@ async function catalog(root) {
   return {metadata,auto,paths,legacyVariants,legacyMainLabels,archived};
 }
 function versionFromCatalog(project,versionId,c) {
-  if(versionId!=='main'&&c.archived.versions?.[project.id]?.[versionId])
+  if(c.archived.versions?.[project.id]?.[versionId])
     throw fail('此版本已移入回收站，请先恢复后再播放或编辑。',404);
   const work=c.auto.find(p=>p.id===project.id);
   const variants=work?.variants||c.legacyVariants[project.id]||[];
@@ -67,7 +67,8 @@ export async function listPosterVersions(root,projects) {
   const c=await catalog(root);
   return projects.map(project=>{
     const work=c.auto.find(p=>p.id===project.id);
-    const versions=['main',...(work?.variants||c.legacyVariants[project.id]||[])
+    const versions=[...(c.archived.versions?.[project.id]?.main?[]:['main']),
+      ...(work?.variants||c.legacyVariants[project.id]||[])
       .filter(v=>!c.archived.versions?.[project.id]?.[v.id]).map(v=>v.id)].map(id=>{
       const v=versionFromCatalog(project,id,c);
       return {id:v.id,label:v.label,poster:v.poster,time:v.time,width:v.width,height:v.height};

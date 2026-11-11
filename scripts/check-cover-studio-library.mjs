@@ -107,7 +107,7 @@ try{
  await page.locator('#ux-categories [data-filter="commercial"]').click();
  await page.locator('#ux-gallery .ux-project[data-id="16"] .ux-project-image img').click();
  await page.locator('#ux-variant-chips .ux-variant').nth(1).click();
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  await page.locator('#ux-url-readonly').click();
  const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/verified-unified-workbench.mp4';
  await page.locator('#ux-url-value').fill(url);
@@ -117,12 +117,12 @@ try{
  // The original 14 works are managed in a separate source map, never rewriting their MP4s.
  await page.locator('#ux-close-editor').click();
  await page.locator('#ux-gallery .ux-project[data-id="01"] .ux-project-image img').click();
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  assert(await page.locator('#ux-url-readonly').isVisible());
  const originalLegacy=(await read('legacy-imagekit-urls'))['01'];
  assert(originalLegacy.startsWith('https://ik.imagekit.io/Ailuren/tr:orig-true/videos/'));
  assert((await page.locator('#ux-url-readonly').textContent()).includes('watsons-commercial.mp4'));
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  await page.locator('#ux-url-readonly').click();
  const legacyNew='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/test-watsons-legacy-connection.mp4';
  await page.locator('#ux-url-value').fill(legacyNew);

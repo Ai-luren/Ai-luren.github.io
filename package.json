@@ -68,6 +68,7 @@
     "check:workbench-import-ui": "node scripts/check-cover-studio-import-ui.mjs",
     "check:workbench-icon-alignment": "node scripts/check-cover-studio-icon-alignment.mjs",
     "check:workbench-phase3": "node scripts/check-cover-studio-phase3-layout.mjs",
+    "check:workbench-live": "node scripts/check-cover-studio-live.mjs",
     "check:workbench-storage": "node scripts/check-cover-studio-session-storage.mjs",
     "covers:storage:scan": "node tools/cover-studio/session-storage.mjs scan",
     "covers:storage:dedupe": "node tools/cover-studio/session-storage.mjs dedupe",

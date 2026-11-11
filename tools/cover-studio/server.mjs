@@ -57,6 +57,7 @@ const writeJSON = (file, value, exclusive = false) => fs.writeFile(file, `${JSON
 const readJSON = async (file, fallback) => { try { return JSON.parse(await fs.readFile(file, 'utf8')); } catch (e) { if (e.code === 'ENOENT' && fallback !== undefined) return fallback; throw e; } };
 
 export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '../..'), port = 5190 } = {}) {
+  const startedAt = Date.now();
   projectRoot = await fs.realpath(projectRoot);
   const workspace = path.join(projectRoot, '.cover-studio');
   const sessionsDir = path.join(workspace, 'sessions'), exportsDir = path.join(workspace, 'exports');
@@ -176,6 +177,11 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob:; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     const url = new URL(req.url, origin), pathname = url.pathname;
+    if (req.method === 'GET' && pathname === '/api/runtime-health') {
+      // The live readiness check compares this boot time with source mtimes,
+      // catching a stale process serving old routes after a workbench update.
+      respond(res, {startedAt, healthy:true});return;
+    }
     if (req.method === 'GET' && pathname === '/api/preview-events') {
       // No CORS wildcard: only the two explicitly permitted local Vite origins.
       if (req.headers.origin && !allowedPreview && req.headers.origin !== origin)

@@ -158,18 +158,9 @@
           <p id="ux-context-hint">3:4 封面属于整部作品；播放器海报和视频地址属于当前视频版本。</p><p id="ux-context-save" role="status">已保存到本地 · 未发布网站</p>
         </div>
         <nav class="ux-detail-tabs" aria-label="选择编辑任务">
-          <button type="button" data-ux-panel="versions" aria-pressed="true">视频版本</button>
+          <button type="button" data-ux-panel="versions" aria-pressed="true">作品管理</button>
           <button type="button" data-ux-panel="artwork" aria-pressed="false">封面与海报</button>
-          <button type="button" data-ux-panel="details" aria-pressed="false">作品设置</button>
         </nav>
-        <section class="ux-edit-section ux-name-section" data-ux-section="details">
-          <div class="ux-section-heading"><h3>作品名称</h3><span class="muted">整部作品共用 · A / B / C 不随版本改变</span></div>
-          <form id="ux-title-form">
-            <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
-            <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
-            <button id="ux-title-save" type="submit" class="primary" hidden>保存名称</button>
-          </form>
-        </section>
         <section class="ux-edit-section ux-cover-section" data-ux-section="artwork">
           <div class="ux-section-heading"><h3>封面与海报</h3><span class="muted" id="ux-preview-guidance">选择一种封面修改</span></div>
           <div class="ux-preview-pair">
@@ -202,7 +193,7 @@
           </div>
           <div class="ux-version-quick-actions">
             <button type="button" id="ux-rename-current" class="secondary">重命名当前版本</button>
-            <button type="button" id="ux-archive-version" class="ux-danger-subtle">移入回收站</button>
+            <button type="button" id="ux-archive-version" class="ux-danger-subtle">归档当前视频</button>
           </div>
           <p id="ux-version-label" class="ux-version-label"></p>
         <form id="ux-version-label-form" class="ux-version-label-form" hidden>
@@ -239,7 +230,15 @@
             </div>
           </form>
         </section>
-        <section class="ux-edit-section ux-publish-section" data-ux-section="details">
+        <section class="ux-edit-section ux-name-section" data-ux-section="versions">
+          <div class="ux-section-heading"><h3>作品名称</h3><span class="muted">整部作品共用 · A / B / C 不随版本改变</span></div>
+          <form id="ux-title-form">
+            <label>中文名称 <input id="ux-title-zh" type="text" maxlength="80" required></label>
+            <label>英文名称 <input id="ux-title-en" type="text" maxlength="80" required></label>
+            <button id="ux-title-save" type="submit" class="primary" hidden>保存名称</button>
+          </form>
+        </section>
+        <section class="ux-edit-section ux-publish-section" data-ux-section="versions">
           <div class="ux-section-heading"><h3>发布与预览</h3>
             <div class="ux-publish-heading-actions">
               <span id="ux-cloud-badge" class="ux-cloud-badge">正在检查</span>
@@ -260,13 +259,13 @@
             <p id="ux-url-validation" class="ux-url-validation" role="status" hidden></p>
           </form>
         </section>
-        <section class="ux-edit-section ux-featured-detail" data-ux-section="details">
+        <section class="ux-edit-section ux-featured-detail" data-ux-section="versions">
           <div><strong>首页精选</strong><p class="muted">固定八部作品</p></div>
           <button id="ux-featured-action" type="button" class="secondary">☆ 加入精选</button>
         </section>
-        <section class="ux-edit-section ux-safe-archive" data-ux-section="details">
+        <section class="ux-edit-section ux-safe-archive" data-ux-section="versions">
           <div><strong>整理作品</strong><p>移入回收站后可恢复；不会删除视频、图片或线上 ImageKit 文件。</p></div>
-          <button id="ux-archive-work" type="button" class="ux-danger-subtle">移入回收站</button>
+          <button id="ux-archive-work" type="button" class="ux-danger-subtle">归档整部作品</button>
         </section>
       </div>
     </div>

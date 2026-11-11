@@ -47,8 +47,11 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     fallbackForCurrentVersion ? project?.cover : currentVersion?.playerPoster || project?.cover,
     fallbackForCurrentVersion || !currentVersion?.playerPoster ? coverRevision : posterRevision,
   );
-  const [dimensions, setDimensions] = useState(() => project?.videoWidth > 0 && project?.videoHeight > 0
-    ? { width: project.videoWidth, height: project.videoHeight } : null);
+  // The first displayed version may now be a reordered extension or the
+  // original main may be archived; initialize with the *visible* video's
+  // proportions to avoid flashing the original main aspect ratio.
+  const [dimensions, setDimensions] = useState(() => currentVersion?.videoWidth > 0 && currentVersion?.videoHeight > 0
+    ? { width: currentVersion.videoWidth, height: currentVersion.videoHeight } : null);
   const cancelFrameRef = useRef(null);
   const frameReadyRef = useRef(false);
   const attemptRef = useRef(0);

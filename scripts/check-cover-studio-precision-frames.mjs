@@ -30,7 +30,7 @@ try{
  await page.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
  await page.locator('#ux-search').fill('岳阳楼');
  await page.locator('.ux-project[data-id="06"] .ux-project-image').click();
- await page.locator('[data-ux-panel="details"]').click();
+ await page.locator('[data-ux-panel="versions"]').click();
  assert.equal(await page.locator('#ux-frame-select').count(),0);
  const nav=await page.locator('.ux-work-nav').boundingBox();
  assert(Math.abs(nav.x+nav.width/2-720)<=5,'global navigation must be truly centered');

@@ -70,8 +70,9 @@
 - **精确选帧**：不恢复 12 张随机候选帧、额外秒数输入或 FPS 说明。只使用本地播放器时间轴、毫秒时间及四个等高按钮「首帧／上一帧／下一帧／尾帧」，按源视频 fps 逐帧；停止约 260ms 后请求最新高清静帧。末帧须解码真实视频画面而不是音频容器尾部；一个保存动作完成取帧与写入。回归 `npm run check:workbench-fast-jog`、`npm run check:workbench-endframe`。
 - **ImageKit 和发布边界**：新建作品和已有作品均展示固定前缀 `https://ik.imagekit.io/Ailuren/tr:orig-true/videos/`，可编辑文件名，允许粘贴完整链接自动提取。必须显式保存，失焦不自动提交；本地更新 ≠ 上传 ImageKit ≠ Git 提交 ≠ Netlify 部署。云端 URL 不跟随本地标题改名变化。
 - **草稿与状态**：修改标题、ImageKit、视频版本、封面后关闭/跳转均须保护草稿。工作台原有 busy 状态逻辑不得重新全局禁用/启用作品库、详情和独立对话框按钮。`/api/preview-events` 只面向本机 Vite 预览局部刷新，不得出现在生产连接中。回归 `npm run check:workbench-draft-focus`、`npm run check:workbench-preview-sync`。
-- **任务区与草稿**：编辑页右侧只有「视频版本／封面与海报／作品设置」三种任务分区，初始为视频版本；切换任务也必须保护未保存草稿。作品库默认展示 8 部精选，其他四类独立浏览；拖动卡片自动保存可撤销。不得恢复「全部作品」Tab、重复版本入口或第二套排序保存流程。
-- **回收站安全**：只能通过 `POST /api/archive-item` 将非精选作品或非主视频版本归档，通过 `POST /api/restore-item` 恢复；整部作品须输入「归档」，精选必须先退出精选。`archive-state.json` 和 `.cover-studio/project-revisions/archive-*.json` 必须保留；归档/恢复不得物理删除 MP4、封面、海报或线上 ImageKit 资源。回归 `npm run check:workbench-recycle`。
+- **任务区与草稿**：编辑页右侧只有「作品管理／封面与海报」两个任务分区，初始为作品管理；作品管理按视频版本→共享作品名称→ImageKit→首页精选→归档顺序展示，切换任务仍必须保护未保存草稿。作品库默认展示 8 部精选，其他四类独立浏览；拖动卡片自动保存可撤销。不得恢复「全部作品」Tab、重复版本入口或第二套排序保存流程。
+- **回收站安全**：`POST /api/archive-item` 可以归档整部非精选作品，或任何视频版本（包括原始 `main`），但一部作品必须保留至少一个可用视频版本；恢复通过 `POST /api/restore-item`。整部作品须输入「归档」，精选必须先退出精选。`archive-state.json` 和 `.cover-studio/project-revisions/archive-*.json` 必须保留；归档/恢复不得物理删除 MP4、封面、海报或线上 ImageKit 资源。回归 `npm run check:workbench-recycle`。
 - **封面底色**：作品库、详情、历史、新建和拖拽预览媒体背景统一纯黑 `#000`，`object-fit: contain`，不拉伸。回归 `npm run check:workbench-backdrops`。
 - **几何与视觉**：导航相对整个编辑器居中，按钮等高不折行；精选星标和加号用对称 SVG，不用字体 ★/☆/+ 代替图标。新增作品优先显示拖入 MP4，默认素材目录位于可展开区域；媒体底图纯黑，图片不拉伸。先加载 `style.css` 再加载 `workbench-enhancements.css`，样式变更执行断点与图标回归。
+- **运行验收硬约束**：每次修改 `tools/cover-studio/` 前后，必须检查 5190 上是否为旧 Node 进程；服务端新增/修改路由或模块后必须重启 `npm run covers`，再运行 `npm run check:workbench-live` 实际打开正在运行的工作台，确认作品列表非空、前端零 JS 错误、模块没有 404、ImageKit 没有请求。仅通过构建与隔离测试不足以交付。
 - **安全测试**：Playwright 只使用 `scripts/lib/safe-media.mjs` 保护的页面，本地小 MP4 夹具和隔离项目；禁止真实 ImageKit CDN 请求，禁止写入正式素材/排序数据。工作台改动至少运行 `npm run check:workbench-full-flow`、`npm run check:workbench-ux`、`npm run check:workbench-phase3`、`npm run check:workbench-icon-alignment`、`npm run build`。窗口覆盖 1440×900、1280×720、1000×750，测试导航偏差、按钮居中、弹窗越界及草稿保护。完整命令见 `docs/本地封面工作台使用教程.md`。

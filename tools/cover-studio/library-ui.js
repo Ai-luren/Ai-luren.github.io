@@ -96,7 +96,8 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  const recycle=()=>state.archived||{works:[],versions:[]};
  const trashCount=()=>recycle().works.length+recycle().versions.length;
  function selectPanel(panel,{focus=false}={}){
-   if(!['versions','artwork','details'].includes(panel))return;
+   if(panel==='details')panel='versions'; // Legacy call sites share the merged management pane.
+   if(!['versions','artwork'].includes(panel))return;
    activePanel=panel;
    $('ux-editor').querySelectorAll('[data-ux-panel]').forEach(button=>{
      const selected=button.dataset.uxPanel===panel;
@@ -108,7 +109,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
      section.hidden=section.dataset.uxSection!==panel;
    });
    if(panel==='artwork')$('ux-stage-instruction').textContent='更换封面或播放器海报请使用右侧按钮；可从当前视频选帧或导入图片。';
-   else $('ux-stage-instruction').textContent='视频可在左侧播放；在右侧选择任务：视频版本、封面与海报、作品设置。';
+   else $('ux-stage-instruction').textContent='视频可在左侧播放；在右侧「作品管理」调整版本、名称、线上链接或精选设置。';
  }
  $('ux-editor').querySelectorAll('[data-ux-panel]').forEach(button=>{
    button.addEventListener('click',()=>navigateWithDraft(()=>selectPanel(button.dataset.uxPanel)));
@@ -876,8 +877,9 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    $('ux-edit-current-version').hidden=true;
    $('ux-edit-current-version').onclick=()=>{selectPanel('versions');startVersionLabelEdit(selectedVersion);};
    $('ux-rename-current').disabled=busy;
-   $('ux-archive-version').disabled=busy||selectedVersion==='main';
-   $('ux-archive-version').title=selectedVersion==='main'?'主版本不能单独移入回收站，可以归档整部作品。':'将此扩展版本移入可恢复的回收站';
+   const canArchiveSingleVersion=options.length>1;
+   $('ux-archive-version').disabled=busy||!canArchiveSingleVersion;
+   $('ux-archive-version').title=canArchiveSingleVersion?'仅归档当前视频版本；其他版本继续保留，文件可恢复。':'至少保留一个视频版本；需要隐藏整部作品请使用「归档整部作品」。';
    $('ux-stage-version').title='当前视频版本；版本切换和重命名请使用右侧「视频版本」';
    $('ux-stage-version').ondblclick=null;
    syncVersionActions();
@@ -1141,8 +1143,8 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
    if(scope==='work'&&isFeatured(selectedId)){
      notify('这部作品正在首页精选。请先替换精选，再移入回收站。',true);return;
    }
-   if(scope==='version'&&selectedVersion==='main'){
-     notify('主版本不能单独移入回收站，可以归档整部作品。',true);return;
+   if(scope==='version'&&versions(selectedId).length<=1){
+     notify('这是作品仅剩的最后一个视频版本；需要隐藏整部作品请使用「归档整部作品」。',true);return;
    }
    archiveFocusOrigin=document.activeElement;
    archivePending={scope,projectId:selectedId,variantId:scope==='version'?selectedVersion:''};
@@ -1183,11 +1185,11 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
        confirmPhrase:item.scope==='work'?'归档':null});
      closeArchiveDialog();
      if(item.scope==='work')finishCloseEditor();
-     else{selectedVersion='main';player.pause();}
+     else{player.pause();}
      await bootstrap();
      filter=item.scope==='work'?'trash':(byId(item.projectId)?.category||'featured');
      renderGallery();
-     if(item.scope==='version')renderEditor();
+     if(item.scope==='version'){selectedVersion=firstVersion(item.projectId);renderEditor();}
      notify(item.scope==='work'?'作品已移入回收站，可在作品库右上角恢复。':'视频版本已移入回收站，其他版本和所有原始文件不变。');
    }catch(error){
      $('ux-archive-error').textContent='操作失败：'+error.message;
@@ -1317,10 +1319,7 @@ export function createLibraryUI({state,api,bootstrap,setWorkflow,openCoverWorkfl
  $('ux-history-poster').addEventListener('click',()=>launchHistory('poster',$('ux-history-poster')));
  $('ux-add-variant').addEventListener('click',launchVersion);
  $('ux-rename-current').addEventListener('click',()=>startVersionLabelEdit(selectedVersion));
- $('ux-archive-version').addEventListener('click',()=>{
-   if(selectedVersion==='main'){notify('主版本不可单独移入回收站。',true);return;}
-   navigateWithDraft(()=>openArchiveDialog('version'));
- });
+ $('ux-archive-version').addEventListener('click',()=>navigateWithDraft(()=>openArchiveDialog('version')));
  $('ux-archive-work').addEventListener('click',()=>navigateWithDraft(()=>openArchiveDialog('work')));
  $('ux-version-cancel').addEventListener('click',cancelVersion);
  $('ux-version-label-cancel').addEventListener('click',()=>cancelVersionLabel({restoreFocus:true}));

@@ -126,7 +126,7 @@ try{
   assert((await fs.stat(path.join(tmp,'assets/videos/works',updated.variants.at(-1).localVideoPath))).size>1000);
   console.log('INLINE_MP4_VERSION_CREATION_PASS');
 
-  await page.locator('[data-ux-panel=details]').click();
+  await page.locator('[data-ux-panel=versions]').click();
   await page.locator('#ux-url-readonly').click();
   const url='https://ik.imagekit.io/Ailuren/tr:orig-true/videos/test-version-c.mp4';
   await page.locator('#ux-url-value').fill(url);

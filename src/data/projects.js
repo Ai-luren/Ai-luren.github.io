@@ -71,6 +71,7 @@ const BASE_PROJECTS = [
     playerPoster:playerPosters[`../../assets/images/player-posters/${posterFile}`]||null,
   }));
   return { ...project, variants: variants.filter(v=>!archived.versions?.[project.id]?.[v.id]),
+    mainVersionArchived: Boolean(archived.versions?.[project.id]?.main),
     versionOrder: projectVersionOrder[project.id] || [],
     ...(project.mainVersionLabel || legacyMainVersionLabels[project.id]
       ? {mainVersionLabel:project.mainVersionLabel || legacyMainVersionLabels[project.id]} : {}),

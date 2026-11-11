@@ -225,7 +225,7 @@ body[data-workflow='library'] #ux-create-quick{
 
 /* Workbench IA v2: task-specific panels instead of a long stack of unrelated forms. */
 #ux-editor .ux-detail-tabs{
- display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;
  margin:13px 0 14px;padding:5px;border:1px solid #5f77914f;
  background:#0c1520;border-radius:11px;
 }
@@ -329,3 +329,12 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor .ux-version-switcher .ux-variant-item.ux-version-drop-target{border-color:#a4d2fa;background:#385574;box-shadow:0 0 0 2px #a4d2fa60}
 body.ux-version-dragging,body.ux-version-dragging *{cursor:grabbing!important;user-select:none!important}
 .ux-version-ghost{position:fixed;z-index:250;pointer-events:none;left:0;top:0;max-width:240px;padding:8px 12px;border:1px solid #a4d2fa;border-radius:9px;color:#edf6ff;background:#294967;font-size:12px;box-shadow:0 8px 25px #0008;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Two-task layout: merge per-video editing and work-level settings. */
+#ux-editor .ux-version-section{padding-bottom:10px}
+#ux-editor .ux-name-section,#ux-editor .ux-publish-section{padding-block:12px}
+#ux-editor .ux-name-section{border-top:1px solid #ffffff25}
+#ux-editor .ux-publish-section{border-top:1px solid #ffffff20}
+#ux-editor .ux-featured-detail{padding-block:10px}
+#ux-editor .ux-safe-archive{margin-top:0;padding:12px 0 5px}
+#ux-editor .ux-version-switcher .ux-variant-chips{min-height:37px}

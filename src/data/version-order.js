@@ -9,11 +9,12 @@ export function orderVideoVersions(versions = [], ids = []) {
 
 export function projectVideoVersions(project) {
   if (!project) return [];
-  return orderVideoVersions([{
+  const main = project.mainVersionArchived ? [] : [{
     id: 'main', label: project.mainVersionLabel || {zh: '主版本', en: 'Main version'},
     videoUrl: project.videoUrl, playerPoster: project.playerPoster,
     videoWidth: project.videoWidth, videoHeight: project.videoHeight,
-  }, ...(project.variants || [])], project.versionOrder);
+  }];
+  return orderVideoVersions([...main, ...(project.variants || [])], project.versionOrder);
 }
 
 export function initialProjectPoster(project) {

@@ -63,7 +63,7 @@ try{
  assert.equal(await page.locator('#ux-work-position').textContent(),(all.length-1)+' / '+all.length);
  console.log('ALL_WORKS_SEQUENCE_CIRCULAR_WRAP_AND_KEYBOARD_PASS');
 
- await page.locator('[data-ux-panel=details]').click();
+ await page.locator('[data-ux-panel=versions]').click();
  const titleBefore=await page.locator('#ux-title-zh').inputValue();
  await page.locator('#ux-title-zh').fill(titleBefore+' 临时草稿');
  await page.locator('#ux-work-next').click();

@@ -28,7 +28,7 @@ export async function updateArchive({projectRoot,workspace,scope,action,projectI
   if(confirmed!==true)throw fail('此操作需要明确确认。');
   if(!['work','version'].includes(scope)||!['archive','restore'].includes(action))throw fail('不支持的回收站操作。');
   if(!/^[0-9A-Za-z_-]{1,48}$/.test(String(projectId||'')))throw fail('作品编号格式无效。');
-  if(scope==='version'&&(!variantId||variantId==='main'))throw fail('主视频不可单独移入回收站；可以归档整部作品。');
+  if(scope==='version'&&!variantId)throw fail('请选择需要移入回收站的视频版本。');
   const current=await readArchive(projectRoot),next=structuredClone(current);
   if(action==='archive'&&scope==='work'){
     if(confirmPhrase!=='归档')throw fail('请输入「归档」以确认整部作品移入回收站。');
@@ -41,6 +41,8 @@ export async function updateArchive({projectRoot,workspace,scope,action,projectI
     const p=projects.find(x=>x.id===projectId);
     const version=managed.find(x=>x.id===projectId)?.versions.find(x=>x.id===variantId);
     if(!p||!version)throw fail('视频版本不存在或已归档。',404);
+    if(managed.find(x=>x.id===projectId).versions.length<=1)
+      throw fail('作品至少需要保留一个视频版本。请归档整部作品，或先添加另一个版本。',409);
     next.versions[projectId]??={};
     next.versions[projectId][variantId]={at:new Date().toISOString(),title:p.title,label:version.label};
   }else if(scope==='work'){

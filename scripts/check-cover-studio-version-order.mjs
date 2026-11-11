@@ -15,6 +15,9 @@ for(const rel of ['src','assets/images','index.html','works.html'])
 await fs.writeFile(path.join(temp,'package.json'),'{"type":"module"}\n');
 await fs.symlink(path.join(root,'node_modules'),path.join(temp,'node_modules'));
 const orderFile=path.join(temp,'src/data/project-version-order.json');
+// The creator may already have reordered versions locally. Reset only the
+// isolated test fixture for a deterministic drag-from-default scenario.
+await fs.writeFile(orderFile,'{}\n');
 const autoFile=path.join(temp,'src/data/auto-projects.json');
 const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
 // Source data may not yet contain the creator's newest local C version:
@@ -90,7 +93,7 @@ try{
   console.log('VERSION_RELOAD_PERSISTENCE_AND_DEFAULT_FIRST_PASS');
   // Also verify the creator's example URL is normalized on the reordered
   // version alone. No ImageKit traffic or real source files are accessed.
-  await page.locator('[data-ux-panel="details"]').click();
+  await page.locator('[data-ux-panel="versions"]').click();
   await page.locator('#ux-url-readonly').click();
   await page.locator('#ux-url-value').fill('https://ik.imagekit.io/Ailuren/videos/FormFunk-E.mp4');
   assert.equal(await page.locator('#ux-url-value').inputValue(),'FormFunk-E');

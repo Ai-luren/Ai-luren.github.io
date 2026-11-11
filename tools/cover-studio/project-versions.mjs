@@ -59,20 +59,20 @@ export async function listManagedVersions(projectRoot, existingProjects = []) {
     if (!p) {
       return {
         id: existing.id, title: existing.title, legacy: true, featured: existing.featured,
-        versions: [{
+        versions: [...(isVisible(existing.id,'main') ? [{
           id: 'main', label: legacyMainLabels[existing.id] || { zh: '主版本', en: 'Main version' },
           videoUrl: legacyURLs[existing.id] || null, sourceName: existing.videoFileName || '',
-        }, ...(legacyVariants[existing.id]||[]).filter(v=>isVisible(existing.id,v.id)).map(v=>({
+        }] : []), ...(legacyVariants[existing.id]||[]).filter(v=>isVisible(existing.id,v.id)).map(v=>({
           id:v.id,label:v.label,videoUrl:v.videoUrl||null,
         }))],
       };
     }
     return {
       id: p.id, title: existing.title, legacy: false, featured: p.featured,
-      versions: [{
+      versions: [...(isVisible(existing.id,'main') ? [{
         id: 'main', label: p.mainVersionLabel || {zh:'主版本', en:'Main version'},
         videoUrl: p.videoUrl || null,
-      }, ...(p.variants || []).filter(v=>isVisible(existing.id,v.id)).map(v => ({
+      }] : []), ...(p.variants || []).filter(v=>isVisible(existing.id,v.id)).map(v => ({
         id: v.id, label: v.label, videoUrl: v.videoUrl || null,
       }))],
     };
