@@ -16,6 +16,8 @@ try {
 
     assert.equal(await page.locator('.flip-experiment__row').count(),3);
     assert.equal(await page.locator('.flip-experiment__detail').count(),3);
+    assert.equal(await page.locator('.flip-experiment__row .flip-experiment__link').count(),0,
+      'AI Lab cards show only View Project; Github remains available inside the project detail');
     await page.locator('.flip-experiment__detail').nth(1).click();
     const lab = page.locator('.lab-project-lightbox');
     await lab.waitFor({state:'visible'});
@@ -26,6 +28,7 @@ try {
     await page.keyboard.press('ArrowRight');
     await page.waitForFunction(language => document.querySelector('#lab-project-title')?.textContent.includes(language==='zh'?'图片对比':'Comparison'), lang);
     assert.equal(await lab.locator('.lab-project-source--primary').getAttribute('href'),'https://ai-luren.github.io/Image-comparison/');
+    assert.equal(await lab.locator('.lab-project-source').filter({hasText:'↗'}).count(),0,'lab links must not use ↗ glyphs');
     assert.equal(await lab.locator('.lab-project-pagination button svg').count(),2);
     await page.keyboard.press('ArrowLeft');
     await page.waitForFunction(language => document.querySelector('#lab-project-title')?.textContent.includes(language==='zh'?'文章配图':'Illustration'),lang);
@@ -34,6 +37,8 @@ try {
       const topSheet = page.locator('.external-link-sheet');
       await topSheet.waitFor({state:'visible'});
       assert((await topSheet.locator('.external-link-sheet__domain').innerText()).includes('github.com'));
+      assert.equal(await topSheet.locator('.external-link-sheet__domain').innerText(),'github.com');
+      assert(!((await topSheet.locator('.external-link-sheet__continue').innerText()).includes('↗')),'confirmation action should have a plain-text label');
       assert.equal(await topSheet.locator('.external-link-sheet__continue').getAttribute('target'),'_blank');
       await page.keyboard.press('Escape');
       await topSheet.waitFor({state:'detached'});
@@ -82,7 +87,7 @@ try {
       await page.locator('#test-future-external-link').click();
       const fallback=page.locator('.external-link-sheet');
       await fallback.waitFor({state:'visible'});
-      assert.equal(await fallback.locator('.external-link-sheet__domain').innerText(),'↗ example.org');
+      assert.equal(await fallback.locator('.external-link-sheet__domain').innerText(),'example.org');
       assert.equal(await fallback.locator('.external-link-sheet__continue').getAttribute('href'),'https://example.org/portfolio');
       await fallback.locator('.external-link-sheet__cancel').click();
       await fallback.waitFor({state:'detached'});
@@ -94,6 +99,19 @@ try {
       assert.equal(await page.locator('.external-link-sheet').count(),0,
         'no preemptive external-link sheet on desktop');
     }
+
+    // Scheme A: plain-text external links, without platform-dependent ↗ glyphs.
+    const externalArrowTargets=page.locator([
+      '.flip-experiment__link',
+      '.lab-project-source',
+      '.impact-reach-action--external',
+      '.external-link-sheet__domain',
+      '.external-link-sheet__continue',
+    ].join(', '));
+    assert.equal(await externalArrowTargets.filter({hasText:'↗'}).count(),0,
+      'external links and confirmation buttons use text-only labels');
+    assert.equal(await page.locator('.impact-reach-external-arrow').count(),0,
+      'legacy social-profile arrow node should not be rendered');
 
     const dock=page.locator('.closing-social .floating-dock-item');
     await dock.first().scrollIntoViewIfNeeded();
@@ -171,8 +189,10 @@ try {
       assert.deepEqual(await page.locator('.floating-dock-label:visible').allInnerTexts(),
         [lang==='en'?'Open GitHub profile':'打开 GitHub 主页'],
         'keyboard focus retains one accessible tooltip');
-      await page.locator('.flip-experiment__link').first().hover();
-      await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.flip-experiment__link .flip-experiment__tooltip')).opacity) > .9, null, { timeout: 2000 });
+      // The in-site project is the sole card action now: GitHub source is
+      // intentionally offered only in its detail dialog, not on hover.
+      await page.locator('.flip-experiment__detail').first().hover();
+      assert.equal(await page.locator('.flip-experiment__link').count(),0);
       assert.equal(await page.locator('.external-link-sheet').count(),0);
     }
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);

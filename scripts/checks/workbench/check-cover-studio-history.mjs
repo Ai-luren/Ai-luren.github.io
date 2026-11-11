@@ -124,7 +124,9 @@ try{
 
  assert.equal(await hash(path.join(root,'assets/images/player-posters',variant.posterFile)),prodOriginalHash);
  assert.equal(await fs.readFile(path.join(fixture,'src/data/legacy-imagekit-urls.json'),'utf8'),initial.urls);
- assert.equal(await fs.readFile(path.join(fixture,'src/data/auto-projects.json'),'utf8'),initial.auto);
+ // JSON.stringify normalizes equivalent numeric spellings (15.0 -> 15).
+ // Verify semantic data equality, rather than serialization whitespace/number formatting.
+ assert.deepEqual(JSON.parse(await fs.readFile(path.join(fixture,'src/data/auto-projects.json'),'utf8')),JSON.parse(initial.auto));
  console.log('ALL_ARTWORK_HISTORY_TESTS_PASS in isolated fixture:',fixture);
 }finally{
  if(browser)await browser.close();

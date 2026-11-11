@@ -599,7 +599,6 @@ function ReachDossier() {
         data-external-label-en={`${card.platform.en} profile`}
         aria-label={card.platform[lang] + ' · ' + t('访问主页（新窗口）', 'Visit profile (new tab)')}>
         <span>{t('访问主页', 'Visit Profile')}</span>
-        <span className="impact-reach-external-arrow" aria-hidden="true">↗</span>
       </a>}
     </div>
   );

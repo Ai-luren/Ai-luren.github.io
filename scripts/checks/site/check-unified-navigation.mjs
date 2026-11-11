@@ -9,10 +9,10 @@ const out=process.env.NAV_SCREENSHOTS;
 if(out)mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
 const geometry=el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);return {box:[r.x,r.y,r.width,r.height],surface:s.backgroundColor,border:s.borderColor,radius:s.borderRadius};};
-function same(a,b){a.box.forEach((v,i)=>assert(Math.abs(v-b.box[i])<1,`${a.box} != ${b.box}`));assert.equal(a.surface,b.surface);assert.equal(a.border,b.border);assert.equal(a.radius,b.radius);}
+function same(a,b,{compareSurface=true}={}){a.box.forEach((v,i)=>assert(Math.abs(v-b.box[i])<1,`${a.box} != ${b.box}`));if(compareSurface)assert.equal(a.surface,b.surface);assert.equal(a.border,b.border);assert.equal(a.radius,b.radius);}
 async function shot(p,name){if(out)await p.screenshot({path:`${out}/${name}.png`});}
 async function arrows(p,width){
- const m=await p.evaluate(()=>{const r=e=>{const x=e.getBoundingClientRect();return {left:x.left,right:x.right,top:x.top,bottom:x.bottom,w:x.width,h:x.height};};return {stage:r(document.querySelector('.cinema-player__stage')),buttons:[...document.querySelectorAll('.cinema-player__sequence button')].map(r),side:document.querySelector('.cinema-player__body').classList.contains('has-side-arrows'),overflow:document.querySelector('.cinema-player').scrollWidth>innerWidth};});
+ const m=await p.evaluate(()=>{const r=e=>{const x=e.getBoundingClientRect();return {left:x.left,right:x.right,top:x.top,bottom:x.bottom,w:x.width,h:x.height};};return {stage:r(document.querySelector('.cinema-player__stage')),buttons:[...document.querySelectorAll('.cinema-player__sequence > button')].map(r),side:document.querySelector('.cinema-player__body').classList.contains('has-side-arrows'),overflow:document.querySelector('.cinema-player').scrollWidth>innerWidth};});
  assert(!m.overflow);assert.equal(m.buttons.length,2);
  for(const b of m.buttons){assert(b.w>=44&&b.h>=44);assert(b.left>=0&&b.right<=width);assert(b.right<=m.stage.left||b.left>=m.stage.right||b.top>=m.stage.bottom,'Arrow overlaps video');}
  if(width<=760)assert(!m.side);
@@ -35,7 +35,7 @@ try{
   if([393,1440].includes(width))await shot(p,`${width}-home-navigation`);
   await p.locator('#projects').scrollIntoViewIfNeeded();
   for(const index of [0,3]){
-   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,featured[index]);assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(220);
+   await p.locator('.comet-archive__card').nth(index).click();await p.waitForFunction(id=>document.querySelector('.cinema-player')?.dataset.projectId===id,featured[index]);assert.deepEqual(await p.locator('.cinema-player video').evaluate(v=>[v.paused,v.currentTime,v.hasAttribute('src'),v.readyState]),[true,0,false,0]);await p.mouse.move(0,0);await p.waitForTimeout(350);
    same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.cinema-player__close').evaluate(geometry));same(brand,await p.locator('.cinema-player__brand').evaluate(geometry));
    await arrows(p,width);await p.keyboard.press('Escape');await p.locator('.cinema-player').waitFor({state:'detached'});
   }
@@ -54,7 +54,12 @@ try{
   assert(await p.locator('.impact-award-grid-card').first().evaluate(el=>el===document.activeElement));
   assert(!await p.locator('main').evaluate(el=>el.inert));
   await p.goto(new URL('works.html?category=visual',base).href);
-  same(home,await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
+  // The library landing shares the *scrolled* home (.96) readability role;
+  // the initial Hero and modal viewers intentionally use the .72 surface.
+  const worksChrome=await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry);
+  same(home,worksChrome,{compareSurface:false});
+  assert.equal(worksChrome.surface,'rgba(28, 28, 30, 0.96)');
+  if(button)same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
   if([393,1440].includes(width))await shot(p,`${width}-works-navigation`);
   if(width<=760){
    await p.locator('.library-page-navigation .cinema-player__close').click();await p.waitForSelector('.library-menu[open]');await p.mouse.move(0,0);await p.waitForTimeout(220);
@@ -68,7 +73,7 @@ try{
   await p.locator('.library-grid .comet-archive__card').first().click();await p.waitForSelector('.cinema-player[open]');
   assert.equal(await p.locator('.cinema-player__navigation').count(),1);
   same(home,await p.locator('.cinema-player__navigation').evaluate(geometry));
-  await p.locator('.cinema-player__return').click();assert.equal(new URL(p.url()).searchParams.get('category'),'visual');
+  await p.locator('.cinema-player__close').click();assert.equal(new URL(p.url()).searchParams.get('category'),'visual');
   assert.deepEqual(errors,[]);
   console.log(`${width}px: capsule continuity, responsive navigation, awards navigation/language, arrow hit areas and filtered return passed`);
   await p.close();

@@ -24,6 +24,8 @@
     "check:nav-scroll": "node scripts/checks/site/check-navigation-scroll-intent.mjs",
     "check:design-system": "node scripts/checks/site/check-design-system-foundation.mjs",
     "check:responsive": "node scripts/checks/site/check-final-responsive.mjs",
+    "check:featured-hover-menu": "node scripts/checks/site/check-featured-hover-mobile-menu.mjs",
+    "check:shared-mobile-menu": "node scripts/checks/site/check-shared-mobile-menu.mjs",
     "check:hero-conversion": "node scripts/checks/site/check-hero-conversion.mjs",
     "check:hero-published": "node scripts/checks/site/check-hero-published-settings.mjs",
     "check:hero-first-frame": "node scripts/checks/site/check-mobile-hero-first-frame.mjs",
@@ -50,6 +52,8 @@
     "check:poster-return": "node scripts/checks/site/check-featured-poster-and-works-return.mjs",
     "check:cinema-local": "node scripts/checks/site/check-cinema-no-black-transitions.mjs",
     "check:cinema-fullscreen": "node scripts/checks/site/check-cinema-mobile-fullscreen.mjs",
+    "check:cinema-controls": "node scripts/checks/site/check-cinema-mobile-controls.mjs",
+    "check:cinema-nav-duration": "node scripts/checks/site/check-cinema-nav-duration.mjs",
     "check:cinema-version-motion": "node scripts/checks/site/check-cinema-version-motion.mjs",
     "check:media-presentation": "node scripts/checks/site/check-media-presentation.mjs",
     "check:asset-catalog": "node scripts/checks/site/check-asset-catalog.mjs",
@@ -89,7 +93,6 @@
     "check:adversarial": "node scripts/run-adversarial-checks.mjs all"
   },
   "dependencies": {
-    "gsap": "^3.15.0",
     "motion": "^12.42.2",
     "ogl": "^1.0.11",
     "react": "^19.2.7",

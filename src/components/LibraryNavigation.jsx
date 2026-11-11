@@ -3,9 +3,13 @@ import { createPortal } from 'react-dom';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import { HOME_HREF, HOME_SECTIONS, WORKS_HREF } from '../navigation/links.js';
 import DesktopPrimaryNavigation from './DesktopPrimaryNavigation.jsx';
+import MobileMenuSocialLinks from './MobileMenuSocialLinks.jsx';
+import ExternalLinkSheet, { useTouchExternalLink } from './ExternalLinkSheet.jsx';
+import { DICT } from '../i18n/dictionary.js';
 
 export default function LibraryNavigation({ lang }) {
   const [open, setOpen] = useState(false);
+  const { pendingLink, closeLink, intercept } = useTouchExternalLink();
   const dialogRef = useRef(null), closeRef = useRef(null), triggerRef = useRef(null);
   useEffect(() => {
     const wide = window.matchMedia('(min-width: 761px)');
@@ -44,11 +48,20 @@ export default function LibraryNavigation({ lang }) {
         else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
       }}>
       <CinemaNavigation lang={lang} closeRef={closeRef} onClose={()=>setOpen(false)} homeHref={HOME_HREF} label={lang==='en'?'Main navigation':'主导航'}/>
-      <div className="shared-menu-links">
-        {HOME_SECTIONS.slice(0, 1).map(section=><a key={section.id} href={`${HOME_HREF}#${section.id}`}>{section[lang]}</a>)}
-        <a href={`${WORKS_HREF}${window.location.search}`}>{lang==='en'?'All Work':'全部作品'}</a>
-        {HOME_SECTIONS.slice(1).map(section=><a key={section.id} href={`${HOME_HREF}#${section.id}`}>{section[lang]}</a>)}
+      <nav className="shared-menu-links mobile-menu__links" aria-label={lang==='en'?'Main navigation':'主导航'}>
+        <ul className="nav-list">
+          <li><a href={`${HOME_HREF}#projects`}><span>{lang==='en'?'Featured':'精选作品'}</span></a></li>
+          <li><a className="is-active" aria-current="page" href={`${WORKS_HREF}${window.location.search}`}><span>{lang==='en'?'All Work':'全部作品'}</span></a></li>
+          {HOME_SECTIONS.slice(1).map(section=><li key={section.id}><a href={`${HOME_HREF}#${section.id}`}><span>{section[lang]}</span></a></li>)}
+        </ul>
+      </nav>
+      <div className="mobile-nav-drawer-foot mobile-menu__footer">
+        <MobileMenuSocialLinks onExternalClick={(event, profile) => {
+          if (intercept(event, { ...profile, opener: triggerRef.current })) setOpen(false);
+        }} />
+        <span className="mobile-menu__copyright">{DICT[lang]['footer.copyright']}</span>
       </div>
     </dialog>,document.body)}
+    <ExternalLinkSheet link={pendingLink} onClose={closeLink} lang={lang} />
   </>;
 }

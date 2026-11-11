@@ -102,10 +102,10 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
         <p className="external-link-sheet__eyebrow">{lang === 'en' ? 'EXTERNAL LINK' : '站外访问'}</p>
         <h2 id="external-link-title">{title}</h2>
         <p className="external-link-sheet__destination">{destination}</p>
-        <p className="external-link-sheet__domain"><span aria-hidden="true">↗</span> {domain}</p>
+        <p className="external-link-sheet__domain">{domain}</p>
         {isGitHub && <p className="external-link-sheet__hint">{lang === 'en' ? 'GitHub may load slowly on some networks. You can copy the address to open it later.' : '部分网络环境下 GitHub 可能加载较慢，可先复制链接备用'}</p>}
         <div className="external-link-sheet__actions">
-          <a className="external-link-sheet__continue" href={link.href} data-external-confirmed="true" target="_blank" rel="noopener noreferrer" onClick={onClose}>{lang === 'en' ? 'Continue to website' : '继续访问'} <span aria-hidden="true">↗</span></a>
+          <a className="external-link-sheet__continue" href={link.href} data-external-confirmed="true" target="_blank" rel="noopener noreferrer" onClick={onClose}>{lang === 'en' ? 'Continue to website' : '继续访问'}</a>
           <button className="external-link-sheet__cancel" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Stay here' : '留在作品集'}</button>
         </div>
         {isGitHub && <button type="button" className="external-link-sheet__copy" onClick={async () => {

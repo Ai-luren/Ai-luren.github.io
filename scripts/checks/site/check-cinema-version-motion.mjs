@@ -1,4 +1,4 @@
-// Regress the same 330ms moving thumb used by the shared language control.
+// Regress the calibrated spring underline and decoded-poster dissolve.
 // A version may visually select immediately, but its poster cannot be swapped
 // until decoded. All browser media is protected from ImageKit network traffic.
 import assert from 'node:assert/strict';
@@ -60,7 +60,7 @@ try {
     assert(midway.buttons[toIndex].selected,'Thumb should reflect requested version immediately');
     if(!reduced){
       assert(midway.thumb.cx>initial.thumb.cx+5,'Thumb must visibly travel from the old tab');
-      assert(midway.thumb.cx<targetCenter-2,'330ms indicator must not snap instantly to target');
+      assert(midway.thumb.cx<targetCenter-2,'Spring indicator must not snap instantly to target');
     }
     if(slowPoster){
       assert(midway.buttons[0].pressed,'Actual film must keep version A until B poster decodes');
@@ -72,6 +72,19 @@ try {
     const settled=await metrics(page);
     assert(Math.abs(settled.thumb.cx-targetCenter)<2,'Thumb must settle precisely at target');
     await page.waitForFunction(index=>document.querySelectorAll('.cinema-player__version')[index]?.getAttribute('aria-pressed')==='true',toIndex,{timeout:12000});
+    // Only decoded poster-to-poster transitions gain a short transparent
+    // outgoing layer; reduced motion and actual playback may not flash it.
+    const outgoing=page.locator('.cinema-player__version-outgoing');
+    if(reduced){
+      assert.equal(await outgoing.count(),0,'Reduced motion must skip poster dissolve');
+    } else if(!slowPoster){
+      const active=await outgoing.count();
+      if(active){
+        const state=await outgoing.evaluate(el=>({ready:el.complete&&el.naturalWidth>0,
+          duration:el.getAnimations().find(a=>a.animationName==='cinema-version-dissolve')?.effect.getTiming().duration}));
+        assert(state.ready&&state.duration===340,'Outgoing poster stays decoded and animates 340ms');
+      }
+    }
     const final=await metrics(page);
     assert.equal(final.buttons.filter(x=>x.pressed).length,1,'Only one actual version remains pressed');
     assert.deepEqual(errors,[],'No browser errors during version switch');

@@ -29,6 +29,7 @@
 - 获奖画廊一次显示全部 8 张，≥1280px 八列，≤1279px 四列两排；手机卡片只显示完整图片，标题和奖项信息在图片查看器中呈现。画廊不使用左右切换，查看器保留原有导航和焦点恢复。
 - AI 实验室详情保持三项目共享导航、一屏等高、真实素材与 `check:lab-showcase`；手机站外链接共用 `ExternalLinkSheet`，禁止伪造界面/绕过确认，入口和素材维护见 `docs/AI实验室与外链维护.md`。
 - 打开手机菜单时，焦点必须进入模态菜单，Tab/Shift+Tab 不得离开菜单内容；关闭后恢复正常焦点和页面滚动。从 ≤760px 调整到 ≥761px 时应立即关闭已打开或正在关闭的菜单、恢复 inert/滚动锁并让文字导航可操作。执行 `npm run check:nav-modal-breakpoints`。
+- **首页和 Works 手机菜单必须作为同一组件规范验收**：四项大字主导航、4 个真实社媒文字链接、版权、Logo/语言/关闭胶囊、44px 触控热区完全一致；首页仅用静态抽屉处理生命周期，Works 仍用原生 `dialog`，不得因此分化视觉样式。公共社媒 URL 在 `src/navigation/socialProfiles.js`，共用列表在 `src/components/MobileMenuSocialLinks.jsx`，CSS 归 `src/styles/navigation.css`；改动执行 `npm run check:shared-mobile-menu`、`npm run check:design-system` 与 `npm run check:glass-material`。正文导航与 Works 列表页使用相同高不透明度 Token，Hero/影院弹窗仍采用轻玻璃，减少透明度时使用实底。
 - 获奖素材「海螺AI动物跳水.webp」原图右侧有约 2–3px 明亮接缝；只能在对应获奖图片查看器中按比例裁切，保持其他获奖图、查看器圆角、媒体尺寸不变。素材更新后重新检查，执行 `npm run check:award-edge`。
 - 三类共享查看器（作品播放器、获奖荣誉、AI 自媒体资料）共用缓动曲线：进入 260ms、退出 220ms、内容轻微位移 8px；保持背景模糊层独立且固定，不对子容器以外的导航胶囊使用 transform。关闭时播放器立即停止媒体，退出后才解除模态、恢复滚动和焦点；减少动态效果时不等待。运行 `npm run check:modal-motion`。
 - 保持 GitHub Pages 相对路径构建方式，不修改部署配置或环境变量。
@@ -39,7 +40,7 @@
 - 首页精选固定 8 件且可换成员，与 `project-order.json` 的 `all` 独立；卡片拖拽自动保存/可撤销，不能锁定全部作品前八件或用 `PROJECTS.slice(0,8)`。回归 `check:curated-order`、`check:work-cards`。
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
 - 修改英文标题时必须原子更新本地 MP4、两类封面与映射；**ImageKit URL 不跟随更名**。回归 `check:asset-catalog`，海外产品还需 `check:overseas-names`。
-- 卡片 3:4 封面与各视频版本原比例海报必须独立保存、校验比例并备份旧图，禁止改动无关版本。回归 `check:cover-poster`；禁用未适配四分类目录的旧 `generate-player-media.mjs`。
+- 卡片 3:4 封面与各视频版本原比例海报必须独立保存、校验比例并备份旧图，禁止改动无关版本。回归 `check:cover-poster`；禁用并归档未适配四分类目录的旧 `generate-player-media.mjs`（可从 Git 历史恢复）。
 - **自动化零 CDN 请求**：所有浏览器测试、截图与回归均不得访问真实 ImageKit；只用本地夹具与模拟数据，除非用户明确批准单独手动核实。
 - **Playwright 防护**：必须使用 `scripts/lib/safe-media.mjs` 中的 `createSafePage` 或 `createSafeContext`，阻断 ImageKit、替换云端 MP4，禁止 `route.continue()` 绕过防护。
 - 云端播放前缀 `tr:orig-true`、按点击才加载、`preload="none"` 均为生产媒体约束；不可因离线回归改变。
@@ -48,7 +49,7 @@
 ## 验证与维护
 
 - **验证分级**：日常 `npm run check:smoke`、工作台 `npm run check:workbench-core`；`npm run check:project` 串行执行这两组。发布前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。严禁删断言掩盖失败。
-- **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；影院 `npm run check:cinema-local`（需 5174）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
+- **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；影院 `npm run check:cinema-local`、手机播放器 `npm run check:cinema-controls`（均需 5174）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
 - **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
 - `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。
 

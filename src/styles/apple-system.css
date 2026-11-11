@@ -2028,3 +2028,13 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
                  0 0 22px rgba(0, 0, 0, .46) !important;
   }
 }
+
+/* About is the primary story; contact is the actionable secondary heading.
+   Preserve the same two-column card and existing mobile one-column flow. */
+#profile .footer-contact-copy h2 {
+  font-size: clamp(25px, 2vw, 30px);
+  line-height: 1.18;
+}
+@media (max-width: 720px) {
+  #profile .footer-contact-copy h2 { font-size: clamp(26px, 7vw, 30px); }
+}

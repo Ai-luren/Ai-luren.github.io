@@ -55,7 +55,7 @@ export const DICT = {
     'about.kicker': '个人简介',
     'about.title': '关于我',
     'about.role': 'AI 影像创作者',
-    'about.description': '从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。',
+    'about.description': '专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验。',
 
     'projects.title': '精选创作档案',
     'projects.note': '8 部代表作品',
@@ -129,7 +129,7 @@ export const DICT = {
     'about.kicker': 'CREATOR PROFILE',
     'about.title': 'About Me',
     'about.role': 'AI Video Creator',
-    'about.description': 'My background spans motion design, VFX, and product development, with experience at Kuaishou and Xiaomi. I now create AI videos for commercials, short films, and new visual storytelling.',
+    'about.description': 'I create AI commercials, product films, and creative shorts, from visual concepts and AI-generated imagery to editing and final delivery. My background includes creative and product experience at Kuaishou and Xiaomi.',
 
     'projects.title': 'Selected Work',
     'projects.note': '8 Featured Works',

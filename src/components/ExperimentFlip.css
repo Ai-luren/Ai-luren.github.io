@@ -98,12 +98,11 @@
   font: 500 13px/1.4 var(--font-body, system-ui);
   text-decoration: none;
   white-space: nowrap;
-  transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), gap var(--apple-duration-control) var(--apple-ease);
+  transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
 }
 
 .flip-experiment__link:hover,
 .flip-experiment__link:focus-visible {
-  gap: 9px;
   border-color: var(--apple-text);
   color: var(--apple-text);
 }
@@ -170,7 +169,7 @@
   }
 }
 
-/* Project-first action hierarchy: a clear in-site overview and secondary source. */
+/* Project-first hierarchy: cards open the in-site project; source lives in its detail panel. */
 .flip-experiment__header, .flip-experiment__row {
   grid-template-columns: 48px minmax(170px, .9fr) minmax(0, 1.8fr) minmax(136px, auto);
 }
@@ -184,7 +183,6 @@
 }
 .flip-experiment__detail:hover { border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-hover-surface); }
 .flip-experiment__actions .flip-experiment__link { position: relative; min-width: 0; min-height: 38px; padding: 0 2px; border-bottom: 0; font-size: 12px; }
-.flip-experiment__actions .flip-experiment__link:hover, .flip-experiment__actions .flip-experiment__link:focus-visible { gap: 6px; }
 .flip-experiment__tooltip {
   position: absolute; right: 0; bottom: calc(100% + 8px);
   width: max-content; max-width: 240px; padding: 8px 11px;

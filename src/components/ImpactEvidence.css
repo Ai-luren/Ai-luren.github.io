@@ -313,7 +313,9 @@
 .impact-reach-dossier .impact-reach-action--primary:active { background: var(--portfolio-icon-active-surface); }
 .impact-reach-dossier .impact-reach-action--external { padding: 0 2px; border: 0; background: transparent; color: var(--apple-secondary); }
 .impact-reach-dossier .impact-reach-action--external:hover, .impact-reach-dossier .impact-reach-action--external:focus-visible { color: var(--apple-text); }
-.impact-reach-external-arrow { font-size: 14px; line-height: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .impact-reach-dossier .impact-reach-action--external:hover > span { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+}
 .impact-reach-dossier .impact-reach-action:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .impact-reach-dossier .impact-reach-action[aria-busy="true"] { cursor: progress; }
 @media (min-width: 721px) and (max-width: 1100px) {

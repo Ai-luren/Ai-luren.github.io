@@ -155,7 +155,7 @@ export async function appendVideoVersion({ projectRoot, workspace, sessionsDir, 
     const variant={
       id,label:{zh:label(labelZh,'中文版本名称'),en:label(labelEn,'英文版本名称')},
       localVideoPath:`${folder}/${videoName}`,videoUrl:null,
-      videoWidth:session.metadata.width,videoHeight:session.metadata.height,posterFile:posterName,
+      videoWidth:session.metadata.width,videoHeight:session.metadata.height,videoDuration:session.metadata.duration,posterFile:posterName,
     };
     if(work)work.variants=[...currentVariants,variant];
     else legacyVersions[projectId]=[...currentVariants,variant];

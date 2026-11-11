@@ -143,3 +143,28 @@
   outline-offset: 4px;
   box-shadow: 0 0 0 7px rgba(84, 148, 225, .13);
 }
+
+/* Featured + All Work: one editorial hover treatment, not a black overlay.
+   Keep the photo unobscured, thumbnail fixed and play badge always readable.
+   No nested button or competing glass surface is introduced. */
+@media (min-width: 721px) {
+  #projects .comet-archive__image::after { opacity: 0 !important; }
+}
+@media (hover: hover) and (pointer: fine) {
+  #projects .comet-archive__card:hover .comet-archive__image,
+  .work-library .comet-archive__card:hover .comet-archive__image {
+    border-color: rgba(255, 255, 255, .42) !important;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, .25) !important;
+    transform: none !important;
+  }
+  #projects .comet-archive__card:hover .comet-archive__play-badge,
+  .work-library .comet-archive__card:hover .comet-archive__play-badge {
+    border-color: rgba(255, 255, 255, .38);
+  }
+}
+/* A keyboard user sees the same artwork boundary, never a large dark tile. */
+#projects .comet-archive__card:focus-visible .comet-archive__image,
+.work-library .comet-archive__card:focus-visible .comet-archive__image {
+  border-color: rgba(255, 255, 255, .5) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .15), 0 12px 26px rgba(0, 0, 0, .25) !important;
+}

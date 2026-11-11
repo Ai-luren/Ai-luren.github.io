@@ -76,7 +76,7 @@ const BASE_PROJECTS = [
     ...(project.mainVersionLabel || legacyMainVersionLabels[project.id]
       ? {mainVersionLabel:project.mainVersionLabel || legacyMainVersionLabels[project.id]} : {}),
     ...(projectTitleOverrides[project.id] ? {title:projectTitleOverrides[project.id]} : {}), ...(cover ? { cover } : {}),
-    videoWidth: media.videoWidth, videoHeight: media.videoHeight,
+    videoWidth: media.videoWidth, videoHeight: media.videoHeight, videoDuration: media.videoDuration,
     playerPoster: playerPosters[`../../assets/images/player-posters/${media.playerPoster}`] || null,
   };
 }).filter(project=>!archived.works?.[project.id]);
