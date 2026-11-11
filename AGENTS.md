@@ -9,15 +9,16 @@
 - `index.html`：页面结构、文案、全局样式、动画和媒体背景。
 - `src/App.jsx`：React 入口，只挂载交互组件。
 - `src/components/`：作品档案、影响力模块及其样式。
-- `src/data/projects.js`：原始 14 件作品 + `src/data/auto-projects.json` 自动新增条目的汇总入口；`PROJECTS` 经 `project-order.json` 控制「全部作品」显示顺序，`FEATURED_PROJECT_IDS` 通过同一文件单独控制首页八件精选及播放器顺序。无真实资料时保留空值。
-- `src/data/auto-projects.json`：工作台新增作品与扩展版本的数据源；旧作品扩展版本另存 `src/data/legacy-video-variants.json`，旧主版本 URL 在 `legacy-imagekit-urls.json`。`src/data/archive-state.json` 仅标记被归档的作品或扩展版本；不要为清理列表而删除素材。上线前需配置可访问的视频地址。
-- `assets/videos/works/`：本地原始作品视频，Vite 开发模式下始终优先使用这些本地文件（不请求 ImageKit）；Git 忽略且不进入正式构建。分类按商业广告、创意短片、海外产品广告、视觉实验管理。
+- `src/data/projects.js`：汇总原始 14 部作品与 `auto-projects.json`；`project-order.json` 的 `all` 控制完整顺序、`featured` 控制独立的 8 部首页精选。无证据的奖项字段保持空值。
+- `src/data/auto-projects.json`：新增作品和扩展版本；旧作品附加版本及原主视频 URL 分别见 `legacy-video-variants.json`、`legacy-imagekit-urls.json`。`archive-state.json` 可归档整部作品或任何版本（含 `main`），禁止物理删除素材。
+- `assets/videos/works/`：本地原始作品视频，Vite 开发模式优先用本地 MP4，缺片也禁止回退 ImageKit；Git 忽略且不进正式构建，正式网站使用配置的云端链接。分类为商业广告、创意短片、海外产品广告、视觉实验。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
 - `docs/`：`设计规范.md` 是唯一持续生效的视觉与交互规范；维护指南为操作说明，带日期的审计/验收文档只作历史记录。
-- `tools/cover-studio/`：本地作品工作台，使用 FFmpeg、环回端口和可恢复的归档索引维护作品；不接入正式 Vite 构建或部署。
+- `portfolio-workbench/`：本地作品工作台，使用 FFmpeg、环回端口和可恢复的归档索引维护作品；不接入正式 Vite 构建或部署。
+- `scripts/checks/site/` 与 `scripts/checks/workbench/`：分别存放网页和工作台回归测试；共用 `scripts/lib/safe-media.mjs` 与 `scripts/fixtures/`，正式构建不包含这些测试。移动脚本须同步 `package.json`、`run-adversarial-checks.mjs` 与相对导入，并执行 `npm run check:repo-layout`。
 - `.cover-studio/`：本地导入副本、候选帧、封面替换与改名历史、迁移前媒体备份；被 Git 忽略，不能当缓存清空。
-- 作品 3:4 封面位于 `assets/images/project-covers/<category>/<English Title>.webp`，播放器原比例海报位于 `assets/images/player-posters/<category>/<MP4 English Stem>.webp`；`category` 仅为 commercial、short-film、social、visual。英文标题修改须同步本地 MP4、封面、海报和 JSON 映射，旧图留存本地历史。命名及历史回滚见 `docs/作品库维护.md`。
+- 正式 3:4 封面与原比例海报分别位于 `assets/images/project-covers/<category>/`、`assets/images/player-posters/<category>/`，按英文名或视频文件 stem 命名；分类为 commercial / short-film / social / visual。改英文名须原子同步 MP4、图片与 JSON 映射、保留历史，不改 ImageKit URL。
 
 ## 规则
 
@@ -35,20 +36,19 @@
 - 页面内容和视觉调整完成后，必须执行构建验证。
 - 修改文案、字号、行宽、容器宽度等影响排版的内容后，必须执行双语布局检测。
 - 双语文案应保持自然且语义一致，避免单词间双空格；导航标签保持紧凑，作品英文标题可换行，不能为凑字数强行缩写品牌或片名。
-- 首页精选与完整作品顺序分别由 `src/data/project-order.json` 的 `featured`（固定 8 件、成员可替换）和 `all` 维护。工作台拖动封面松手自动保存、可撤销，星标须明确选择替换对象；不要使用 `PROJECTS.slice(0, 8)` 或锁定全部作品前 8 项。优先检查本地预览自动同步，必要时再刷新 `5174`；回归 `check:curated-order`、`check:work-cards`。
+- 首页精选固定 8 件且可换成员，与 `project-order.json` 的 `all` 独立；卡片拖拽自动保存/可撤销，不能锁定全部作品前八件或用 `PROJECTS.slice(0,8)`。回归 `check:curated-order`、`check:work-cards`。
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
 - 修改英文标题时必须原子更新本地 MP4、两类封面与映射；**ImageKit URL 不跟随更名**。回归 `check:asset-catalog`，海外产品还需 `check:overseas-names`。
 - 卡片 3:4 封面与各视频版本原比例海报必须独立保存、校验比例并备份旧图，禁止改动无关版本。回归 `check:cover-poster`；禁用未适配四分类目录的旧 `generate-player-media.mjs`。
-- 在本机 Vite 开发模式下，`src/data/projects.js` 的作品播放器使用 `assets/videos/works/` 中的本地 MP4；即使已配置 ImageKit URL 也不能走线上 CDN。没有本地原片时不要自动回退访问 ImageKit。正式构建仍保持 ImageKit 原始视频链接。
-- **零 ImageKit CDN 消耗是自动化测试的硬性约束**：日常测试、截图、UI 检查、回归测试禁止向 ImageKit 发起真实网络请求；不要为了测试布局访问线上作品视频。
-- 所有使用 Playwright 的脚本必须通过 `scripts/lib/safe-media.mjs` 的 `createSafePage` / `createSafeContext` 创建受保护的页面或上下文；这些辅助函数在导航和播放前拦截 ImageKit 请求，MP4 由 `scripts/fixtures/` 本地小视频替代，其他 ImageKit 请求直接阻断。新测试也必须遵守。不能调用 `route.continue()` 绕过该保护。
-- 自动测试使用本地模拟媒体验证播放器状态、尺寸和导航；真实 CDN 播放检查只能在用户**明确授权**后单独手动执行，绝不自动回退到真实视频。不得改动生产环境 `tr:orig-true`、点击后加载及 `preload="none"` 的行为。
+- **自动化零 CDN 请求**：所有浏览器测试、截图与回归均不得访问真实 ImageKit；只用本地夹具与模拟数据，除非用户明确批准单独手动核实。
+- **Playwright 防护**：必须使用 `scripts/lib/safe-media.mjs` 中的 `createSafePage` 或 `createSafeContext`，阻断 ImageKit、替换云端 MP4，禁止 `route.continue()` 绕过防护。
+- 云端播放前缀 `tr:orig-true`、按点击才加载、`preload="none"` 均为生产媒体约束；不可因离线回归改变。
 
 
 ## 验证与维护
 
-- **分级验证**：日常 `npm run check:smoke`；工作台 `npm run check:workbench-core`；`npm run check:project` 顺序运行两组。上线前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。失败不可删除断言；写入测试只在隔离项目执行，浏览器测试须拦截 ImageKit。
-- **专项命令**：发布前 `npm run build`；媒体安全 `npm run check:media-safety`；首页弱网滚动 `npm run check:home-scroll`（先 build）；影院真本地 MP4 `npm run check:cinema-local`（需 5174 开发服务）；双语 `npm run check:i18n`；其他按 `docs/交接说明.md` 和对应手册执行，最后 `git diff --check`。
+- **验证分级**：日常 `npm run check:smoke`、工作台 `npm run check:workbench-core`；`npm run check:project` 串行执行这两组。发布前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。严禁删断言掩盖失败。
+- **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；影院 `npm run check:cinema-local`（需 5174）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
 - **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
 - `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。
 
@@ -60,20 +60,20 @@
 
 ## 作品管理工作台硬约束
 
-- **桌面限定**：`npm run covers` 只供 Mac 桌面（宽度 ≥921px）使用；公开作品集手机版保持原样。详情采用全屏双栏：左侧本地 MP4 播放/时间轴/选帧，右侧两种封面、中英文标题、版本、ImageKit 和精选。工作台不参与生产构建。
-- **版本兼容**：新作品版本保存在 `src/data/auto-projects.json`；原有 14 部作品可直接添加 B/C 版本，新增记录保存在 `src/data/legacy-video-variants.json`，**不迁移或覆盖原主视频**。每部最多 8 个版本；卡片封面属于作品，原比例海报与 ImageKit URL 属于所选视频版本。回归 `node scripts/check-cover-studio-legacy-version.mjs`。
-- **版本排序**：同一作品的视频版本可按住标签拖动，松手自动保存到 `src/data/project-version-order.json`；首个视频为公开影院默认播放版本，但 `main` 主版本身份、媒体文件、封面、各版本 ImageKit URL 不得改变。回归 `npm run check:workbench-version-order`。
-- **版本名称**：右侧「作品统一名称」固定放在视频版本上方，整部作品的中英文标题由 A/B/C 全部视频共用。视频标签单击切换，当前视频的中英文版本名称输入框**常驻展开**，只在发生修改后显示保存与撤销；禁止恢复铅笔、重复重命名按钮或双击入口。新增版本仍在右侧。名称保存在自动作品 `mainVersionLabel`、`legacy-main-version-labels.json` 或附加版本记录中；仅监听 `127.0.0.1:5190` 的 `/api/update-version-label` 不得连接到生产页面。
+- **桌面限定**：`npm run workbench` 只供 Mac 桌面（宽度 ≥921px）使用；公开作品集手机版保持原样。详情采用全屏双栏：左侧本地 MP4 播放/时间轴/选帧，右侧两种封面、中英文标题、版本、ImageKit 和精选。工作台不参与生产构建。
+- **版本兼容**：新作品版本写入 `auto-projects.json`，原有 14 部作品添加 B/C 版本写入 `legacy-video-variants.json`，不迁移原始 MP4；每部最多 8 个版本。3:4 封面属于整部作品，播放器海报和 ImageKit 属于具体视频。回归 `check-cover-studio-legacy-version.mjs`。
+- **版本排序**：拖动标签自动保存至 `src/data/project-version-order.json`，首个未归档版本为网页默认播放；不更改 `main` 身份及任何媒体或 URL。回归 `npm run check:workbench-version-order`。
+- **版本名称**：作品统一中英文名放在版本标签上方，A/B/C 共用；选中版本后直接显示该视频的中英文输入，修改时才显示保存与撤销。禁止铅笔、重复重命名或双击入口。自动作品 `mainVersionLabel`、旧作品 `legacy-main-version-labels.json`、扩展版本各自记录名称；仅本机 `/api/update-version-label` 可修改。
 - **导航**：顶部上一部/下一部按 `src/data/project-order.json` 的 `all` 顺序跨分类、精选与搜索**首尾循环**；切换前经过 `navigateWithDraft` 草稿保护，`Option + ←/→` 仅在非输入状态使用。视频版本切换与内联命名统一放右侧「作品管理」中，左侧只负责播放、时间轴与选帧。
-- **会话存储**：工作台的 `sessions/<UUID>/source.mp4` 同内容视频通过 `.cover-studio/source-objects/` 共享 SHA-256 校验的只读硬链接；正式作品 MP4 始终保持独立可编辑文件。不得自动删除 `project-revisions/`、`sessions/` 选帧或 `exports/`。需清理时先运行 `npm run covers:storage:scan` 与 `npm run covers:storage:verify`；恢复独立会话用 `npm run covers:storage:restore -- <UUID>`。变更须通过 `npm run check:workbench-storage`。
-- **封面与备份**：3:4 卡片封面和播放器原比例海报独立保存，不拉伸；保存/恢复前备份当前图。最多保留每部卡片 3 份旧图，以及每个视频版本海报 3 份旧图；按 SHA-256、版本、路径及真实比例校验。严禁把 `.cover-studio/project-revisions/` 当缓存删除。回归 `npm run check:workbench-history`。
-- **精确选帧**：不恢复 12 张随机候选帧、额外秒数输入或 FPS 说明。只使用本地播放器时间轴、毫秒时间及四个等高按钮「首帧／上一帧／下一帧／尾帧」，按源视频 fps 逐帧；停止约 260ms 后请求最新高清静帧。末帧须解码真实视频画面而不是音频容器尾部；一个保存动作完成取帧与写入。回归 `npm run check:workbench-fast-jog`、`npm run check:workbench-endframe`。
+- **会话存储**：`.cover-studio/source-objects/` 通过 SHA-256/只读硬链接为 `sessions/<UUID>/source.mp4` 去重，正式 MP4 仍是独立副本。严禁清除 `sessions/`、`exports/`、`project-revisions/`；清理前先 `covers:storage:scan` 与 `covers:storage:verify`，恢复独立视频用 `covers:storage:restore -- <UUID>`。
+- **封面与备份**：作品 3:4 封面与每个视频原比例海报独立管理、不拉伸；备份历史各最多 3 份，保存/恢复时验证比例、版本与路径。不可清理 `.cover-studio/project-revisions/`。回归 `npm run check:workbench-history`。
+- **精确选帧**：不恢复 12 张候选帧；已有作品使用时间轴及「首帧／上一帧／下一帧／尾帧」按 fps 定位，停止约 260ms 后请求 FFmpeg 精确帧，尾帧取实际画面。新增作品的辅助选帧工具始终直接可见。回归 `check:workbench-fast-jog`、`check:workbench-endframe`。
 - **ImageKit 和发布边界**：新建作品和已有作品均展示固定前缀 `https://ik.imagekit.io/Ailuren/tr:orig-true/videos/`，可编辑文件名，允许粘贴完整链接自动提取。必须显式保存，失焦不自动提交；本地更新 ≠ 上传 ImageKit ≠ Git 提交 ≠ Netlify 部署。云端 URL 不跟随本地标题改名变化。
-- **草稿与状态**：修改标题、ImageKit、视频版本、封面后关闭/跳转均须保护草稿。工作台原有 busy 状态逻辑不得重新全局禁用/启用作品库、详情和独立对话框按钮。`/api/preview-events` 只面向本机 Vite 预览局部刷新，不得出现在生产连接中。回归 `npm run check:workbench-draft-focus`、`npm run check:workbench-preview-sync`。
-- **任务区与草稿**：编辑页右侧只有「作品管理／封面与海报」两个任务分区，初始为作品管理；作品管理按作品统一名称→视频版本及常驻名称编辑→ImageKit→首页精选→整部作品归档顺序展示，切换任务仍必须保护未保存草稿。作品库默认展示 8 部精选，其他四类独立浏览；拖动卡片自动保存可撤销。不得恢复「全部作品」Tab、重复版本入口或第二套排序保存流程。
-- **回收站安全**：版本标签同行右侧仅保留一个 39px 归档图标（作用于当前选中视频），底部「整部移入回收站」属于作品级操作，二者必须明确区分。`POST /api/archive-item` 可以归档整部非精选作品，或任何视频版本（包括原始 `main`），但一部作品必须保留至少一个可用视频版本；恢复通过 `POST /api/restore-item`。整部作品须输入「归档」，精选必须先退出精选。`archive-state.json` 和 `.cover-studio/project-revisions/archive-*.json` 必须保留；归档/恢复不得物理删除 MP4、封面、海报或线上 ImageKit 资源。回归 `npm run check:workbench-recycle`。
+- **草稿保护**：修改作品名、视频名、ImageKit、版本或封面后，切换/关闭必须提示未保存；不要重写全局 busy 禁用逻辑。`/api/preview-events` 只用于本机 Vite 局部刷新。回归 `check:workbench-draft-focus`、`check:workbench-preview-sync`。
+- **任务区**：右侧只有「作品管理／封面与海报」两栏；前者顺序为作品统一名→视频版本→ImageKit→首页精选→整部归档。不得恢复「全部作品」Tab、重复版本入口或第二套排序保存动作。
+- **安全归档**：版本标签行右侧 39px 图标只归档当前视频（含 `main`），且至少保留一个可用版本；底部「整部移入回收站」归档非精选作品、必须输入「归档」，精选先退出。`archive-state.json` 与 `.cover-studio/project-revisions/archive-*.json` 保留恢复依据，绝不删除 MP4、WebP 或 ImageKit。回归 `npm run check:workbench-recycle`。
 - **封面底色**：作品库、详情、历史、新建和拖拽预览媒体背景统一纯黑 `#000`，`object-fit: contain`，不拉伸。回归 `npm run check:workbench-backdrops`。
-- **新增作品状态机**：导入前只展示视频入口、作品统一名称与分类，隐藏禁用选帧和空封面；导入 MP4 成功后**复用已有 `/api/frame`** 自动生成第一组 3:4 及原比例预览，失败允许手动选帧。各封面独立可替换，默认素材目录和可选 ImageKit 链接均常显，保存按缺失项给出明确文案；绝不恢复「1/3」假向导，绝不自动上传云端。对新建流程运行 `npm run check:workbench-create`（写入只在隔离项目）。
-- **几何与视觉**：导航相对整个编辑器居中，按钮等高不折行；精选星标和加号用对称 SVG，不用字体 ★/☆/+ 代替图标。工作台禁止新增 `<details>/<summary>` 折叠交互，视频素材目录、ImageKit、添加版本的中英文名称、精确选帧及封面位置微调均默认直接展示；新增作品优先显示拖入 MP4，媒体底图纯黑，图片不拉伸。先加载 `style.css` 再加载 `workbench-enhancements.css`，样式变更执行断点与图标回归。
-- **运行验收硬约束**：每次修改 `tools/cover-studio/` 前后，必须检查 5190 上是否为旧 Node 进程；服务端新增/修改路由或模块后必须重启 `npm run covers`，再运行 `npm run check:workbench-live` 实际打开正在运行的工作台，确认作品列表非空、前端零 JS 错误、模块没有 404、ImageKit 没有请求。仅通过构建与隔离测试不足以交付。
-- **安全测试**：Playwright 只使用 `scripts/lib/safe-media.mjs` 保护的页面，本地小 MP4 夹具和隔离项目；禁止真实 ImageKit CDN 请求，禁止写入正式素材/排序数据。工作台改动至少运行 `npm run check:workbench-full-flow`、`npm run check:workbench-ux`、`npm run check:workbench-phase3`、`npm run check:workbench-icon-alignment`、`npm run build`。窗口覆盖 1440×900、1280×720、1000×750，测试导航偏差、按钮居中、弹窗越界及草稿保护。完整命令见 `docs/本地封面工作台使用教程.md`。
+- **新建作品**：导入前只显示 MP4 入口、默认素材目录、作品统一名称／分类与可选 ImageKit；导入后 `/api/frame` 自动生成两张独立封面，失败可手动选帧。无效控件在导入前隐藏；底部提示缺失项，不用假「1/3」进度，不自动上传。回归 `npm run check:workbench-create`。
+- **界面常显**：工作台禁止 `<details>/<summary>` 折叠：素材目录、ImageKit、添加版本名称、精确选帧和封面微调直接显示，空间不足使用内部滚动。按钮/精选星标/加号使用居中 SVG，媒体纯黑底、不拉伸。保留 `style.css` → `workbench-enhancements.css` 的加载顺序并测 3 档断点。
+- **服务端真实验收**：每次改 `portfolio-workbench/` 先检查 5190 是否是旧 Node 进程；更新路由/模块后重启 `npm run workbench`，再运行 `npm run check:workbench-live`，确认作品正常读取、无 JS 错误、404 或 ImageKit 请求。构建/隔离测试不能替代真实验收。
+- **安全测试**：Playwright 通过 `safe-media.mjs` 及隔离项目测试写入；不得访问正式素材/排序数据。工作台至少验证 `check:workbench-full-flow`、`check:workbench-ux`、`check:workbench-phase3`、`check:workbench-icon-alignment`、`npm run build`；检查 1440×900、1280×720、1000×750。

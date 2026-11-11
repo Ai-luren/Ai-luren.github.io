@@ -34,8 +34,8 @@ const workbenchNpm=Object.keys(scripts).filter(name=>name.startsWith('check:work
  !['check:workbench-core','check:workbench-full'].includes(name))
  .concat('check:cover-poster');
 const all={
-  site:[...siteNpm.map(name=>['npm','run',name]),...siteStandalone.map(name=>['node','scripts/'+name])],
-  workbench:[...workbenchNpm.map(name=>['npm','run',name]),...workbenchStandalone.map(name=>['node','scripts/'+name])],
+  site:[...siteNpm.map(name=>['npm','run',name]),...siteStandalone.map(name=>['node','scripts/checks/site/'+name])],
+  workbench:[...workbenchNpm.map(name=>['npm','run',name]),...workbenchStandalone.map(name=>['node','scripts/checks/workbench/'+name])],
 };
 for(const category of Object.keys(all)){
  for(const spec of all[category]){

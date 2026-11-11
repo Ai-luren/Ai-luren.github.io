@@ -93,13 +93,13 @@ npm run dev
 
 首页：<http://127.0.0.1:5174/>　·　作品库：<http://127.0.0.1:5174/works.html>
 
-打开本地封面及作品管理工作台：
+启动本地作品工作台：
 
 ~~~bash
-npm run covers
+npm run workbench
 ~~~
 
-工作台：<http://127.0.0.1:5190/>
+工作台：<http://127.0.0.1:5190/>（旧命令 `npm run covers` 仍可使用）。更新 `portfolio-workbench/` 后先重启旧的 5190 服务，再运行 `npm run check:workbench-live`；单纯构建通过不代表浏览器已使用新代码。
 
 **媒体边界：** 本地作品 MP4 位于 Git 忽略的 assets/videos/works/，不会随仓库克隆，也不会进入生产构建。开发模式缺少原片时不会自动转向 ImageKit；正式发布使用作品数据中配置的云端视频地址。运行工作台需安装 FFmpeg / FFprobe。 多次编辑的同内容临时视频会在本机使用只读共享存储，查看与验证命令见 [工作台使用教程](./docs/本地封面工作台使用教程.md#本地空间维护可选)。
 
@@ -112,20 +112,29 @@ npm run covers
 index.html · works.html           首页与作品库入口
 src/components/                  作品卡片、播放器与交互组件
 src/data/projects.js             原有作品与作品数据汇总
-src/data/auto-projects.json      新增作品及视频 A/B 版本
+src/data/auto-projects.json      新增作品及其 A/B/C 等视频版本
 src/data/legacy-video-variants.json 旧作品追加的视频版本
 src/data/project-order.json      首页精选与完整作品独立排序
+src/data/project-version-order.json 单部作品的 A/B/C 视频播放顺序
+src/data/archive-state.json      整部作品及单个视频的可恢复归档状态
 assets/images/project-covers/    四分类下的 3:4 视频封面，文件名与英文作品名一致
 assets/images/player-posters/    同分类、同英文文件名的原比例播放器海报
-tools/cover-studio/              仅供本地使用的作品管理工作台
-docs/                            设计规范与维护说明
+portfolio-workbench/             作品工作台（独立本地服务，不参与网站发布）
+scripts/checks/site/              公开网站的自动化验收脚本
+scripts/checks/workbench/         本地作品工作台的隔离回归测试
+scripts/lib/                      浏览器安全拦截及共用测试组件
+scripts/fixtures/                 测试用 MP4，非正式作品素材
+docs/                             设计规范与维护说明
 ~~~
 
 ~~~bash
-npm run check:smoke          # 构建、素材、精选顺序和媒体安全
+npm run check:smoke          # 构建、目录路径、素材、精选顺序和媒体安全
+npm run check:repo-layout    # 检查目录迁移后的脚本、相对导入和配置入口
 npm run check:home-scroll    # 先 build；弱网首页滚动与浏览器返回恢复
 npm run check:workbench-core # 工作台核心流程、存储和视觉回归
-npm run check:project        # 依次运行上述两组快速检查
+npm run check:workbench-create # 新增作品导入、双封面和本地保存
+npm run check:workbench-live # 已启动 5190 服务的真实页面、资源与异常检查
+npm run check:project        # 依次运行 smoke 和 workbench-core
 npm run check:site-full      # 独立生产预览下逐项检查公开网页
 npm run check:workbench-full # 隔离项目逐项检查工作台
 npm run check:adversarial    # 网站和工作台全量深测，记录到本地 .audit

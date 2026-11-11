@@ -1,0 +1,119 @@
+import assert from 'node:assert/strict';
+import {existsSync,mkdirSync,readFileSync} from 'node:fs';
+import {chromium} from 'playwright-core';
+import {createSafePage,getSafeMediaReport} from '../../lib/safe-media.mjs';
+const executablePath=[
+  '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+  '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+].find(existsSync);
+assert(executablePath,'Browser required');
+const browser=await chromium.launch({executablePath,headless:true});
+const base=process.env.PORTFOLIO_URL??'http://127.0.0.1:5174/';
+// The cover workbench can reorder Featured and All Work independently.
+const order = JSON.parse(readFileSync(new URL('../../../src/data/project-order.json', import.meta.url)));
+const canonicalFeaturedIds = ['01','02','06','03','04','07','08','05'];
+const canonicalFeatured = {
+ zh:['屈臣氏 AI 品牌广告','联想 AI 品牌广告','湖南 AI 文旅宣传','通义万相 AI 品牌广告','霸王茶姬 AI 品牌广告','悠船 AI 创意短片','通义万相 AI 创意短片','宠物 AI 创意短片'],
+ en:['Watsons AI Brand Ad','Lenovo AI Brand Ad','Hunan AI Travel Film','Wan AI Brand Ad','Chagee AI Brand Ad','Midjourney AI Short Film','WAN AI Short Film','Pet AI Short Film']
+};
+const titles = Object.fromEntries(canonicalFeaturedIds.map((id,i)=>[id,{zh:canonicalFeatured.zh[i],en:canonicalFeatured.en[i]}]));
+Object.assign(titles, {
+ '09': {zh:'海外无线耳机 AI 场景广告',en:'Wireless Earbuds · AI Lifestyle Ad'},
+ '10': {zh:'海外无线耳机 AI 产品展示广告',en:'Wireless Earbuds · AI Product Showcase'},
+ '11': {zh:'无线耳机 AI 社媒创意广告',en:'Wireless Earbuds · AI Social Media Ad'},
+ '13': {zh:'宠物红光护理仪 AI 产品广告',en:'Pet Red Light Therapy Device · AI Ad'},
+ '14': {zh:'中式国风巨物美学',en:'Chinese-Inspired Giant-Scale Visuals'},
+ '15': {zh:'最难的告别',en:'The Hardest Goodbye'},
+});
+for(const item of JSON.parse(readFileSync(new URL('../../../src/data/auto-projects.json',import.meta.url)))){
+  titles[item.id] = item.title;
+}
+// The workbench can override bilingual display titles without changing media IDs.
+const renamed=JSON.parse(readFileSync(new URL('../../../src/data/project-title-overrides.json',import.meta.url)));
+for(const [id,title] of Object.entries(renamed)) if(titles[id]) titles[id] = {...titles[id],...title};
+const featured={zh:order.featured.map(id=>titles[id].zh),en:order.featured.map(id=>titles[id].en)};
+const commercialIds=new Set(['01','02','03','04','06','09']);
+for(const item of JSON.parse(readFileSync(new URL('../../../src/data/auto-projects.json',import.meta.url)))){
+  if(item.category==='commercial')commercialIds.add(item.id);
+}
+const firstCommercialId=order.all.find(id=>commercialIds.has(id));
+const libraryFirst={zh:titles[firstCommercialId].zh,en:titles[firstCommercialId].en};
+const awards={
+ zh:['MJ 官方优秀作品','未来AI设计大赛','联想AI比赛','海螺AI动物跳水','无限剧场小赛','海纳星火计划','海纳星火计划','影视级特效小赛'],
+ en:['Featured by Midjourney','Future AI Design Contest','Lenovo AI Competition','Hailuo AI Animal Diving','Infinite Theater Contest','Spark of Haina Program','Spark of Haina Program','Cinematic Effects Contest']
+};
+const shotdir='.audit/curated-order/shots';mkdirSync(shotdir,{recursive:true});
+let passed=0;
+try{
+ for(const width of [320,390,720,721,1024,1440])for(const lang of ['zh','en']){
+  const tag=width+' '+lang;
+  const page=await createSafePage(browser,{viewport:{width,height:900}});
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  try{
+   await page.addInitScript(l=>localStorage.setItem('ailuren-lang',l),lang);
+   await page.goto(new URL('index.html',base).href,{waitUntil:'domcontentloaded'});
+   const readProjects=async()=>page.locator('#projects .comet-archive__card .comet-archive__title').allTextContents()
+     .then(xs=>xs.map(x=>x.replace(/\s+/g,' ').trim()));
+   const readAwards=async()=>page.locator('#impact-awards .impact-award-grid-caption strong').allTextContents()
+     .then(xs=>xs.map(x=>x.replace(/\s+/g,' ').trim()));
+   await page.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
+   await page.locator('#impact-awards .impact-award-grid-card').first().waitFor({state:'attached'});
+   if(width>720){
+     assert.deepEqual(await readProjects(),featured[lang],tag+': desktop featured order');
+     assert.deepEqual(await readAwards(),awards[lang],tag+': desktop award order');
+   }else{
+     assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1');
+     await page.locator('#projects .comet-archive-pagination button').nth(1).evaluate(e=>e.click());
+     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(4),{timeout:10000});
+     assert.deepEqual(await readProjects(),featured[lang].slice(4),tag+': featured page 2');
+     await page.locator('#projects .comet-archive-pagination button').first().evaluate(e=>e.click());
+     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(0,4),{timeout:10000});
+     assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1 return');
+     assert.deepEqual(await readAwards(),awards[lang],tag+': mobile award order');
+     // Gallery thumbnails are deferred until nearby, so compare their real
+     // loaded sources after bringing the award section into view.
+     await page.locator('#impact-awards').scrollIntoViewIfNeeded();
+     await page.waitForFunction(()=>[...document.querySelectorAll('#impact-awards .impact-award-grid-card img')]
+       .every(image=>Boolean(image.getAttribute('src'))),null,{timeout:8000});
+     const urls=await page.locator('#impact-awards .impact-award-grid-card img').evaluateAll(images=>images.map(image=>image.getAttribute('src')));
+     assert.notEqual(urls[5],urls[6],tag+': distinct Haina proof images mixed together');
+   }
+   // Viewer order derives from the same canonical award list.
+   await page.locator('#impact-awards .impact-award-grid-card').first().evaluate(e=>e.click());
+   await page.locator('.impact-award-lightbox').waitFor({state:'visible',timeout:8500});
+   assert.equal((await page.locator('#impact-award-lightbox-title').textContent()).trim(),awards[lang][0],tag+': first award viewer');
+   await page.locator('.impact-award-lightbox-nav--next').evaluate(e=>e.click());
+   await page.waitForFunction(expected=>document.querySelector('#impact-award-lightbox-title')?.textContent?.trim()===expected,awards[lang][1],{timeout:10000});
+   assert.equal((await page.locator('#impact-award-lightbox-title').textContent()).trim(),awards[lang][1],tag+': viewer next sequence');
+   await page.locator('.impact-award-lightbox .cinema-player__close').first().evaluate(e=>e.click());
+   await page.locator('.impact-award-lightbox').waitFor({state:'detached',timeout:8000});
+   await page.locator('#projects .comet-archive__card').first().evaluate(e=>e.click());
+   await page.locator('.cinema-player[open]').waitFor({state:'visible',timeout:8500});
+   assert.equal((await page.locator('#cinema-player-title').textContent()).trim(),featured[lang][0],tag+': featured viewer');
+   assert.equal((await page.locator('.cinema-player__count').textContent()).trim(),'1 / 8',tag+': featured viewer counter');
+   await page.locator('.cinema-player__work-nav button').last().evaluate(e=>e.click());
+   await page.waitForFunction(expected=>document.querySelector('#cinema-player-title')?.textContent?.trim()===expected,featured[lang][1],{timeout:8000});
+   if([390,1440].includes(width)){
+     await page.locator('.cinema-player__close').first().evaluate(e=>e.click());
+     await page.locator('#projects').scrollIntoViewIfNeeded();await page.waitForTimeout(400);
+     await page.screenshot({path:`${shotdir}/featured-${width}-${lang}.jpg`,type:'jpeg',quality:80});
+     await page.locator('#impact-awards').scrollIntoViewIfNeeded();await page.waitForTimeout(400);
+     await page.screenshot({path:`${shotdir}/awards-${width}-${lang}.jpg`,type:'jpeg',quality:80});
+   }
+   assert.deepEqual(errors,[],tag+': JavaScript errors');
+   assert.equal(getSafeMediaReport(page).urls.length,0,tag+': CDN video request');
+   // All Work follows its separately persisted independent display order.
+   const library=await createSafePage(browser,{viewport:{width,height:900}});
+   try{
+     await library.addInitScript(l=>localStorage.setItem('ailuren-lang',l),lang);
+     await library.goto(new URL('works.html',base).href,{waitUntil:'domcontentloaded'});
+     await library.locator('.library-grid .comet-archive__card').first().waitFor({state:'attached'});
+     const first=(await library.locator('.library-grid .comet-archive__title').first().textContent()).replace(/\s+/g,' ').trim();
+     assert.equal(first,libraryFirst[lang],tag+': library independent first card order');
+     assert.equal(getSafeMediaReport(library).urls.length,0,tag+': library CDN');
+   }finally{await library.close();}
+   passed++;console.log('PASS',tag,'ordered 8 featured / 8 awards / viewer steps / separately ordered library');
+  }finally{await page.close();}
+ }
+}finally{await browser.close();}
+console.log('PASS curated display order:',passed,'width / language combinations');
