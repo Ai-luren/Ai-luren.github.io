@@ -32,6 +32,7 @@ try {
       brightness: getComputedStyle(document.documentElement).getPropertyValue('--video-brightness').trim(),
       settings: window.__videoTuning,
       legacyEditorPresent: !!document.querySelector('#video-tuner'),
+      copyMaskDisplay: getComputedStyle(document.querySelector('#top .hero-copy'), '::before').display,
     }));
     assert.equal(settings.legacyEditorPresent, false);
     results.push(settings);
@@ -42,7 +43,19 @@ try {
   assert.equal(results[0].brightness, '0.63');
   assert.equal(results[0].saturation, '0.80');
   assert.equal(results[0].settings.vignette, 0, 'Global WebGL vignette must not create black edge masks');
-  console.log('PASS: new and returning visitors receive identical published Hero settings');
+  assert.equal(results[0].copyMaskDisplay, 'none', 'Hero copy must not add an element-sized rectangular gradient over the video');
+  // The seam was most visible on widescreen desktop and can also occur on phones;
+  // verify the real final cascade, not the presence of an earlier display:none rule.
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1704, height: 960 }]) {
+    const page = await createSafePage(browser, { viewport });
+    await page.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
+    const maskDisplay = await page.locator('#top .hero-copy').evaluate(
+      element => getComputedStyle(element, '::before').display,
+    );
+    assert.equal(maskDisplay, 'none', 'Rectangular Hero copy overlay reappeared at width ' + viewport.width);
+    await page.close();
+  }
+  console.log('PASS: new and returning visitors receive identical published Hero settings; no bounded copy mask at mobile and desktop');
 } finally {
   await browser.close();
 }

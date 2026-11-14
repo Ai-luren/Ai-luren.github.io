@@ -1692,36 +1692,10 @@
     #top .hero-title,
     #top .hero-subtitle { text-shadow: 0 2px 12px rgba(0, 0, 0, .42) !important; }
 
-    /* Editorial Hero readability: a feathered *local* shadow behind copy.
-       Keep the scroll-driven film and all following chapters untouched. */
-    #top .hero-copy { isolation: isolate; }
-    #top .hero-copy::before {
-      content: '';
-      display: block !important;
-      position: absolute;
-      inset: -64px -88px -60px -68px;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(ellipse at 34% 52%,
-        rgba(4, 7, 12, .49) 0%, rgba(4, 7, 12, .30) 46%,
-        rgba(4, 7, 12, .13) 68%, transparent 86%);
-      border: 0;
-    }
-    /* Tablet shells sit close to the viewport edge; never let the decorative
-       vignette create horizontal document overflow. */
-    @media (min-width: 761px) and (max-width: 1060px) {
-      #top .hero-copy::before { left: -16px; right: -16px; }
-    }
-    @media (max-width: 760px) {
-      #top .hero-copy::before {
-        /* Keep the vignette inside narrow 320px viewports. */
-        inset: -42px -12px -48px -12px;
-        background: radial-gradient(ellipse at 35% 50%,
-          rgba(4, 7, 12, .52) 0%, rgba(4, 7, 12, .29) 51%,
-          rgba(4, 7, 12, .1) 72%, transparent 88%);
-      }
-    }
-
+    /* Hero readability is handled by #hero-profile-mask and restrained text
+       shadows. Do not add a bounded pseudo-element gradient behind the copy:
+       its rectangular containing box produces visible vertical/horizontal
+       seams over bright video frames. */
   </style>
 </head>
 <body class="is-loading is-on-hero">
