@@ -4,6 +4,7 @@ import { createSafePage, createSafeContext } from '../../lib/safe-media.mjs';
 
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
+import { DICT } from '../../../src/i18n/dictionary.js';
 
 const URL = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
 const BROWSER_CANDIDATES = [
@@ -118,7 +119,7 @@ try {
   if (aboutState.title !== '关于我' || aboutState.role !== 'AI 影像创作者') {
     throw new Error(`关于我标题或职业定位异常：${JSON.stringify(aboutState)}`);
   }
-  if (aboutState.description !== '从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。') {
+  if (aboutState.description !== DICT.zh['about.description']) {
     throw new Error('关于我中文正文与确认文案不一致');
   }
   if (aboutState.previousSection !== 'expertise-group' || aboutState.lastExpertiseSection !== 'experiments' || !aboutState.contactWithinSection) {
@@ -136,7 +137,7 @@ try {
   await page.locator('#nav-lang [data-switch-lang="en"]').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();
-  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes('I now create AI videos for commercials')) {
+  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes(DICT.en['about.description'])) {
     throw new Error('关于我英文标题、职业定位或正文未按字典切换');
   }
 

@@ -2318,6 +2318,21 @@
         var intent = { section: primaryNavSection(sectionId) };
         intent.onEnd = function () {
           if (navScrollIntent !== intent) return;
+          // ScrollTrigger's first-load refresh may end a smooth scroll before
+          // the Expertise section enters the viewport. Recover that interrupted
+          // navigation once; wheel/touch/key interruptions still release it.
+          if (sectionId === 'recognition' && !intent.recovered) {
+            var section = document.getElementById('recognition');
+            var rect = section && section.getBoundingClientRect();
+            var sampleLine = window.innerHeight * .47;
+            if (rect && (rect.top > sampleLine || rect.bottom <= sampleLine)) {
+              intent.recovered = true;
+              window.requestAnimationFrame(function () {
+                if (navScrollIntent === intent) scrollToSectionAnchor(sectionId, 'smooth');
+              });
+              return;
+            }
+          }
           releaseNavScrollIntent(intent);
           setNavActive(sectionId);
         };
@@ -2332,6 +2347,32 @@
         window.addEventListener('keydown', intent.onKeyDown);
         // No-op target scrolls may not dispatch scrollend. Never keep a stale lock.
         intent.timeout = window.setTimeout(intent.onEnd, 2200);
+      }
+      // IntersectionObserver only reports threshold crossings. A section can
+      // remain intersecting as its neighbour becomes active, leaving the
+      // navigation underline stale after a manual scroll (notably near AI Lab).
+      // Reconcile the actual viewport position on scroll without competing
+      // with the explicit destination lock used during navigation clicks.
+      var navViewportFrame = 0;
+      function syncNavActiveToViewport() {
+        navViewportFrame = 0;
+        if (navScrollIntent) return;
+        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) {
+          setNavActive('contact');
+          return;
+        }
+        var sampleLine = window.innerHeight * .47;
+        var section = null;
+        ['top', 'projects', 'recognition', 'experiments', 'profile'].forEach(function (id) {
+          var element = document.getElementById(id);
+          if (!element) return;
+          var rect = element.getBoundingClientRect();
+          if (rect.top <= sampleLine && rect.bottom > sampleLine) section = id;
+        });
+        if (section) setNavActive(section);
+      }
+      function scheduleNavViewportSync() {
+        if (!navViewportFrame) navViewportFrame = window.requestAnimationFrame(syncNavActiveToViewport);
       }
       function setNavActive(sectionId) {
         var activeSection = primaryNavSection(sectionId);
@@ -2406,7 +2447,7 @@
       if ('IntersectionObserver' in window) {
       // is-on-hero 由 Hero 占比观察器独立管理；导航观察器换章时不能顺带抹掉它，
       // 否则 Hero 离场途中蒙版会瞬间消失又在下个阈值恢复（01→02 背景闪跳的根源）。
-        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { var sectionId = entry.target.id; setNavActive(sectionId); var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + sectionId); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { var sectionId = entry.target.id; var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + sectionId); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); scheduleNavViewportSync(); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
         var observeNavSections = function () {
           document.querySelectorAll('main section, footer').forEach(function (section) {
             if (window.innerWidth > 760 && section.id === 'recognition') return;
@@ -2420,9 +2461,8 @@
           window.requestAnimationFrame(function () { window.requestAnimationFrame(observeNavSections); });
         });
       }
-      window.addEventListener('scroll', function () {
-        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) setNavActive('contact');
-      }, { passive: true });
+      window.addEventListener('scroll', scheduleNavViewportSync, { passive: true });
+      window.addEventListener('resize', scheduleNavViewportSync);
 
       setVideoTarget();
       window.requestAnimationFrame(seekLoop);

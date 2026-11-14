@@ -56,6 +56,15 @@ try {
       await page.waitForFunction(() => location.hash === '#recognition');
       await page.waitForTimeout(120);
       assert(await page.locator('#primary-nav [data-impact-nav]').evaluate(el => el.classList.contains('is-active')));
+      if (width === 761 && lang === 'zh') {
+        // Production ScrollTrigger may refresh during the first navigation.
+        // An active underline is insufficient: the destination must arrive too.
+        await page.waitForFunction(() => {
+          const rect = document.getElementById('recognition').getBoundingClientRect();
+          const sampleLine = window.innerHeight * .47;
+          return rect.top <= sampleLine && rect.bottom > sampleLine;
+        }, null, { timeout: 2500 });
+      }
       for (const id of ['impact-awards', 'impact-programs', 'impact-reach', 'experiments']) {
         await page.evaluate(id => document.getElementById(id).scrollIntoView({ block: 'center', behavior: 'instant' }), id);
         await page.waitForTimeout(160);

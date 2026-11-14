@@ -189,10 +189,17 @@ header .nav-toggle svg, .cinema-player__navigation button svg { width: 18px; hei
   .nav-language-switch {
     top: 7px !important;
     right: 60px !important;
-    width: 92px !important;
-    min-width: 92px !important;
+    width: 94px !important;
+    min-width: 94px !important;
     height: 40px !important;
     min-height: 40px !important;
+  }
+  /* The visual capsule stays 40px high; the transparent button hitboxes
+     extend 2px past it to reach the 44x44px mobile touch target. */
+  .nav-language-switch > button {
+    height: 44px;
+    min-height: 44px;
+    align-self: center;
   }
   .nav-language-switch__zh-long { display: none; }
   .nav-language-switch__zh-short { display: inline; }

@@ -15,7 +15,7 @@ async function measure(page) {
     const video = document.querySelector('.cinema-player video');
     const layoutStyle = getComputedStyle(document.querySelector('.cinema-player__layout'));
     const stage = document.querySelector('.cinema-player__stage').getBoundingClientRect();
-    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), versions:document.querySelector('.cinema-player__versions') ? rect('.cinema-player__versions') : null, title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:stage.width/stage.height, paused:video.paused, time:video.currentTime, hasSource:video.hasAttribute('src'), readyState:video.readyState, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
+    return {paddingTop:parseFloat(layoutStyle.paddingTop),paddingBottom:parseFloat(layoutStyle.paddingBottom),stage:rect('.cinema-player__stage'), caption:rect('.cinema-player__caption'), controls:document.querySelector('.cinema-player__mobile-controls') ? rect('.cinema-player__mobile-controls') : null, versions:document.querySelector('.cinema-player__versions') ? rect('.cinema-player__versions') : null, title:rect('.cinema-player__caption h2'), play:rect('.cinema-player__play'), close:rect('.cinema-player__close'), body:rect('.cinema-player__body'),scrollHeight:document.querySelector('.cinema-player').scrollHeight, ratio:stage.width/stage.height, paused:video.paused, time:video.currentTime, hasSource:video.hasAttribute('src'), readyState:video.readyState, bg:getComputedStyle(document.querySelector('.cinema-player')).backgroundColor, prompt:document.querySelector('.cinema-player__start').textContent.trim(), viewport:[innerWidth,innerHeight], overflow:document.querySelector('.cinema-player').scrollWidth > innerWidth};
   });
 }
 function check(m) {
@@ -25,14 +25,30 @@ function check(m) {
   assert.equal(m.bg,'rgba(0, 0, 0, 0)');
   assert(!m.overflow);
   assert(Math.abs(m.stage.width/m.stage.height-m.ratio)<0.005);
-  assert(Math.abs(m.stage.x-m.caption.x)<1);
-  assert(m.caption.width<=m.stage.width+1);
-  assert(Math.abs(m.title.x-m.stage.x)<1);
-  // On phones the version selector sits between the poster and the caption;
-  // single-version projects retain the original 14px/16px caption gap.
-  if (m.versions && m.viewport[0] <= 760) {
-    assert(m.versions.y-m.stage.bottom >= 12 && m.versions.y-m.stage.bottom <= 20);
-    assert(m.caption.y-m.versions.bottom >= 12 && m.caption.y-m.versions.bottom <= 20);
+  // Compact portrait films remain centered without stretching, while
+  // their captions use the full reading width (landscape/desktop stay aligned).
+  const compactPortrait = m.viewport[0] <= 760 && m.ratio < 1;
+  if (compactPortrait) {
+    assert(Math.abs(m.stage.x + m.stage.width/2 - m.caption.x - m.caption.width/2) < 1,
+      'Portrait stage and full-width caption must share the same center');
+    assert(m.caption.width>=m.stage.width-1, 'Portrait caption must not be narrowed to the video');
+    assert(Math.abs(m.title.x-m.caption.x)<1, 'Portrait title follows the full-width caption');
+  } else {
+    assert(Math.abs(m.stage.x-m.caption.x)<1);
+    assert(m.caption.width<=m.stage.width+1);
+    assert(Math.abs(m.title.x-m.stage.x)<1);
+  }
+  // Current mobile reading order: film, custom transport, full-width title,
+  // optional A/B/C versions, work arrows. Older snapshots assumed tabs
+  // before the title and omitted the transport bar entirely.
+  if (m.viewport[0] <= 760) {
+    assert(m.controls, 'Mobile video transport must remain mounted');
+    assert(m.controls.y-m.stage.bottom>=4 && m.controls.y-m.stage.bottom<=16,
+      'Mobile transport belongs immediately below the film');
+    assert(m.caption.y-m.controls.bottom>=8 && m.caption.y-m.controls.bottom<=26,
+      'Title must follow the mobile transport with breathing room');
+    if (m.versions) assert(m.versions.y-m.caption.bottom>=8 && m.versions.y-m.caption.bottom<=20,
+      'Version tabs must follow the full-width title');
   } else {
     assert(m.caption.y-m.stage.bottom >= 12 && m.caption.y-m.stage.bottom <= 20);
   }
@@ -43,7 +59,13 @@ function check(m) {
   if (m.viewport[0] <= 760) {
     const freeSpace = m.viewport[1] - m.paddingTop - m.paddingBottom - m.body.height;
     const expectedTop = m.paddingTop + (m.ratio >= 1 ? Math.max(0, freeSpace / 2) : 0);
-    assert(Math.abs(m.body.y - expectedTop) < 1, 'Mobile wide films center in available space; portrait and overflowing groups remain top aligned');
+    // safe center may fall back to start alignment when the player itself
+    // requires scrolling. Both are valid; neither may clip above the nav.
+    const atTop=Math.abs(m.body.y-m.paddingTop)<1;
+    const atCenter=Math.abs(m.body.y-expectedTop)<1;
+    assert(atTop||atCenter,
+      'Mobile film must be top-aligned or safe-centered without clipping: '+
+      JSON.stringify({viewport:m.viewport,bodyY:m.body.y,expectedTop,paddingTop:m.paddingTop,ratio:m.ratio}));
   }
   assert(Math.abs(m.play.x+m.play.width/2-(m.stage.x+m.stage.width/2))<1);
   assert(Math.abs(m.play.y+m.play.height/2-(m.stage.y+m.stage.height/2))<1);

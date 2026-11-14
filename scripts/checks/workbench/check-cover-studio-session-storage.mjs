@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID, createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { constants } from 'node:fs';
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -13,6 +14,21 @@ import {
 const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cover-studio-store-test-'));
 const workspace = path.join(root, '.cover-studio');
 const data = Buffer.from('synthetic MP4 fixture - cannot be decoded but has stable content');
+// Exercise the real CLI entry point from a separate project-shaped fixture.
+// Never let dedupe/restore commands operate on the user's real sessions.
+const cliDir = path.join(root, 'portfolio-workbench');
+await fs.mkdir(cliDir, { recursive: true });
+const cliFile = path.join(cliDir, 'session-storage.mjs');
+await fs.copyFile(new URL('../../../portfolio-workbench/session-storage.mjs', import.meta.url), cliFile);
+// macOS resolves /var to /private/var inside import.meta.url.
+const cli = await fs.realpath(cliFile);
+function runCli(mode, ...args) {
+  const result = spawnSync(process.execPath, [cli, mode, ...args], {
+    cwd: os.tmpdir(), encoding: 'utf8', timeout: 10000,
+  });
+  assert.equal(result.status, 0, `${mode} CLI failed: ${result.stderr || result.error}`);
+  return JSON.parse(result.stdout);
+}
 async function makeVideo(bytes) {
   const id = randomUUID();
   const dir = path.join(workspace, 'sessions', id);
@@ -32,11 +48,14 @@ try {
   let result = await inspectSessionStorage({ workspace });
   assert.equal(result.videoSessions, 3);
   assert.equal(result.uniqueSources, 2);
+  assert.equal(runCli('scan').videoSessions, 3, 'CLI must resolve the fixture project, not its parent');
+  assert.equal(runCli('scan').uniqueSources, 2);
 
   assert.equal((await deduplicateSessionSource({ workspace, sessionId: first.id })).action, 'already-linked');
   assert.equal((await deduplicateSessionSource({ workspace, sessionId: second.id })).action, 'linked');
   assert.equal((await deduplicateSessionSource({ workspace, sessionId: unique.id })).action, 'already-linked');
   assert.equal((await deduplicateSessionSource({ workspace, sessionId: second.id })).action, 'already-linked');
+  assert.equal(runCli('dedupe').alreadyLinked, 3, 'CLI dedupe must operate only on fixture sessions');
 
   const store = path.join(workspace, 'source-objects', originalHash + '.mp4');
   assert.equal((await fs.stat(first.file)).ino, (await fs.stat(second.file)).ino);
@@ -48,10 +67,13 @@ try {
   assert.equal(result.verifiedObjects, 2);
   assert.equal(result.alreadyLinked, 3);
   assert.equal(result.sharedBytes, data.length);
+  assert.equal(runCli('verify').verifiedObjects, 2, 'CLI verify must inspect fixture objects');
   await restoreIndependentSessionSource({ workspace, sessionId: second.id });
   assert.notEqual((await fs.stat(first.file)).ino, (await fs.stat(second.file)).ino);
   assert.equal((await fs.readFile(second.file)).toString(), data.toString());
   assert.notEqual((await fs.stat(second.file)).mode & 0o200, 0, 'restored source is writable');
+  assert.equal(runCli('restore', second.id).sessionId, second.id, 'CLI restore must target the fixture');
+  assert.equal((await fs.readFile(second.file)).toString(), data.toString());
 
   await fs.unlink(first.file);
   assert.equal((await fs.readFile(store)).toString(), data.toString(), 'store survives session deletion');

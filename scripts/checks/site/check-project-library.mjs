@@ -20,7 +20,10 @@ const browser = await chromium.launch({ executablePath, headless: true });
 async function assertPlayer(page) {
   if (await page.locator('.cinema-player video').count()) {
     const video = page.locator('.cinema-player video');
-    assert.equal(await video.evaluate(v => v.controls && v.paused && !v.getAttribute('src') && v.preload === 'none'), true);
+    assert.equal(await video.evaluate(v => {
+      const phone = window.innerWidth <= 760;
+      return v.controls === !phone && v.paused && !v.getAttribute('src') && v.preload === 'none';
+    }), true, 'Desktop uses native controls; phones use the custom bar and neither preloads video');
     assert.equal(await page.locator('.cinema-player__close').evaluate(button => button === document.activeElement), true);
     // Layout/navigation regression must not repeatedly play videos.
     // Actual playback is covered separately by check-cinema-playback.mjs

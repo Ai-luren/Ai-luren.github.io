@@ -48,7 +48,7 @@
 
 ## 验证与维护
 
-- **验证分级**：日常 `npm run check:smoke`、工作台 `npm run check:workbench-core`；`npm run check:project` 串行执行这两组。发布前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。严禁删断言掩盖失败。
+- **验证分级**：先运行只读 `npm run check:plan` 核对测试归属及重复覆盖；日常 `npm run check:smoke`、工作台 `npm run check:workbench-core`；`npm run check:project` 串行执行这两组。发布前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。清单唯一来源为 `scripts/lib/check-suite-catalog.mjs`，维护说明见 `docs/测试与回归维护.md`。保留历史 npm 命令，严禁删断言掩盖失败。
 - **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；影院 `npm run check:cinema-local`、手机播放器 `npm run check:cinema-controls`（均需 5174）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
 - **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
 - `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。

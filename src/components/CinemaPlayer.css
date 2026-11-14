@@ -210,7 +210,7 @@
 }
 .cinema-player__sequence > button:active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
 @media (max-width: 760px) {
-  .cinema-player__information { display: flex; flex-direction: column; gap: 16px; margin-top: 14px; }
+  .cinema-player__information { display: flex; flex-direction: column; }
   .cinema-player__sequence { width: min(196px, 100%); gap: 12px; }
 }
 
@@ -436,6 +436,17 @@
   .cinema-player__work-nav { order: 2; }
 
 }
+/* At narrow accessibility zoom, preserve 44px controls without forcing the
+   entire modal to scroll sideways. The time label may elide only if needed. */
+@media (max-width: 320px) {
+  .cinema-player__mobile-control-row { gap: 0; }
+  .cinema-player__mobile-time {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cinema-player__mobile-icon, .cinema-player__seek { transition: none !important; }
 }

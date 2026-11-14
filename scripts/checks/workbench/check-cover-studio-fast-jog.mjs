@@ -30,6 +30,7 @@ try{
  await p.waitForFunction(()=>document.querySelectorAll('.ux-project').length===8);
  await p.locator('#ux-search').fill('岳阳楼');
  await p.locator('.ux-project[data-id="06"] .ux-project-image').click();
+ await p.locator('[data-ux-panel=artwork]').click();
  await p.locator('#ux-change-poster').click();
  await p.waitForFunction(()=>!document.querySelector('#ux-inline-next').disabled,null,{timeout:30000});
  assert(await p.locator('#ux-inline-time-input').isHidden());

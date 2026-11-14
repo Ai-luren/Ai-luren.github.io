@@ -123,8 +123,11 @@ try{
  await work16.click();
  const versions=page.locator('#ux-variant-chips .ux-variant');
  assert(await versions.count()>=2);
- assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher',
-   'Video versions live together in the right-side version task, with an explicit pencil for each label.');
+ assert.equal(await page.locator('#ux-variant-chips').evaluate(e=>e.parentElement.className),'ux-version-switcher-row',
+   'All video tabs share one row with the archive control, without a duplicate pencil action.');
+ assert.equal(await page.locator('#ux-archive-version').evaluate(e=>e.parentElement.className),'ux-version-switcher-row');
+ assert.equal(await page.locator('#ux-variant-chips .ux-variant-edit').count(),0);
+ assert(await page.locator('#ux-version-label-form').isVisible(),'Current version labels must be editable inline');
  assert(await page.locator('#ux-variant-chips').isVisible());
  assert(await page.locator('#ux-stage-version').isVisible(),'Show current video label in the preview summary.');
  const variantGeometry=await page.locator('#ux-variant-chips .ux-variant').evaluateAll(buttons=>

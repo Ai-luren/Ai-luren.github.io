@@ -108,6 +108,7 @@ docs/                        设计规范与维护指南
 
 ```bash
 npm run build                   # 生产构建
+npm run check:plan              # 只读查看测试覆盖与重复检查
 npm run check:smoke             # 基础构建、目录与媒体安全
 npm run check:cinema-controls   # 手机播放器交互
 npm run check:cinema-local      # 本地视频缓冲与防黑屏

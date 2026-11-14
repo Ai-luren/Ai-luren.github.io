@@ -1496,9 +1496,6 @@ header .nav-contact-icon:focus-visible {
   .impact-evidence {
     --impact-mobile-card-height: 600px;
   }
-  .impact-platform-mobile-network {
-    padding: 16px 16px 14px;
-  }
   .impact-platform-mobile-grid { margin-top: 10px; }
   .impact-platform-mobile-tile {
     min-height: 64px;

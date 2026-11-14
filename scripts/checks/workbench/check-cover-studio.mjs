@@ -29,6 +29,7 @@ try{
   const video=path.join(fixture,'assets/videos/works',paths[id]);const cover=path.join(fixture,'assets/images/project-covers',covers[id]);const poster=path.join(fixture,'assets/images/player-posters',metadata[id].playerPoster);
   const before={video:await sha(video),cover:await sha(cover),poster:await sha(poster)};
   await page.locator('#ux-categories [data-filter="social"]').click();await page.locator(`#ux-gallery .ux-project[data-id="${id}"] .ux-project-image`).click();await page.waitForFunction(()=>document.querySelector('#ux-video-preview')?.readyState>=2);
+  await page.locator('[data-ux-panel=artwork]').click();
   await page.locator('#ux-change-cover').click();await page.waitForFunction(()=>!document.querySelector('#ux-inline-save')?.disabled,null,{timeout:30000});
   assert.equal(await page.locator('#ux-inline-frames').count(),0);assert.equal(await page.locator('[data-ux-fit="contain"]').getAttribute('aria-pressed'),'true');
   await page.locator('#ux-inline-first').click();await page.waitForFunction(()=>document.querySelector('#ux-inline-title')?.textContent.includes('已选中')&&!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});

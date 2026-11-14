@@ -176,7 +176,7 @@ export async function inspectSessionStorage({ workspace, apply = false, verify =
 
 const invoked = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (invoked) {
-  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
   const workspace = path.join(root, '.cover-studio');
   const mode = process.argv[2] || 'scan';
   if (!['scan', 'dedupe', 'verify', 'restore'].includes(mode)) {

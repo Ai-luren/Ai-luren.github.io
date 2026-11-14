@@ -72,6 +72,7 @@ try{
  assert(await page.locator('#ux-close-editor').isVisible());
  assert((await page.locator('#ux-close-editor').getAttribute('aria-label')).includes('关闭'));
 
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-change-poster').click();
  await page.waitForFunction(()=>!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});
  assert(await page.locator('#ux-inline-last').isEnabled());
@@ -107,6 +108,7 @@ try{
  assert.equal(historyAfter.entries.length,3);
  console.log('SAVED_LAST_FRAME_TIME_NOT_ZERO_AND_RIGHT_PREVIEW_REFRESHED');
 
+ await page.locator('[data-ux-panel=artwork]').click();
  await page.locator('#ux-change-cover').click();
  await page.waitForFunction(()=>!document.querySelector('#ux-inline-save').disabled,null,{timeout:30000});
  await page.locator('#ux-inline-last').click();
