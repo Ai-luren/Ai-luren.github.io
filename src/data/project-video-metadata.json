@@ -71,6 +71,14 @@
     "playerPosterTimeSource": "cover-studio-confirmed-selection",
     "videoDuration": 15.102
   },
+  "20": {
+    "videoWidth": 607,
+    "videoHeight": 1080,
+    "playerPoster": "short-film/The Kennel Between Us.webp",
+    "playerPosterTime": 0.5,
+    "playerPosterTimeSource": "cover-studio-confirmed-selection",
+    "videoDuration": 83.869
+  },
   "01": {
     "videoWidth": 1280,
     "videoHeight": 720,

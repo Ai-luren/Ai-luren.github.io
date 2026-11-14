@@ -45,7 +45,9 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
   }, [deferUntilNear]);
   const previewRevision=useLocalArtworkRevision('cover',project.id);
   const cover=revisionedArtworkUrl(project.cover,previewRevision);
-  const detail = project.award[lang] || PROJECT_CATEGORIES.find(item => item.id === project.category)?.label[lang];
+  const detail = project.typeLabel?.[lang]
+    || project.award[lang]
+    || PROJECT_CATEGORIES.find(item => item.id === project.category)?.label[lang];
   const status = projectVideoVersions(project)[0]?.videoUrl?.trim()
     ? (lang === 'en' ? 'Play' : '播放')
     : (lang === 'en' ? 'Pending upload' : '待上传');
