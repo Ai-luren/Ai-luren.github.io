@@ -152,5 +152,31 @@
         "videoDuration": 15.102
       }
     ]
+  },
+  {
+    "id": "20",
+    "category": "short-film",
+    "featured": false,
+    "title": {
+      "zh": "犬舍挪了，紫苏香了",
+      "en": "The Kennel Between Us"
+    },
+    "typeLabel": {
+      "zh": "AI 漫剧",
+      "en": "AI Short Drama"
+    },
+    "award": {
+      "zh": "",
+      "en": ""
+    },
+    "sourceUrl": null,
+    "caseStudy": null,
+    "localVideoPath": "AI Short Flims/The Kennel Between Us.mp4",
+    "videoUrl": "https://ik.imagekit.io/Ailuren/tr:orig-true/videos/The-Kennel-Between-Us.mp4",
+    "coverFile": "short-film/The Kennel Between Us.webp",
+    "mainVersionLabel": {
+      "zh": "主版本",
+      "en": "Main version"
+    }
   }
 ]

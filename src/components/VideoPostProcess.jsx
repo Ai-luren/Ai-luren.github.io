@@ -7,7 +7,7 @@ const DEFAULT_SETTINGS = {
   saturation: 80,
   contrast: 96,
   blur: 0,
-  vignette: 100,
+  vignette: 0,
   noise: 8,
   pixel: 31,
   colorDepth: 40,

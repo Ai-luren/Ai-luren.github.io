@@ -2178,7 +2178,7 @@
       document.documentElement.style.setProperty('--hero-mask-strength', '0.60');
       var publishedVideoSettings = {
         brightness: 63, mask: 0, saturation: 80, contrast: 96, blur: 0,
-        vignette: 100, noise: 8, pixel: 31, colorDepth: 40, dither: 10,
+        vignette: 0, noise: 8, pixel: 31, colorDepth: 40, dither: 10,
         edge: 20, crt: 38, glow: 24, chroma: 4, pixelMaster: 35, crtMaster: 60
       };
       document.documentElement.style.setProperty('--video-brightness', '0.63');
@@ -2186,7 +2186,7 @@
       document.documentElement.style.setProperty('--video-saturation', '0.80');
       document.documentElement.style.setProperty('--video-contrast', '0.96');
       document.documentElement.style.setProperty('--video-blur', '0.00px');
-      document.documentElement.style.setProperty('--video-vignette-opacity', '1.00');
+      document.documentElement.style.setProperty('--video-vignette-opacity', '0.00');
       document.documentElement.style.setProperty('--video-noise-opacity', '0.08');
       window.__videoTuning = publishedVideoSettings;
       window.dispatchEvent(new CustomEvent('video-tuning-change', { detail: publishedVideoSettings }));

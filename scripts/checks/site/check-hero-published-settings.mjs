@@ -41,6 +41,7 @@ try {
   assert.equal(results[0].mask, '0.60');
   assert.equal(results[0].brightness, '0.63');
   assert.equal(results[0].saturation, '0.80');
+  assert.equal(results[0].settings.vignette, 0, 'Global WebGL vignette must not create black edge masks');
   console.log('PASS: new and returning visitors receive identical published Hero settings');
 } finally {
   await browser.close();
