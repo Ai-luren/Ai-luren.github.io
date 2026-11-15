@@ -98,12 +98,14 @@ try {
       assert.equal(await page.locator('#projects-featured-note').count(),0,'Remove redundant Featured count caption');
       assert(hit.width >= 44 && hit.height >= 44, 'Library text link needs a visible touch target.');
       assert.equal(await more.evaluate(element => getComputedStyle(element).backgroundColor), 'rgba(0, 0, 0, 0)');
-      assert(Math.abs(hit.x + hit.width - archive.x - archive.width) < 4.5, 'Library link should align with the work area right edge within responsive spacing tolerance.');
       if (width <= 720) {
+        assert(Math.abs(hit.x - archive.x)<2, 'Mobile Browse All text must start at the card grid left edge.');
         assert(hit.y >= pagination.y + pagination.height + 12, 'Mobile link belongs below pagination.');
         assert(hit.y <= pagination.y + pagination.height + 28, 'Mobile pagination gap should stay compact.');
         assert.equal(await page.locator('#projects-library-link a').count(), 0);
       } else {
+        assert(Math.abs(hit.x + hit.width - archive.x - archive.width)<4.5,
+          'Desktop Browse All should still align with the work area right edge.');
         assert(hit.y>=header.y && hit.y+hit.height<=header.y+header.height+2,'Desktop link belongs in heading row.');
         assert(Math.abs(title.y+title.height-hit.y-hit.height)<5,'Desktop link and heading share a bottom baseline.');
         assert(Math.abs(title.x-archive.x)<2,'Desktop heading begins at content edge.');
@@ -116,7 +118,7 @@ try {
       await page.close();
     }
   }
-  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、桌面标题同排、手机分页下方、分类、页面往返和播放器交互。');
+  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、桌面标题同排靠右、手机分页下方靠左、分类、页面往返和播放器交互。');
 } finally {
   await browser.close();
 }

@@ -25,14 +25,17 @@ html[data-hero-experience="cinematic"] #hero-video {
 .hero-scroll-guide {
   position: fixed;
   z-index: 30;
-  left: 50%;
+  /* Full-width centered flex container keeps the horizontal anchor fixed
+     while Chinese/English font metrics settle during refresh. */
+  left: 0;
+  right: 0;
   bottom: clamp(24px, 4svh, 44px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 7px;
-  width: max-content;
-  max-width: calc(100vw - 36px);
+  width: 100%;
+  max-width: 100%;
   color: rgba(246, 248, 251, .90);
   font: 500 12px/1.4 var(--font-body, var(--sans, sans-serif));
   letter-spacing: .055em;
@@ -40,21 +43,31 @@ html[data-hero-experience="cinematic"] #hero-video {
   pointer-events: none;
   opacity: 0;
   visibility: hidden;
-  transform: translate(-50%, 7px);
-  transition: opacity 320ms ease, transform 320ms ease, visibility 0s 320ms;
+  /* Enter downward from above, never animate the horizontal position. */
+  transform: translateY(-9px);
+  transition: opacity 280ms ease-out,
+    transform 340ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s 340ms;
 }
 .hero-scroll-guide[data-visible="true"] {
   opacity: 1;
   visibility: visible;
-  transform: translate(-50%, 0);
-  transition: opacity 320ms ease, transform 320ms ease, visibility 0s;
+  transform: translateY(0);
+  transition: opacity 280ms ease-out,
+    transform 340ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s;
 }
-body.is-loading .hero-scroll-guide { opacity: 0; }
+/* Hold the starting pose until loading completes, so the first entrance
+   remains vertical even when fonts, video or hydration settle late. */
+body.is-loading .hero-scroll-guide { opacity: 0; transform: translateY(-9px); }
 .hero-scroll-guide__mobile { display: none; }
-.hero-scroll-guide svg { display: block; animation: hero-scroll-cue-drift 2.5s ease-in-out infinite; }
+.hero-scroll-guide svg { display: block; opacity: .8; }
+body.is-loaded .hero-scroll-guide[data-visible="true"] svg {
+  animation: hero-scroll-cue-drift 1.8s ease-in-out infinite;
+}
 @keyframes hero-scroll-cue-drift {
-  0%, 100% { transform: translateY(0); opacity: .7; }
-  50% { transform: translateY(4px); opacity: 1; }
+  0%, 100% { transform: translateY(-1px); opacity: .78; }
+  50% { transform: translateY(3px); opacity: 1; }
 }
 @media (max-width: 760px) {
   .hero-scroll-guide {
@@ -68,7 +81,7 @@ body.is-loading .hero-scroll-guide { opacity: 0; }
 @media (prefers-reduced-motion: reduce) {
   .hero-scroll-guide,
   .hero-scroll-guide[data-visible="true"] { transition: none; }
-  .hero-scroll-guide svg { animation: none; }
+  body.is-loaded .hero-scroll-guide[data-visible="true"] svg { animation: none; }
 }
 /* Match the actual B+C loading line: same cool-blue gradient, 2px rail,
    and subtle glow, rotated into a vertical reading-progress indicator.

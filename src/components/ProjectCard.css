@@ -39,7 +39,10 @@
 @media (max-width: 720px) {
   #projects .section-intro { display: block; margin-bottom: 22px; }
   #projects .section-intro > .projects-meta-row { display: none; }
-  #projects .archive-more { margin-top: 6px; padding-right: 4px; }
+  /* Mobile editorial flow follows the left edge of the cover grid.
+     Desktop keeps the contextual action on the title's right. */
+  #projects .archive-more { justify-content: flex-start; margin-top: 6px; padding-right: 0; }
+  #projects .archive-more a { padding-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { #projects .archive-more a { transition: none; } }
 

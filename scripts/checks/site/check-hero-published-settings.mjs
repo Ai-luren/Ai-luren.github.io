@@ -76,14 +76,16 @@ try {
         const top = element.getBoundingClientRect().top + scrollY;
         return Math.max(0, (top - innerHeight) / max * video.duration);
       };
-      const firstCard = document.querySelector('#projects .comet-archive__item');
+      // A+ cards no longer carry their own row padding: the archive grid
+      // owns the vertical breathing room via row-gap.
+      const featuredGrid = document.querySelector('#projects .comet-archive');
       return {
         cueText: cue?.innerText,
         cueVisible: getComputedStyle(cue).visibility,
         cuePointer: getComputedStyle(cue).pointerEvents,
         cueLinks: cue?.querySelectorAll('a,button').length,
         videoDuration: video.duration,
-        featuredRowBreath: parseFloat(getComputedStyle(firstCard).paddingBottom),
+        featuredRowBreath: parseFloat(getComputedStyle(featuredGrid).rowGap),
         times: {
           projects: entrySecond('#projects .comet-archive'),
           expertise: entrySecond('#recognition'),
@@ -97,10 +99,34 @@ try {
     assert.equal(timeline.cueVisible, 'visible', 'P1 first-screen scroll cue is missing');
     assert.equal(timeline.cuePointer, 'none', 'Scroll instruction must never block interaction');
     assert.equal(timeline.cueLinks, 0, 'Scroll cue must not jump past the film');
+    // The hint must descend along the Y axis, not slide laterally during
+    // refresh/font hydration. Arrow cadence is deliberately shorter than
+    // the retired 2.5s cycle without adding lateral/repeated movement.
+    const cueMotion = await page.evaluate(() => {
+      const el = document.getElementById('hero-scroll-guide');
+      const style = getComputedStyle(el);
+      const box = el.getBoundingClientRect();
+      const label = el.querySelector(innerWidth<=760
+        ? '.hero-scroll-guide__mobile' : '.hero-scroll-guide__desktop');
+      const rect = label.getBoundingClientRect();
+      const arrow = getComputedStyle(el.querySelector('svg'));
+      return {left:box.left,right:box.right,textMid:rect.left+rect.width/2,
+        x:new DOMMatrixReadOnly(style.transform).m41,
+        arrowDuration:arrow.animationDuration,arrowAnimation:arrow.animationName,
+        opacityDuration:style.transitionDuration.split(',')[0].trim()};
+    });
+    assert(Math.abs(cueMotion.left)<1 && Math.abs(cueMotion.right-viewport.width)<1,
+      'Hero guide must use a full-width center anchor, not translateX(-50%)');
+    assert(Math.abs(cueMotion.textMid-viewport.width/2)<1,
+      'Hero guide label must remain horizontally centered while appearing');
+    assert.equal(cueMotion.x,0,'Hero guide must not animate horizontally');
+    assert.equal(cueMotion.arrowAnimation,'hero-scroll-cue-drift');
+    assert.equal(cueMotion.arrowDuration,'1.8s','Hero chevron should not drift on a slow 2.5s loop');
+    assert.equal(cueMotion.opacityDuration,'0.28s','Cue entry should be restrained and responsive');
     if (!viewport.mobile) {
       assert(timeline.cueText.includes('向下滚动'), 'Desktop scroll instruction missing');
-      assert(timeline.featuredRowBreath >= 18 && timeline.featuredRowBreath <= 30,
-        'Featured rows accidentally separated or cramped');
+      assert(timeline.featuredRowBreath >= 16 && timeline.featuredRowBreath <= 28,
+        'Featured card grid rows should keep a restrained 16-28px gap');
       assert(timeline.times.projects >= 1.5 && timeline.times.projects <= 3,
         'First works cards should enter during city/building flight');
       assert(timeline.times.expertise >= 5.5 && timeline.times.expertise <= 8,
@@ -125,6 +151,12 @@ try {
     }));
     assert.equal(away.state, 'false', 'Guide must hide outside Hero');
     assert(+away.opacity < .1, 'Hidden guide must not linger over works');
+    const hiddenMotion = await page.locator('#hero-scroll-guide').evaluate(el => {
+      const matrix = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+      return {x:matrix.m41,y:matrix.m42};
+    });
+    assert(Math.abs(hiddenMotion.x)<0.01 && Math.abs(hiddenMotion.y+9)<0.1,
+      'Off-Hero pose must sit 9px above final position, with no X displacement');
     await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
     await page.waitForTimeout(440);
     assert.equal(await page.locator('#hero-scroll-guide').getAttribute('data-visible'),

@@ -6,6 +6,7 @@ const suites = [
   'scripts/checks/site/check-motion-modal-entry.mjs',
   'scripts/checks/site/check-motion-library-filters.mjs',
   'scripts/checks/site/check-motion-page-prefetch.mjs',
+  'scripts/checks/site/check-section-static-entrance.mjs',
 ];
 const server = process.env.PORTFOLIO_URL ? null : spawn(process.execPath,
   ['./node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'],
@@ -27,7 +28,7 @@ try {
       child.once('exit',code=>code===0?resolve():reject(new Error(script+' failed ('+code+')')));
     });
   }
-  console.log('PASS: three motion stages - modal first paint, filter stability, deferred page prefetch');
+  console.log('PASS: four motion checks - modal first paint, filter stability, deferred prefetch, static section content');
 } finally {
   if(server){server.kill('SIGTERM');await wait(130);}
 }

@@ -290,8 +290,9 @@
     .section-note { color: var(--body-text); }
 
     /* 动效系统：视频持续推进，章节只承担一次有方向的进场。 */
-    nav a { transition: color var(--motion-duration-control) ease, transform var(--motion-duration-control) var(--motion-ease-control); }
-    nav a:hover, nav a:focus-visible { transform: translateY(-1px); }
+    /* Navigation labels stay on one baseline in resting, active, hover and
+       keyboard-focus states. Selected state is expressed by the underline. */
+    nav a { transition: color var(--motion-duration-control) ease; }
 
     /* 画面连续性：让视频成为贯穿全页的背景，不被 section 色块切断。 */
     :root { --signal: #a1a1a6; }
@@ -1745,7 +1746,7 @@
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row" id="projects-library-link"></div></div>
+      <div class="shell"><div class="section-intro"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row" id="projects-library-link"></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
@@ -1753,13 +1754,13 @@
     <div id="expertise-group" class="expertise-group" role="group" aria-labelledby="recognition-title">
     <section id="recognition" class="section" aria-labelledby="recognition-title">
       <div class="shell">
-        <div class="section-intro reveal"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
+        <div class="section-intro"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
         <div id="recognition-react-root" class="recognition-react-root" aria-label="专业实力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
     <section id="experiments" class="section expertise-lab-subsection" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
+      <div class="shell"><div class="section-intro"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
         <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
       </div>
     </section>
@@ -1770,10 +1771,10 @@
         <div class="closing-card">
           <div class="closing-card-main">
             <div class="closing-about">
-              <div class="section-intro reveal">
+              <div class="section-intro">
                 <h2 id="profile-title" class="section-title about-role" data-i18n="about.role">AI 影像创作者</h2>
               </div>
-              <div class="about-copy reveal">
+              <div class="about-copy">
                 <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验</p>
               </div>
             </div>
@@ -1979,14 +1980,6 @@
         var currentScroll = window.scrollY || window.pageYOffset || 0;
         var targetTop = anchor.getBoundingClientRect().top + currentScroll - getAnchorOffset();
         window.scrollTo({ top: Math.max(0, targetTop), behavior: behavior || 'auto' });
-        var isMobileImpactTarget = window.innerWidth <= 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
-        if (isMobileImpactTarget) {
-          target.classList.remove('is-mobile-anchor-enter');
-          window.requestAnimationFrame(function () {
-            target.classList.add('is-mobile-anchor-enter');
-            window.setTimeout(function () { target.classList.remove('is-mobile-anchor-enter'); }, 520);
-          });
-        }
         return true;
       }
       function scrollToContactCard(behavior) {
@@ -2019,51 +2012,18 @@
       }, { once: true });
       if (window.gsap && window.ScrollTrigger && !reduced) {
         gsap.registerPlugin(ScrollTrigger);
-        /* 入场动画统一 token：所有入场调用共享相同的缓动与节奏，避免参数碎片化。 */
+        /* Only the Hero copy retains an entrance; the Selected Work,
+           Expertise (including AI Lab), and Contact sections render immediately.
+           Their scroll-driven film/background and interaction animations remain. */
         var compactMotion = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-        var ANIM = compactMotion ? {
-          ease: 'power3.out',
-          intro: { duration: 0.36, y: 6 },
-          hero: { duration: 0.4, y: 8, stagger: 0.04 },
-          stage: { duration: 0.38, y: 6 },
-          footer: { duration: 0.36, y: 6 }
-        } : {
-          ease: 'power3.out',
-          intro: { duration: 0.4, y: 10 },
-          hero: { duration: 0.44, y: 12, stagger: 0.06 },
-          stage: { duration: 0.42, y: 8 },
-          footer: { duration: 0.4, y: 8 }
-        };
-        function entrance(selector, fromVars, toVars, trigger, options) {
-          var settings = options || {};
-          var attempt = arguments.length > 5 ? arguments[5] : 0;
-          var targetNode = document.querySelector(selector);
-          var triggerNode = typeof trigger === 'string' ? document.querySelector(trigger) : trigger;
-          if (!targetNode || (trigger && !triggerNode)) {
-            if (attempt < 20) {
-              window.setTimeout(function () {
-                entrance(selector, fromVars, toVars, trigger, settings, attempt + 1);
-              }, 50);
-            }
-            return;
-          }
-          var scrollTrigger = settings.scrollTrigger || { trigger: triggerNode || targetNode, start: settings.start || 'top 84%', once: true };
-          var target = Object.assign({ autoAlpha: 1, duration: .6, ease: ANIM.ease, scrollTrigger: scrollTrigger }, settings);
-          delete target.start;
-          delete target.scrollTrigger;
-          target.scrollTrigger = scrollTrigger;
-          gsap.fromTo(selector, fromVars, Object.assign(target, toVars));
-        }
-        entrance('#top .hero-copy .reveal', { autoAlpha: 0, y: ANIM.hero.y }, { y: 0 }, '#top', { duration: ANIM.hero.duration, stagger: ANIM.hero.stagger });
-        entrance('#profile .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#profile', { duration: ANIM.intro.duration });
-        entrance('#profile .about-copy', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#profile', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#projects .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#projects', { duration: ANIM.intro.duration });
-        entrance('#projects .motion-stage', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#projects .motion-stage', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#recognition .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#recognition', { duration: ANIM.intro.duration });
-        entrance('#recognition .recognition-react-root', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#recognition .recognition-react-root', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#experiments .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#experiments', { duration: ANIM.intro.duration });
-        entrance('#profile .closing-social .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#profile', { duration: ANIM.footer.duration });
-        entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration, delay: .08 });
+        var heroMotion = compactMotion
+          ? { duration: 0.4, y: 8, stagger: 0.04 }
+          : { duration: 0.44, y: 12, stagger: 0.06 };
+        gsap.fromTo('#top .hero-copy .reveal',
+          { autoAlpha: 0, y: heroMotion.y },
+          { autoAlpha: 1, y: 0, duration: heroMotion.duration,
+            ease: 'power3.out', stagger: heroMotion.stagger,
+            scrollTrigger: { trigger: '#top', start: 'top 84%', once: true } });
       }
 
       var status = document.querySelector('.copy-status');

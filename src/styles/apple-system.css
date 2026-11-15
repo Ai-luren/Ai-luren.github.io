@@ -516,18 +516,6 @@ header .nav-contact-icon {
   -webkit-backdrop-filter: none;
 }
 
-@keyframes impact-mobile-anchor-enter {
-  from { opacity: .68; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-
-@media (max-width: 720px) {
-  .impact-evidence-row.is-mobile-anchor-enter > .impact-evidence-label,
-  .impact-evidence-row.is-mobile-anchor-enter > div:last-child {
-    animation: impact-mobile-anchor-enter 420ms var(--apple-ease) both;
-  }
-}
-
 /* Selected-work and AI-media links share one quiet, anchored CTA treatment. */
 .comet-archive__image > .comet-archive__meta {
   display: inline-flex !important;
