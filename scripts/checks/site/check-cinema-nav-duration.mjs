@@ -38,7 +38,10 @@ try {
     const prev=nav.locator('.cinema-player__sequence > button').first();
     assert.equal(await prev.evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)',
       'Work arrows should be subtle ghost controls, not heavy outlined circles');
-    assert.equal(await prev.evaluate(el=>getComputedStyle(el).borderTopWidth),'0px');
+    const ring=await prev.evaluate(el=>{const css=getComputedStyle(el);return {width:css.borderTopWidth,color:css.borderTopColor,radius:css.borderTopLeftRadius};});
+    assert.equal(ring.width,'1px','Ghost circle keeps a stable transparent border');
+    assert.equal(ring.color,'rgba(0, 0, 0, 0)','The resting arrow ring must be invisible');
+    assert.equal(ring.radius,'50%','Work navigation arrow must remain circular');
     assert((await prev.boundingBox()).width>=44,'Work-arrow tap target must be >=44px');
     assert.equal(await player.locator('video').getAttribute('src'),null,'No video requested on open');
     assert.equal(getSafeMediaReport(page).urls.length,0,'Opening work must not fetch ImageKit MP4');

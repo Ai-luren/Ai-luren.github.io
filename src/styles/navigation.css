@@ -420,17 +420,14 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   background: var(--portfolio-icon-hover-surface) !important;
   color: var(--apple-text);
 }
-/* Keep legacy rail transform untouched: it positions that control vertically. */
-.impact-award-rail-nav:hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):active:not(:disabled) {
   background: var(--portfolio-icon-active-surface) !important;
 }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):focus-visible {
   outline: 2px solid var(--apple-blue);
   outline-offset: 4px;
 }
 .cinema-player__sequence > button:disabled { opacity: .32; cursor: default; }
-.impact-award-rail-nav:disabled { opacity: .32; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   :is(.cinema-player__sequence > button,.impact-award-lightbox-nav) { transition: none; }
 }

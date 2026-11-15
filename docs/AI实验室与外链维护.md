@@ -6,7 +6,7 @@
 
 | 职责 | 当前位置 |
 | --- | --- |
-| 三个项目名称、短说明、GitHub URL、图片列表、在线体验地址及站内详情 | `src/components/ExperimentFlip.jsx` |
+| 三个项目名称、短说明、GitHub URL、图片列表及站内详情 | `src/components/ExperimentFlip.jsx` |
 | 一屏式布局、媒体框/缩略图、圆角与断点 | `src/components/ExperimentFlip.css` |
 | 底部社交 Dock 及 Hover 提示 | `src/components/FloatingDock.jsx`、`FloatingDock.css` |
 | 触屏确认面板与站外行为 | `src/components/ExternalLinkSheet.jsx`、`ExternalLinkSheet.css` |
@@ -18,7 +18,7 @@
 
 - **AI 新闻追踪**：`assets/images/lab/news/{juya-card,aihot-card,builders-card}.webp`，来自 `Ai-luren/Ainews-to-Feishu`。详情仅保留三张真实飞书卡片，固定同高媒体框及三个圆角缩略图。
 - **AI 文章配图**：`assets/images/lab/illustrations/01-two-breakpoints.webp`、`02-sort-by-purpose.webp`、`05-information-well.webp`、`08-trust-bridge.webp`，来自 `Ai-luren/Ailuren-illustrations` 的实例图库。保持原作品比例，四张图片可切换。
-- **图片对比工具**：`assets/images/lab/comparison/live-showcase.png`，从该工具真实运行界面的按钮、输入图和滑块区域组合成 **960×700** 展示图；采用**示例输入**，不是直接截图的完整浏览器页面。仅一张展示图、不显示 `1 / 1` 或图片缩略图；「在线体验」和「GitHub 源码」是不同入口，源仓库为 `Ai-luren/Image-comparison`。
+- **图片对比工具**：`assets/images/lab/comparison/live-showcase.png`，从该工具真实运行界面的按钮、输入图和滑块区域组合成 **960×700** 展示图；采用**示例输入**，不是直接截图的完整浏览器页面。仅一张展示图、不显示 `1 / 1` 或图片缩略图；详情仅保留「GitHub 源码」入口，不显示已取消的「在线体验」；源仓库为 `Ai-luren/Image-comparison`。
 
 这些展示资产由 Vite 本地打包，不以 GitHub Raw 地址作为访客图片来源。用户所在网络无法打开 GitHub 时，仍可先在站内了解项目。完整源码和安装步骤保持在各自仓库 README 中，不重复堆进作品详情。
 

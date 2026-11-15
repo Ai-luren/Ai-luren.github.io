@@ -16,6 +16,18 @@ try {
         const cards = page.locator('#impact-awards .impact-award-grid-card');
         await cards.first().waitFor({ state: 'attached' });
         assert.equal(await cards.count(), 8, `${width} ${lang}: all awards must be present`);
+        // Consolidated image geometry from the retired duplicate test.
+        for (const index of [0, 7]) {
+          const img=cards.nth(index).locator('img');
+          const geometry=await img.evaluate(el=>{
+            const css=getComputedStyle(el),rect=el.getBoundingClientRect();
+            return { ratio:rect.width/rect.height,
+              radius:parseFloat(css.borderTopLeftRadius), fit:css.objectFit };
+          });
+          assert(Math.abs(geometry.ratio-540/960)<.02 &&
+            geometry.radius>0 && geometry.fit==='contain',
+            `${width} ${lang}: award thumbnail geometry`);
+        }
         const layout = await page.locator('.impact-award-grid').evaluate(grid => ({ columns: getComputedStyle(grid).gridTemplateColumns.split(' ').length, captions: getComputedStyle(grid.querySelector('.impact-award-grid-caption')).display, overflow: document.documentElement.scrollWidth - innerWidth }));
         assert.equal(layout.columns, width >= 1280 ? 8 : 4, `${width} ${lang}: wrong column count`);
         assert.equal(layout.captions === 'none', width <= 720, `${width} ${lang}: wrong caption visibility`);

@@ -38,6 +38,18 @@ try {
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
         await page.goto(new URL(kind==='home'?'index.html#impact-reach':'works.html',base).href);
         await page.locator(kind==='home'?'#impact-reach .impact-glass':'.library-grid .comet-archive__image').first().waitFor();
+        if(kind==='home'){
+          // Initial React mount may precede native hash scroll restoration.
+          // Compare settled off-Hero chrome (.96) with Works, not transient
+          // Hero chrome (.72) before the hash target reaches the viewport.
+          await page.waitForFunction(()=>{
+            const target=document.querySelector('#impact-reach');
+            if(!target)return false;
+            const rect=target.getBoundingClientRect();
+            return !document.body.classList.contains('is-on-hero') &&
+              rect.top < innerHeight && rect.bottom > 0;
+          });
+        }
         pages[kind]=await page.evaluate(kind=>{
           const get=selector=>{
             const el=document.querySelector(selector);if(!el)return null;

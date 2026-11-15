@@ -101,10 +101,7 @@
     .brand { color: var(--mist); font: 500 13px var(--tech); letter-spacing: .12em; white-space: nowrap; }
     nav { display: flex; align-items: center; gap: 24px; }
     nav a { position: relative; font: 500 14px/1.2 var(--tech); letter-spacing: .04em; }
-    nav a::after { position: absolute; right: 0; bottom: -10px; left: 0; height: 1px; content: ''; transform: scaleX(0); transform-origin: left; transition: transform var(--motion-duration-control) var(--motion-ease-control); }
-    nav a.is-active::after { transform: scaleX(1); }
     .nav-contact { padding: 7px 12px; border: 1px solid rgba(232,240,245,.24); color: rgba(231,236,244,.78); }
-    .nav-contact::after { display: none; }
     .nav-lang { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; border: 1px solid rgba(232,240,245,.24); background: transparent; color: rgba(231,236,244,.78); font: 500 12px/1 var(--tech); letter-spacing: .06em; white-space: nowrap; cursor: pointer; transition: color var(--motion-duration-control) ease, border-color var(--motion-duration-control) ease; }
     .nav-lang i { color: rgba(255,255,255,.4); font-style: normal; }
     .nav-lang [data-lang-part] { opacity: .55; transition: opacity var(--motion-duration-control) ease, color var(--motion-duration-control) ease; }
@@ -1498,30 +1495,18 @@
         letter-spacing: 0;
         text-shadow: none;
       }
-      #primary-nav .nav-list a::after {
-        display: block !important;
-        right: 11px;
-        bottom: -7px;
-        left: 11px;
-        height: 1px;
-        background: rgba(245, 245, 247, .82);
-        transform: scaleX(0);
-        transition: transform var(--motion-duration-control) var(--motion-ease-control);
-      }
       #primary-nav .nav-list a:hover,
       #primary-nav .nav-list a:focus-visible,
       #primary-nav .nav-list a.is-active {
         background: transparent;
         color: var(--body-on-dark);
       }
-      #primary-nav .nav-list a.is-active::after { transform: scaleX(1); }
       #primary-nav .nav-list a.nav-contact {
         display: none !important;
         padding-inline: 11px;
         border: 0;
         color: rgba(245, 245, 247, .52);
       }
-      #primary-nav .nav-list a.nav-contact::after { display: none !important; }
       header .nav-lang {
         border-color: rgba(245, 245, 247, .18);
         background: transparent;

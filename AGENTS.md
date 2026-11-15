@@ -14,7 +14,7 @@
 - `assets/videos/works/`：本地原始作品视频，Vite 开发模式优先用本地 MP4，缺片也禁止回退 ImageKit；Git 忽略且不进正式构建，正式网站使用配置的云端链接。分类为商业广告、创意短片、海外产品广告、视觉实验。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
-- `docs/`：`设计规范.md` 是唯一持续生效的视觉与交互规范；维护指南为操作说明，带日期的审计/验收文档只作历史记录。
+- `docs/`：`设计规范.md` 是公开网页的唯一视觉与交互规范；工作台专属规则见 `docs/本地封面工作流.md`，维护指南为操作说明，带日期的审计/验收文档只作历史记录。
 - `portfolio-workbench/`：本地作品工作台，使用 FFmpeg、环回端口和可恢复的归档索引维护作品；不接入正式 Vite 构建或部署。
 - `scripts/checks/site/` 与 `scripts/checks/workbench/`：分别存放网页和工作台回归测试；共用 `scripts/lib/safe-media.mjs` 与 `scripts/fixtures/`，正式构建不包含这些测试。移动脚本须同步 `package.json`、`run-adversarial-checks.mjs` 与相对导入，并执行 `npm run check:repo-layout`。
 - `.cover-studio/`：本地导入副本、候选帧、封面替换与改名历史、迁移前媒体备份；被 Git 忽略，不能当缓存清空。
@@ -48,7 +48,7 @@
 
 ## 验证与维护
 
-- **验证分级**：只读清单 `npm run check:plan`；快速网站 `npm run check:smoke`、工作台 `npm run check:workbench-core`，合计 `npm run check:project`。发布前深测 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。唯一队列见 `scripts/lib/check-suite-catalog.mjs`，说明见 `docs/测试与回归维护.md`。保留旧命令及全部断言。
+- **验证分级**：只读清单 `npm run check:plan`；快速网站 `npm run check:smoke`、工作台 `npm run check:workbench-core`，合计 `npm run check:project`。发布前深测 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。唯一队列见 `scripts/lib/check-suite-catalog.mjs`，说明见 `docs/测试与回归维护.md`。仅保留当前有效且有独立价值的测试；删除重复/过期测试前须将独有断言并入现行测试、核实调用方，更新清单并复跑。
 - **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；本地缓冲 `npm run check:cinema-local`（需 5174 开发服务）、手机播放器 `npm run check:cinema-controls`（默认 5174，支持 `PORTFOLIO_URL`）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
 - **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
 - `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。

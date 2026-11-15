@@ -115,5 +115,5 @@ if (process.argv.includes('--json')) {
   console.log(JSON.stringify({ summary, quick, deep }, null, 2));
 } else {
   console.log('TEST_PLAN_PASS ' + JSON.stringify(summary));
-  console.log('说明：深度测试包括快速测试的一部分，但同一次深测内不重复运行相同文件；原有 npm 命令均保留。');
+  console.log('说明：深度测试包括快速测试的一部分，但同一次深测内不重复运行相同文件；有效 npm 命令保持兼容；唯一断言已迁移的冗余测试入口允许退休。');
 }

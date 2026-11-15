@@ -147,8 +147,6 @@ header .nav-lang,
 header .nav-contact-icon,
 .nav-toggle,
 .mobile-nav-close,
-.impact-award-rail-nav,
-.impact-award-card-zoom,
 .impact-award-lightbox-nav,
 .impact-award-lightbox-close,
 .comet-archive-page-arrow,
@@ -158,16 +156,6 @@ header .nav-contact-icon,
 
 /* Small media controls are part of the content surface contract; their
    opacity and interaction state remain component-owned. */
-.impact-award-card-zoom {
-  border: 1px solid rgba(215, 227, 235, .4);
-  border-radius: 50%;
-  background: rgba(0, 0, 0, .55);
-  box-shadow: none;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.impact-award-rail-nav,
 .impact-award-lightbox-nav,
 .impact-award-lightbox-close {
   border: 1px solid rgba(255, 255, 255, .38);
