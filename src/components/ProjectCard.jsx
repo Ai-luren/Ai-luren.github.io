@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import CometCard from './CometCard.jsx';
 import './CometCard.css';
 import './ProjectCard.css';
+import './UnifiedWorkCard.css';
 import { PROJECT_CATEGORIES } from '../data/projects.js';
 import {initialProjectPoster,projectVideoVersions} from '../data/version-order.js';
 import { warmImage } from '../utils/warmImage.js';
@@ -48,7 +49,8 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
   const detail = project.typeLabel?.[lang]
     || project.award[lang]
     || PROJECT_CATEGORIES.find(item => item.id === project.category)?.label[lang];
-  const status = projectVideoVersions(project)[0]?.videoUrl?.trim()
+  const isReady = Boolean(projectVideoVersions(project)[0]?.videoUrl?.trim());
+  const status = isReady
     ? (lang === 'en' ? 'Play' : '播放')
     : (lang === 'en' ? 'Pending upload' : '待上传');
   return (
@@ -57,7 +59,7 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
       onPointerDownCapture={() => warmImage(initialProjectPoster(project) || cover)}
       onFocusCapture={() => warmImage(initialProjectPoster(project) || cover)}
       onClick={event => onClick(event, project)}>
-      <button ref={cardRef} type="button" className="comet-archive__card" data-project-id={project.id} aria-haspopup="dialog"
+      <button ref={cardRef} type="button" className="comet-archive__card portfolio-work-card--unified" data-project-id={project.id} aria-haspopup="dialog"
         aria-label={[project.title[lang], detail, status].filter(Boolean).join(' · ')}
         style={{ '--comet-cover': `url(${cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>
         <span className="comet-archive__image">
@@ -65,7 +67,12 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
             loading={coverPriority === 'high' || coverPriority === 'normal' || (coverPriority === 'auto' && project.featured) ? 'eager' : 'lazy'}
             fetchPriority={coverPriority === 'normal' ? 'auto' : coverPriority} decoding="async"
             style={{ objectFit: project.featured ? 'cover' : 'contain' }} />
-          <span className="comet-archive__play-badge" aria-hidden="true">{status}</span>
+          <span className={isReady ? 'comet-archive__play-badge is-ready' : 'comet-archive__play-badge is-pending'} aria-hidden="true">
+            {isReady && <svg className="portfolio-work-card__play-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M9 6.5 18 12 9 17.5Z" fill="currentColor"/>
+            </svg>}
+            <span className={isReady ? 'portfolio-work-card__play-text' : undefined}>{status}</span>
+          </span>
         </span>
         <strong className="comet-archive__title">{renderTitle(project.title[lang])}</strong>
         <span className="comet-archive__copy">

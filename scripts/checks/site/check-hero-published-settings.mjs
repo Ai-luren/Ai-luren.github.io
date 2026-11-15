@@ -55,7 +55,98 @@ try {
     assert.equal(maskDisplay, 'none', 'Rectangular Hero copy overlay reappeared at width ' + viewport.width);
     await page.close();
   }
-  console.log('PASS: new and returning visitors receive identical published Hero settings; no bounded copy mask at mobile and desktop');
+  // P1 cinematic story contract: align real film beats to the moment each
+  // chapter FIRST enters the viewport, not its document top (which can be
+  // beyond the maximum scroll). Do not split the two Featured rows merely
+  // to force more background video between the cards.
+  for (const viewport of [
+    { width: 1440, height: 900, mobile: false },
+    { width: 390, height: 844, mobile: true },
+  ]) {
+    const page = await createSafePage(browser, { viewport });
+    await page.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelectorAll('#projects .comet-archive__item').length >= (innerWidth > 720 ? 8 : 4), { timeout: 12000 });
+    await page.waitForTimeout(400);
+    const timeline = await page.evaluate(() => {
+      const video = document.getElementById('hero-video');
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const cue = document.getElementById('hero-scroll-guide');
+      const entrySecond = selector => {
+        const element = document.querySelector(selector);
+        const top = element.getBoundingClientRect().top + scrollY;
+        return Math.max(0, (top - innerHeight) / max * video.duration);
+      };
+      const firstCard = document.querySelector('#projects .comet-archive__item');
+      return {
+        cueText: cue?.innerText,
+        cueVisible: getComputedStyle(cue).visibility,
+        cuePointer: getComputedStyle(cue).pointerEvents,
+        cueLinks: cue?.querySelectorAll('a,button').length,
+        videoDuration: video.duration,
+        featuredRowBreath: parseFloat(getComputedStyle(firstCard).paddingBottom),
+        times: {
+          projects: entrySecond('#projects .comet-archive'),
+          expertise: entrySecond('#recognition'),
+          lab: entrySecond('#experiments'),
+          about: entrySecond('#profile'),
+        },
+      };
+    });
+    assert(timeline.videoDuration > 14.8 && timeline.videoDuration < 15.3,
+      'Unexpected film duration in story-timing test');
+    assert.equal(timeline.cueVisible, 'visible', 'P1 first-screen scroll cue is missing');
+    assert.equal(timeline.cuePointer, 'none', 'Scroll instruction must never block interaction');
+    assert.equal(timeline.cueLinks, 0, 'Scroll cue must not jump past the film');
+    if (!viewport.mobile) {
+      assert(timeline.cueText.includes('向下滚动'), 'Desktop scroll instruction missing');
+      assert(timeline.featuredRowBreath >= 18 && timeline.featuredRowBreath <= 30,
+        'Featured rows accidentally separated or cramped');
+      assert(timeline.times.projects >= 1.5 && timeline.times.projects <= 3,
+        'First works cards should enter during city/building flight');
+      assert(timeline.times.expertise >= 5.5 && timeline.times.expertise <= 8,
+        'Expertise should enter during spaceship-to-industrial transition');
+      assert(timeline.times.lab >= 10 && timeline.times.lab <= 12.5,
+        'Lab should enter during the ring/cloud city reveal');
+      assert(timeline.times.about >= 13 && timeline.times.about <= 14.8,
+        'Contact should enter near the final cloud city shot');
+    } else {
+      assert(timeline.cueText.includes('上滑探索'), 'Mobile swipe instruction missing');
+    }
+    // A guide is a contextual instruction, not a one-time dismissal. It
+    // disappears outside the Hero and returns when visitors scroll back.
+    await page.evaluate(() => scrollTo({
+      top: document.getElementById('projects').offsetTop + 200,
+      behavior: 'instant',
+    }));
+    await page.waitForTimeout(440);
+    const away = await page.evaluate(() => ({
+      state: document.getElementById('hero-scroll-guide').dataset.visible,
+      opacity: getComputedStyle(document.getElementById('hero-scroll-guide')).opacity,
+    }));
+    assert.equal(away.state, 'false', 'Guide must hide outside Hero');
+    assert(+away.opacity < .1, 'Hidden guide must not linger over works');
+    await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(440);
+    assert.equal(await page.locator('#hero-scroll-guide').getAttribute('data-visible'),
+      'true', 'Guide must return on Hero revisit');
+    if (!viewport.mobile) {
+      const scrollRail = await page.evaluate(() => {
+        const line = document.querySelector('.scroll-rail');
+        return {
+          width: getComputedStyle(line).width,
+          gradient: getComputedStyle(line.firstElementChild).backgroundImage,
+          glow: getComputedStyle(line.firstElementChild).boxShadow,
+        };
+      });
+      assert.equal(scrollRail.width, '2px', 'Right rail thickness must match loading bar');
+      assert(scrollRail.gradient.includes('linear-gradient'), 'Right rail blue gradient missing');
+      assert(scrollRail.glow.includes('rgba(94, 176, 246, 0.42)'), 'Rail must use soft loading glow');
+    }
+    console.log('PASS P1 story rhythm '+viewport.width+'px: '+JSON.stringify(timeline.times)
+      +' (featured row breathing '+timeline.featuredRowBreath+'px)');
+    await page.close();
+  }
+  console.log('PASS: identical published Hero settings, cinematic scroll discovery and chapter-to-film timing');
 } finally {
   await browser.close();
 }

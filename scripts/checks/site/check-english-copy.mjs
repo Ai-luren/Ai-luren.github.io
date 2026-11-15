@@ -40,6 +40,9 @@ try{
    await page.addInitScript(()=>localStorage.setItem('ailuren-lang','en'));
    await page.goto(new URL(route,base).href,{waitUntil:'domcontentloaded'});
    await page.waitForFunction(route=>route==='index.html'?document.querySelector('#projects-title')?.textContent?.trim()==='Selected Work':document.querySelector('.library-grid .comet-archive__card'),route);
+   // The static Selected Work heading can appear before React mounts its
+   // expertise portals; wait for the actual content this check inspects.
+   if(route==='index.html')await page.locator('#impact-programs .impact-evidence-label h2').waitFor({state:'attached',timeout:10000});
    const checks=await page.evaluate(()=>{
     const text=document.body.innerText;
     return {

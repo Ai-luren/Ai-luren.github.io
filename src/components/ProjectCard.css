@@ -30,35 +30,8 @@
 #projects .archive-more a:hover, #projects .archive-more a:focus-visible { color: #fff; }
 #projects .archive-more a:hover::after, #projects .archive-more a:focus-visible::after { opacity: .68; }
 #projects .archive-more a:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 4px; }
-/* The shared card markup reads artwork, project name and award/category in
-   that order. Desktop home cards use the library's compact information rhythm. */
-@media (min-width: 721px) {
-  #projects .comet-archive__card > .comet-archive__title {
-    min-width: 0;
-    margin-top: calc(var(--portfolio-work-title-gap) - var(--portfolio-work-caption-gap));
-    overflow: visible;
-  }
-  #projects .comet-archive__card { row-gap: var(--portfolio-work-caption-gap); }
-  @supports (grid-template-rows: subgrid) {
-  #projects .comet-archive { row-gap: 0; }
-  #projects .comet-archive__item {
-    display: grid;
-    grid-row: span 3;
-    grid-template-rows: subgrid;
-    padding-bottom: 22px;
-  }
-  #projects .comet-archive__card > .comet-archive__title {
-    min-width: 0;
-    grid-row: 2;
-    align-items: flex-start;
-    margin-top: var(--portfolio-work-title-gap);
-    overflow: visible;
-  }
-  #projects .comet-archive__card { grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; align-content: stretch; }
-  #projects .comet-archive__card > .comet-archive__image { grid-row: 1; }
-  #projects .comet-archive__card > .comet-archive__copy { grid-row: 3; padding-top: var(--portfolio-work-caption-gap); }
-  }
-}
+/* A+ cards use shared flex layout on both pages. The former homepage
+   subgrid split captions from the poster and left an empty 22px tail. */
 @media (max-width: 720px) {
   #projects .section-intro { margin-bottom: 22px; }
   #projects .section-intro > .projects-meta-row { display: none; }
@@ -130,11 +103,6 @@
     padding-block: 12px 28px;
   }
 }
-@supports (grid-template-rows: subgrid) {
-  @media (min-width: 721px) and (max-width: 1023px) {
-    #projects .comet-archive-mobile-shell .comet-archive { row-gap: 0; }
-  }
-}
 
 
 /* Brief but readable location cue for workbench deep links; no new UI. */
@@ -144,27 +112,5 @@
   box-shadow: 0 0 0 7px rgba(84, 148, 225, .13);
 }
 
-/* Featured + All Work: one editorial hover treatment, not a black overlay.
-   Keep the photo unobscured, thumbnail fixed and play badge always readable.
-   No nested button or competing glass surface is introduced. */
-@media (min-width: 721px) {
-  #projects .comet-archive__image::after { opacity: 0 !important; }
-}
-@media (hover: hover) and (pointer: fine) {
-  #projects .comet-archive__card:hover .comet-archive__image,
-  .work-library .comet-archive__card:hover .comet-archive__image {
-    border-color: rgba(255, 255, 255, .42) !important;
-    box-shadow: 0 12px 26px rgba(0, 0, 0, .25) !important;
-    transform: none !important;
-  }
-  #projects .comet-archive__card:hover .comet-archive__play-badge,
-  .work-library .comet-archive__card:hover .comet-archive__play-badge {
-    border-color: rgba(255, 255, 255, .38);
-  }
-}
-/* A keyboard user sees the same artwork boundary, never a large dark tile. */
-#projects .comet-archive__card:focus-visible .comet-archive__image,
-.work-library .comet-archive__card:focus-visible .comet-archive__image {
-  border-color: rgba(255, 255, 255, .5) !important;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, .15), 0 12px 26px rgba(0, 0, 0, .25) !important;
-}
+/* Shared A+ outer-card hover and keyboard focus are owned by
+   UnifiedWorkCard.css. No separate image border or shadow on hover. */

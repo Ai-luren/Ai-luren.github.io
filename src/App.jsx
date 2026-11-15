@@ -5,7 +5,6 @@ import { FEATURED_PROJECTS } from './data/projects.js';
 import { prepareProjectPoster } from './utils/warmImage.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
-import VideoPostProcess from './components/VideoPostProcess.jsx';
 import FloatingDock from './components/FloatingDock.jsx';
 import MobileMenuSocialLinks from './components/MobileMenuSocialLinks.jsx';
 import SiteExternalLinkGuard from './components/SiteExternalLinkGuard.jsx';
@@ -42,7 +41,6 @@ export default function App() {
 
   return (
     <>
-      <VideoPostProcess />
       <SiteExternalLinkGuard />
       {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
       <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />

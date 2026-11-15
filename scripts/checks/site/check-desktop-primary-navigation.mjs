@@ -16,8 +16,8 @@ const executablePath = [
 assert(executablePath, 'Chrome or Edge is required for this browser check.');
 const browser = await chromium.launch({ executablePath, headless: true });
 const expected = {
-  zh: ['精选作品', '全部作品', '专业实力', '联系'],
-  en: ['Featured', 'All Work', 'Expertise', 'Contact'],
+  zh: ['精选作品', '专业实力', '联系', '全部作品'],
+  en: ['Featured', 'Expertise', 'Contact', 'All Work'],
 };
 
 try {
@@ -107,7 +107,7 @@ try {
   const mobile = await createSafePage(browser, { viewport: { width: 390, height: 844 } });
   await mobile.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
   await mobile.locator('.nav-toggle').click();
-  assert.deepEqual(await mobile.locator('#mobile-primary-nav a').evaluateAll(as => as.map(a => a.getAttribute('href'))), ['#projects', './works.html', '#recognition', '#contact']);
+  assert.deepEqual(await mobile.locator('#mobile-primary-nav a').evaluateAll(as => as.map(a => a.getAttribute('href'))), ['#projects', '#recognition', '#contact', './works.html']);
   assert.equal(await mobile.locator('#primary-nav .site-primary-nav').isVisible(), false);
   await mobile.close();
   console.log('390px: hamburger menu and four unified primary entries');

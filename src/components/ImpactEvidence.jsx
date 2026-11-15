@@ -324,7 +324,7 @@ function AwardGallery() {
   const active = isOpen ? awards[openIndex] : null;
   return (
     <div className="impact-glass impact-award-shell impact-award-shell--grid">
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{lang === 'en' ? 'CLICK TO VIEW' : '点击查看'}</span></div>
+      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span></div>
       <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases' : 'AI 创作赛事获奖、入围及展映记录'}</p>
       <ul ref={railRef} className="impact-award-grid" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'}>
         {awards.map((award, index) => (
@@ -395,7 +395,6 @@ function LogoIndex() {
       <div className="impact-platform-desktop-card">
         <div className="impact-platform-desktop-head">
           <span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span>
-          <span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span>
         </div>
         <p className="impact-platform-desktop-description">{lang === 'en' ? 'Recognized through AI creator programs' : '多个 AI 视频平台的合作创作者'}</p>
         <div className="impact-platform-desktop-grid">
@@ -591,14 +590,14 @@ function ReachDossier() {
         data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id}
         aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')}
         onClick={(event) => openProfile(card, event)}>
-        {t('查看资料', 'View details')}
+        <span className="portfolio-link-label">{t('查看资料', 'View details')}</span>
       </button>
       {card.link && <a className="impact-reach-action impact-reach-action--external"
         href={card.link} target="_blank" rel="noopener noreferrer"
         data-external-label-zh={`${card.platform.zh}主页`}
         data-external-label-en={`${card.platform.en} profile`}
         aria-label={card.platform[lang] + ' · ' + t('访问主页（新窗口）', 'Visit profile (new tab)')}>
-        <span>{t('访问主页', 'Visit Profile')}</span>
+        <span className="portfolio-link-label">{t('访问主页', 'Visit Profile')}</span>
       </a>}
     </div>
   );
@@ -607,7 +606,6 @@ function ReachDossier() {
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
         <span>{t('跨平台影响力', 'CROSS-PLATFORM REACH')}</span>
-        <small>{t('4 个平台', '4 platforms')}</small>
       </div>
       <div className="impact-reach-compact-grid">
         {reachCards.map((card) => (

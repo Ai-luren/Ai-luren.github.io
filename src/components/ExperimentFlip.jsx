@@ -65,7 +65,6 @@ const experiments = [
       { zh: '同步缩放检查局部细节', en: 'Use synchronized zoom to inspect details' }
     ],
     gallery: [{ src: comparisonShowcase, title: { zh: '真实界面组合预览 · 示例输入', en: 'Real UI composite · sample images' } }],
-    liveUrl: 'https://ai-luren.github.io/Image-comparison/',
     href: 'https://github.com/Ai-luren/Image-comparison'
   }
 ];
@@ -218,7 +217,6 @@ export default function ExperimentFlip() {
           <span>{lang === 'en' ? 'No.' : '序号'}</span>
           <span>{lang === 'en' ? 'Project' : '项目名称'}</span>
           <span>{lang === 'en' ? 'Description / Highlights' : '描述 / 技术标签'}</span>
-          <span>{lang === 'en' ? 'Explore' : '查看'}</span>
         </div>
         <div className="flip-experiment__list">
           {experiments.map((item, i) => (
@@ -235,7 +233,7 @@ export default function ExperimentFlip() {
                 <button type="button" className="flip-experiment__detail" aria-haspopup="dialog"
                   aria-busy={pendingProject === i}
                   onClick={event => openProject(i, event.currentTarget)}>
-                  {lang === 'en' ? 'View project' : '查看项目'}
+                  <span className="portfolio-link-label">{lang === 'en' ? 'View project' : '查看项目'}</span>
                 </button>
               </div>
             </article>
@@ -258,11 +256,8 @@ export default function ExperimentFlip() {
             <ProjectShowcase active={active} lang={lang} selectedIndex={visualIndex} onSelect={changeImage} imagePending={pendingImage} />
             <div className="lab-project-footer">
               <div className="lab-project-actions">
-                {active.liveUrl && <a className="lab-project-source lab-project-source--primary" href={active.liveUrl} target="_blank" rel="noopener noreferrer" onClick={event => intercept(event, {
-                  href: active.liveUrl, zh: '图片对比工具 · 在线体验', en: 'Image Comparison Tool · Live demo'
-                })}>{lang === 'zh' ? '在线体验' : 'Try online'}</a>}
                 <a className="lab-project-source" href={active.href} target="_blank" rel="noopener noreferrer" onClick={event => handleSource(event, active)}>
-                  {lang === 'en' ? 'GitHub source' : 'GitHub 源码'}
+                  <span className="portfolio-link-label">{lang === 'en' ? 'GitHub source' : 'GitHub 源码'}</span>
                 </a>
               </div>
             </div>

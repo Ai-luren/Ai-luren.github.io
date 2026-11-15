@@ -290,23 +290,44 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 }
 .site-primary-nav a:hover,
 .site-primary-nav a.is-active { color: var(--apple-text); }
-.site-primary-nav a::after {
-  position: absolute;
-  right: 50%;
-  bottom: 1px;
-  left: 50%;
-  height: 1px;
-  background: rgba(245,245,247,.72);
-  content: '';
-  transition: left var(--apple-duration-control) var(--apple-ease), right var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
-  opacity: 0;
+/* Legacy container-bottom underline is intentionally retired: its spacing
+   was unrelated to the text glyphs and varied between pages. */
+.site-primary-nav a::after { display: none !important; }
+/* Link emphasis: a single typography-owned underline vocabulary for the
+   persistent desktop nav, social actions, AI Lab actions and GitHub source.
+   The 5px offset is measured from text glyphs, not from a padded hit area.
+   Blue is reserved for focus rings and other functional status indicators. */
+:root {
+  --portfolio-link-underline-offset: 5px;
+  --portfolio-link-underline-weight: 1px;
+  --portfolio-link-rule-active: rgba(245, 245, 247, .84);
+  --portfolio-link-rule-hover: rgba(245, 245, 247, .66);
 }
-.site-primary-nav a.is-active::after {
-  right: 11px;
-  left: 11px;
-  opacity: 1;
+:is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source) > .portfolio-link-label {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-style: solid;
+  text-decoration-thickness: var(--portfolio-link-underline-weight);
+  text-underline-offset: var(--portfolio-link-underline-offset);
+  text-decoration-skip-ink: none;
+  transition: text-decoration-color var(--apple-duration-control) var(--apple-ease);
 }
-.site-primary-nav a:not(.is-active):hover::after { right: 11px; left: 11px; opacity: .42; }
+.site-primary-nav a.is-active > .portfolio-link-label {
+  text-decoration-color: var(--portfolio-link-rule-active);
+}
+.site-primary-nav a:not(.is-active):is(:hover,:focus-visible) > .portfolio-link-label,
+:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source):is(:hover,:focus-visible) > .portfolio-link-label {
+  text-decoration-color: var(--portfolio-link-rule-hover);
+}
+:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source):is(:hover,:focus-visible) {
+  color: var(--apple-text);
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source) > .portfolio-link-label {
+    transition: none;
+  }
+}
+
 .site-primary-nav a:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .library-page-navigation .cinema-player__navigation > .site-primary-nav { display: none; }
 .library-page-navigation .cinema-player__navigation > .cinema-player__close { display: grid; }
@@ -589,8 +610,8 @@ body.mobile-nav-open > header {
   #mobile-nav-drawer .mobile-menu__links .nav-list a.is-active > span:not(.nav-short),
   #library-menu .mobile-menu__links .nav-list a.is-active > span {
     text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 9px;
+    text-decoration-thickness: var(--portfolio-link-underline-weight);
+    text-underline-offset: var(--portfolio-link-underline-offset);
   }
   /* BUCK-style social destination block; text links instead of extra icon tiles.
      Two columns retain 44px touch targets on short iPhone viewports. */
@@ -675,4 +696,27 @@ body.mobile-nav-open > header {
 @media (max-width: 760px) and (prefers-reduced-motion: reduce) {
   #mobile-nav-drawer .mobile-menu__social-list a,
   #library-menu .mobile-menu__social-list a { transition: none; }
+}
+
+
+/* Stay-on-page anchors appear together. The separate Works library is last
+   with a subtle boundary and a grid icon; it is not another scroll chapter. */
+@media (min-width: 761px) {
+  .site-primary-nav > .site-primary-nav__library-item {
+    margin-left: clamp(5px, .9vw, 12px);
+    padding-left: clamp(5px, .9vw, 12px);
+    border-left: 1px solid rgba(245,245,247,.20);
+  }
+  .site-primary-nav .site-primary-nav__library-link {
+    gap: 5px;
+    color: rgba(245,245,247,.76);
+  }
+}
+@media (max-width: 760px) {
+  #mobile-primary-nav .nav-list li.nav-library-item,
+  #library-menu .mobile-menu__links .nav-list li.nav-library-item {
+    margin-top: 10px !important;
+    padding-top: 8px !important;
+    border-top: 1px solid var(--apple-hairline-soft) !important;
+  }
 }

@@ -186,8 +186,24 @@ export default function VideoPostProcess() {
   // A restored WebGL context invalidates GPU programs/textures. Build fresh
   // OGL resources instead of showing the old canvas's undefined contents.
   const [webglGeneration, setWebglGeneration] = useState(0);
+  // Desktop now presents the native 15s film directly. Do not initialize
+  // hidden WebGL shaders for it; keep existing mobile WebGL and GPU recovery.
+  const [cinematicDesktop, setCinematicDesktop] = useState(
+    () => document.documentElement.dataset.heroExperience === 'cinematic'
+      && window.matchMedia('(min-width: 761px)').matches
+  );
 
   useEffect(() => {
+    const query = window.matchMedia('(min-width: 761px)');
+    const onChange = () => setCinematicDesktop(
+      document.documentElement.dataset.heroExperience === 'cinematic' && query.matches
+    );
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (cinematicDesktop) return undefined;
     const video = document.getElementById('hero-video');
     const container = document.getElementById('video-bg');
     if (!video || !container || !window.WebGLRenderingContext) return undefined;
@@ -362,7 +378,7 @@ export default function VideoPostProcess() {
       // avoiding a synthetic loss event during React cleanup/reinitialization.
       if (!gl.isContextLost()) gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
-  }, [webglGeneration]);
+  }, [webglGeneration, cinematicDesktop]);
 
   return null;
 }

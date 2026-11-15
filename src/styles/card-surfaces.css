@@ -32,6 +32,13 @@
   --portfolio-content-shadow: 0 14px 34px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .06);
   /* Shared editorial artwork geometry for Featured and All Work.
      Keep the home and library grids independent; standardize their cards. */
+  /* Unified A+ work card follows the site's existing content-glass roles. */
+  --portfolio-work-card-surface: var(--portfolio-glass-surface);
+  --portfolio-work-card-border: var(--portfolio-card-border);
+  --portfolio-work-card-radius: var(--portfolio-content-radius);
+  --portfolio-work-artwork-radius: var(--portfolio-tile-radius);
+  --portfolio-work-card-shadow: 0 12px 34px rgba(0,0,0,.22), inset 0 1px rgba(255,255,255,.06);
+  --portfolio-work-card-shadow-hover: 0 16px 37px rgba(0,0,0,.29), inset 0 1px rgba(255,255,255,.08);
   --portfolio-work-cover-ratio: 3 / 4;
   --portfolio-work-title-gap: 10px;
   --portfolio-work-caption-gap: 5px;

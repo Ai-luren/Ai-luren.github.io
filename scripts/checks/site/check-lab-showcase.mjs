@@ -3,7 +3,7 @@ import {chromium} from 'playwright-core';
 import {createSafePage,getSafeMediaReport} from '../../lib/safe-media.mjs';
 
 // Lab details must be a one-viewport proof viewer, not a scrollable README.
-// Test authentic project screenshots, 16:9 illustrations, and the real comparison-app demo.
+// Test authentic project screenshots, 16:9 illustrations, and the actual comparison-app screenshot.
 const b=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
 const origin=process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
 try {
@@ -67,7 +67,11 @@ try {
         assert(showcase.width === 960 && showcase.height === 700, 'single comparison showcase should be a balanced 960x700 real UI composite');
         assert.equal(await dialog.locator('.lab-project-showcase-count').count(),0,'single image should not show 1 / 1');
       }
-      if(i===2) assert.equal(await dialog.locator('.lab-project-source--primary').getAttribute('href'),'https://ai-luren.github.io/Image-comparison/');
+      if(i===2){
+        assert.equal(await dialog.locator('.lab-project-source').count(),1,'Comparison project retains GitHub source only');
+        assert.equal(await dialog.locator('.lab-project-source').getAttribute('href'),'https://github.com/Ai-luren/Image-comparison');
+        assert.equal(await dialog.locator('.lab-project-source--primary').count(),0,'Removed live-demo pill must not return');
+      }
     }
     assert(Math.max(...heights)-Math.min(...heights)<1,'All three project cards must use the same height: '+heights);
     await p.keyboard.press('ArrowLeft');
@@ -78,7 +82,7 @@ try {
     assert.deepEqual(errors,[]);
     await p.keyboard.press('Escape');
     await viewer.waitFor({state:'detached'});
-    console.log('PASS:',width+'×'+height,lang,'3 equal-height cards, no scroll/clipping, live demo and aligned arrows');
+    console.log('PASS:',width+'×'+height,lang,'3 equal-height cards, no scroll/clipping, GitHub source only and aligned arrows');
     await p.close();
   }
 }finally{await b.close()}

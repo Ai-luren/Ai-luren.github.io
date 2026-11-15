@@ -94,11 +94,70 @@ try {
             fields,chrome:material('body > header'),
             mobile:material('#projects .comet-archive-mobile-shell'),
             hero:material('#top .hero-proof-card'),
+            // Branding now belongs to the closing card itself. It is
+            // noninteractive and no separate footer bar/copyright remains.
+            footerPlacement:(()=>{
+              const card=document.querySelector('#profile .closing-card');
+              const footer=document.querySelector('.closing-footer');
+              if(!card||!footer)return null;
+              const style=getComputedStyle(footer);
+              const brand=card.querySelector('.closing-footer');
+              const brandDisplay=brand ? getComputedStyle(brand).display : 'missing';
+              const logo=card.querySelector('.closing-footer .footer-avatar')?.getBoundingClientRect();
+              const social=card.querySelector('.floating-dock-item')?.getBoundingClientRect();
+              const socialButtons=[...card.querySelectorAll('.closing-social .floating-dock-item')];
+              return {
+                brandDisplay,
+                mobileDockOneRow:socialButtons.length===6 &&
+                  Math.max(...socialButtons.map(x=>x.getBoundingClientRect().top))-
+                  Math.min(...socialButtons.map(x=>x.getBoundingClientRect().top))<2,
+                circleGeometry:brandDisplay!=='none'&&logo&&social ? {
+                  logoDiameter:logo.width, socialDiameter:social.width,
+                  logoHeight:logo.height, socialHeight:social.height,
+                  centerDelta:(logo.top+logo.height/2)-(social.top+social.height/2),
+                } : null,
+                insideCard:card.contains(footer),
+                outerFooterCount:document.querySelectorAll('body > footer').length,
+                brandInsideCard:!!card.querySelector('.footer-brand:not(a)'),
+                noCopyright:!card.querySelector('.footer-bottom-copy'),
+                brandNotClickable:!card.querySelector('.footer-brand[href]'),
+                socialDockInsideCard:!!card.querySelector('#footer-dock-react-root'),
+                isolation:style.isolation,
+                zIndex:style.zIndex,
+                pseudoDisplay:getComputedStyle(footer,'::before').display,
+                background:style.backgroundColor,
+              };
+            })(),
             pageOverflow:document.documentElement.scrollWidth-innerWidth,
           };
         },selectors);
         const name=width+'px '+lang+' '+mode,exp=expected[mode==='normal'?'normal':'fallback'];
         assert(evidence.pageOverflow<=2,name+': viewport overflow');
+        const placement=evidence.footerPlacement;
+        assert(placement,name+': missing closing footer inside card');
+        assert.equal(placement.insideCard,true,name+': closing footer must be INSIDE the contact glass card');
+        assert.equal(placement.outerFooterCount,0,name+': avoid a detached footer below the card');
+        assert(placement.brandInsideCard&&placement.noCopyright&&placement.brandNotClickable&&placement.socialDockInsideCard,
+          name+': brand and dock share the card, with no navigation or redundant copyright');
+        assert.equal(placement.isolation,'auto',name+': footer must not isolate a transparent compositing layer');
+        assert.equal(placement.zIndex,'auto',name+': footer must not create a positive stacking layer');
+        assert.equal(placement.pseudoDisplay,'none',name+': remove transparent footer pseudo');
+        assert.equal(placement.background,'rgba(0, 0, 0, 0)',name+': footer remains transparent inside card');
+        assert(placement.mobileDockOneRow,name+': social dock icons should share one row');
+        const circles=placement.circleGeometry;
+        if(width<=760){
+          assert.equal(placement.brandDisplay,'none',name+': repeated creator brand must be hidden on phones');
+          assert.equal(circles,null,name+': hidden mobile creator logo should not occupy space');
+        }else{
+          assert.equal(placement.brandDisplay,'flex',name+': desktop creator brand must remain');
+          assert(circles,name+': desktop brand and dock controls need measurable circles');
+          assert(Math.abs(circles.logoDiameter-circles.socialDiameter)<=1,
+            name+': desktop logo and social button widths differ');
+          assert(Math.abs(circles.logoHeight-circles.socialHeight)<=1,
+            name+': desktop logo and social button heights differ');
+          assert(Math.abs(circles.centerDelta)<=2,
+            name+': desktop logo and social icons are not vertically aligned');
+        }
         for(const [selector,panel] of Object.entries(evidence.fields)){
           assert(panel&&panel.visible,name+': missing '+selector);
           assert.equal(panel.background,exp.glass,name+': glass color '+selector);

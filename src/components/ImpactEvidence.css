@@ -18,7 +18,7 @@
 .impact-evidence button { font: inherit; }
 .impact-eyebrow { margin: 0; color: var(--impact-muted); font: 500 10px/1.5 var(--tech, var(--mono, monospace)); letter-spacing: .08em; text-transform: uppercase; }
 .impact-evidence-row { display: grid; align-items: start; gap: clamp(28px, 5vw, 72px); }
-.impact-evidence-label { position: relative; top: auto; padding-top: 4px; text-shadow: 0 2px 16px rgba(0, 0, 0, .72); }
+.impact-evidence-label { position: relative; top: auto; padding-top: 4px; text-shadow: none; }
 .impact-evidence-label h2 { display: block; }
 .impact-evidence-label p { max-width: 170px; margin: 15px 0 0; color: var(--impact-signal); font-size: 11px; line-height: 1.75; }
 .impact-evidence-row > div:last-child { min-width: 0; }
@@ -306,15 +306,24 @@
 .impact-reach-compact-primary > span { font: 600 clamp(23px, 2.4vw, 32px)/1.07 var(--font-display); letter-spacing: -.04em; white-space: nowrap; }
 .impact-reach-compact-primary small { color: var(--apple-secondary); font: 400 11px/1.45 var(--font-body); }
 .impact-reach-compact-secondary { display: block; margin-top: 6px; color: var(--apple-secondary); font: 400 12px/1.5 var(--font-body); overflow-wrap: anywhere; }
-.impact-reach-compact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
-.impact-reach-dossier .impact-reach-action { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 0; min-height: 40px; box-sizing: border-box; color: var(--apple-text); font: 500 12px/1.45 var(--font-body); text-align: center; text-decoration: none; white-space: nowrap; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease); }
-.impact-reach-dossier .impact-reach-action--primary { padding: 0 13px; border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius); background: var(--portfolio-tile-surface-hover); }
-.impact-reach-dossier .impact-reach-action--primary:hover, .impact-reach-dossier .impact-reach-action--primary:focus-visible { border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-hover-surface); }
-.impact-reach-dossier .impact-reach-action--primary:active { background: var(--portfolio-icon-active-surface); }
-.impact-reach-dossier .impact-reach-action--external { padding: 0 2px; border: 0; background: transparent; color: var(--apple-secondary); }
+.impact-reach-compact-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 4px 16px; }
+.impact-reach-dossier .impact-reach-action {
+  display: inline-flex; align-items: center; justify-content: flex-start; gap: 7px;
+  min-width: 0; min-height: 40px; box-sizing: border-box; color: var(--apple-text);
+  font: 500 12px/1.45 var(--font-body); text-align: left; text-decoration: none;
+  white-space: nowrap; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  transition: color var(--apple-duration-control) var(--apple-ease);
+}
+.impact-reach-dossier .impact-reach-action--primary {
+  padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .impact-reach-dossier .impact-reach-action--primary:hover { color: var(--apple-text); }
+}
+.impact-reach-dossier .impact-reach-action--external { padding: 0; border: 0; background: transparent; color: var(--apple-secondary); }
 .impact-reach-dossier .impact-reach-action--external:hover, .impact-reach-dossier .impact-reach-action--external:focus-visible { color: var(--apple-text); }
 @media (hover: hover) and (pointer: fine) {
-  .impact-reach-dossier .impact-reach-action--external:hover > span { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  /* Underlines for both actions are shared by the portfolio link-label rule. */
 }
 .impact-reach-dossier .impact-reach-action:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .impact-reach-dossier .impact-reach-action[aria-busy="true"] { cursor: progress; }
@@ -343,7 +352,7 @@
   .impact-reach-compact-secondary { margin-top: 4px; }
   .impact-reach-compact-actions { grid-column: 1 / -1; }
   .impact-reach-dossier .impact-reach-action { min-height: 44px; font-size: 11px; }
-  .impact-reach-dossier .impact-reach-action--primary { padding-inline: 12px; }
+
 }
 /* Keep all three impact chapters on the same desktop title-over-panel layout. */
 @media (min-width: 821px) {
@@ -535,7 +544,7 @@
 /* Keep both text actions on one row in 320px English without shrinking the hit area. */
 @media (max-width: 349px) {
   .impact-reach-compact-actions { gap: 6px; }
-  .impact-reach-dossier .impact-reach-action--primary { padding-inline: 10px; }
+
   .impact-reach-dossier .impact-reach-action--external { gap: 4px; }
 }
 

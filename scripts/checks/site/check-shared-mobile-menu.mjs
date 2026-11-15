@@ -27,7 +27,7 @@ async function load(kind,width,height,lang){
       menuItems:[...nav.querySelectorAll('.nav-list a')].map(a=>({text:a.innerText,href:a.getAttribute('href'),r:box(a),color:getComputedStyle(a).color,font:getComputedStyle(a).fontSize})),
       socialHeading:social.querySelector('.mobile-menu__social-label').innerText,
       socialLinks:[...social.querySelectorAll('a')].map(a=>({text:a.innerText,href:a.href,r:box(a),font:getComputedStyle(a).fontSize})),
-      copyright:foot.querySelector('.mobile-menu__copyright').innerText,
+      copyrightRemoved:foot.querySelector('.mobile-menu__copyright')===null,
       pageOverflow:document.documentElement.scrollWidth-innerWidth,
       footerInView:box(foot).bottom<=innerHeight-8,
       headerVisible:getComputedStyle(head).visibility==='visible',
@@ -36,7 +36,7 @@ async function load(kind,width,height,lang){
   assert.equal(data.menuItems.length,4,kind+': precisely four main links');
   assert.equal(data.socialLinks.length,4,kind+': precisely four social links');
   assert.deepEqual(data.socialLinks.map(l=>l.href),MOBILE_MENU_SOCIAL_PROFILES.map(l=>l.href),kind+': social links from canonical data');
-  assert.deepEqual(data.menuItems.map(x=>x.text),lang==='en'?['Featured','All Work','Expertise','Contact']:['精选作品','全部作品','专业实力','联系']);
+  assert.deepEqual(data.menuItems.map(x=>x.text),lang==='en'?['Featured','Expertise','Contact','All Work']:['精选作品','专业实力','联系','全部作品']);
   assert.deepEqual(data.socialLinks.map(l=>l.text),MOBILE_MENU_SOCIAL_PROFILES.map(l=>l[lang]));
   assert.equal(data.socialHeading,lang==='en'?'Social':'社交平台');
   assert.equal(data.overlay,'rgba(12, 12, 13, 0.9)',kind+': dark modal material');
@@ -45,7 +45,7 @@ async function load(kind,width,height,lang){
   assert(data.menuItems.every((x,i,arr)=>x.r.left>=0&&x.r.right<=width&&(i===0||x.r.top>=arr[i-1].r.bottom)));
   assert(data.socialLinks.every(x=>x.r.left>=0&&x.r.right<=width&&x.r.height>=43.9),kind+': social hit areas visible');
   assert(data.footer.top>=data.menuItems.at(-1).r.bottom+8,kind+': bottom social block does not overlap menu');
-  assert(data.footerInView,kind+': copyright is visible');
+  assert(data.footerInView&&data.copyrightRemoved,kind+': mobile menu no longer displays an unnecessary copyright line');
   return {page,data,errors:errs,kind,container};
 }
 try{
@@ -64,8 +64,8 @@ try{
       assert.equal(home.data.socialLinks[i].font,works.data.socialLinks[i].font);
       for(const key of ['top','left','height'])approx(home.data.socialLinks[i].r[key],works.data.socialLinks[i].r[key],width+' '+lang+': social '+i+' '+key);
     }
-    // Distinct ACTIVE item is intentional: first on home, second on Works.
-    assert.equal(home.data.menuItems[0].color,works.data.menuItems[1].color);
+    // Distinct ACTIVE item is intentional: first on home, fourth on Works.
+    assert.equal(home.data.menuItems[0].color,works.data.menuItems[3].color);
     assert.deepEqual(home.errors,[]);assert.deepEqual(works.errors,[]);
     assert.equal(getSafeMediaReport(home.page).urls.length,0);
     assert.equal(getSafeMediaReport(works.page).urls.length,0);

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <style>@view-transition { navigation: auto; }</style>
   <link rel="stylesheet" href="./src/styles/page-transitions.css" />
+  <script src="./page-transition-types.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>try { if (window.localStorage.getItem('ailuren-lang') === 'en') document.documentElement.lang = 'en'; } catch (error) {}</script>
   <meta name="description" content="AI路人（宁磊），9 年动态设计经验（快手/小米），专注 AI 视频创意与 AIGC 内容创作，涵盖 AI 广告、概念短片、文旅宣传。获可灵超棒奖、通义官方宣传片、MJ 官方优秀作品等奖项，抖音单视频千万播放。" />
@@ -132,7 +133,6 @@
     .hero-title { margin: 18px 0 0; text-wrap: balance; }
     .hero-title span { font-weight: 600; }
     .hero-subtitle { text-shadow: 0 1px 9px rgba(3,10,18,.58); text-wrap: pretty; }
-    .scroll-cue { display: none; }
     .hero-readout { position: absolute; right: 0; bottom: 0; display: grid; gap: 7px; color: rgba(237,244,249,.52); font: 500 10px var(--tech); text-align: right; }
     .hero-readout strong { color: var(--signal); font-weight: 400; }
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(255,255,255,.25); transform: translateY(-50%); pointer-events: none; }
@@ -261,11 +261,11 @@
 
     /* 色彩系统：深空底色、蓝灰信息层、单一蓝色交互层。 */
 
-    /* A first-frame still underlies native video and WebGL until decoding succeeds. */
+    /* One responsive first-frame layer covers the native video until decoding.
+       No separate video poster URL: inline JS URLs were not fingerprinted in production. */
     #video-bg { background: var(--space-black) url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat; }
-    /* Keep the actual ship frame above the native video and canvas while
-       desktop metadata/texture decoding catches up. This is a still from
-       the SAME film, not an added visual or an altered Hero color preset. */
+    /* Exact opening frame, extracted from the SAME film for each viewport;
+       shown above the native decoder until the first decoded frame is ready. */
     #hero-first-frame {
       position: absolute; inset: 0; z-index: 2; pointer-events: none;
       background: #000 url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat;
@@ -1649,14 +1649,13 @@
       display: none !important;
     }
 
-    /* Improve chapter-title legibility against bright moving film frames.
-       Only local text shadows: no section-sized overlays or video adjustments. */
+    /* One small contact shadow for moving film; the old diffuse 28px halo
+       made crisp headings look muddy over brighter cloud frames. */
     #projects .section-title,
     #recognition .section-title,
     #recognition .impact-evidence-label h2,
     #experiments .section-title {
-      text-shadow: 0 2px 14px rgba(0, 0, 0, .78),
-                   0 0 28px rgba(0, 0, 0, .38);
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .42);
     }
 
     /* 导航材质统一：桌面与移动端都使用网站其他面板的中性深黑磨砂层。 */
@@ -1701,8 +1700,15 @@
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata" poster="assets/images/hero-first-frame-mobile.webp"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
+  <!-- Contextual Hero scroll instruction: visible again after returning to
+       the opening film; it is not a second navigation button. -->
+  <div id="hero-scroll-guide" class="hero-scroll-guide" aria-hidden="true">
+    <span class="hero-scroll-guide__desktop" data-i18n="hero.scrollGuide.desktop">向下滚动 · 探索影像</span>
+    <span class="hero-scroll-guide__mobile" data-i18n="hero.scrollGuide.mobile">上滑探索</span>
+    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg>
+  </div>
   <header>
     <div class="nav-inner shell">
       <a class="brand" href="#top" aria-label="AI路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /><span class="nav-brand-name" data-i18n="brand.name">AI路人</span></a>
@@ -1725,14 +1731,14 @@
     <nav id="mobile-primary-nav" class="mobile-menu__links" aria-label="主导航" data-i18n-aria="nav.aria">
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
-        <li><a href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
         <li><a href="#recognition"><span data-i18n="nav.expertise">专业实力</span><span class="nav-short" data-i18n="nav.expertise.short">实力</span></a></li>
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
+        <li class="nav-library-item"><a class="nav-library-link" href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
       </ul>
     </nav>
     <div class="mobile-nav-drawer-foot mobile-menu__footer">
       <div id="mobile-menu-social-root"></div>
-      <span class="mobile-menu__copyright" data-i18n="footer.copyright">© 2024-2026 AI路人 · 保留所有权利</span>
+
     </div>
   </div>
 
@@ -1746,7 +1752,6 @@
           <div class="hero-actions reveal">
             <div id="hero-actions-react-root"></div>
           </div>
-          <a class="scroll-cue reveal" href="#projects" aria-label="继续阅读" data-i18n-aria="hero.scrollCue.aria"><span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-proof reveal" aria-label="创作能力方向" data-i18n-aria="hero.proof.aria">
           <div class="hero-proof-card"><strong data-i18n="hero.proof1.title">AI 视频制作</strong><span data-i18n="hero.proof1.desc">品牌广告 · 创意短片</span></div>
@@ -1769,7 +1774,7 @@
       </div>
     </section>
 
-    <section id="experiments" class="section" aria-labelledby="experiments-title">
+    <section id="experiments" class="section expertise-lab-subsection" aria-labelledby="experiments-title">
       <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
         <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
       </div>
@@ -1782,17 +1787,14 @@
           <div class="closing-card-main">
             <div class="closing-about">
               <div class="section-intro reveal">
-                <p class="closing-column-kicker" data-i18n="about.kicker">个人简介</p>
-                <div><h2 id="profile-title" class="section-title" data-i18n="about.title">关于我</h2></div>
+                <h2 id="profile-title" class="section-title about-role" data-i18n="about.role">AI 影像创作者</h2>
               </div>
               <div class="about-copy reveal">
-                <h3 class="about-role" data-i18n="about.role">AI 影像创作者</h3>
                 <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验。</p>
               </div>
             </div>
             <section id="contact" class="closing-contact" aria-labelledby="contact-title">
               <div class="footer-contact-copy">
-                <p class="footer-contact-kicker" data-i18n="footer.contact.kicker">合作联系</p>
                 <h2 id="contact-title" data-i18n="footer.contact.title">开始合作</h2>
                 <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
                 <div class="footer-contact-direct">
@@ -1803,27 +1805,18 @@
             </section>
           </div>
           <div class="closing-social" aria-label="社交媒体与作品链接">
-            <span class="closing-social-label" data-i18n="footer.social.kicker">社交平台</span>
+            <footer class="closing-footer" aria-label="个人品牌">
+              <div class="footer-brand" aria-label="AI路人">
+                <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></span>
+                <span class="footer-brand-copy"><strong data-i18n="brand.name">AI路人</strong></span>
+              </div>
+            </footer>
             <div id="footer-dock-react-root"></div>
           </div>
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="closing-footer">
-    <div class="shell footer-stack">
-      <div class="footer-topline">
-        <a class="footer-brand" href="#top" aria-label="AI路人，返回顶部" data-i18n-aria="brand.aria">
-          <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></span>
-          <span class="footer-brand-copy"><strong data-i18n="brand.name">AI路人</strong></span>
-        </a>
-      </div>
-      <div class="footer-bottom footer-copyright-row">
-        <p class="footer-bottom-copy" data-i18n="footer.copyright">© 2024-2026 AI路人 · 保留所有权利</p>
-      </div>
-    </div>
-  </footer>
   <div class="copy-status" role="status" aria-live="polite"></div>
 
   <script src="./vendor/gsap.min.js"></script>
@@ -1928,15 +1921,15 @@
         var activelyScrubbing = now - lastScrollAt < ACTIVE_SCROLL_WINDOW;
         publishScrubState(activelyScrubbing);
         var delta = targetTime - video.currentTime;
-        // A phone decoder cannot keep up with 40+ random seeks per second,
-        // especially while an OGL texture is being uploaded. Coalesce seeks,
-        // never interrupt a pending seek, and settle on the exact frame once
-        // scrolling stops. Desktop keeps its existing high-frequency response.
+        // Coalesce in-flight seeks on *both* desktop and mobile. Reassigning
+        // currentTime while the decoder is seeking interrupts frame decoding
+        // (particularly visible as horizontal tearing with the 720p Hero).
+        // Keep desktop's existing cadence; after the pending seek finishes,
+        // request only the latest scroll target and settle precisely at rest.
         var seekInterval = mobileScrub ? (activelyScrubbing ? 50 : 80) : (activelyScrubbing ? 24 : 72);
         var targetChanged = Math.abs(targetTime - lastRequestedTime) > (mobileScrub ? .055 : .012);
         var needsCorrection = Math.abs(delta) > (mobileScrub ? .06 : (activelyScrubbing ? .025 : .01));
-        var canSeek = mobileScrub ? !video.seeking : (activelyScrubbing ? targetChanged : !video.seeking);
-        if (mobileScrub && activelyScrubbing && !targetChanged) canSeek = false;
+        var canSeek = !video.seeking && (!activelyScrubbing || targetChanged);
         if (loaded && !reduced && video.duration && canSeek && needsCorrection && now - lastSeekAt >= seekInterval) {
           // 快速滚动只提交最新目标，避免重复提交同一个未完成的 seek 把解码器拖成队列。
           // 大跳跃先用关键帧快速到位，停止滚动后再用精确时间补齐。
@@ -2085,7 +2078,7 @@
         entrance('#recognition .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#recognition', { duration: ANIM.intro.duration });
         entrance('#recognition .recognition-react-root', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#recognition .recognition-react-root', { duration: ANIM.stage.duration, start: 'top 78%' });
         entrance('#experiments .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#experiments', { duration: ANIM.intro.duration });
-        entrance('.closing-footer .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#profile', { duration: ANIM.footer.duration });
+        entrance('#profile .closing-social .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#profile', { duration: ANIM.footer.duration });
         entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration, delay: .08 });
       }
 

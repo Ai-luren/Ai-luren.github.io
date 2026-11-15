@@ -175,13 +175,16 @@
 }
 .flip-experiment__actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
 .flip-experiment__detail {
-  min-height: 38px; padding: 0 13px;
-  border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius);
-  background: var(--portfolio-tile-surface-hover); color: var(--apple-text);
-  font: 500 12px/1.4 var(--font-body); white-space: nowrap; cursor: pointer;
-  transition: background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
+  display: inline-flex; align-items: center; justify-content: flex-start;
+  box-sizing: border-box; min-height: 38px; min-width: 0; padding: 0;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  color: var(--apple-text); font: 500 12px/1.4 var(--font-body);
+  text-align: left; white-space: nowrap; cursor: pointer;
+  transition: color var(--apple-duration-control) var(--apple-ease);
 }
-.flip-experiment__detail:hover { border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-hover-surface); }
+@media (hover: hover) and (pointer: fine) {
+  .flip-experiment__detail:hover { color: var(--apple-text); }
+}
 .flip-experiment__actions .flip-experiment__link { position: relative; min-width: 0; min-height: 38px; padding: 0 2px; border-bottom: 0; font-size: 12px; }
 .flip-experiment__tooltip {
   position: absolute; right: 0; bottom: calc(100% + 8px);
@@ -202,7 +205,7 @@
     grid-template-columns: 27px minmax(150px, .7fr) minmax(0, 1.6fr) 130px;
     gap: 12px; padding-inline: 12px;
   }
-  .flip-experiment__actions { justify-content: flex-start; }
+  .flip-experiment__actions { justify-content: flex-end; }
 }
 @media (max-width: 720px) {
   .flip-experiment__row { grid-template-columns: 28px minmax(0, 1fr); }
@@ -322,13 +325,11 @@
 .lab-project-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
 .lab-project-source {
   box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-  min-height: 39px; padding: 0; border: none; border-bottom: 1px solid transparent;
+  min-height: 39px; padding: 0; border: 0;
   background: transparent; color: var(--apple-secondary);
   font: 500 12px/1.4 var(--font-body); text-decoration: none; white-space: nowrap;
 }
-.lab-project-source:hover { border-color: currentColor; color: var(--apple-text); }
-.lab-project-source--primary { padding: 0 13px; color: var(--apple-text); background: var(--portfolio-tile-surface-hover); border: 1px solid var(--portfolio-icon-border); border-radius: 999px; }
-.lab-project-source--primary:hover { background: var(--portfolio-icon-hover-surface); border-color: var(--portfolio-icon-border); }
+.lab-project-source:hover { color: var(--apple-text); }
 .lab-project-source:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .lab-project-pagination { grid-area: pager; align-self: end; display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 4px; }
 .lab-project-pagination span { min-width: 48px; color: var(--apple-secondary); text-align: center; font: 500 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; }

@@ -5,6 +5,7 @@ import './TextType.css';
 export default function TextType({
   text,
   as: Component = 'div',
+  startWithFullText = false,
   typingSpeed = 50,
   initialDelay = 0,
   pauseDuration = 2000,
@@ -22,8 +23,14 @@ export default function TextType({
   reverseMode = false,
   ...props
 }) {
-  const [displayedText, setDisplayedText] = useState('');
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
+  // On an initial Hero mount, show the complete role immediately rather
+  // than briefly exposing a one-character headline over the preloaded frame.
+  // Subsequent rotations retain the existing typing/deleting animation.
+  const initialText = startWithFullText
+    ? (Array.isArray(text) ? text[0] : text) || ''
+    : '';
+  const [displayedText, setDisplayedText] = useState(initialText);
+  const [currentCharIndex, setCurrentCharIndex] = useState([...initialText].length);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const cursorRef = useRef(null);

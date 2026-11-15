@@ -17,8 +17,8 @@ const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:'+port+'/';
 const widths=[320,360,375,390,430,720,721,760,761,768,820,900,1023,1024,1280,1440,1920];
 const langs=['zh','en'];
 const expectedNav={
- zh:['精选作品','全部作品','专业实力','联系'],
- en:['Featured','All Work','Expertise','Contact'],
+ zh:['精选作品','专业实力','联系','全部作品'],
+ en:['Featured','Expertise','Contact','All Work'],
 };
 let server;
 async function ready(){

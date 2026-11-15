@@ -90,7 +90,7 @@ try {
       for(const pageData of [home,library]){
         const cover=pageData.elements.cover;
         assert(cover&&cover.width>0&&cover.height>0,tag+': work cover missing');
-        assert.equal(cover.radius,'18px',tag+': cover radius');
+        assert.equal(cover.radius,width<=720?'9px':'12px',tag+': inner artwork radius');
         assert(near(cover.width/cover.height,.75,.02),tag+': 3:4 cover');
       }
       assert(near(home.elements.title.fontSize,library.elements.title.fontSize),tag+': heading scale differs');

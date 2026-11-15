@@ -45,7 +45,8 @@ export const DICT = {
 
     'hero.positioning': 'AI 视频创意 · 影像效果设计',
     'hero.subtitle': '为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。',
-    'hero.scrollCue.aria': '继续阅读',
+    'hero.scrollGuide.desktop': '向下滚动 · 探索影像',
+    'hero.scrollGuide.mobile': '上滑探索',
     'hero.proof.aria': '创作能力方向',
     'hero.proof1.title': 'AI 视频制作',
     'hero.proof1.desc': '品牌广告 · 创意短片',
@@ -119,7 +120,8 @@ export const DICT = {
 
     'hero.positioning': 'AI Video Creation · Visual Effects',
     'hero.subtitle': 'AI-powered commercials, product films and creative shorts for brands — from concept to final cut.',
-    'hero.scrollCue.aria': 'Keep reading',
+    'hero.scrollGuide.desktop': 'Scroll to explore',
+    'hero.scrollGuide.mobile': 'Swipe to explore',
     'hero.proof.aria': 'Creative capabilities',
     'hero.proof1.title': 'AI Video',
     'hero.proof1.desc': 'Commercials · Short Films',

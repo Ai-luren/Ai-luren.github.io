@@ -27,7 +27,9 @@ try {
     assert((await lab.locator('.lab-project-image-frame img').evaluate(e=>e.naturalWidth))>0);
     await page.keyboard.press('ArrowRight');
     await page.waitForFunction(language => document.querySelector('#lab-project-title')?.textContent.includes(language==='zh'?'图片对比':'Comparison'), lang);
-    assert.equal(await lab.locator('.lab-project-source--primary').getAttribute('href'),'https://ai-luren.github.io/Image-comparison/');
+    assert.equal(await lab.locator('.lab-project-source').count(),1,'Comparison detail has only GitHub source');
+    assert.equal(await lab.locator('.lab-project-source').getAttribute('href'),'https://github.com/Ai-luren/Image-comparison');
+    assert.equal(await lab.locator('.lab-project-source--primary').count(),0,'Removed live demo must not remain');
     assert.equal(await lab.locator('.lab-project-source').filter({hasText:'↗'}).count(),0,'lab links must not use ↗ glyphs');
     assert.equal(await lab.locator('.lab-project-pagination button svg').count(),2);
     await page.keyboard.press('ArrowLeft');

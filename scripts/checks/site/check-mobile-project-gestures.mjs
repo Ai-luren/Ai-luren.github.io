@@ -104,19 +104,25 @@ try {
     const description = section?.querySelector('.about-description');
     const role = section?.querySelector('.about-role');
     const text = description?.textContent.trim() || '';
+    // The cinematic edition inserts a transparent film-only flight between
+    // Expertise (including the AI Lab) and About; ignore that ARIA-hidden
+    // spacer when validating the actual content order.
+    const previous = section?.previousElementSibling;
+    const previousContent = previous?.classList.contains('hero-journey-flight')
+      ? previous.previousElementSibling : previous;
     return {
       title: section?.querySelector('#profile-title')?.textContent.trim(),
       role: role?.textContent.trim(),
       description: text,
-      previousSection: section?.previousElementSibling?.id,
-      lastExpertiseSection: section?.previousElementSibling?.lastElementChild?.id,
+      previousSection: previousContent?.id,
+      lastExpertiseSection: previousContent?.lastElementChild?.id,
       contactWithinSection: Boolean(section?.querySelector('#contact')),
       oldCareerElements: section?.querySelectorAll('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction], [data-career-pagination-index]').length ?? -1,
       textOverflow: description ? description.scrollWidth > description.clientWidth + 1 : true,
       boundsOverflow: description ? description.getBoundingClientRect().right > innerWidth + 1 : true,
     };
   });
-  if (aboutState.title !== '关于我' || aboutState.role !== 'AI 影像创作者') {
+  if (aboutState.title !== 'AI 影像创作者' || aboutState.role !== 'AI 影像创作者') {
     throw new Error(`关于我标题或职业定位异常：${JSON.stringify(aboutState)}`);
   }
   if (aboutState.description !== DICT.zh['about.description']) {
@@ -137,7 +143,7 @@ try {
   await page.locator('#nav-lang [data-switch-lang="en"]').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();
-  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes(DICT.en['about.description'])) {
+  if (!aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes("Let's Work Together") || !aboutEnglish.includes(DICT.en['about.description'])) {
     throw new Error('关于我英文标题、职业定位或正文未按字典切换');
   }
 

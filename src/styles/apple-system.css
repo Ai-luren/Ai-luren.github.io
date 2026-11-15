@@ -816,28 +816,20 @@ header .nav-contact-icon:active,
   align-items: start;
   gap: clamp(28px, 4vw, 56px);
 }
-#profile .closing-about .section-intro { display: block; margin-bottom: 16px; }
-#profile .closing-column-kicker,
-#profile .footer-contact-kicker {
-  margin: 0 0 10px;
-  color: var(--apple-tertiary);
-  font: 500 10px/1.5 var(--font-mono);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-#profile .closing-card .section-title,
+/* Two equal reading columns: one role heading and one action heading. */
+#profile .closing-about .section-intro { display: block; margin: 0 0 15px; }
+#profile .closing-card #profile-title.about-role,
 #profile .footer-contact-copy h2 {
   margin: 0;
   color: var(--apple-label);
-  font-size: clamp(30px, 2.4vw, 36px);
-  font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -.025em;
+  font: 600 clamp(24px, 2.3vw, 32px)/1.2 var(--font-display);
+  letter-spacing: -.03em;
+  text-wrap: balance;
 }
 #profile .about-copy { width: min(100%, 660px); max-width: 660px; margin: 0; }
-#profile .about-role { margin: 0 0 10px; }
 #profile .about-description {
-  max-width: 66ch;
+  margin: 0;
+  max-width: 62ch;
   color: rgba(245, 245, 247, .78);
   font-size: clamp(16px, 1.15vw, 17px);
   line-height: 1.72;
@@ -858,9 +850,9 @@ header .nav-contact-icon:active,
   backdrop-filter: none;
   text-align: left;
 }
-#profile .footer-contact-copy > p:not(.footer-contact-kicker) {
+#profile .footer-contact-copy > p {
   max-width: 34ch;
-  margin: 12px 0 0;
+  margin: 15px 0 0;
   color: rgba(245, 245, 247, .78);
   line-height: 1.7;
 }
@@ -880,6 +872,22 @@ header .nav-contact-icon:active,
   margin-top: clamp(22px, 2.6vw, 32px);
   padding-top: 16px;
   border-top: 1px solid var(--apple-hairline-soft);
+}
+/* Desktop footer shares the editorial columns used by the headings.
+   At tablet widths, retain the flexible row to protect six-icon controls. */
+@media (min-width: 1024px) {
+  #profile .closing-social {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    align-items: center;
+    column-gap: clamp(28px, 4vw, 56px);
+  }
+  #profile .closing-social #footer-dock-react-root {
+    width: 100%;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+  #profile .closing-social .floating-dock-panel { gap: 8px; }
 }
 .closing-social-label {
   flex: 0 0 auto;
@@ -926,35 +934,63 @@ header .nav-contact-icon:active,
   transform: none;
   white-space: normal;
 }
-.closing-footer {
-  padding: 16px 0 max(32px, env(safe-area-inset-bottom)) !important;
-  background: transparent !important;
-}
-.closing-footer::before { background: transparent !important; }
-.closing-footer .footer-stack {
+/* The brand is now a noninteractive visual mark within the contact card.
+   Give it the same circular geometry as the adjacent social icon controls.
+   No separate footer stacking context, copyright row or decorative line. */
+#profile .closing-social .closing-footer {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  min-width: 0;
+  height: 46px;
+  margin: 0;
+  padding: 0 !important;
+  background: transparent !important;
+  isolation: auto;
+  z-index: auto;
 }
-.closing-footer .footer-topline { margin: 0; padding: 0 !important; border: 0 !important; }
-.closing-footer .footer-bottom { width: auto; margin: 0; padding: 0 !important; border: 0 !important; }
-.closing-footer .footer-copyright-row .footer-bottom-copy { width: auto; padding: 0 !important; border: 0 !important; }
-
+#profile .closing-footer::before { display: none; }
+#profile .closing-social .footer-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: auto;
+  min-height: 46px;
+  height: 46px;
+  margin: 0;
+  padding: 0;
+  color: var(--apple-text);
+  cursor: default;
+  pointer-events: none;
+}
+#profile .closing-social .footer-avatar {
+  box-sizing: border-box;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+}
+#profile .closing-social .footer-brand-copy strong {
+  font-size: 17px;
+  line-height: 1.15;
+}
 @media (max-width: 720px) {
-  #profile.closing-section { padding: 48px 0 18px; }
-  #profile .closing-card { padding: 22px 20px 16px; border-radius: 20px; }
-  .closing-card-main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  #profile .closing-about .section-intro { margin-bottom: 14px; }
-  #profile .closing-column-kicker,
-  #profile .footer-contact-kicker { margin-bottom: 8px; }
-  #profile .closing-card .section-title,
-  #profile .footer-contact-copy h2 { font-size: clamp(30px, 8vw, 34px); }
+  #profile.closing-section { padding: 36px 0 14px; }
+  #profile .closing-card { padding: 19px 18px 16px; border-radius: 20px; }
+  .closing-card-main { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  #profile .closing-about .section-intro { margin-bottom: 11px; }
+  #profile .closing-card #profile-title.about-role,
+  #profile .footer-contact-copy h2 { font-size: clamp(27px, 7.5vw, 32px); }
   #profile .about-copy { width: 100%; max-width: none; }
-  #profile .about-description { font-size: 16px; line-height: 1.75; }
+  #profile .about-description { font-size: 15.5px; line-height: 1.64; }
   #profile .closing-contact { padding-top: 0; }
   #profile .footer-contact-copy { width: 100%; max-width: none; }
-  #profile .footer-contact-direct { display: grid; gap: 0; margin-top: 14px; }
+  #profile .footer-contact-copy > p {
+    margin-top: 11px;
+    line-height: 1.55;
+  }
+  #profile .footer-contact-direct { display: grid; gap: 0; margin-top: 10px; }
   #profile .footer-contact-direct a,
   #profile .footer-contact-direct a:last-child {
     display: grid;
@@ -962,20 +998,28 @@ header .nav-contact-icon:active,
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 12px 0;
+    min-height: 44px;
+    padding: 7px 0;
     border-top: 1px solid var(--apple-hairline-soft);
   }
   #profile .footer-contact-direct strong { overflow-wrap: anywhere; }
-  .closing-social { align-items: flex-start; flex-direction: column; gap: 8px; margin-top: 18px; padding-top: 12px; }
-  .closing-social #footer-dock-react-root { width: 100%; justify-content: flex-start; }
+  .closing-social { align-items: center; flex-direction: column; gap: 0; margin-top: 19px; padding-top: 18px; }
+  .closing-social #footer-dock-react-root { width: 100%; justify-content: center; }
   .closing-social .floating-dock-shell { max-width: 100%; }
   .closing-social .floating-dock-panel { gap: clamp(2px, 1.2vw, 4px); }
   .closing-social .floating-dock-icon,
   .closing-social .floating-dock-icon img { width: 18px; height: 18px; }
-  .closing-footer { padding: 12px 0 max(26px, env(safe-area-inset-bottom)) !important; }
-  .closing-footer .footer-stack { flex-direction: column; gap: 12px; }
-  .closing-footer .footer-brand { justify-content: center; }
-  .closing-footer .footer-bottom-copy { text-align: center; }
+  /* Mobile already identifies the creator in the global navigation.
+     Hide the repeated brand row; leave the social icons in one clean line. */
+  #profile .closing-social .closing-footer { display: none; }
+  #profile .closing-social .floating-dock-item { min-width: 40px; min-height: 40px; }
+}
+
+/* Phone navigation spans up to 760px; hide the repeated footer signature
+   through that breakpoint, including landscape phones (721–760px). */
+@media (min-width: 721px) and (max-width: 760px) {
+  #profile .closing-social .closing-footer { display: none; }
+  #profile .closing-social { justify-content: center; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1104,11 +1148,6 @@ header .nav-contact-icon:focus-visible {
     grid-template-rows: auto auto !important;
   }
   #projects .comet-archive-mobile-shell { padding-bottom: 60px; }
-  #projects .comet-archive-mobile-shell .comet-archive__title {
-    height: auto !important;
-    min-height: 0 !important;
-    padding-top: var(--portfolio-work-title-gap-mobile) !important;
-  }
   #projects .comet-archive-mobile-shell .comet-archive__details,
   #projects .comet-archive-mobile-shell .comet-archive__details strong {
     height: auto !important;
@@ -1256,20 +1295,10 @@ header .nav-contact-icon:focus-visible {
     min-height: 0 !important;
     gap: 0 !important;
   }
-  .comet-archive-mobile-shell .comet-archive__title {
-    order: 2 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 2px 1px 0 !important;
-    align-items: flex-start !important;
-    overflow: visible !important;
-  }
   .comet-archive-mobile-shell .comet-archive__title-content--forced-break .comet-archive__title-line {
     display: block !important;
   }
   .comet-archive-mobile-shell .comet-archive__image {
-    order: 1 !important;
     aspect-ratio: 3 / 4 !important;
     background-color: var(--portfolio-content-surface) !important;
     background-position: center !important;
@@ -1280,26 +1309,13 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-mobile-shell .comet-archive__image > .comet-archive__meta {
     display: none !important;
   }
-  .comet-archive-mobile-shell .comet-archive__copy {
-    display: grid !important;
-    order: 3 !important;
-    gap: 2px !important;
-    min-height: 0 !important;
-    padding: var(--portfolio-work-caption-gap-mobile) 1px 0 !important;
-  }
   .comet-archive-mobile-shell .comet-archive__details {
     height: auto !important;
     min-height: 0 !important;
     min-width: 0 !important;
   }
-  @supports (grid-template-rows: subgrid) {
-    #projects .comet-archive-mobile-shell .comet-archive { grid-template-rows: none !important; row-gap: 0 !important; }
-    #projects .comet-archive-mobile-shell .comet-archive__item { display: grid; grid-row: span 3; grid-template-rows: subgrid; padding-bottom: 16px; }
-    #projects .comet-archive-mobile-shell .comet-archive__card { display: grid !important; grid-row: span 3; grid-template-rows: subgrid; align-content: stretch; }
-    #projects .comet-archive-mobile-shell .comet-archive__image { grid-row: 1; }
-    #projects .comet-archive-mobile-shell .comet-archive__title { grid-row: 2; }
-    #projects .comet-archive-mobile-shell .comet-archive__copy { grid-row: 3; }
-  }
+  /* ProjectCard now uses a unified flex surface; the old mobile subgrid
+     and three individually aligned rows are intentionally retired here. */
   .comet-archive-page-arrow {
     position: absolute;
     top: 50%;
@@ -2026,12 +2042,46 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
   }
 }
 
-/* About is the primary story; contact is the actionable secondary heading.
-   Preserve the same two-column card and existing mobile one-column flow. */
-#profile .footer-contact-copy h2 {
-  font-size: clamp(25px, 2vw, 30px);
-  line-height: 1.18;
+
+/* AI Lab is the fourth Expertise submodule, not a standalone page chapter.
+   Its #experiments anchor, project previews and bilingual text remain intact. */
+#expertise-group #experiments.expertise-lab-subsection {
+  padding-top: 32px;
+  padding-bottom: clamp(30px, 3vw, 44px);
 }
+#expertise-group #experiments.expertise-lab-subsection .section-title {
+  text-shadow: 0 1px 6px rgba(0,0,0,.42);
+}
+/* The three Expertise evidence modules use a 28px vertical gap on
+   narrow phones (<=720px). AI Lab uses that SAME gap. At 721–760px,
+   Expertise itself uses the wider 64px row rhythm, so we keep its shared
+   32px + 32px gap rather than making AI Lab feel unusually compressed. */
 @media (max-width: 720px) {
-  #profile .footer-contact-copy h2 { font-size: clamp(26px, 7vw, 30px); }
+  #expertise-group #recognition {
+    padding-bottom: 0;
+  }
+  #expertise-group #experiments.expertise-lab-subsection {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+}
+/* Copyright is plain metadata, never a second thin divider beneath the logo. */
+#profile .closing-footer .footer-copyright-row .footer-bottom-copy {
+  display: block !important;
+  border: 0 !important;
+}
+
+
+@media (max-width: 359px) {
+  #profile .closing-social .floating-dock-panel {
+    gap: 0;
+    max-width: none;
+    width: 264px;
+    justify-content: center;
+    padding: 0;
+  }
+  #profile .closing-social #footer-dock-react-root {
+    margin-left: -7px;
+    width: calc(100% + 14px);
+  }
 }

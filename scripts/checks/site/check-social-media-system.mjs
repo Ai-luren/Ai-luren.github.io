@@ -179,7 +179,7 @@ try {
           }
         }
         assert.deepEqual(errors,[],`${tag}: page errors`);
-        console.log(`PASS ${tag}: media layout, action order, shared capsule, language, QR, focus`);
+        console.log(`PASS ${tag}: media layout, unboxed actions, language, QR, focus`);
       } finally {await page.close()}
     }
   } finally {await browser.close()}

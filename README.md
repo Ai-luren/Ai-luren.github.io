@@ -110,6 +110,7 @@ docs/                        设计规范与维护指南
 npm run build                   # 生产构建
 npm run check:plan              # 只读查看测试覆盖与重复检查
 npm run check:smoke             # 基础构建、目录与媒体安全
+npm run check:project           # 网站与工作台核心回归（非全部深测）
 npm run check:cinema-controls   # 手机播放器交互
 npm run check:cinema-local      # 本地视频缓冲与防黑屏
 npm run check:cinema-version-motion # A/B 版本切换动画
@@ -117,7 +118,7 @@ npm run check:workbench-core    # 工作台核心回归
 npm run check:i18n              # 中英文界面
 ```
 
-维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
+维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
 
 </details>
 

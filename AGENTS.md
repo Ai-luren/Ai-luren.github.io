@@ -24,7 +24,7 @@
 
 - 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。
 - 修改 CSS 前先确认规则归属：Hero、共享 Token、导航、玻璃和作品库拥有各自文件；禁止复制旧版调参器或无必要地在 `index.html`、共享 CSS 中叠加同选择器覆盖。
-- 首页滚动使用浏览器原生初始定位及历史恢复；**禁止主动强制归零**，尤其不能在 `load`／`pageshow` 中重置访客位置，也不能将 `history.scrollRestoration` 改为 `manual`。生产构建后运行 `npm run check:home-scroll`，覆盖弱网、返回及 `#projects` 深链。
+- 首页滚动使用浏览器原生初始定位及历史恢复；**禁止主动强制归零**，尤其不能在 `load`／`pageshow` 中重置访客位置，也不能将 `history.scrollRestoration` 改为 `manual`。首次生产加载时 ScrollTrigger 刷新不得导致「专业实力」导航滚动提前结束；只允许一次受限恢复，用户主动滚动必须解除锁定。生产构建后检查 `check:home-scroll`、`check:nav-scroll` 与 `scripts/checks/site/check-desktop-primary-navigation.mjs`。
 - 导航响应式契约：**761px 及以上首页与全部作品页都展开同一套四项文字导航**；760px 及以下才使用汉堡菜单。作品库普通页左侧 A+ 箭头 +「首页 / Home」在双端都指向首页 Hero (./index.html)，不要误改成 #projects 或创作者头像；作品详情/获奖/账号资料弹窗仍使用共享头像品牌导航。保留 B+++ 语言切换和 = → × 动画，不为平板单独创建导航实现。
 - 获奖画廊一次显示全部 8 张，≥1280px 八列，≤1279px 四列两排；手机卡片只显示完整图片，标题和奖项信息在图片查看器中呈现。画廊不使用左右切换，查看器保留原有导航和焦点恢复。
 - AI 实验室详情保持三项目共享导航、一屏等高、真实素材与 `check:lab-showcase`；手机站外链接共用 `ExternalLinkSheet`，禁止伪造界面/绕过确认，入口和素材维护见 `docs/AI实验室与外链维护.md`。
@@ -48,8 +48,8 @@
 
 ## 验证与维护
 
-- **验证分级**：先运行只读 `npm run check:plan` 核对测试归属及重复覆盖；日常 `npm run check:smoke`、工作台 `npm run check:workbench-core`；`npm run check:project` 串行执行这两组。发布前 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。清单唯一来源为 `scripts/lib/check-suite-catalog.mjs`，维护说明见 `docs/测试与回归维护.md`。保留历史 npm 命令，严禁删断言掩盖失败。
-- **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；影院 `npm run check:cinema-local`、手机播放器 `npm run check:cinema-controls`（均需 5174）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
+- **验证分级**：只读清单 `npm run check:plan`；快速网站 `npm run check:smoke`、工作台 `npm run check:workbench-core`，合计 `npm run check:project`。发布前深测 `npm run check:site-full`、`npm run check:workbench-full` 或 `npm run check:adversarial`。唯一队列见 `scripts/lib/check-suite-catalog.mjs`，说明见 `docs/测试与回归维护.md`。保留旧命令及全部断言。
+- **专项检查**：改代码先 `npm run build`；媒体安全 `npm run check:media-safety`；弱网滚动 `npm run check:home-scroll`（先构建）；本地缓冲 `npm run check:cinema-local`（需 5174 开发服务）、手机播放器 `npm run check:cinema-controls`（默认 5174，支持 `PORTFOLIO_URL`）；中英排版 `npm run check:i18n`；结束 `git diff --check`。
 - **运行**：本地启动 `npm run dev` 后访问 `http://127.0.0.1:5174/`；正式预览用 `npm run preview`，不能直接打开 `index.html` 文件。
 - `.audit/` 仅本地保存报告和素材对照，不属于部署文件；旧记录见 `.audit/README.md`，不得清空。旧 Git 分支及不可达对象须核实恢复价值后才能清理。
 
@@ -76,5 +76,5 @@
 - **封面底色**：作品库、详情、历史、新建和拖拽预览媒体背景统一纯黑 `#000`，`object-fit: contain`，不拉伸。回归 `npm run check:workbench-backdrops`。
 - **新建作品**：导入前只显示 MP4 入口、默认素材目录、作品统一名称／分类与可选 ImageKit；导入后 `/api/frame` 自动生成两张独立封面，失败可手动选帧。无效控件在导入前隐藏；底部提示缺失项，不用假「1/3」进度，不自动上传。回归 `npm run check:workbench-create`。
 - **界面常显**：工作台禁止 `<details>/<summary>` 折叠：素材目录、ImageKit、添加版本名称、精确选帧和封面微调直接显示，空间不足使用内部滚动。按钮/精选星标/加号使用居中 SVG，媒体纯黑底、不拉伸。保留 `style.css` → `workbench-enhancements.css` 的加载顺序并测 3 档断点。
-- **服务端真实验收**：每次改 `portfolio-workbench/` 先检查 5190 是否是旧 Node 进程；更新路由/模块后重启 `npm run workbench`，再运行 `npm run check:workbench-live`，确认作品正常读取、无 JS 错误、404 或 ImageKit 请求。构建/隔离测试不能替代真实验收。
+- **服务端真实验收**：修改 `portfolio-workbench/` 后先检查 5190 是否为旧进程、确认无未保存草稿，再正常重启 `npm run workbench` 并执行 `npm run check:workbench-live`。服务启动可能修剪超过限额的封面历史，**禁止为了测试而启动第二个实例指向正式 `.cover-studio/`**；写入型测试必须使用隔离项目。构建/隔离测试不能替代正式服务验收。
 - **安全测试**：Playwright 通过 `safe-media.mjs` 及隔离项目测试写入；不得访问正式素材/排序数据。工作台至少验证 `check:workbench-full-flow`、`check:workbench-ux`、`check:workbench-phase3`、`check:workbench-icon-alignment`、`npm run build`；检查 1440×900、1280×720、1000×750。

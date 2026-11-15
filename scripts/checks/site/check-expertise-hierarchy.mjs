@@ -59,7 +59,20 @@ try{
             measure('#experiments .flip-experiment'),
           ];
           const children=[award,creator,media,lab];
-          return {main,project,children,cardTitle,cards,
+          const evidence=[...document.querySelectorAll('#recognition .impact-evidence-row')];
+          const peerSpacing=evidence.slice(1).map((row,i)=>
+            row.getBoundingClientRect().top-evidence[i].getBoundingClientRect().bottom);
+          // Use the evidence row's layout edge rather than its animated
+          // inner glass child; entrance transforms can skew one frame.
+          const labHandoff=lab.top-evidence.at(-1).getBoundingClientRect().bottom;
+          // ScrollTrigger may animate element positions while the test runs.
+          // The authoritative spacing contract is the actual CSS layout gap.
+          const labLayoutGap=parseFloat(getComputedStyle(document.querySelector('#recognition')).paddingBottom)
+            +parseFloat(getComputedStyle(document.querySelector('#experiments')).paddingTop);
+          const peerLayoutGap=parseFloat(getComputedStyle(document.querySelector('#recognition .impact-evidence')).rowGap);
+          return {main,project,children,cardTitle,cards,peerSpacing,labHandoff,labLayoutGap,peerLayoutGap,
+            labIsNested:document.getElementById('expertise-group')?.contains(document.getElementById('experiments')),
+            noInternalFilm:!document.querySelector('#expertise-group .hero-journey-flight'),
             gapToFirst:award.top-main.bottom,
             gaps:children.map((title,i)=>cards[i].top-title.bottom),
             overflow:document.documentElement.scrollWidth-innerWidth};
@@ -75,6 +88,13 @@ try{
         if(width<=760)assert(result.cardTitle && result.cardTitle.size<=sub-3,tag+': creator tile label must be smaller than section heading');
         const target=width<=760?20:28;
         for(const [i,gap] of result.gaps.entries())assert(Math.abs(gap-target)<=1.25,tag+': gap '+i+'='+gap.toFixed(2)+' expected '+target);
+        // The mobile fourth submodule should follow the same vertical
+        // rhythm as its three Expertise peers, never a new chapter gap.
+        assert(result.labIsNested && result.noInternalFilm,tag+': Lab split from Expertise');
+        assert(result.peerSpacing.length===2,tag+': missing Expertise modules');
+        assert(Math.abs(result.labLayoutGap-result.peerLayoutGap)<=1,
+          tag+': AI Lab layout gap differs from Expertise peers ('+
+          result.labLayoutGap.toFixed(1)+'px vs '+result.peerLayoutGap.toFixed(1)+'px)');
         assert(result.overflow<=2,tag+': horizontal overflow');
         assert.deepEqual(errors,[],tag+': page errors');
         console.log('PASS '+tag+': main '+result.main.size+' > sub '+sub+(width<=760?' > tile '+result.cardTitle.size:'')+'; gaps '+result.gaps.map(Math.round).join('/')+'px');

@@ -2,7 +2,19 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import './i18n/index.js';
+import './styles/hero-journey.css';
 import { warmNavigationTo } from './navigation/pagePrefetch.js';
+
+// The reviewed 15s C+ journey is now the homepage's local published design.
+// It does not affect Works, the player, or mobile section spacing.
+if (location.pathname.endsWith('/index.html') || location.pathname.endsWith('/')) {
+  document.documentElement.dataset.heroExperience = 'cinematic';
+  await import('./utils/heroScrollRecovery.js');
+  const { activateImmersive } = await import('./utils/heroImmersivePreview.js');
+  activateImmersive();
+  const { initHeroScrollGuide } = await import('./utils/heroScrollGuide.js');
+  initHeroScrollGuide();
+}
 
 await (window.__gsapReady || Promise.resolve()).catch(() => undefined);
 

@@ -257,16 +257,24 @@ const CHECKS = {
       const experimentTop = experimentHeading ? experimentHeading.getBoundingClientRect().top + scrollY : null;
       const lastPanelBottom = metrics.at(-1)?.panelBottom;
       const labGap = Number.isFinite(experimentTop) && Number.isFinite(lastPanelBottom) ? experimentTop - lastPanelBottom : 0;
+      // The published 15s cinematic journey deliberately inserts transparent
+      // film-only travel after AI 自媒体. Test the REAL content spacing after
+      // subtracting that stage, not the total cinematic scroll distance.
+      const travel = document.querySelector('#recognition .hero-journey-flight--after-recognition');
+      const travelHeight = travel && getComputedStyle(travel).display !== 'none'
+        ? travel.getBoundingClientRect().height : 0;
+      const contentGap = labGap - travelHeight;
       const mobileOverfull = mobile
         ? metrics.some((item) => item.height > window.innerHeight * .9)
         : false;
       const titleRhythmOk = mobile
         ? maxDelta(titleGaps) <= 3
         : titleGaps.every((gap) => gap > 0) && maxDelta(titleGaps) <= 3;
-      const ok = !mobileOverfull && titleRhythmOk && maxDelta(rowGaps) <= 3 && labGap <= (mobile ? 96 : 128);
+      const ok = !mobileOverfull && titleRhythmOk && maxDelta(rowGaps) <= 3
+        && contentGap >= 0 && contentGap <= (mobile ? 96 : 128);
       return {
         ok,
-        detail: `标题-卡片 ${titleGaps.map(Math.round).join('/')}px / 模块间 ${rowGaps.map(Math.round).join('/')}px / 自媒体-实验室 ${Math.round(labGap)}px / 模块高度 ${metrics.map((item) => Math.round(item.height)).join('/')}`,
+        detail: `标题-卡片 ${titleGaps.map(Math.round).join('/')}px / 模块间 ${rowGaps.map(Math.round).join('/')}px / 自媒体-实验室净间距 ${Math.round(contentGap)}px（透明穿梭 ${Math.round(travelHeight)}px）/ 模块高度 ${metrics.map((item) => Math.round(item.height)).join('/')}`,
       };
     });
   },
@@ -329,7 +337,9 @@ const CHECKS = {
         }
       };
       assertRadius('header, header.is-condensed, .impact-glass, #profile .closing-card, #experiments .flip-experiment', '24px', '外层面板圆角');
-      assertRadius('#top .hero-proof-card, #projects .comet-archive__image, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#top .hero-proof-card, #impact-reach .impact-reach-profile-media', '18px', '内容卡片圆角');
+      assertRadius('#projects .portfolio-work-card--unified', innerWidth<=720?'14px':'18px', 'A+ 作品外层圆角');
+      assertRadius('#projects .portfolio-work-card--unified .comet-archive__image', innerWidth<=720?'9px':'12px', 'A+ 作品海报圆角');
       assertRadius('#recognition .impact-award-grid-card img', innerWidth <= 720 ? '8px' : '12px', '获奖图片圆角');
       assertRadius('#experiments .flip-experiment__row', '0px', '编辑索引行不使用独立卡片圆角');
       assertRadius('#recognition .impact-platform-desktop-tile, #recognition .impact-platform-mobile-tile', '0px', '平台静态分栏不使用卡片圆角');

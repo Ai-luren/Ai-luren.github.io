@@ -39,6 +39,7 @@ export default function HeroTitle() {
         as="span"
         className="hero-title__rotating"
         text={ROTATING_WORDS[lang]}
+        startWithFullText
         typingSpeed={lang === 'en' ? 50 : 90}
         deletingSpeed={lang === 'en' ? 30 : 50}
         pauseDuration={1600}
