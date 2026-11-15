@@ -113,6 +113,21 @@
 @keyframes impact-award-lightbox-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .impact-award-lightbox { animation: none; } }
 
+/* Wide-screen editorial evidence rail: one readable primary award with
+   directly accessible supporting thumbnails, never extra full-size images. */
+.impact-award-viewer-rail { display: none; }
+@media (min-width: 1100px) {
+  .impact-award-lightbox figure { grid-template-columns: 48px minmax(0,1fr) 48px 188px; }
+  .impact-award-viewer-rail { grid-column: 4; grid-row: 1 / 3; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-content: center; align-self: stretch; gap: 9px; min-width: 0; }
+  .impact-award-viewer-rail-meta { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px 3px; color: var(--apple-secondary); font: 500 10px/1.4 var(--font-mono); letter-spacing: .035em; }
+  .impact-award-viewer-thumb { box-sizing: border-box; display: grid; place-items: center; width: 100%; min-height: 0; padding: 4px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: inherit; cursor: pointer; touch-action: manipulation; transition: border-color 180ms var(--apple-ease), background-color 180ms var(--apple-ease); }
+  .impact-award-viewer-thumb img { display: block; width: 100%; height: clamp(46px,calc((100dvh - 330px)/4),100px); object-fit: contain; border-radius: 7px; }
+  .impact-award-viewer-thumb[aria-pressed="true"] { border-color: rgba(198,218,234,.62); background: rgba(255,255,255,.085); }
+  .impact-award-viewer-thumb:hover:not([aria-pressed="true"]), .impact-award-viewer-thumb:focus-visible { border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-hover-surface); }
+  .impact-award-viewer-thumb:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
+}
+@media (prefers-reduced-motion: reduce) { .impact-award-viewer-thumb { transition: none; } }
+
 /* Logo Index: one shared glass shell, with no repeated inner frame. */
 .impact-logo-shell { min-height: 0; padding: 10px 24px 12px; display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: 10px; }
 .impact-logo-head { flex: 0 0 auto; }
@@ -450,25 +465,6 @@
   min-height: 46px;
   margin-top: 24px;
 }
-.impact-profile-pagination-arrow {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  flex: 0 0 46px;
-  border: 1px solid var(--portfolio-icon-border);
-  border-radius: 50%;
-  background: var(--portfolio-icon-surface);
-  color: var(--apple-text);
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: border-color var(--apple-duration-control) var(--apple-ease),
-    background-color var(--apple-duration-control) var(--apple-ease);
-}
-.impact-profile-pagination-arrow svg { display: block; width: 18px; height: 18px; }
-.impact-profile-pagination-arrow:hover:not(:disabled) { border-color: var(--portfolio-panel-border); background: var(--portfolio-icon-hover-surface); }
-.impact-profile-pagination-arrow:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
-.impact-profile-pagination-arrow:disabled { cursor: progress; opacity: .45; }
 .impact-profile-pagination-count { min-width: 55px; color: var(--apple-secondary); font: 500 13px/1.5 var(--font-mono); text-align: center; font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) { .impact-profile-pagination { margin-top: 18px; } }
 @media (prefers-reduced-motion: reduce) { .impact-profile-pagination-arrow { transition: none; } }

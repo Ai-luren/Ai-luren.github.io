@@ -1,3 +1,5 @@
+// Layout invariants are measured without foreground reveal transforms;
+// the cinematic suite separately tests motion and its interactions.
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright-core';
 import { createSafePage } from '../../lib/safe-media.mjs';
@@ -11,7 +13,7 @@ try {
   for(const width of [320,390,721,1440]){
     for(const lang of ['zh','en']){
       for(const pageName of ['home','works']){
-        const page=await createSafePage(browser,{viewport:{width,height:900}});
+        const page=await createSafePage(browser,{viewport:{width,height:900},reducedMotion:'reduce'});
         const tag=width+'px '+lang+' '+pageName;
         const errors=[];page.on('pageerror',error=>errors.push(error.message));
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
@@ -70,7 +72,15 @@ try {
         if(width===390 || width===1440){
           const card=cards.first(),img=card.locator('.comet-archive__image');
           const original=await img.evaluate(el=>getComputedStyle(el).boxShadow);
-          await card.hover();await page.waitForTimeout(420);
+          await card.hover();
+          await page.waitForTimeout(140);
+          // A changing hash position or a late cover decode can move the
+          // pointer between scrollIntoView and the final hover sampling.
+          // Check real CSS :hover, then reacquire the target if necessary.
+          if(!(await card.evaluate(el=>el.matches(':hover')&&el.parentElement.matches(':hover')))) {
+            await card.hover();
+          }
+          await page.waitForTimeout(300);
           const after=await card.evaluate(el=>({
             cardBorder:getComputedStyle(el).borderColor,
             imgShadow:getComputedStyle(el.querySelector('.comet-archive__image')).boxShadow

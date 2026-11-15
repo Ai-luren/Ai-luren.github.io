@@ -1,0 +1,5 @@
+/* React Bits adapter: never hide content before hydration or GSAP startup. */
+.animated-content { visibility: visible; }
+@media (prefers-reduced-motion: reduce) {
+  .animated-content { transform: none !important; }
+}

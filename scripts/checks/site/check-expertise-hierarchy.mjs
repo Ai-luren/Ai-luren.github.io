@@ -26,7 +26,12 @@ try{
   const browser=await chromium.launch({headless:true,executablePath:browserPath});
   try{
     for(const lang of ['zh','en'])for(const width of widths){
-      const page=await createSafePage(browser, {viewport:{width,height:900}});
+      // Inspect stable typographic layout with system reduced motion;
+      // cinematic scrub geometry is independently validated by
+      // check-cinematic-dolly-scrub.mjs.
+      const page=await createSafePage(browser, {
+        viewport:{width,height:900},reducedMotion:'reduce'
+      });
       const tag=width+'px '+lang;
       try{
         const errors=[];
@@ -81,7 +86,7 @@ try{
         assert(Math.abs(result.main.size-result.project.size)<1,tag+': unequal top-level titles');
         assert(result.children.every(t=>t?.visible),tag+': missing child heading');
         const sub=result.children[0].size;
-        assert(result.main.size>sub+2,tag+': primary title too small');
+        assert(result.main.size>sub+5,tag+': primary title must clearly outrank secondary titles');
         assert(result.children.every(t=>Math.abs(t.size-sub)<.5),tag+': uneven subheadings');
         assert(result.children.every(t=>Math.abs(t.x-result.main.x)<=1.5),tag+': H2 left edges must align with Expertise: '+result.children.map(t=>t.x).join('/')+' vs '+result.main.x);
         assert(!result.children.some(t=>t.overflow),tag+': clipped child title');

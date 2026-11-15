@@ -38,25 +38,35 @@ try {
   await page.locator('#projects .comet-archive__cover').first().waitFor({ state: 'attached' });
   await page.waitForTimeout(350);
   const initialHome = await page.locator('#projects .comet-archive__cover')
-    .evaluateAll(images => images.map(image => image.hasAttribute('src')));
-  assert.equal(initialHome.length, 4, 'Mobile Featured first page must render four cards');
-  assert.deepEqual(initialHome, [true, true, false, false],
-    'Only the near first row should request imagery on first mobile Hero load');
+    .evaluateAll(images => images.map(image => ({
+      loaded:image.hasAttribute('src'),
+      top:image.getBoundingClientRect().top,
+    })));
+  assert.equal(initialHome.length, 8, 'Mobile Featured displays eight cards in one 2x4 grid');
+  // A scroll-driven dolly starts the cards deeper in the scene. Depending
+  // on Hero viewport height, even row one may be beyond the preload margin.
+  // Never force network work for artwork still far behind the video Hero.
+  assert(initialHome.slice(2).every(item => !item.loaded),
+    'Rows 2-4 must not compete with the Hero video');
+  assert(initialHome.every(item => !item.loaded || item.top <= 852 + 350 + 8),
+    'Only covers within the 350px preload margin may request imagery');
   assert(await page.locator('#impact-awards .impact-award-grid-card img')
     .evaluateAll(images => images.every(image => !image.hasAttribute('src'))),
   'Distant award thumbnails must not compete with Hero');
 
-  await page.locator('#projects').scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => [...document.querySelectorAll('#projects .comet-archive__cover')]
-    .every(image => image.complete && image.naturalWidth > 0));
-  await page.locator('.comet-archive-pagination button').nth(1).click();
-  await page.waitForFunction(() => {
-    const button = document.querySelectorAll('.comet-archive-pagination button')[1];
-    const images = [...document.querySelectorAll('#projects .comet-archive__cover')];
-    return button?.getAttribute('aria-selected') === 'true'
-      && images.length === 4 && images.every(image => image.complete && image.naturalWidth > 0);
-  });
-  console.log('PASS mobile Featured: near-row loading and decoded second-page navigation');
+  // Scroll through each real 2-card row, not directly to the final row:
+  // skipped rows should not preload until the visitor actually approaches.
+  for(const first of [0,2,4,6]){
+    await page.locator('#projects .comet-archive__cover').nth(first).scrollIntoViewIfNeeded();
+    await page.waitForFunction(index => [...document.querySelectorAll('#projects .comet-archive__cover')]
+      .slice(index,index+2).every(image => image.complete && image.naturalWidth > 0),
+      first,{timeout:10000});
+  }
+  assert(await page.locator('#projects .comet-archive__cover')
+    .evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)),
+    'All eight Featured covers must decode once their rows were visited');
+  assert.equal(await page.locator('.comet-archive-pagination').count(),0);
+  console.log('PASS mobile Featured: all eight covers decode progressively as rows enter the viewport');
 
   await page.locator('#impact-awards').scrollIntoViewIfNeeded();
   await page.waitForFunction(() => [...document.querySelectorAll('#impact-awards .impact-award-grid-card img')]

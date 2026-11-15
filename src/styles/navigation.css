@@ -384,7 +384,7 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
 /* Unified ghost-circle navigation: Awards viewer and cinema work switcher.
    No background at rest; one circular hover/focus treatment without layout shift.
    44px/48px target sizes remain stable on touch, with the same 20px chevron. */
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav) {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button) {
   display: grid;
   place-items: center;
   padding: 0;
@@ -400,36 +400,37 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
     opacity var(--apple-duration-control) var(--apple-ease);
 }
 .cinema-player__sequence > button { flex: 0 0 44px; width: 44px; height: 44px; }
+:is(.impact-profile-pagination-arrow,.lab-project-pagination > button) { box-sizing: border-box; flex: 0 0 44px; width: 44px; height: 44px; }
 .impact-award-lightbox-nav { flex: 0 0 48px; width: 48px; height: 48px; }
-:is(.cinema-player__sequence > button svg,.impact-award-lightbox-nav svg) {
+:is(.cinema-player__sequence > button svg,.impact-award-lightbox-nav svg,.impact-profile-pagination-arrow svg,.lab-project-pagination > button svg) {
   display: block;
   width: 20px;
   height: 20px;
 }
 /* Hover is a fine-pointer affordance only: iOS tap must not latch the ring. */
 @media (hover: hover) and (pointer: fine) {
-  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav):hover:not(:disabled) {
+  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button):hover:not(:disabled) {
     border-color: var(--portfolio-icon-border) !important;
     background: var(--portfolio-icon-hover-surface) !important;
     color: var(--apple-text);
     transform: none;
   }
 }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):focus-visible {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button):focus-visible {
   border-color: var(--portfolio-icon-border) !important;
   background: var(--portfolio-icon-hover-surface) !important;
   color: var(--apple-text);
 }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):active:not(:disabled) {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button):active:not(:disabled) {
   background: var(--portfolio-icon-active-surface) !important;
 }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):focus-visible {
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button):focus-visible {
   outline: 2px solid var(--apple-blue);
   outline-offset: 4px;
 }
-.cinema-player__sequence > button:disabled { opacity: .32; cursor: default; }
+:is(.cinema-player__sequence > button,.impact-profile-pagination-arrow,.lab-project-pagination > button):disabled { opacity: .32; cursor: progress; }
 @media (prefers-reduced-motion: reduce) {
-  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav) { transition: none; }
+  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-profile-pagination-arrow,.lab-project-pagination > button) { transition: none; }
 }
 @media (max-width:760px) {
   body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }

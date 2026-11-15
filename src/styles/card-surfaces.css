@@ -16,7 +16,7 @@
   --portfolio-panel-solid: #1c1c1e;
   --portfolio-panel-border: rgba(255, 255, 255, .14);
   --portfolio-panel-blur: blur(22px) saturate(1.08);
-  /* Shared cinematic content glass: Impact, Lab, About, Hero proof and mobile archive.
+  /* Shared cinematic content glass: Impact, Lab, About, Hero proof and individual work cards.
      Chrome remains lighter (.72); modal scrims remain darker (.9). */
   --portfolio-glass-surface: rgba(26, 27, 31, .82);
   --portfolio-glass-solid: var(--portfolio-panel-solid);
@@ -65,7 +65,6 @@
 #experiments .flip-experiment,
 #top .hero-proof-card,
 #profile .closing-card,
-#projects .comet-archive-mobile-shell,
 header,
 header.is-condensed {
   border: 1px solid var(--portfolio-card-border) !important;
@@ -81,8 +80,7 @@ header.is-condensed {
 .impact-glass,
 #experiments .flip-experiment,
 #profile .closing-card,
-#top .hero-proof-card,
-#projects .comet-archive-mobile-shell {
+#top .hero-proof-card {
   --portfolio-card-surface: var(--portfolio-glass-surface);
   --portfolio-card-blur: var(--portfolio-glass-blur);
 }
@@ -175,8 +173,7 @@ header .nav-contact-icon,
   .impact-glass,
   #experiments .flip-experiment,
   #top .hero-proof-card,
-  #profile .closing-card,
-  #projects .comet-archive-mobile-shell {
+  #profile .closing-card {
     background: var(--portfolio-glass-solid) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -187,8 +184,7 @@ header .nav-contact-icon,
   .impact-glass,
   #experiments .flip-experiment,
   #top .hero-proof-card,
-  #profile .closing-card,
-  #projects .comet-archive-mobile-shell {
+  #profile .closing-card {
     background: var(--portfolio-glass-solid) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;

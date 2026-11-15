@@ -236,17 +236,27 @@ const CHECKS = {
     return page.evaluate(() => {
       const rows = [...document.querySelectorAll('.impact-evidence-row')];
       if (rows.length !== 3) return { ok: true };
+      // Measure document FLOW rather than transformed visual rectangles.
+      // Cinematic Dolly Through intentionally scales/translates the whole
+      // glass panel while scrubbing; this layout test checks the underlying
+      // consistent rhythm, not a random animation frame.
+      const flowTop = el => {
+        let top = 0;
+        for(let node=el;node;node=node.offsetParent) top+=node.offsetTop;
+        return top;
+      };
       const metrics = rows.map((row) => {
-        const label = row.querySelector('.impact-evidence-label')?.getBoundingClientRect();
-        const panel = row.querySelector(':scope > div:last-child > .impact-glass')?.getBoundingClientRect();
-        const rect = row.getBoundingClientRect();
+        const label = row.querySelector('.impact-evidence-label');
+        const panel = row.querySelector(':scope > div:last-child > .impact-glass');
+        const top = flowTop(row);
         return {
           id: row.id,
-          height: rect.height,
-          titleToPanel: label && panel ? panel.top - label.bottom : null,
-          top: rect.top + scrollY,
-          bottom: rect.bottom + scrollY,
-          panelBottom: panel ? panel.bottom + scrollY : null,
+          height: row.offsetHeight,
+          titleToPanel: label && panel
+            ? flowTop(panel) - flowTop(label) - label.offsetHeight : null,
+          top,
+          bottom: top + row.offsetHeight,
+          panelBottom: panel ? flowTop(panel) + panel.offsetHeight : null,
         };
       });
       const titleGaps = metrics.map((item) => item.titleToPanel).filter(Number.isFinite);
@@ -254,7 +264,7 @@ const CHECKS = {
       const maxDelta = (values) => values.length ? Math.max(...values) - Math.min(...values) : 0;
       const mobile = window.innerWidth <= 720;
       const experimentHeading = document.querySelector('#experiments .section-title');
-      const experimentTop = experimentHeading ? experimentHeading.getBoundingClientRect().top + scrollY : null;
+      const experimentTop = experimentHeading ? flowTop(experimentHeading) : null;
       const lastPanelBottom = metrics.at(-1)?.panelBottom;
       const labGap = Number.isFinite(experimentTop) && Number.isFinite(lastPanelBottom) ? experimentTop - lastPanelBottom : 0;
       // The published 15s cinematic journey deliberately inserts transparent
@@ -351,7 +361,7 @@ const CHECKS = {
       const reference = visible('.impact-glass')[0];
       if (reference) {
         const base = getComputedStyle(reference);
-        for (const el of visible('.impact-glass, #experiments .flip-experiment, #profile .closing-card, #top .hero-proof-card, #projects .comet-archive-mobile-shell')) {
+        for (const el of visible('.impact-glass, #experiments .flip-experiment, #profile .closing-card, #top .hero-proof-card')) {
           const style = getComputedStyle(el);
           if (style.backgroundColor !== base.backgroundColor || style.backdropFilter !== base.backdropFilter ||
               style.borderTopColor !== base.borderTopColor || style.boxShadow !== base.boxShadow) {

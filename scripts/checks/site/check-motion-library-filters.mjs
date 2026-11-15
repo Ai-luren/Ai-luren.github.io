@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright-core';
 import {createSafePage} from '../../lib/safe-media.mjs';
+// Geometry tests opt out of entry transforms; cinematic motion has its own two-page regression.
 const browser=await chromium.launch({executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',headless:true});
 for(const [width,lang] of [[320,'zh'],[320,'en'],[390,'zh'],[390,'en'],[720,'en'],[1440,'zh'],[1440,'en']]){
- const p=await createSafePage(browser,{viewport:{width,height:880}});
+ const p=await createSafePage(browser,{viewport:{width,height:880},reducedMotion:'reduce'});
  await p.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
  const errors=[];p.on('pageerror',e=>errors.push(e.message));
  await p.goto(new URL('works.html',process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/').href,{waitUntil:'domcontentloaded'});

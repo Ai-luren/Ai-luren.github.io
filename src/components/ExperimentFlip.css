@@ -289,11 +289,6 @@
 .lab-project-source:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .lab-project-pagination { grid-area: pager; align-self: end; display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 4px; }
 .lab-project-pagination span { min-width: 48px; color: var(--apple-secondary); text-align: center; font: 500 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; }
-.lab-project-pagination button { display: grid; place-items: center; box-sizing: border-box; width: 43px; height: 43px; padding: 0; line-height: 0; border: 1px solid var(--portfolio-icon-border); border-radius: 50%; background: var(--portfolio-icon-surface); color: var(--apple-text); cursor: pointer; transition: background-color 180ms var(--apple-ease); }
-.lab-project-pagination button svg { display: block; width: 18px; height: 18px; }
-.lab-project-pagination button:hover { background: var(--portfolio-icon-hover-surface); }
-.lab-project-pagination button:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
-.lab-project-pagination button:disabled { opacity: .45; cursor: progress; }
 .flip-experiment__detail[aria-busy="true"], .lab-project-image-tabs button[aria-busy="true"] { opacity: .6; cursor: progress; }
 
 /* Tablet landscape preserves the paired layout while minimizing dead space. */
@@ -334,7 +329,6 @@
   .lab-project-footer { justify-self: center; }
   .lab-project-source { font-size: 11px; min-height: 34px; }
   .lab-project-pagination { justify-self: center; gap: 23px; margin-top: 0; }
-  .lab-project-pagination button { width: 40px; height: 40px; }
 }
 @media (max-width: 760px) and (max-height: 680px) {
   .lab-project-lightbox { padding-top: 74px; padding-bottom: 8px; }
@@ -343,7 +337,6 @@
   .lab-project-lead { font-size: 10.5px; }
   .lab-project-image-tabs { flex-basis: 31px; min-height: 31px; }
   .lab-project-image-tabs button { height: 31px; width: 45px; }
-  .lab-project-pagination button { width: 36px; height: 36px; }
   .lab-project-image-frame .lab-project-image-canvas > img:not(.lab-project-comparison-inset) { max-height: clamp(100px,calc(100dvh - 390px),260px); }
   .lab-project-showcase--news .lab-project-image-frame { height: clamp(105px,calc(100dvh - 420px),250px); }
 }

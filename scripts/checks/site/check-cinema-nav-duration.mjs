@@ -67,8 +67,10 @@ try {
   const page=await createSafePage(browser,{viewport:{width:390,height:844}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(new URL('index.html#projects',base).href,{waitUntil:'domcontentloaded'});
-  // Mobile featured archive is paginated 4 + 4; projects 16 and 18 are on page two.
-  await page.locator('#projects .comet-archive-pagination [role="tab"]').nth(1).click();
+  // Featured is one continuous 2x4 grid on phones; later cards are already mounted.
+  await page.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
+  assert.equal(await page.locator('#projects .comet-archive__card').count(),8);
+  assert.equal(await page.locator('#projects .comet-archive-pagination').count(),0);
   await page.locator('#projects .comet-archive__card[data-project-id="16"]').click();
   await page.waitForFunction(()=>document.querySelector('.cinema-player[open]')?.classList.contains('is-motion-visible'));
   const modal=page.locator('.cinema-player[open]');

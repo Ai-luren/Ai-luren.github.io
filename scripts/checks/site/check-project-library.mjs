@@ -78,7 +78,7 @@ try {
       await home.click();
       assert.equal(new URL(page.url()).hash,'','Home return must open the Hero, not a work section.');
       await page.waitForSelector('.comet-archive__card', { state: 'attached' });
-      assert.equal(await page.locator('.comet-archive__card').count(), width <= 720 ? 4 : 8);
+      assert.equal(await page.locator('.comet-archive__card').count(),8);
       await page.locator('#projects').scrollIntoViewIfNeeded();
       await page.locator('.comet-archive__card').first().click();
       await page.waitForSelector('.cinema-player[open]');
@@ -91,18 +91,28 @@ try {
       await more.waitFor({state:'visible',timeout:10000});
       await page.waitForTimeout(450); // Existing GSAP alignment finishes after visibility flips.
       // Read related rectangles after the scroll entrance settles.
-      const { hit, archive, pagination, title, header } = await more.evaluate(element => {
+      const { hit, archive, title, header } = await more.evaluate(element => {
         const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-        return { hit: element.getBoundingClientRect().toJSON(), archive: rect('.comet-archive'), pagination: rect('.comet-archive-pagination'), title: rect('#projects-title'), header: rect('#projects .section-intro') };
+        return { hit: element.getBoundingClientRect().toJSON(), archive: rect('.comet-archive'), title: rect('#projects-title'), header: rect('#projects .section-intro') };
       });
       assert.equal(await page.locator('#projects-featured-note').count(),0,'Remove redundant Featured count caption');
       assert(hit.width >= 44 && hit.height >= 44, 'Library text link needs a visible touch target.');
       assert.equal(await more.evaluate(element => getComputedStyle(element).backgroundColor), 'rgba(0, 0, 0, 0)');
       if (width <= 720) {
         assert(Math.abs(hit.x - archive.x)<2, 'Mobile Browse All text must start at the card grid left edge.');
-        assert(hit.y >= pagination.y + pagination.height + 12, 'Mobile link belongs below pagination.');
-        assert(hit.y <= pagination.y + pagination.height + 28, 'Mobile pagination gap should stay compact.');
-        assert.equal(await page.locator('#projects-library-link a').count(), 0);
+        assert(hit.y >= title.bottom + 6, 'Mobile Browse All must sit below the Featured heading.');
+        assert(hit.y + hit.height <= header.y + header.height + 2,
+          'Mobile Browse All must remain inside the heading block, before the work grid.');
+        assert.equal(await page.locator('#projects .comet-archive-pagination').count(),0);
+        assert.equal(await page.locator('#projects-library-link a').count(), 1);
+        const mobileRhythm=await page.evaluate(()=>({
+          gap:parseFloat(getComputedStyle(document.querySelector('#projects .comet-archive')).rowGap),
+          flight:document.querySelector('.hero-journey-flight--after-projects')?.getBoundingClientRect().height || 0,
+        }));
+        assert(mobileRhythm.gap<=16.1,'Eight card rows must keep their compact editorial gap');
+        if(!await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches))
+          assert(mobileRhythm.flight>=68&&mobileRhythm.flight<=96.1,
+            'Mobile film chapter transition should not insert an extra blank screen');
       } else {
         assert(Math.abs(hit.x + hit.width - archive.x - archive.width)<4.5,
           'Desktop Browse All should still align with the work area right edge.');
@@ -118,7 +128,7 @@ try {
       await page.close();
     }
   }
-  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、桌面标题同排靠右、手机分页下方靠左、分类、页面往返和播放器交互。');
+  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、桌面标题同排靠右、手机标题下方靠左、分类、页面往返和播放器交互。');
 } finally {
   await browser.close();
 }

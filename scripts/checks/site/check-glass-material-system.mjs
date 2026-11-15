@@ -57,6 +57,15 @@ try {
         }
         await page.goto(new URL('index.html#impact-reach',base).href);
         await page.locator('#impact-reach .impact-glass').waitFor();
+        // Dynamic sections can mount before native hash restoration. Material
+        // comparisons need the settled Expertise nav surface, not Hero chrome.
+        await page.locator('#impact-reach').scrollIntoViewIfNeeded();
+        await page.waitForFunction(()=>{
+          const node=document.querySelector('#impact-reach');
+          const r=node?.getBoundingClientRect();
+          return r && r.top<innerHeight && r.bottom>0 &&
+            !document.body.classList.contains('is-on-hero');
+        },null,{timeout:7000});
         if(mode==='unsupported'){
           const replaced=await page.evaluate(()=>{
             let count=0;
@@ -78,6 +87,10 @@ try {
           });
           assert(replaced>0,'No unsupported-filter fallback rules were activated');
         }
+        // Background-color has a 220ms transition on A+ cards. Rewriting an
+        // @supports condition is a dynamic style change; sample its settled
+        // material rather than the earlier rgba transition frame.
+        if (mode === 'unsupported') await page.waitForTimeout(320);
         const evidence=await page.evaluate(selectors=>{
           function material(selector,pseudo=null){
             const el=document.querySelector(selector);
@@ -92,7 +105,7 @@ try {
           const fields=Object.fromEntries(selectors.map(selector=>[selector,material(selector)]));
           return {
             fields,chrome:material('body > header'),
-            mobile:material('#projects .comet-archive-mobile-shell'),
+            mobile:material('#projects .portfolio-work-card--unified'),
             hero:material('#top .hero-proof-card'),
             // Branding now belongs to the closing card itself. It is
             // noninteractive and no separate footer bar/copyright remains.
@@ -166,8 +179,8 @@ try {
         }
         for(const panel of [evidence.hero,evidence.mobile]){
           if(!panel?.visible)continue;
-          assert.equal(panel.background,exp.glass,name+': hero / mobile archive glass');
-          assert.equal(panel.blur,exp.glassBlur,name+': hero / mobile archive blur');
+          assert.equal(panel.background,exp.glass,name+': Hero and individual Featured card glass');
+          assert.equal(panel.blur,exp.glassBlur,name+': Hero and individual Featured card blur');
         }
         assert.equal(evidence.chrome.background,exp.chrome,name+': chrome surface');
         assert.equal(evidence.chrome.blur,exp.chromeBlur,name+': chrome blur');

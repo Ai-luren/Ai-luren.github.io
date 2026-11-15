@@ -1,7 +1,7 @@
 /*
  * A+ Unified Work Card: one glass surface for Featured and All Work.
  * Uses the existing card-surfaces.css tokens, ProjectCard markup, and the
- * existing mobile paging / category filters / modal player. The entire
+ * mobile continuous Featured grid / category filters / modal player. The entire
  * card button remains the only interactive target.
  */
 :is(#projects, .work-library) .comet-archive__card.portfolio-work-card--unified {
@@ -33,7 +33,7 @@
    category baseline with longer ones at narrow desktop widths (721–1023px). */
 #projects .comet-archive { align-items: stretch; }
 /* Prevent the old homepage three-row subgrid from adding empty space below
-   the card. No changes to the homepage four-column or mobile pager grid. */
+   the card. No changes to the homepage four-column or mobile continuous grid. */
 #projects .comet-archive__item:has(> .portfolio-work-card--unified) {
   display: block;
   grid-row: auto;

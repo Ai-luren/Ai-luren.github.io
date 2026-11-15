@@ -11,6 +11,7 @@ import SiteExternalLinkGuard from './components/SiteExternalLinkGuard.jsx';
 import ExperimentFlip from './components/ExperimentFlip.jsx';
 import HeroActions from './components/HeroActions.jsx';
 import HeroTitle from './components/HeroTitle.jsx';
+import AnimatedContent from './components/AnimatedContent.jsx';
 import DesktopPrimaryNavigation from './components/DesktopPrimaryNavigation.jsx';
 import './styles/card-surfaces.css';
 import './styles/apple-system.css';
@@ -42,6 +43,7 @@ export default function App() {
   return (
     <>
       <SiteExternalLinkGuard />
+      <AnimatedContent page="home" />
       {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
       <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}

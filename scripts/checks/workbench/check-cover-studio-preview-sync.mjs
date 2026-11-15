@@ -13,7 +13,7 @@ const root=path.resolve(import.meta.dirname,'../../..');
 const temp=await fs.mkdtemp(path.join(os.tmpdir(),'ailuren-preview-sync-'));
 const fp=(...args)=>path.join(temp,...args);
 // Clone all Vite public assets too: works.html requires the route-transition script.
-for(const rel of ['src','assets/images','public','index.html','works.html'])
+for(const rel of ['src','assets/images','public','vendor','index.html','works.html'])
  await fs.cp(path.join(root,rel),fp(rel),{recursive:true});
 await fs.writeFile(fp('package.json'),'{"type":"module"}\n');
 await fs.symlink(path.join(root,'node_modules'),fp('node_modules'));

@@ -14,7 +14,12 @@ try {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(() => {
-      window.__scrollTest = { seeks: [], refreshes: 0 };
+      window.__scrollTest = { seeks: [], refreshes: 0, seekRaf: 0 };
+      const nativeRaf = window.requestAnimationFrame;
+      window.requestAnimationFrame = function(callback) {
+        if (callback?.name === 'seekLoop') window.__scrollTest.seekRaf++;
+        return nativeRaf.call(window, callback);
+      };
       const desc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'currentTime');
       Object.defineProperty(HTMLMediaElement.prototype, 'currentTime', {
         configurable: true,
@@ -72,6 +77,14 @@ try {
         'Hero must remain fixed, in bounds and serve a same-origin video: '+JSON.stringify(state));
       assert.equal(getSafeMediaReport(page).urls.length, 0);
       assert.deepEqual(errors, [], 'Browser errors');
+      // An idle portfolio must not burn a permanent 60fps Hero seek loop.
+      // Allow any final decoded frame to settle before inspecting the counter.
+      await page.waitForTimeout(250);
+      const beforeIdle = await page.evaluate(() => window.__scrollTest.seekRaf);
+      await page.waitForTimeout(450);
+      const afterIdle = await page.evaluate(() => window.__scrollTest.seekRaf);
+      assert(afterIdle - beforeIdle <= 2,
+        'Hero seek RAF kept polling while idle: '+(afterIdle-beforeIdle));
       if (mobile) {
         await page.evaluate(() => {
           if (window.ScrollTrigger) {

@@ -37,6 +37,9 @@ export const deepStandalone = Object.freeze({
 const excludeSite = new Set([
   'check:smoke', 'check:project', 'check:adversarial', 'check:site-full',
   'check:workbench-full', 'check:cover-poster', 'check:cinema-local', 'check:plan',
+  // Direct aliases are useful for targeted debugging, but these exact test
+  // files already run within the deep check:motion-polish composite.
+  'check:animated-content', 'check:cinematic-dolly',
 ]);
 const excludeWorkbench = new Set([
   'check:workbench-core', 'check:workbench-full',

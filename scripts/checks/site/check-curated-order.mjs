@@ -58,18 +58,11 @@ try{
      .then(xs=>xs.map(x=>x.replace(/\s+/g,' ').trim()));
    await page.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
    await page.locator('#impact-awards .impact-award-grid-card').first().waitFor({state:'attached'});
-   if(width>720){
-     assert.deepEqual(await readProjects(),featured[lang],tag+': desktop featured order');
-     assert.deepEqual(await readAwards(),awards[lang],tag+': desktop award order');
-   }else{
-     assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1');
-     await page.locator('#projects .comet-archive-pagination button').nth(1).evaluate(e=>e.click());
-     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(4),{timeout:10000});
-     assert.deepEqual(await readProjects(),featured[lang].slice(4),tag+': featured page 2');
-     await page.locator('#projects .comet-archive-pagination button').first().evaluate(e=>e.click());
-     await page.waitForFunction(expected=>[...document.querySelectorAll('#projects .comet-archive__title')].map(x=>x.textContent.replace(/\s+/g,' ').trim()).join('|')===expected.join('|'), featured[lang].slice(0,4),{timeout:10000});
-     assert.deepEqual(await readProjects(),featured[lang].slice(0,4),tag+': featured page 1 return');
-     assert.deepEqual(await readAwards(),awards[lang],tag+': mobile award order');
+   assert.deepEqual(await readProjects(),featured[lang],tag+': all eight Featured works in editorial order');
+   assert.equal(await page.locator('#projects .comet-archive-pagination button').count(),0,
+     tag+': no obsolete mobile Featured pagination');
+   assert.deepEqual(await readAwards(),awards[lang],tag+': award order');
+   if(width<=720){
      // Gallery thumbnails are deferred until nearby, so compare their real
      // loaded sources after bringing the award section into view.
      await page.locator('#impact-awards').scrollIntoViewIfNeeded();

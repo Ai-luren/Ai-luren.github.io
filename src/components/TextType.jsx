@@ -1,5 +1,4 @@
-import { createElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getGsap } from '../gsap-runtime.js';
+import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import './TextType.css';
 
 export default function TextType({
@@ -33,39 +32,53 @@ export default function TextType({
   const [currentCharIndex, setCurrentCharIndex] = useState([...initialText].length);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const cursorRef = useRef(null);
+  const [heroInView, setHeroInView] = useState(true);
+  const [reducedMotion, setReducedMotion] = useState(
+    () => window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false
+  );
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
+
+  useEffect(() => {
+    const section = document.getElementById('top');
+    if (!section || !('IntersectionObserver' in window)) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroInView(Boolean(entry?.isIntersecting));
+    }, {rootMargin: '120px 0px 120px 0px', threshold: 0});
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const query = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(query.matches);
+    query.addEventListener?.('change', update);
+    return () => query.removeEventListener?.('change', update);
+  }, []);
+
+  // Only text that is actually on screen needs a timer. While offscreen or
+  // reduced, hold a COMPLETE role to avoid returning to a half-deleted word.
+  const typingActive = heroInView && !reducedMotion;
+  useEffect(() => {
+    if (typingActive) return;
+    const complete = textArray[currentTextIndex] || '';
+    const role = reverseMode ? [...complete].reverse().join('') : complete;
+    setDisplayedText(previous => previous === role ? previous : role);
+    setCurrentCharIndex([...role].length);
+    setIsDeleting(false);
+  }, [typingActive, currentTextIndex, reverseMode, textArray]);
 
   const getRandomSpeed = useCallback(() => {
     if (!variableSpeed) return typingSpeed;
     return Math.random() * (variableSpeed.max - variableSpeed.min) + variableSpeed.min;
   }, [typingSpeed, variableSpeed]);
 
-  useEffect(() => {
-    if (!showCursor || !cursorRef.current) return undefined;
-    const cursor = cursorRef.current;
-    const gsap = getGsap();
-    if (!gsap) return undefined;
-    gsap.killTweensOf(cursor);
-    const context = gsap.context(() => {
-      gsap.set(cursor, { opacity: 1 });
-      gsap.to(cursor, {
-        opacity: 0,
-        duration: cursorBlinkDuration,
-        repeat: -1,
-        yoyo: true,
-        ease: 'power2.inOut',
-        overwrite: 'auto',
-      });
-    }, cursor);
 
-    return () => {
-      context.revert();
-      gsap.killTweensOf(cursor);
-    };
-  }, [showCursor, cursorBlinkDuration]);
+  // The cursor uses a composited CSS pulse, paused outside the Hero. A
+  // permanently repeating GSAP tween kept the global 60fps ticker alive
+  // even after readers had scrolled several screens past the headline.
 
   useEffect(() => {
+    if (!typingActive) return undefined;
     let timeout;
     const currentText = textArray[currentTextIndex] || '';
     const processedText = reverseMode ? [...currentText].reverse().join('') : currentText;
@@ -98,7 +111,7 @@ export default function TextType({
       : isDeleting ? deletingSpeed : currentCharIndex >= processedText.length ? pauseDuration : getRandomSpeed();
     timeout = window.setTimeout(tick, delay);
     return () => window.clearTimeout(timeout);
-  }, [currentCharIndex, currentTextIndex, deletingSpeed, displayedText, getRandomSpeed, initialDelay, isDeleting, loop, onSentenceComplete, pauseDuration, reverseMode, textArray]);
+  }, [currentCharIndex, currentTextIndex, deletingSpeed, displayedText, getRandomSpeed, initialDelay, isDeleting, loop, onSentenceComplete, pauseDuration, reverseMode, textArray, typingActive]);
 
   // 删除到空字时不把光标留在行首，避免出现第二条独立横线。
   // 有内容时光标自然紧跟在文字末尾，位置与 TextType 参考效果一致。
@@ -109,6 +122,6 @@ export default function TextType({
     Component,
     { className: `text-type ${className}`.trim(), ...props },
     <span className="text-type__content" style={{ color }}>{displayedText}</span>,
-    showCursor && <span ref={cursorRef} className={`text-type__cursor ${cursorClassName} ${shouldHideCursor ? 'text-type__cursor--hidden' : ''}`}>{cursorCharacter}</span>,
+    showCursor && <span className={`text-type__cursor ${cursorClassName} ${shouldHideCursor ? 'text-type__cursor--hidden' : ''}`} style={{ '--text-type-cursor-blink-duration': `${cursorBlinkDuration}s` }}>{cursorCharacter}</span>,
   );
 }

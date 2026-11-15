@@ -17,3 +17,25 @@
 .text-type__cursor--hidden {
   display: none;
 }
+
+/* One compositor-friendly blink; no global JS/GSAP ticker. The published
+   Hero is an ambient reading surface, so pause the cursor once it leaves
+   the viewport. Reduced-motion preference keeps the indicator static. */
+@keyframes text-type-cursor-blink {
+  to { opacity: 0; }
+}
+.text-type__cursor {
+  animation: text-type-cursor-blink var(--text-type-cursor-blink-duration, .5s)
+    cubic-bezier(.42, 0, .58, 1) infinite alternate;
+  animation-play-state: paused;
+}
+body.is-on-hero .text-type__cursor {
+  animation-play-state: running;
+}
+@media (prefers-reduced-motion: reduce) {
+  .text-type__cursor,
+  body.is-on-hero .text-type__cursor {
+    animation: none;
+    opacity: 1;
+  }
+}

@@ -59,13 +59,14 @@ assert(scripts['check:workbench-create']?.includes('check-cover-studio-import-ui
 assert(!deep.workbench.some(spec => spec[0] === 'npm' && spec[2] === 'check:workbench-import-ui'),
   'Import UI test is already covered by the create composite; do not run it twice');
 
-// Four related motion checks are deliberately grouped under check:motion-polish.
+// Five motion checks are deliberately grouped under check:motion-polish.
 const motionScript = 'scripts/checks/site/check-motion-polish.mjs';
 const motionChildren = [
   'scripts/checks/site/check-motion-modal-entry.mjs',
   'scripts/checks/site/check-motion-library-filters.mjs',
   'scripts/checks/site/check-motion-page-prefetch.mjs',
-  'scripts/checks/site/check-section-static-entrance.mjs',
+  'scripts/checks/site/check-animated-content-stability.mjs',
+  'scripts/checks/site/check-cinematic-dolly-scrub.mjs',
 ];
 const motionSource = fs.readFileSync(at(motionScript), 'utf8');
 assert(pathsByArea.site.has(motionScript), 'The motion composite must be in site deep QA');

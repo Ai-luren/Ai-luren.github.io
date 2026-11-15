@@ -52,7 +52,8 @@ try{
             aboutRoleCount:get('#profile .about-role').querySelectorAll('h3').length,
             cardOverflow:bounds(get('#profile .closing-card')).right>innerWidth+1,
             horizontalOverflow:document.documentElement.scrollWidth-innerWidth,
-            links:links.map(a=>({href:a.getAttribute('href'),text:a.textContent.trim()})),
+            links:links.map(a=>({href:a.getAttribute('href'),text:a.textContent.trim(),
+              targetHeight:bounds(a).height,valueSize:parseFloat(getComputedStyle(a.querySelector('strong')).fontSize)})),
             profileLabel:get('#profile').getAttribute('aria-labelledby'),
             contactLabel:get('#contact').getAttribute('aria-labelledby'),
             copyText:get('#profile .about-description').textContent.trim(),
@@ -86,6 +87,8 @@ try{
         assert.equal(state.contactLabel,'contact-title');
         assert(state.links.some(l=>l.href?.startsWith('mailto:')),tag+': email link missing');
         assert(state.links.some(l=>l.href==='#copy-wechat'),tag+': WeChat copy target missing');
+        assert(state.links.every(l=>l.targetHeight>=43.99&&l.valueSize>=14.9),
+          tag+': contact actions must be at least 44px with readable 15px values');
         assert(state.copyText.length>40,tag+': biography description missing');
         assert.equal(getSafeMediaReport(page).urls.length,0,tag+': unexpected CDN media');
         console.log('PASS '+tag+': equal headings, single-row social dock, intact contact actions');

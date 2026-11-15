@@ -1,5 +1,5 @@
-/* Desktop Featured: one heading row and one contextual library action.
-   The count caption is retired; mobile action remains below pagination. */
+/* Featured: one heading row and one contextual library action.
+   Mobile action now follows the headline; the retired pager never renders. */
 #projects .section-intro {
   display: flex;
   align-items: flex-end;
@@ -38,10 +38,12 @@
    subgrid split captions from the poster and left an empty 22px tail. */
 @media (max-width: 720px) {
   #projects .section-intro { display: block; margin-bottom: 22px; }
-  #projects .section-intro > .projects-meta-row { display: none; }
+  /* Isolate the h2 top margin: it must occupy real flow height before the CTA. */
+  #projects .section-intro > div:first-child { display: flow-root; }
+  #projects .section-intro > .projects-meta-row { display: block; margin-top: 10px; }
   /* Mobile editorial flow follows the left edge of the cover grid.
      Desktop keeps the contextual action on the title's right. */
-  #projects .archive-more { justify-content: flex-start; margin-top: 6px; padding-right: 0; }
+  #projects .archive-more { justify-content: flex-start; margin-top: 0; padding-right: 0; }
   #projects .archive-more a { padding-left: 0; }
 }
 @media (prefers-reduced-motion: reduce) { #projects .archive-more a { transition: none; } }

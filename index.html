@@ -69,6 +69,11 @@
     html { background: var(--space-black); --anchor-offset: 88px; scroll-behavior: auto; scroll-padding-top: var(--anchor-offset); }
     body { margin: 0; overflow-x: hidden; color: var(--mist); background: var(--space-black); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
     body.is-loading { overflow: hidden; }
+    /* React portals fill the Selected Work / Expertise chapters after the
+       static HTML is parsed. Do not let browser scroll anchoring silently
+       move a reader who already swiped while the 8-card grid mounts.
+       Browser history scroll restoration remains native and unchanged. */
+    #main-content { overflow-anchor: none; }
     a { color: inherit; text-decoration: none; }
     button { color: inherit; font: inherit; }
     ::selection { color: var(--space-black); background: var(--accent-blue); }
@@ -1718,8 +1723,8 @@
         <div class="hero-copy">
           <p class="hero-positioning" data-i18n="hero.positioning">AI 视频创意 · 影像效果设计</p>
           <div id="hero-title-react-root"></div>
-          <p class="hero-subtitle reveal" data-i18n="hero.subtitle">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</p>
-          <div class="hero-actions reveal">
+          <p class="hero-subtitle" data-i18n="hero.subtitle">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</p>
+          <div class="hero-actions">
             <div id="hero-actions-react-root"></div>
           </div>
         </div>
@@ -1810,6 +1815,9 @@
       var lastScrollAt = -Infinity;
       var lastProgress = -1;
       var progressRaf = 0;
+      var seekFrame = 0;
+      var correctionTimer = 0;
+      var scrollIdleTimer = 0;
       var scrubState = false;
       var ACTIVE_SCROLL_WINDOW = 160;
       var mobileScrub = window.matchMedia('(max-width: 760px)').matches;
@@ -1879,42 +1887,65 @@
         document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
         if (!video.duration || reduced) return;
         targetTime = progress * video.duration;
+        scheduleSeek();
       }
 
+      // The film is scroll-driven, NOT an animation that needs a permanent
+      // requestAnimationFrame loop. Schedule work only on actual scroll,
+      // available decoded frames or a pending final seek correction.
+      function scheduleSeek() {
+        if (!seekFrame && !document.hidden) seekFrame = window.requestAnimationFrame(seekLoop);
+      }
+      function retrySeekAfter(wait) {
+        if (correctionTimer) window.clearTimeout(correctionTimer);
+        correctionTimer = window.setTimeout(function () {
+          correctionTimer = 0;
+          scheduleSeek();
+        }, Math.max(8, wait));
+      }
       function onScroll() {
         lastScrollAt = performance.now();
         publishScrubState(true);
         if (!progressRaf) progressRaf = window.requestAnimationFrame(setVideoTarget);
+        if (scrollIdleTimer) window.clearTimeout(scrollIdleTimer);
+        // One settle tick replaces the former perpetual 60fps polling loop.
+        scrollIdleTimer = window.setTimeout(function () {
+          scrollIdleTimer = 0;
+          publishScrubState(false);
+          scheduleSeek();
+        }, ACTIVE_SCROLL_WINDOW + 20);
       }
 
       function seekLoop(now) {
+        seekFrame = 0;
         var activelyScrubbing = now - lastScrollAt < ACTIVE_SCROLL_WINDOW;
-        publishScrubState(activelyScrubbing);
         var delta = targetTime - video.currentTime;
-        // Coalesce in-flight seeks on *both* desktop and mobile. Reassigning
-        // currentTime while the decoder is seeking interrupts frame decoding
-        // (particularly visible as horizontal tearing with the 720p Hero).
-        // Keep desktop's existing cadence; after the pending seek finishes,
-        // request only the latest scroll target and settle precisely at rest.
+        // Coalesce in-flight seeks on both desktop and mobile. Never overwrite
+        // a seek in progress, and preserve the published decoder cadence.
         var seekInterval = mobileScrub ? (activelyScrubbing ? 50 : 80) : (activelyScrubbing ? 24 : 72);
         var targetChanged = Math.abs(targetTime - lastRequestedTime) > (mobileScrub ? .055 : .012);
         var needsCorrection = Math.abs(delta) > (mobileScrub ? .06 : (activelyScrubbing ? .025 : .01));
-        var canSeek = !video.seeking && (!activelyScrubbing || targetChanged);
-        if (loaded && !reduced && video.duration && canSeek && needsCorrection && now - lastSeekAt >= seekInterval) {
-          // 快速滚动只提交最新目标，避免重复提交同一个未完成的 seek 把解码器拖成队列。
-          // 大跳跃先用关键帧快速到位，停止滚动后再用精确时间补齐。
-          if (!mobileScrub && activelyScrubbing && Math.abs(delta) > 1.4 && typeof video.fastSeek === 'function') video.fastSeek(targetTime);
-          else video.currentTime = targetTime;
-          lastRequestedTime = targetTime;
-          lastSeekAt = now;
-        }
-        window.requestAnimationFrame(seekLoop);
+        if (!loaded || reduced || !video.duration || !needsCorrection || video.seeking) return;
+        if (activelyScrubbing && !targetChanged) return; // final tick handles it
+        var remaining = seekInterval - (now - lastSeekAt);
+        if (remaining > 0) { retrySeekAfter(remaining); return; }
+        // Preserve fast keyframe seek for large desktop jumps, and precise
+        // correction when the user stops moving the scroll position.
+        if (!mobileScrub && activelyScrubbing && Math.abs(delta) > 1.4 && typeof video.fastSeek === 'function') video.fastSeek(targetTime);
+        else video.currentTime = targetTime;
+        lastRequestedTime = targetTime;
+        lastSeekAt = now;
       }
 
+      video.addEventListener('seeked', scheduleSeek);
       video.addEventListener('loadeddata', function () {
         video.pause();
         setVideoTarget();
+        scheduleSeek();
       }, { once: true });
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) { setVideoTarget(); scheduleSeek(); }
+      });
       window.addEventListener('scroll', onScroll, { passive: true });
       var previousWidth = window.innerWidth;
       window.addEventListener('resize', function () {
@@ -1927,21 +1958,12 @@
         window.clearTimeout(window.__refreshTimer);
         window.__refreshTimer = window.setTimeout(function () {
           setVideoTarget();
+          scheduleSeek();
           if (window.ScrollTrigger) window.ScrollTrigger.refresh();
         }, 180);
       }, { passive: true });
-      function showReveals() {
-        var nodes = document.querySelectorAll('.reveal');
-        if (window.gsap && window.ScrollTrigger && !reduced) return;
-        if (reduced || !('IntersectionObserver' in window)) { nodes.forEach(function (node) { node.classList.add('is-visible'); }); return; }
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
-          });
-        }, { threshold: .14 });
-        nodes.forEach(function (node) { observer.observe(node); });
-      }
-      showReveals();
+      // Hero text, CTA and supporting proof render fully opaque from the
+      // initial HTML / first React commit. No reveal observer is needed.
 
       var floatingHeader = document.querySelector('header');
       var initialHashAligned = false;
@@ -1995,20 +2017,10 @@
       window.addEventListener('load', function () {
         window.requestAnimationFrame(alignInitialHash);
       }, { once: true });
-      if (window.gsap && window.ScrollTrigger && !reduced) {
+      if (window.gsap && window.ScrollTrigger) {
+        // Other sections still use ScrollTrigger for existing film position
+        // refreshes; Hero typography deliberately has no entrance timeline.
         gsap.registerPlugin(ScrollTrigger);
-        /* Only the Hero copy retains an entrance; the Selected Work,
-           Expertise (including AI Lab), and Contact sections render immediately.
-           Their scroll-driven film/background and interaction animations remain. */
-        var compactMotion = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-        var heroMotion = compactMotion
-          ? { duration: 0.4, y: 8, stagger: 0.04 }
-          : { duration: 0.44, y: 12, stagger: 0.06 };
-        gsap.fromTo('#top .hero-copy .reveal',
-          { autoAlpha: 0, y: heroMotion.y },
-          { autoAlpha: 1, y: 0, duration: heroMotion.duration,
-            ease: 'power3.out', stagger: heroMotion.stagger,
-            scrollTrigger: { trigger: '#top', start: 'top 84%', once: true } });
       }
 
       var status = document.querySelector('.copy-status');
@@ -2215,7 +2227,8 @@
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');
       function primaryNavSection(sectionId) {
-        if (sectionId === 'top' || sectionId === 'projects') return 'projects';
+        if (sectionId === 'top') return null;
+        if (sectionId === 'projects') return 'projects';
         if (sectionId === 'recognition' || sectionId === 'experiments' || /^impact-(awards|programs|reach)$/.test(sectionId)) return 'recognition';
         if (sectionId === 'contact' || sectionId === 'profile' || sectionId === 'footer') return 'contact';
         return null;
@@ -2387,7 +2400,7 @@
       window.addEventListener('resize', scheduleNavViewportSync);
 
       setVideoTarget();
-      window.requestAnimationFrame(seekLoop);
+      scheduleSeek();
       }());
     }());
   </script>

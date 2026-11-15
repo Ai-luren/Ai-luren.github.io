@@ -33,10 +33,11 @@ try{
   server=spawn(process.execPath,['./node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',String(port),'--strictPort'],{stdio:'ignore'});
   await ready();
  }
+ // Geometry tests opt out of entry transforms; cinematic motion has its own two-page regression.
  const browser=await chromium.launch({headless:true,executablePath:binary});
  try{
   for(const lang of langs)for(const width of widths){
-   const page=await createSafePage(browser, {viewport:{width,height:900}});
+   const page=await createSafePage(browser, {viewport:{width,height:900}, reducedMotion:'reduce'});
    try{
     const errors=[];
     page.on('pageerror',error=>errors.push(error.message));
@@ -49,8 +50,8 @@ try{
      const evidence=await page.evaluate(kind=>{
       const visible=node=>{
        const s=getComputedStyle(node),r=node.getBoundingClientRect();
-       // Off-screen reveal animations intentionally set visibility:hidden until scroll.
-       // Geometry exists and dedicated scroll checks verify entrance visibility.
+       // GSAP foreground transforms may be temporarily active on screen.
+       // This geometry suite uses reduced motion; the cinematic suite covers entry.
        return s.display!=='none'&&r.width>0&&r.height>0;
       };
       const outOfBounds=[...document.querySelectorAll('main h1,main h2,main h3,main a,main button,.library-grid a,.library-grid button,.closing-contact a')]
@@ -89,9 +90,8 @@ try{
      assert.deepEqual(evidence.missingTitles,[],tag+': invisible/missing heading');
      assert(evidence.lang.toLowerCase().startsWith(lang.toLowerCase()),tag+': document language mismatch '+evidence.lang);
      assert(Math.abs(evidence.coverRatio-.75)<=.012,tag+': cover proportion changed');
-     // Mobile Featured uses four mounted cards per page; the underlying eight
-     // project records and pagination are checked by the work-card suite.
-     assert.equal(evidence.cardCount,kind==='home'?(width<=720?4:8):defaultCount,tag+': expected visible portfolio cards changed');
+     // Mobile Featured always mounts eight cards; the card suite checks four real rows.
+     assert.equal(evidence.cardCount,kind==='home'?8:defaultCount,tag+': expected visible portfolio cards changed');
      assert(evidence.navWidth>100,tag+': shared navigation missing');
      if(width<=760)assert(evidence.menuWidth>=44,tag+': menu touch target too small');
      if(width>=761)assert.deepEqual(evidence.navLinks,expectedNav[lang],tag+': tablet/desktop nav changed');

@@ -121,9 +121,9 @@ html[data-hero-experience="cinematic"] .scroll-rail > span {
     height: clamp(340px, 55svh, 620px);
   }
   /* Parallax is independent of existing GSAP transforms and card hover. */
-  html[data-hero-experience="cinematic"] #projects .section-intro,
+  /* Background/video and media can breathe with the film, but section
+     headings are stable reading landmarks in either scroll direction. */
   html[data-hero-experience="cinematic"] #projects .motion-stage,
-  html[data-hero-experience="cinematic"] #recognition .section-intro,
   html[data-hero-experience="cinematic"] #recognition .recognition-react-root {
     translate: 0 var(--hero-journey-offset, 0px);
   }
@@ -150,8 +150,10 @@ html[data-hero-experience="cinematic"] .scroll-rail > span {
   html[data-hero-experience="cinematic"] .hero-journey-flight--after-top {
     height: clamp(70px, 10svh, 100px);
   }
+  /* Eight complete Featured cards already form a long mobile chapter.
+     Leave a short film breath, not another empty reading screen. */
   html[data-hero-experience="cinematic"] .hero-journey-flight--after-projects {
-    height: clamp(90px, 14svh, 140px);
+    height: clamp(68px, 9svh, 96px);
   }
   html[data-hero-experience="cinematic"] .hero-journey-flight--outro {
     height: clamp(110px, 18svh, 170px);
@@ -163,5 +165,16 @@ html[data-hero-experience="cinematic"] .scroll-rail > span {
   html[data-hero-experience="cinematic"] .hero-journey-flight {
     display: none;
     height: 0;
+  }
+}
+
+/* Editorial titles now share a genuinely reversible scroll-scrub timeline.
+   The JS writes Y/opacity for chapter-level groups ONLY; no CSS entrance
+   transition, no one-shot reveal and no extra animation on card inner text. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-hero-experience="cinematic"] [data-editorial-title] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

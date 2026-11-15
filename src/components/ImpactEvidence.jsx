@@ -291,10 +291,11 @@ function AwardGallery() {
       const verticalPadding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
       const ratio = image.naturalWidth / image.naturalHeight;
       const arrowSpace = mobile ? 0 : 136; // 48px controls + 20px gaps
-      const maxWidth = Math.min(960, width - horizontalPadding - arrowSpace);
+      const railSpace = width >= 1100 ? 208 : 0; // thumbnail evidence index on wide desktops
+      const maxWidth = Math.min(960, width - horizontalPadding - arrowSpace - railSpace);
       let mediaWidth = maxWidth;
       for (let pass = 0; pass < 4; pass++) {
-        figure.style.width = `${mediaWidth + arrowSpace}px`;
+        figure.style.width = `${mediaWidth + arrowSpace + railSpace}px`
         const informationHeight = caption.getBoundingClientRect().height + 14 + (mobile ? 62 : 0);
         const availableHeight = height - verticalPadding - informationHeight;
         let nextWidth = Math.min(maxWidth, Math.max(160, availableHeight) * ratio);
@@ -303,9 +304,9 @@ function AwardGallery() {
         if (Math.abs(nextWidth - mediaWidth) < .1) break;
         mediaWidth = nextWidth;
       }
-      figure.style.width = `${mediaWidth + arrowSpace}px`;
-      setViewerSize(previous => previous && Math.abs(previous.width - mediaWidth) < .1 && Math.abs(previous.height - mediaWidth / ratio) < .1 && previous.mobile === mobile
-        ? previous : {width: mediaWidth, height: mediaWidth / ratio, figureWidth: mediaWidth + arrowSpace, mobile});
+      figure.style.width = `${mediaWidth + arrowSpace + railSpace}px`
+      setViewerSize(previous => previous && Math.abs(previous.width - mediaWidth) < .1 && Math.abs(previous.height - mediaWidth / ratio) < .1 && previous.mobile === mobile && previous.figureWidth === mediaWidth + arrowSpace + railSpace
+        ? previous : {width: mediaWidth, height: mediaWidth / ratio, figureWidth: mediaWidth + arrowSpace + railSpace, mobile});
     };
     fit();
     image.addEventListener('load', fit);
@@ -363,6 +364,17 @@ function AwardGallery() {
             <button type="button" className="impact-award-lightbox-nav impact-award-lightbox-nav--next" aria-label={lang === 'en' ? 'Next award' : '下一张'} aria-controls="impact-award-lightbox" onClick={() => step(1)}>
               <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10 5 7 7-7 7" /></svg>
             </button>
+            <div className="impact-award-viewer-rail" role="group" aria-label={lang === 'en' ? 'Jump to an award' : '快速切换奖项'}>
+              <div className="impact-award-viewer-rail-meta"><span>{lang === 'en' ? 'AWARD INDEX' : '获奖索引'}</span><span>{openIndex + 1} / {awards.length}</span></div>
+              {awards.map((award, index) => (
+                <button type="button" key={award.image} className="impact-award-viewer-thumb"
+                  aria-pressed={index === openIndex}
+                  aria-label={lang === 'en' ? `View award ${index + 1}: ${award.title.en}` : `查看第 ${index + 1} 项：${award.title.zh}`}
+                  onClick={() => step(index - viewerTargetIndexRef.current)}>
+                  <img src={award.thumbnail} alt="" loading="lazy" decoding="async" />
+                </button>
+              ))}
+            </div>
           </figure>
 
         </div>,

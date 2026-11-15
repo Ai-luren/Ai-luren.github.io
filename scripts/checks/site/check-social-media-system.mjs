@@ -49,6 +49,9 @@ try {
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
         await page.goto(new URL('index.html#impact-reach',base).href,{waitUntil:'domcontentloaded'});
         await page.locator('#impact-reach .impact-reach-dossier').waitFor();
+        // React can mount its dossier before the native/hash navigation has
+        // settled. Compare scrolled chrome only after the actual section lands.
+        await page.waitForFunction(() => window.scrollY > 500 && !document.body.classList.contains('is-on-hero'), null, {timeout:12000});
         const tag=`${width}px ${lang}`;
         const home=await page.locator('body > header').evaluate(geometry);
         const layout=await page.locator('#impact-reach .impact-reach-dossier').evaluate(node=>{

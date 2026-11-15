@@ -17,7 +17,10 @@ async function load(kind,width,height,lang){
   const container=kind==='home'?'#mobile-nav-drawer':'#library-menu';
   await page.waitForSelector(kind==='home'?container+'.is-open':container+'[open]');
   await page.locator(container+' .mobile-menu__social-list a').first().waitFor();
-  await page.waitForTimeout(240);
+  // The menu's 380ms main transition can be followed by list/layout motion.
+  // Compare final geometry after the full entrance, not an intermediate
+  // frame (particularly at the 760px responsive boundary).
+  await page.waitForTimeout(820);
   const data=await page.evaluate(({kind,container})=>{
     const root=document.querySelector(container), head=document.querySelector(kind==='home'?'body > header':'#library-menu .cinema-player__navigation');
     const nav=root.querySelector('.mobile-menu__links'),foot=root.querySelector('.mobile-menu__footer'),social=root.querySelector('.mobile-menu__social');
@@ -64,8 +67,12 @@ try{
       assert.equal(home.data.socialLinks[i].font,works.data.socialLinks[i].font);
       for(const key of ['top','left','height'])approx(home.data.socialLinks[i].r[key],works.data.socialLinks[i].r[key],width+' '+lang+': social '+i+' '+key);
     }
-    // Distinct ACTIVE item is intentional: first on home, fourth on Works.
-    assert.equal(home.data.menuItems[0].color,works.data.menuItems[3].color);
+    // Hero is a neutral landing, with no Featured preselection. Works is a
+    // distinct active page and keeps the fourth item highlighted.
+    assert.equal(home.data.menuItems[0].color,home.data.menuItems[1].color,
+      width+' '+lang+': Hero menu should not preselect Featured');
+    assert.equal(works.data.menuItems[3].color,'rgb(245, 245, 247)',
+      width+' '+lang+': Works menu highlights All Work');
     assert.deepEqual(home.errors,[]);assert.deepEqual(works.errors,[]);
     assert.equal(getSafeMediaReport(home.page).urls.length,0);
     assert.equal(getSafeMediaReport(works.page).urls.length,0);

@@ -834,7 +834,48 @@ header .nav-contact-icon:active,
   gap: 12px 20px;
   margin-top: 18px;
 }
-#profile .footer-contact-direct a { min-width: 0; margin: 0; padding: 0; border: 0; }
+/* P1 / 2026-11-16 — contacts are primary actions, not passive metadata.
+   Keep the established unboxed, right-aligned desktop composition, but
+   provide full 44px targets and more legible values without adding buttons. */
+#profile .footer-contact-direct a,
+#profile .footer-contact-direct a:last-child {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 5px 0;
+  border: 0;
+  display: inline-grid;
+  align-content: center;
+  gap: 3px;
+  text-underline-offset: 4px;
+}
+#profile .footer-contact-direct span {
+  font: 500 10px/1.45 var(--font-body);
+  letter-spacing: .04em;
+  color: var(--apple-secondary);
+}
+#profile .footer-contact-direct strong {
+  color: var(--apple-text);
+  font: 600 15px/1.4 var(--font-body);
+  letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) and (pointer: fine) {
+  #profile .footer-contact-direct a:hover strong {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+}
+#profile .footer-contact-direct a:focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+#profile .footer-contact-direct a:focus-visible strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
 .closing-social {
   display: flex;
   align-items: center;
@@ -1125,12 +1166,6 @@ header .nav-contact-icon:focus-visible {
    thumb-friendly second entry point at the end of the card. */
 /* Mobile controls sit below media, never over the artwork. */
 @media (max-width: 720px) {
-  #projects .comet-archive-mobile-shell .comet-archive {
-    padding: 16px 16px 8px !important;
-    row-gap: 16px !important;
-    grid-template-rows: auto auto !important;
-  }
-  #projects .comet-archive-mobile-shell { padding-bottom: 60px; }
   #projects .comet-archive-mobile-shell .comet-archive__details,
   #projects .comet-archive-mobile-shell .comet-archive__details strong {
     height: auto !important;
@@ -1146,20 +1181,6 @@ header .nav-contact-icon:focus-visible {
     text-align: right;
     font: 500 11px/1.4 var(--font-body);
     color: var(--apple-secondary);
-  }
-  #projects .comet-archive-page-arrow {
-    top: auto !important;
-    bottom: 8px !important;
-    transform: none !important;
-  }
-  #projects .comet-archive-page-arrow--prev { left: 12px !important; }
-  #projects .comet-archive-page-arrow--next { right: 12px !important; }
-  #projects .comet-archive-pagination {
-    position: absolute;
-    bottom: 8px;
-    left: 64px;
-    right: 64px;
-    padding: 0 !important;
   }
   #impact-awards .impact-award-shell:not(.impact-award-shell--grid) {
     padding-bottom: 60px !important;
@@ -1178,81 +1199,22 @@ header .nav-contact-icon:focus-visible {
 
 .comet-archive__mobile-link,
 .impact-reach-mobile-link { display: none; }
-.comet-archive-page-arrow svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-  margin: auto;
-  flex: none;
-}
-.comet-archive-page-arrow,
-.comet-archive-pagination button,
 .impact-award-pagination button,
 .impact-award-lightbox-nav,
 .impact-award-lightbox-close {
   touch-action: manipulation;
 }
 
-/* Selected work mobile B: one controlled carousel, four complete cards per
-   page. The current page is the only page rendered, so adjacent artwork can
-   never peek through the clipped stage. */
+/* Featured on phones is an eight-card, two-column continuous archive.
+   The retired 4-card carousel, swipe offset, paging arrows, dots and
+   forward/back keyframes had no mounted React consumers and are removed.
+   Keep only the artwork/caption consistency rules still used by ProjectCard;
+   the CURRENT grid geometry is owned at the end of this file by #projects. */
 .comet-archive-mobile-shell { display: contents; }
 .comet-archive-page-arrow,
 .comet-archive-pagination { display: none; }
 .comet-archive__meta { text-decoration: none !important; }
 @media (max-width: 720px) {
-  .comet-archive-mobile-shell {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    touch-action: pan-y;
-    border: 1px solid var(--apple-hairline);
-    border-radius: var(--apple-radius-panel);
-    background: var(--portfolio-card-surface);
-    box-shadow: var(--portfolio-card-shadow);
-    -webkit-backdrop-filter: var(--portfolio-card-blur);
-    backdrop-filter: var(--portfolio-card-blur);
-  }
-  .comet-archive-mobile-shell .comet-archive {
-    --mobile-swipe-x: 0px;
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row !important;
-    column-gap: 10px !important;
-    row-gap: 10px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 22px 42px !important;
-    overflow: hidden !important;
-    overscroll-behavior: none !important;
-    transform: translate3d(var(--mobile-swipe-x), 0, 0);
-    transition: transform var(--apple-duration-card) var(--apple-ease);
-    will-change: transform;
-  }
-  .comet-archive-mobile-shell .comet-archive.is-touch-dragging { transition: none; }
-  @keyframes comet-mobile-page-forward {
-    from { transform: translate3d(18px, 0, 0); }
-    to { transform: translate3d(0, 0, 0); }
-  }
-  @keyframes comet-mobile-page-back {
-    from { transform: translate3d(-18px, 0, 0); }
-    to { transform: translate3d(0, 0, 0); }
-  }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item {
-    animation-duration: var(--apple-duration-card);
-    animation-timing-function: var(--apple-ease);
-    animation-fill-mode: both;
-  }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item { animation-name: comet-mobile-page-forward; }
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation-name: comet-mobile-page-back; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(2),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(2) { animation-delay: 18ms; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(3),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(3) { animation-delay: 36ms; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(4),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(4) { animation-delay: 54ms; }
   .comet-archive-mobile-shell .comet-archive__item {
     min-width: 0 !important;
     min-height: 0 !important;
@@ -1284,85 +1246,6 @@ header .nav-contact-icon:focus-visible {
     min-height: 0 !important;
     min-width: 0 !important;
   }
-  /* ProjectCard now uses a unified flex surface; the old mobile subgrid
-     and three individually aligned rows are intentionally retired here. */
-  .comet-archive-page-arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 4;
-    display: grid !important;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 50%;
-    background: rgba(25, 25, 28, .96);
-    color: var(--apple-text);
-    cursor: pointer;
-    touch-action: manipulation;
-    transform: translateY(-50%);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03), 0 4px 12px rgba(0, 0, 0, .18);
-    transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
-  }
-  .comet-archive-page-arrow--prev { left: 4px; }
-  .comet-archive-page-arrow--next { right: 4px; }
-  .comet-archive-page-arrow span { font: 300 26px/1 var(--font-body); }
-  .comet-archive-page-arrow span {
-    display: block;
-    width: 1em;
-    height: 1em;
-    line-height: .82;
-    text-align: center;
-    transform: translateY(-1px);
-  }
-  .comet-archive-page-arrow:hover:not(:disabled),
-  .comet-archive-page-arrow:focus-visible { border-color: rgba(255,255,255,.42); background: var(--apple-surface-raised); outline: none; }
-  .comet-archive-page-arrow:disabled { opacity: .28; cursor: default; }
-  .comet-archive-pagination {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 28px;
-    padding: 0 0 12px;
-  }
-  .comet-archive-pagination button {
-    width: 7px;
-    height: 7px;
-    flex: 0 0 auto;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: rgba(255,255,255,.22);
-    cursor: pointer;
-    touch-action: manipulation;
-    transform: scaleX(1);
-    transform-origin: center;
-    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
-  }
-  .comet-archive-pagination button.is-active { background: var(--apple-text); transform: scaleX(3.43); }
-  .comet-archive-pagination button:focus-visible { outline: 2px solid var(--apple-text); outline-offset: 4px; }
-}
-
-@media (max-width: 720px) {
-  /* English labels need the same rhythm, but their extra glyphs do not need
-     the generous Chinese-page breathing room. */
-  html[lang="en"] .comet-archive-mobile-shell .comet-archive {
-    row-gap: 10px !important;
-    padding-block: 16px !important;
-  }
-  html[lang="en"] .comet-archive-mobile-shell .comet-archive-pagination {
-    padding-bottom: 8px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .comet-archive-page-arrow,
-.comet-archive-pagination button,
-.comet-archive-mobile-shell .comet-archive { transition: none !important; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation: none !important; }
 }
 
 /* Mobile award gallery: one complete portrait at a time, with Apple-style
@@ -1594,41 +1477,6 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (max-width: 720px) {
-  /* Selected Work page arrows match the Cinema/Awards ghost-circle language.
-     Preserve their 44px target, fixed center and existing disabled affordance. */
-  #projects .comet-archive-page-arrow {
-    width: 44px !important;
-    height: 44px !important;
-    border: 1px solid transparent !important;
-    border-radius: 50% !important;
-    background: transparent !important;
-    color: var(--apple-secondary);
-    box-shadow: none !important;
-    transition: background-color var(--apple-duration-control) var(--apple-ease),
-      border-color var(--apple-duration-control) var(--apple-ease),
-      color var(--apple-duration-control) var(--apple-ease),
-      opacity var(--apple-duration-control) var(--apple-ease);
-  }
-  #projects .comet-archive-page-arrow svg { width: 20px; height: 20px; }
-  #projects .comet-archive-page-arrow:active:not(:disabled) {
-    background: var(--portfolio-icon-active-surface) !important;
-  }
-  #projects .comet-archive-page-arrow:focus-visible {
-    border-color: var(--portfolio-icon-border) !important;
-    background: var(--portfolio-icon-hover-surface) !important;
-    color: var(--apple-text);
-    outline: 2px solid var(--apple-blue);
-    outline-offset: 2px;
-  }
-  @media (hover: hover) and (pointer: fine) {
-    #projects .comet-archive-page-arrow:hover:not(:disabled) {
-      border-color: var(--portfolio-icon-border) !important;
-      background: var(--portfolio-icon-hover-surface) !important;
-      color: var(--apple-text);
-    }
-  }
-
-  .comet-archive-pagination,
   .impact-award-pagination {
     width: fit-content !important;
     max-width: 100%;
@@ -1641,16 +1489,13 @@ header .nav-contact-icon:focus-visible {
     box-shadow: none !important;
   }
 
-  /* 分页点的定位基准必须是完整轮播壳，而不是左右箭头预留区；
-     否则精选创作和获奖作品会整体偏向左侧。 */
-  #projects .comet-archive-pagination,
+  /* Award paging indicators are centered against the full gallery. */
   #impact-awards .impact-award-pagination {
     left: 50% !important;
     right: auto !important;
     transform: translateX(-50%) !important;
   }
 
-  .comet-archive-pagination button,
   .impact-award-pagination button {
     position: relative;
     display: grid;
@@ -1667,7 +1512,6 @@ header .nav-contact-icon:focus-visible {
     transform: none !important;
   }
 
-  .comet-archive-pagination button::before,
   .impact-award-pagination button::before {
     display: block;
     width: 7px;
@@ -1680,7 +1524,6 @@ header .nav-contact-icon:focus-visible {
     transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
 
-  .comet-archive-pagination button.is-active::before,
   .impact-award-pagination button.is-active::before {
     width: 20px;
     height: 7px;
@@ -1688,7 +1531,6 @@ header .nav-contact-icon:focus-visible {
     transform: none;
   }
 
-  .comet-archive-pagination button:focus-visible,
   .impact-award-pagination button:focus-visible {
     outline: 2px solid var(--apple-blue) !important;
     outline-offset: -1px;
@@ -1845,7 +1687,8 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
    and Lab list margin combined into inconsistent title-to-panel distances.
    Own those distances here without changing cards, content or animations. */
 :root {
-  --expertise-subheading-size: var(--impact-title-size);
+  /* P2: clear hierarchy below the 64px primary section headline. */
+  --expertise-subheading-size: clamp(34px, 2.75vw, 40px);
   --expertise-title-panel-gap: 28px;
   --expertise-main-subheading-gap: 44px;
 }
@@ -1880,7 +1723,7 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
 #experiments .flip-experiment { margin-top: 0; }
 @media (max-width: 760px) {
   :root {
-    --expertise-subheading-size: var(--impact-title-size-mobile);
+    --expertise-subheading-size: clamp(26px, 7.3vw, 30px);
     --expertise-title-panel-gap: 20px;
     --expertise-main-subheading-gap: 36px;
     --expertise-card-heading-size: clamp(24px, 6.8vw, 28px);
@@ -1942,4 +1785,50 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
     margin-left: 0;
     width: 100%;
   }
+}
+
+/* 2026-11 | Featured mobile editorial grid — all eight works, no carousel.
+   One 2-column / 4-row continuous gallery. Remove the redundant enclosing
+   glass/frame; individual ProjectCards retain the identical A+ glass surface
+   used on Works. Desktop four-column layout is untouched. */
+@media (max-width: 720px) {
+  #projects .comet-archive-mobile-shell {
+    display: contents !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    overflow: visible !important;
+  }
+  #projects .comet-archive-mobile-shell .comet-archive {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    grid-auto-flow: row !important;
+    column-gap: clamp(10px, 3vw, 14px) !important;
+    row-gap: clamp(12px, 3.5vw, 16px) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+    touch-action: pan-y !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+  #projects .comet-archive-page-arrow,
+  #projects .comet-archive-pagination { display: none !important; }
+  #projects .archive-more {
+    justify-content: flex-start;
+    margin-top: 0;
+  }
+  /* More room is gained from two extra real rows; don't insert empty screens. */
+  #projects { padding-bottom: 42px; }
 }

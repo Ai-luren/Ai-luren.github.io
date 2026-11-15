@@ -55,6 +55,8 @@
     "check:mobile-gestures": "node scripts/checks/site/check-mobile-project-gestures.mjs",
     "check:profile-no-flash": "node scripts/checks/site/check-profile-no-flash.mjs",
     "check:motion-polish": "node scripts/checks/site/check-motion-polish.mjs",
+    "check:cinematic-dolly": "node scripts/checks/site/check-cinematic-dolly-scrub.mjs",
+    "check:animated-content": "node scripts/checks/site/check-animated-content-stability.mjs",
     "check:poster-return": "node scripts/checks/site/check-featured-poster-and-works-return.mjs",
     "check:cinema-local": "node scripts/checks/site/check-cinema-no-black-transitions.mjs",
     "check:cinema-fullscreen": "node scripts/checks/site/check-cinema-mobile-fullscreen.mjs",
