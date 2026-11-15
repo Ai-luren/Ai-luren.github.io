@@ -51,6 +51,22 @@ try{
      check(state.decorationColor!=='rgba(0, 0, 0, 0)',width+'/'+lang+' nav active underlined');
      check(state.hasOldLine==='none',width+'/'+lang+' old nav pseudo underline retired');
    }
+   // Featured library entry must use the same typography-owned 1px / 5px
+   // underline, not the retired container-bottom ::after hairline.
+   const browse=p.locator('#projects .archive-more a').first();
+   await browse.scrollIntoViewIfNeeded();
+   const featuredBefore=await get(browse);
+   check(featuredBefore.hasLabel,width+'/'+lang+' Featured link has shared text-label element');
+   check(featuredBefore.offset==='5px'&&featuredBefore.thickness==='1px'&&featuredBefore.line==='underline',
+     width+'/'+lang+' Featured underline matches nav, social and Lab');
+   check(featuredBefore.hasOldLine==='none',
+     width+'/'+lang+' Featured old padded pseudo underline is absent');
+   await browse.hover();
+   await p.waitForTimeout(280);
+   const featuredHover=await get(browse);
+   check(featuredHover.decorationColor!=='rgba(0, 0, 0, 0)' &&
+     featuredHover.decorationColor!=='transparent',
+     width+'/'+lang+' Featured hover underline follows same color token');
    await lab.click();
    await p.locator('.lab-project-lightbox').waitFor({state:'visible'});
    const source=p.locator('.lab-project-source');

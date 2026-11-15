@@ -55,184 +55,15 @@
   /* Same reading size in both Vite dev CSS order and extracted production CSS. */
   #impact-awards .impact-award-description { font-size: var(--type-caption-mobile); }
 }
-.impact-award-rail { display: flex; align-items: center; gap: 14px; height: 370px; margin: 0; padding: 14px 62px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-padding-inline: 62px; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; clip-path: inset(0 62px); list-style: none; }
-.impact-award-rail::-webkit-scrollbar { display: none; }
-.impact-award-rail > li { flex: 0 0 calc((100% - 42px) / 4); width: calc((100% - 42px) / 4); height: 100%; scroll-snap-align: start; }
-.impact-award-card { position: relative; display: grid; place-items: center; width: 100%; height: 100%; padding: 0; overflow: hidden; cursor: zoom-in; transition: border-color var(--motion-duration-card) var(--motion-ease-control), box-shadow var(--motion-duration-card) var(--motion-ease-control); }
-.impact-award-card img { display: block; width: 100%; height: 100%; border-radius: var(--portfolio-content-radius, 18px); object-fit: contain; }
 /* Desktop/tablet cards share one centered media-and-caption column. The rail
    follows the tallest real caption, so language and carousel changes add no
    artificial blank rows or fixed-height space. */
 @media (min-width: 721px) {
   #impact-awards .impact-award-shell { padding: 24px 0 20px; }
-  #impact-awards .impact-award-rail > li {
-    height: auto;
-  }
-  #impact-awards .impact-award-rail .impact-award-card {
-    display: grid;
-    place-items: start center;
-    height: auto;
-    padding: 0;
-    overflow: visible;
-    border: 0 !important;
-    border-radius: 0;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-  #impact-awards .impact-award-card-content {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-    width: min(100%, var(--award-poster-width, 180px));
-    min-width: 0;
-    margin-inline: auto;
-  }
-  #impact-awards .impact-award-card-content > img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1124 / 2000;
-    max-width: 100%;
-    object-fit: contain;
-    border-radius: var(--portfolio-tile-radius, 12px);
-  }
-  #impact-awards .impact-award-rail .impact-award-card-caption {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    align-content: start;
-    align-items: start;
-    width: 100%;
-    min-width: 0;
-    height: auto;
-    min-height: 0;
-    box-sizing: border-box;
-    padding: 0;
-    text-align: left;
-  }
-  #impact-awards .impact-award-card-caption strong {
-    display: block;
-    min-width: 0;
-    margin: 0 0 5px;
-    color: var(--apple-text);
-    font: 600 14px/1.3 var(--font-display);
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: normal;
-    text-wrap: pretty;
-  }
-  #impact-awards .impact-award-card-caption small {
-    display: block;
-    min-width: 0;
-    margin: 0;
-    color: var(--apple-secondary);
-    font: 400 11px/1.4 var(--font-mono);
-    white-space: normal;
-    text-align: left;
-    overflow-wrap: anywhere;
-    word-break: normal;
-  }
-  #impact-awards .impact-award-rail .impact-award-card:hover,
-  #impact-awards .impact-award-rail .impact-award-card:focus-visible { border: 0 !important; box-shadow: none !important; }
-}
-@media (max-width: 720px) {
-  /* Keep the existing mobile button flex layout: its image and caption remain
-     flex items while the shared desktop alignment wrapper has no box. */
-  #impact-awards .impact-award-card-content { display: contents; }
-  /* The mobile image previously filled a wide grid cell with object-fit:
-     contain. Only the cell had rounded corners; the actual narrow artwork
-     remained rectangular inside it. Size the image by its real aspect ratio
-     so its border radius clips the visible artwork itself. */
-  #impact-awards .impact-award-card-content > img {
-    width: auto !important;
-    max-width: 100%;
-    height: 100% !important;
-    aspect-ratio: 540 / 960;
-    align-self: center !important;
-    object-fit: cover !important;
-    border-radius: var(--portfolio-content-radius, 18px);
-    overflow: hidden;
-  }
 }
 /* Centered gallery stage controls posters, gutters and arrows.
    Keep 3 fully visible posters from 721px through 1279px and 4 on wider
    desktops; <=720px retains its single-poster/touch carousel. */
-@media (min-width: 721px) {
-  #impact-awards .impact-award-stage {
-    --award-poster-width: 154px;
-    --award-poster-height: 274px;
-    --award-gutter: 20px;
-    --award-columns: 3;
-    position: relative;
-    width: min(100%, 616px);
-    margin-inline: auto;
-  }
-  #impact-awards .impact-award-stage .impact-award-rail {
-    box-sizing: border-box;
-    width: 100%;
-    max-width: none;
-    height: auto;
-    min-height: 0;
-    margin: 0;
-    padding: 0 64px;
-    clip-path: inset(0 64px);
-    scroll-padding-inline: 64px;
-    align-items: flex-start;
-    gap: var(--award-gutter);
-  }
-  #impact-awards .impact-award-stage .impact-award-rail > li {
-    flex: 0 0 calc((100% - (var(--award-columns) - 1) * var(--award-gutter)) / var(--award-columns));
-    width: calc((100% - (var(--award-columns) - 1) * var(--award-gutter)) / var(--award-columns));
-    height: auto;
-  }
-  #impact-awards .impact-award-stage .impact-award-rail-nav {
-    top: calc(var(--award-poster-height) / 2);
-    bottom: auto;
-    transform: translateY(-50%);
-  }
-  #impact-awards .impact-award-stage .impact-award-rail-nav--prev { left: 6px; }
-  #impact-awards .impact-award-stage .impact-award-rail-nav--next { right: 6px; }
-}
-@media (min-width: 1024px) and (max-width: 1279px) {
-  #impact-awards .impact-award-stage {
-    --award-poster-width: 184px;
-    --award-poster-height: 327px;
-    --award-gutter: 25px;
-    --award-columns: 3;
-    width: min(100%, 768px);
-  }
-}
-@media (min-width: 1280px) and (max-width: 1439px) {
-  #impact-awards .impact-award-stage {
-    --award-poster-width: 180px;
-    --award-poster-height: 320px;
-    --award-gutter: 26px;
-    --award-columns: 4;
-    width: min(100%, 964px);
-  }
-}
-@media (min-width: 1440px) {
-  #impact-awards .impact-award-stage {
-    --award-poster-width: 192px;
-    --award-poster-height: 342px;
-    --award-gutter: 30px;
-    --award-columns: 4;
-    width: min(100%, 1020px);
-  }
-}
-@media (max-width: 720px) {
-  .impact-award-stage { display: contents; }
-}
-.impact-award-card:hover, .impact-award-card:focus-visible { border-color: var(--impact-edge); box-shadow: 0 0 0 1px rgba(255, 255, 255, .18), 0 14px 30px rgba(0, 0, 0, .35); }
-.impact-award-card:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
-.impact-award-card--static, .impact-award-card--static:hover, .impact-award-card--static:focus-visible { cursor: default; border-color: var(--impact-border); box-shadow: none; outline: none; transform: none; }
-.impact-award-card-zoom { position: absolute; right: 8px; bottom: 8px; display: grid; place-items: center; width: 26px; height: 26px; color: rgba(237, 244, 249, .9); font: 500 14px/1 var(--tech, var(--mono, monospace)); opacity: 0; transition: opacity var(--motion-duration-card) var(--motion-ease-control); }
-.impact-award-card:hover .impact-award-card-zoom, .impact-award-card:focus-visible .impact-award-card-zoom { opacity: 1; }
-@media (hover: none) { .impact-award-card-zoom { opacity: 1; } }
-.impact-award-rail-nav { position: absolute; top: 50%; z-index: 2; display: grid; place-items: center; width: 46px; height: 46px; color: rgba(255, 255, 255, .94); cursor: pointer; transform: translateY(-12%); transition: border-color var(--motion-duration-control) var(--motion-ease-control), color var(--motion-duration-control) var(--motion-ease-control), opacity var(--motion-duration-control) var(--motion-ease-control), background-color var(--motion-duration-control) var(--motion-ease-control); }
-.impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .82); background: #1c1c1e; color: #fff; }
-.impact-award-rail-nav:focus-visible { outline: 2px solid var(--impact-edge); outline-offset: 2px; }
-.impact-award-rail-nav:disabled { cursor: default; opacity: .28; }
-.impact-award-rail-nav--prev { left: 10px; }
-.impact-award-rail-nav--next { right: 10px; }
 .impact-award-nav-icon { display: block; width: 18px; height: 18px; }
 
 /* Viewer media uses its natural ratio; list-card dimensions never apply here. */
@@ -292,11 +123,18 @@
 /* Social accounts share a compact glass panel across all viewport sizes. */
 .impact-reach-dossier { display: flex; flex-direction: column; min-height: 0; padding: 24px 28px; }
 .impact-reach-dossier-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; color: var(--impact-muted); font: 500 11px/1.5 var(--font-mono); letter-spacing: .055em; }
-.impact-reach-dossier-head small { color: var(--apple-tertiary); font: inherit; letter-spacing: 0; }
 .impact-reach-compact-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.impact-reach-compact-account { min-width: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 5px 22px; border-left: 1px solid var(--impact-hairline); }
-.impact-reach-compact-account:first-child { border-left: 0; padding-left: 0; }
-.impact-reach-compact-account:last-child { padding-right: 0; }
+.impact-reach-compact-account { min-width: 0; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; padding: 5px 12px; border-left: 1px solid var(--impact-hairline); }
+.impact-reach-compact-account:first-child { border-left: 0; }
+/* Center equal-width content blocks within the four equal grid columns.
+   Text itself remains left-aligned; missing secondary links do not leave
+   the fourth account visually glued to the left side of a large empty cell. */
+@media (min-width: 1101px) {
+  .impact-reach-compact-account {
+    grid-template-columns: minmax(0, 205px);
+    justify-content: center;
+  }
+}
 .impact-reach-identity { display: inline-flex; align-items: center; min-width: 0; gap: 9px; }
 .impact-reach-platform-icon { display: grid; place-items: center; flex: 0 0 34px; width: 34px; height: 34px; border: 1px solid var(--portfolio-tile-border); border-radius: 10px; background: var(--portfolio-tile-surface); color: var(--apple-text); }
 .impact-reach-platform-icon img { display: block; width: 19px; height: 19px; object-fit: contain; filter: grayscale(1) brightness(0) invert(1); }
@@ -317,14 +155,8 @@
 .impact-reach-dossier .impact-reach-action--primary {
   padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none;
 }
-@media (hover: hover) and (pointer: fine) {
-  .impact-reach-dossier .impact-reach-action--primary:hover { color: var(--apple-text); }
-}
 .impact-reach-dossier .impact-reach-action--external { padding: 0; border: 0; background: transparent; color: var(--apple-secondary); }
 .impact-reach-dossier .impact-reach-action--external:hover, .impact-reach-dossier .impact-reach-action--external:focus-visible { color: var(--apple-text); }
-@media (hover: hover) and (pointer: fine) {
-  /* Underlines for both actions are shared by the portfolio link-label rule. */
-}
 .impact-reach-dossier .impact-reach-action:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .impact-reach-dossier .impact-reach-action[aria-busy="true"] { cursor: progress; }
 @media (min-width: 721px) and (max-width: 1100px) {
@@ -504,8 +336,6 @@
   .impact-evidence-label p { max-width: 360px; }
   .impact-award-shell { min-height: 0; }
   .impact-award-shell .impact-evidence-note { margin-right: 14px; margin-left: 14px; }
-  .impact-award-rail { height: 330px; padding: 18px 58px; scroll-padding-inline: 58px; clip-path: inset(0 58px); }
-  .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
   .impact-logo-shell { min-height: 0; padding: 8px 16px 10px; }
 }
 
@@ -536,8 +366,6 @@
 @media (max-width: 720px) {
   .impact-logo-shell .logo-loop { --logo-loop-height: 30px !important; }
   .impact-logo-shell .logo-loop__list { gap: 24px; padding-right: 24px; }
-  .impact-award-card-zoom { display: grid; opacity: 1; }
-  .impact-award-rail > li { flex: 0 0 min(220px, calc(100% - 48px)); width: min(220px, calc(100% - 48px)); }
   .impact-award-shell .impact-evidence-note { color: rgba(245, 245, 247, .68); }
 }
 
@@ -551,10 +379,8 @@
 @media (max-width: 500px) {
   .impact-evidence-note { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; white-space: normal; }
   #impact-awards .impact-evidence-note span { min-width: 0; overflow-wrap: anywhere; }
-  .impact-evidence-note span + span { display: block; margin-top: 0; text-align: right; }
   .impact-award-shell { min-height: 0; padding-top: 20px; }
   .impact-award-description { margin: 0 14px 6px; font-size: var(--type-caption-mobile); }
-  .impact-award-rail { height: 300px; }
   .impact-award-lightbox-close { top: 12px; right: 12px; }
 }
 
@@ -576,8 +402,7 @@
     letter-spacing: .04em;
     text-transform: uppercase;
   }
-  .impact-platform-mobile-network-head span:first-child { text-align: left; }
-  .impact-platform-mobile-network-head span:last-child { text-align: right; }
+  .impact-platform-mobile-network-head span { text-align: left; }
   .impact-platform-mobile-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

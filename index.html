@@ -962,9 +962,6 @@
       text-decoration-color: currentColor;
     }
 
-    @media (max-width: 720px) {
-    }
-
     /* 移动端主导航：03 的胶囊入口 + 01 的清晰菜单行为。 */
     .mobile-nav-drawer { display: none; }
     .nav-toggle-label, .nav-toggle-code { display: none; }
@@ -1010,9 +1007,8 @@
     #experiments::before { background: transparent !important; }
     #projects { overflow: hidden; }
     .footer-contact-copy { display: grid; gap: 10px; }
-    .footer-contact-kicker { margin: 0; color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .1em; }
     .footer-contact-copy h2 { margin: 0; color: #f0f4f6; font: 700 clamp(2rem, 4vw, 3.2rem)/1.05 var(--display); letter-spacing: -.05em; }
-    .footer-contact-copy > p:not(.footer-contact-kicker) { max-width: 34ch; margin: 0 auto; color: var(--body-text); font-size: 14px; line-height: 1.7; }
+    .footer-contact-copy > p { max-width: 34ch; margin: 0 auto; color: var(--body-text); font-size: 14px; line-height: 1.7; }
     .footer-contact-direct { display: flex; flex-wrap: wrap; }
     .footer-contact-direct a { display: grid; gap: 3px; color: var(--body-on-dark); text-decoration: none; text-align: left; }
     .footer-contact-direct a:hover, .footer-contact-direct a:focus-visible { color: var(--accent-blue-on-dark); outline: none; }
@@ -1029,8 +1025,6 @@
     /* 文字层级只做收敛：标题承担叙事，元数据和说明退到第二层。 */
     body, button, input, textarea, select { font-optical-sizing: auto; }
     .about-role { text-wrap: balance; }
-    @media (max-width: 720px) {
-    }
 
     /* 让系统的可读性偏好优先于玻璃和视频质感。 */
     @media (prefers-reduced-transparency: reduce) {
@@ -1089,7 +1083,7 @@
       text-align: left;
     }
     .footer-contact-copy h2 { font-size: clamp(2.6rem, 5vw, 4.8rem); }
-    .footer-contact-copy > p:not(.footer-contact-kicker) { margin-left: 0; }
+    .footer-contact-copy > p { margin-left: 0; }
     .footer-contact-direct { justify-content: flex-start; gap: 0; margin-top: 26px; }
     .footer-contact-direct a { min-width: 190px; padding-right: 28px; margin-right: 28px; border-right: 1px solid rgba(255, 255, 255, .2); }
     .footer-contact-direct a:last-child { padding-right: 0; margin-right: 0; border-right: 0; }
@@ -1115,7 +1109,7 @@
       }
       .footer-contact-copy { width: 100%; max-width: none; padding: 0; text-align: left; }
       .footer-contact-copy h2 { font-size: clamp(2.55rem, 13vw, 4rem); }
-      .footer-contact-copy > p:not(.footer-contact-kicker) { max-width: 26ch; margin-left: 0; }
+      .footer-contact-copy > p { max-width: 26ch; margin-left: 0; }
       .footer-contact-direct { display: grid; gap: 0; margin-top: 22px; }
       .footer-contact-direct a,
       .footer-contact-direct a:last-child { min-width: 0; padding: 13px 0; margin: 0; border-top: 1px solid rgba(255, 255, 255, .18); border-right: 0; }
@@ -1614,16 +1608,6 @@
     }
 
     /* 影响力模块：外层面板承担层级，奖项与截图只保留轻边框，不再发光。 */
-    .impact-award-card {
-      border-radius: var(--radius-card) !important;
-      background: var(--surface-card-inset) !important;
-      box-shadow: none !important;
-    }
-    .impact-award-card:hover,
-    .impact-award-card:focus-visible {
-      border-color: rgba(255, 255, 255, .46) !important;
-      box-shadow: none !important;
-    }
     .impact-reach-profile-media {
       border-radius: var(--radius-card) !important;
       clip-path: inset(0 round var(--radius-card));
@@ -1761,7 +1745,7 @@
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row"><p id="projects-featured-note" class="section-note"></p><div id="projects-library-link"></div></div></div>
+      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row" id="projects-library-link"></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
@@ -1790,13 +1774,13 @@
                 <h2 id="profile-title" class="section-title about-role" data-i18n="about.role">AI 影像创作者</h2>
               </div>
               <div class="about-copy reveal">
-                <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验。</p>
+                <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验</p>
               </div>
             </div>
             <section id="contact" class="closing-contact" aria-labelledby="contact-title">
               <div class="footer-contact-copy">
                 <h2 id="contact-title" data-i18n="footer.contact.title">开始合作</h2>
-                <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
+                <p data-i18n="footer.contact.desc">AI 广告与短片合作，欢迎直接联系</p>
                 <div class="footer-contact-direct">
                   <a href="mailto:1746850550@qq.com"><span data-i18n="footer.contact.emailLabel">邮箱</span><strong>1746850550@qq.com</strong></a>
                   <a class="copy-link" href="#copy-wechat" data-copy="15580714085" data-i18n-aria="footer.contact.copyWechat" aria-label="点击复制微信号"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>

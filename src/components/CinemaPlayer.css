@@ -196,15 +196,19 @@
 .cinema-player__work-nav { grid-column: 1 / -1; grid-row: 2; display: flex; justify-content: center; width: 100%; }
 .cinema-player__sequence { display: grid; grid-template-columns: 44px minmax(56px, 1fr) 44px; align-items: center; gap: 16px; width: min(196px, 100%); }
 .cinema-player__count { color: var(--apple-secondary); text-align: center; font: 13px/1.35 var(--font-mono); white-space: nowrap; }
-/* Work arrows are secondary ghost controls, not copies of the circular
-   navigation chrome or a third segmented toggle. */
+/* Work arrows share circular ghost controls with the Awards image viewer;
+   their counter remains a separate unboxed label. */
 .cinema-player__sequence > button {
   flex: 0 0 44px; width: 44px; height: 44px;
-  border: 0 !important; border-radius: 12px !important;
+  border: 1px solid transparent !important; border-radius: 50% !important;
   background: transparent !important; color: var(--apple-secondary);
   transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
 }
-.cinema-player__sequence > button:hover:not(:disabled),
+@media (hover: hover) and (pointer: fine) {
+  .cinema-player__sequence > button:hover:not(:disabled) {
+    color: var(--apple-text); background: var(--portfolio-icon-hover-surface) !important;
+  }
+}
 .cinema-player__sequence > button:focus-visible {
   color: var(--apple-text); background: var(--portfolio-icon-hover-surface) !important;
 }

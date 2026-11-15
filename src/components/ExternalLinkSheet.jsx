@@ -21,6 +21,7 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
   const cancelRef = useRef(null);
   const openerRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
 
   useEffect(() => {
     if (!link) return undefined;
@@ -50,11 +51,9 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
     };
   }, [link, onClose]);
 
-  useEffect(() => { setCopied(false); }, [link?.href]);
+  useEffect(() => { setCopied(false); setCopyFailed(false); }, [link?.href]);
   if (!link) return null;
   const contact = link.contactAction;
-  const domain = contact ? null : new URL(link.href).hostname.replace(/^www\./, '');
-  const isGitHub = domain === 'github.com';
   const title = lang === 'en' ? 'Open external website?' : '即将前往站外网站';
   const destination = lang === 'en' ? (link.en || link.zh) : (link.zh || link.en);
 
@@ -65,7 +64,11 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
     try {
       await navigator.clipboard.writeText(contact === 'email' ? link.address : link.wechatId);
       setCopied(true);
-    } catch { setCopied(false); }
+      setCopyFailed(false);
+    } catch {
+      setCopied(false);
+      setCopyFailed(true);
+    }
   };
 
   return createPortal(
@@ -79,39 +82,37 @@ export default function ExternalLinkSheet({ link, onClose, lang }) {
             {contact === 'wechat' ? (
               <>
                 <div className="external-link-sheet__qr"><img src={link.href} alt={lang === 'en' ? 'WeChat QR code' : '微信联系二维码'} width="200" height="200" /></div>
-                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Scan with another device, or copy the WeChat ID below.' : '可使用另一台设备扫码，或复制微信号后在微信中搜索添加。'}</p>
-                <p className="external-link-sheet__contact-value">{link.wechatId}</p>
+                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Scan with WeChat, or copy the ID and download the QR code below.' : '微信扫码添加，或复制微信号并下载二维码。'}</p>
               </>
             ) : (
               <>
-                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Copy the address or open your email app to write a message.' : '可以复制邮箱地址，或打开邮件应用发送邮件。'}</p>
-                <p className="external-link-sheet__contact-value">{link.address}</p>
+                <p className="external-link-sheet__contact-note">{lang === 'en' ? 'Copy the email address to send a message in your mail app.' : '复制邮箱地址后，可在邮件应用中联系。'}</p>
               </>
             )}
             <div className="external-link-sheet__actions">
-              <button className="external-link-sheet__continue" type="button" onClick={copyContact}>{copied ? (lang === 'en' ? (contact === 'email' ? 'Email copied' : 'WeChat ID copied') : (contact === 'email' ? '邮箱已复制' : '微信号已复制')) : (lang === 'en' ? (contact === 'email' ? 'Copy email address' : 'Copy WeChat ID') : (contact === 'email' ? '复制邮箱地址' : '复制微信号'))}</button>
-              {contact === 'email' ? (
-                <a className="external-link-sheet__cancel" href={link.href} onClick={onClose}>{lang === 'en' ? 'Open mail app' : '打开邮件应用'}</a>
+              {contact === 'wechat' ? (
+                <a className="external-link-sheet__continue" href={link.href} download={link.download} onClick={copyContact}>
+                  {copied ? (lang === 'en' ? 'ID copied · Check downloads' : '已复制微信号 · 请查看下载') : (lang === 'en' ? 'Copy ID & save QR code' : '复制并保存二维码')}
+                </a>
               ) : (
-                <a className="external-link-sheet__cancel" href={link.href} download={link.download}>{lang === 'en' ? 'Save QR image' : '保存二维码图片'}</a>
+                <button className="external-link-sheet__continue" type="button" onClick={copyContact}>
+                  {copied ? (lang === 'en' ? 'Email copied' : '邮箱已复制') : (lang === 'en' ? 'Copy email address' : '复制邮箱地址')}
+                </button>
               )}
-              <button className="external-link-sheet__dismiss" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Close' : '关闭'}</button>
+              <button className="external-link-sheet__cancel" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Stay in portfolio' : '留在作品集'}</button>
             </div>
+            {copyFailed && <p className="external-link-sheet__copy-error" role="status">
+              {lang === 'en' ? 'Copy failed. Please copy the contact from the portfolio.' : '复制未成功，请从作品集联系信息中手动复制。'}
+            </p>}
           </>
         ) : <>
         <p className="external-link-sheet__eyebrow">{lang === 'en' ? 'EXTERNAL LINK' : '站外访问'}</p>
         <h2 id="external-link-title">{title}</h2>
         <p className="external-link-sheet__destination">{destination}</p>
-        <p className="external-link-sheet__domain">{domain}</p>
-        {isGitHub && <p className="external-link-sheet__hint">{lang === 'en' ? 'GitHub may load slowly on some networks. You can copy the address to open it later.' : '部分网络环境下 GitHub 可能加载较慢，可先复制链接备用'}</p>}
         <div className="external-link-sheet__actions">
           <a className="external-link-sheet__continue" href={link.href} data-external-confirmed="true" target="_blank" rel="noopener noreferrer" onClick={onClose}>{lang === 'en' ? 'Continue to website' : '继续访问'}</a>
           <button className="external-link-sheet__cancel" type="button" ref={cancelRef} onClick={onClose}>{lang === 'en' ? 'Stay here' : '留在作品集'}</button>
         </div>
-        {isGitHub && <button type="button" className="external-link-sheet__copy" onClick={async () => {
-          try { await navigator.clipboard.writeText(link.href); setCopied(true); }
-          catch { setCopied(false); }
-        }}>{copied ? (lang === 'en' ? 'Link copied' : '已复制链接') : (lang === 'en' ? 'Copy link instead' : '复制 GitHub 链接')}</button>}
         </>}
       </div>
     </div>,

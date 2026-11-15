@@ -19,6 +19,11 @@ try {
     const R=e=>{let a=e.getBoundingClientRect();return{x:a.x,y:a.y,w:a.width,h:a.height,r:a.right,top:a.top,b:a.bottom}};
     const CSS=e=>{const s=getComputedStyle(e);return{bg:s.backgroundColor,border:s.borderTopWidth,br:s.borderTopRightRadius,paddingL:s.paddingLeft,paddingR:s.paddingRight,justify:s.justifyContent,align:s.textAlign}};
     const header=document.querySelector('.flip-experiment__header span:nth-child(3)');
+    const row=document.querySelector('.flip-experiment__row');
+    const labHeaderStart=document.querySelector('.flip-experiment__header span:first-child');
+    const labNumber=document.querySelector('.flip-experiment__row .flip-experiment__index');
+    const socialHead=document.querySelector('.impact-reach-dossier-head');
+    const platformHead=document.querySelector('.impact-platform-desktop-head');
     const actions=[...document.querySelectorAll('.flip-experiment__actions')];
     const btn=actions[0].querySelector('.flip-experiment__detail');
     const soc=[...document.querySelectorAll('#impact-reach .impact-reach-action--primary')];
@@ -28,6 +33,17 @@ try {
     const dock=document.querySelector('#footer-dock-react-root');
     const icons=[...document.querySelectorAll('#profile .floating-dock-item')];
     return{header:R(header),labBtn:R(btn),labCSS:CSS(btn),actions:actions.map(R),headerCSS:CSS(header),
+      contentGrid:{
+        labStart:R(labNumber).x,
+        labHeadingStart:R(labHeaderStart).x,
+        labRowInset:getComputedStyle(row).paddingLeft,
+        labRowInsetRight:getComputedStyle(row).paddingRight,
+        socialStart:R(socialHead).x,socialEnd:R(socialHead).r,
+        // Its ancestor is hidden on phones; computed display on the child
+        // alone is not enough to tell if the platform header has geometry.
+        platformStart:R(platformHead).w>0?R(platformHead).x:null,
+        platformEnd:R(platformHead).w>0?R(platformHead).r:null
+      },
       soc:soc.map(e=>({box:R(e),css:CSS(e)})),ext:ext.map(e=>({box:R(e),css:CSS(e)})),
       footer:R(footer),contact:R(contact),dock:R(dock),icons:icons.map(R),
       socialDockDisplay:getComputedStyle(footer).display,labActionsCount:actions.length,socCount:soc.length,
@@ -42,11 +58,35 @@ try {
    assert(result.soc.every(x=>x.box.h >= (w<=720?44:40)),tag+': social touch target size');
    assert(result.overflow<=2,tag+': horizontal overflow '+result.overflow);
    if(w>=1024){
-     assert(Math.abs(result.contact.x-result.dock.x)<=1.5,tag+': dock misaligned '+result.contact.x+','+result.dock.x);
+     assert(Math.abs(result.contact.r-result.dock.r)<=1.5,
+       tag+': right-aligned contact and dock must share an outer edge '+result.contact.r+','+result.dock.r);
      assert(result.socialDockDisplay==='grid',tag+': footer not grid');
    }
-   if(w>720)assert(result.header.r < result.labBtn.x,
-     tag+': Lab description heading should end before the separate action column');
+   // All Expertise glass cards share symmetric interior alignment, not
+   // merely the same outer width. This catches the previous 12/24px Lab
+   // gutters drifting away from the 28px creator/social panels.
+   const grid=result.contentGrid;
+   assert.equal(grid.labRowInset,w<=720?'14px':'28px',tag+': Lab inner gutter');
+   assert.equal(grid.labRowInsetRight,grid.labRowInset,tag+': asymmetric Lab gutter');
+   assert(Math.abs(grid.labStart-grid.socialStart)<=1.5,
+     tag+': Lab index and AI Media interior left edges differ');
+   if(w>720){
+     assert(Math.abs(grid.labHeadingStart-grid.socialStart)<=1.5,
+       tag+': Lab header and AI Media interior left edges differ');
+     assert(Math.abs(result.labBtn.r-grid.socialEnd)<=1.5,
+       tag+': Lab action and AI Media interior right edges differ');
+     assert(result.header.r < result.labBtn.x,
+       tag+': Lab description heading should end before the action column');
+   }else{
+     assert(Math.abs(result.labBtn.x-grid.labStart)<=1.5,
+       tag+': Mobile Lab action should align with list content');
+   }
+   if(grid.platformStart!==null){
+     assert(Math.abs(grid.labStart-grid.platformStart)<=1.5,
+       tag+': Creator / Lab interior left edges differ');
+     assert(Math.abs(result.labBtn.r-grid.platformEnd)<=1.5,
+       tag+': Creator / Lab interior right edges differ');
+   }
    if([390,1440].includes(w)){
      const link=lab.locator('.flip-experiment__detail').nth(2);
      assert.equal(await link.getAttribute('aria-haspopup'),'dialog',tag+': missing accessible dialog affordance');

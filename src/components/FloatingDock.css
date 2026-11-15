@@ -116,4 +116,3 @@
 .floating-dock-qr__heading { font: 600 13px/1.4 var(--font-body); white-space: nowrap; }
 .floating-dock-qr__image { display: block; padding: 5px; border-radius: 8px; background: #fff; }
 .floating-dock-qr__image img { display: block; width: 164px; height: 164px; object-fit: contain; }
-.floating-dock-qr__caption { font: 400 11px/1.3 var(--font-body); color: var(--apple-secondary); }

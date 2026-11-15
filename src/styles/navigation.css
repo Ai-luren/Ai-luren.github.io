@@ -303,7 +303,7 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   --portfolio-link-rule-active: rgba(245, 245, 247, .84);
   --portfolio-link-rule-hover: rgba(245, 245, 247, .66);
 }
-:is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source) > .portfolio-link-label {
+:is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source, .archive-more a) > .portfolio-link-label {
   text-decoration-line: underline;
   text-decoration-color: transparent;
   text-decoration-style: solid;
@@ -316,14 +316,14 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   text-decoration-color: var(--portfolio-link-rule-active);
 }
 .site-primary-nav a:not(.is-active):is(:hover,:focus-visible) > .portfolio-link-label,
-:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source):is(:hover,:focus-visible) > .portfolio-link-label {
+:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source, .archive-more a):is(:hover,:focus-visible) > .portfolio-link-label {
   text-decoration-color: var(--portfolio-link-rule-hover);
 }
-:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source):is(:hover,:focus-visible) {
+:is(.impact-reach-action, .flip-experiment__detail, .lab-project-source, .archive-more a):is(:hover,:focus-visible) {
   color: var(--apple-text);
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source) > .portfolio-link-label {
+  :is(.site-primary-nav a, .impact-reach-action, .flip-experiment__detail, .lab-project-source, .archive-more a) > .portfolio-link-label {
     transition: none;
   }
 }
@@ -381,33 +381,59 @@ body.cinema-open .library-page-navigation, body.profile-viewer-open .library-pag
   outline-offset: 3px !important;
 }
 
-/* The award viewer retains its established circular arrow controls.
-   Cinema work browsing uses the quieter ghost-arrow treatment instead, and
-   its nested "all work" link must never inherit these icon button styles. */
-.impact-award-lightbox-nav {
-  display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
-  flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
-  border: 1px solid var(--portfolio-icon-border) !important;
-  border-radius: var(--portfolio-icon-radius) !important;
-  background: var(--portfolio-icon-surface) !important; color: var(--apple-text);
-  transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease);
+/* Unified ghost-circle navigation: Awards viewer and cinema work switcher.
+   No background at rest; one circular hover/focus treatment without layout shift.
+   44px/48px target sizes remain stable on touch, with the same 20px chevron. */
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav) {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--apple-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color var(--apple-duration-control) var(--apple-ease),
+    border-color var(--apple-duration-control) var(--apple-ease),
+    color var(--apple-duration-control) var(--apple-ease),
+    opacity var(--apple-duration-control) var(--apple-ease);
 }
-.cinema-player__sequence > button {
-  display: grid; place-items: center; cursor: pointer; touch-action: manipulation;
-  flex: 0 0 44px; width: 44px; height: 44px; padding: 0;
-  border: 0 !important; border-radius: 12px !important;
-  background: transparent !important; color: var(--apple-secondary);
-  transition: background-color 180ms ease, color 180ms ease, opacity 180ms ease;
+.cinema-player__sequence > button { flex: 0 0 44px; width: 44px; height: 44px; }
+.impact-award-lightbox-nav { flex: 0 0 48px; width: 48px; height: 48px; }
+:is(.cinema-player__sequence > button svg,.impact-award-lightbox-nav svg) {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
-.cinema-player__sequence > button svg { width: 20px; height: 20px; }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; transform: none; }
-/* The rail arrow uses translateY for its fixed vertical position. Do not
-   overwrite that transform on hover, or the button visibly drops. */
+/* Hover is a fine-pointer affordance only: iOS tap must not latch the ring. */
+@media (hover: hover) and (pointer: fine) {
+  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav):hover:not(:disabled) {
+    border-color: var(--portfolio-icon-border) !important;
+    background: var(--portfolio-icon-hover-surface) !important;
+    color: var(--apple-text);
+    transform: none;
+  }
+}
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav):focus-visible {
+  border-color: var(--portfolio-icon-border) !important;
+  background: var(--portfolio-icon-hover-surface) !important;
+  color: var(--apple-text);
+}
+/* Keep legacy rail transform untouched: it positions that control vertically. */
 .impact-award-rail-nav:hover:not(:disabled) { background: var(--portfolio-icon-hover-surface) !important; }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) { background: var(--portfolio-icon-active-surface) !important; }
-:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 4px; }
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):active:not(:disabled) {
+  background: var(--portfolio-icon-active-surface) !important;
+}
+:is(.cinema-player__sequence > button,.impact-award-lightbox-nav,.impact-award-rail-nav):focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 4px;
+}
 .cinema-player__sequence > button:disabled { opacity: .32; cursor: default; }
 .impact-award-rail-nav:disabled { opacity: .32; cursor: default; }
+@media (prefers-reduced-motion: reduce) {
+  :is(.cinema-player__sequence > button,.impact-award-lightbox-nav) { transition: none; }
+}
 @media (max-width:760px) {
   body > header, body > header.is-condensed, .cinema-player__navigation { top: max(12px,env(safe-area-inset-top)) !important; width: calc(100% - 24px) !important; height: 56px !important; }
   header .brand, .cinema-player__brand { left: 8px; top: 5px; width: 44px; height: 44px; }

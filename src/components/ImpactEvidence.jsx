@@ -410,7 +410,6 @@ function LogoIndex() {
         <div className="impact-platform-mobile-network">
           <div className="impact-platform-mobile-network-head">
             <span>{lang === 'en' ? 'PLATFORMS' : '创作平台'}</span>
-            <span>{lang === 'en' ? 'CREDENTIALS' : '创作者身份'}</span>
           </div>
           <div className="impact-platform-mobile-grid">
             {logos.map((logo) => (

@@ -8,7 +8,8 @@
   grid-template-columns: 48px minmax(190px, .9fr) minmax(0, 1.8fr) 84px;
   gap: clamp(14px, 2vw, 26px);
   align-items: center;
-  padding-inline: 24px;
+  /* Match AI Creator and AI Media panels: 28px inset on each side. */
+  padding-inline: 28px;
 }
 
 .flip-experiment__header {
@@ -85,33 +86,6 @@
   color: var(--apple-tertiary);
 }
 
-.flip-experiment__link {
-  display: inline-flex;
-  min-width: 64px;
-  min-height: 44px;
-  align-items: center;
-  justify-self: end;
-  gap: 6px;
-  padding: 0 2px;
-  border-bottom: 1px solid rgba(237, 244, 249, .32);
-  color: var(--apple-secondary);
-  font: 500 13px/1.4 var(--font-body, system-ui);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
-}
-
-.flip-experiment__link:hover,
-.flip-experiment__link:focus-visible {
-  border-color: var(--apple-text);
-  color: var(--apple-text);
-}
-
-.flip-experiment__link:focus-visible {
-  outline: 2px solid var(--accent-blue-focus, rgba(41, 151, 255, .88));
-  outline-offset: 3px;
-}
-
 @media (max-width: 720px) {
   .flip-experiment {
     margin-top: 24px;
@@ -126,7 +100,8 @@
     gap: 8px 10px;
     min-height: 0;
     align-items: start;
-    padding: 16px;
+    /* Match the mobile AI Media card inner gutter (14px). */
+    padding: 14px;
   }
 
   .flip-experiment__index {
@@ -138,8 +113,7 @@
     line-height: 1.25;
   }
 
-  .flip-experiment__meta,
-  .flip-experiment__link {
+  .flip-experiment__meta {
     grid-column: 1 / -1;
   }
 
@@ -155,16 +129,10 @@
   .flip-experiment__facts {
     font-size: 11px;
   }
-
-  .flip-experiment__link {
-    justify-self: start;
-    margin-top: -2px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flip-experiment__row,
-  .flip-experiment__link {
+  .flip-experiment__row {
     transition: none;
   }
 }
@@ -182,38 +150,26 @@
   text-align: left; white-space: nowrap; cursor: pointer;
   transition: color var(--apple-duration-control) var(--apple-ease);
 }
-@media (hover: hover) and (pointer: fine) {
-  .flip-experiment__detail:hover { color: var(--apple-text); }
-}
-.flip-experiment__actions .flip-experiment__link { position: relative; min-width: 0; min-height: 38px; padding: 0 2px; border-bottom: 0; font-size: 12px; }
-.flip-experiment__tooltip {
-  position: absolute; right: 0; bottom: calc(100% + 8px);
-  width: max-content; max-width: 240px; padding: 8px 11px;
-  background: var(--portfolio-panel-solid, #25262a);
-  border: 1px solid var(--portfolio-panel-border); border-radius: 10px;
-  color: var(--apple-text); opacity: 0; pointer-events: none;
-  font: 500 11px/1.4 var(--font-body);
-  transform: translateY(3px);
-  transition: opacity 180ms var(--apple-ease), transform 180ms var(--apple-ease);
-}
-.flip-experiment__link:is(:hover,:focus-visible) .flip-experiment__tooltip { opacity: 1; transform: translateY(0); }
-.flip-experiment__detail:focus-visible, .flip-experiment__link:focus-visible {
+.flip-experiment__detail:focus-visible {
   outline: 2px solid var(--apple-blue); outline-offset: 3px;
 }
 @media (min-width: 721px) and (max-width: 1000px) {
   .flip-experiment__header, .flip-experiment__row {
     grid-template-columns: 27px minmax(150px, .7fr) minmax(0, 1.6fr) 130px;
-    gap: 12px; padding-inline: 12px;
+    gap: 12px;
+    /* Inherit the 28px desktop inset; a 12px override broke alignment
+       with the neighboring creator and media cards. */
   }
   .flip-experiment__actions { justify-content: flex-end; }
 }
 @media (max-width: 720px) {
+  /* Reassert phone columns after the desktop four-track layout above.
+     This is not redundant with the earlier mobile block: the later base rule
+     would otherwise force a 384px row and overflow 320–390px screens. */
   .flip-experiment__row { grid-template-columns: 28px minmax(0, 1fr); }
   .flip-experiment__meta, .flip-experiment__actions { min-width: 0; grid-column: 1/-1; }
   .flip-experiment__actions { justify-content: flex-start; margin-top: 3px; }
   .flip-experiment__detail { min-height: 44px; }
-  .flip-experiment__actions .flip-experiment__link { min-height: 44px; }
-  .flip-experiment__tooltip { display: none; }
 }
 
 /* AI Lab / shared cinema vocabulary: a readable editorial gallery, not

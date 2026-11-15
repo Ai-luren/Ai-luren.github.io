@@ -16,6 +16,13 @@ async function arrows(p,width){
  assert(!m.overflow);assert.equal(m.buttons.length,2);
  for(const b of m.buttons){assert(b.w>=44&&b.h>=44);assert(b.left>=0&&b.right<=width);assert(b.right<=m.stage.left||b.left>=m.stage.right||b.top>=m.stage.bottom,'Arrow overlaps video');}
  if(width<=760)assert(!m.side);
+ const ghost=await p.locator('.cinema-player__sequence > button').last().evaluate(el=>{
+   const s=getComputedStyle(el),svg=getComputedStyle(el.querySelector('svg'));
+   return {radius:s.borderRadius,background:s.backgroundColor,icon:[svg.width,svg.height]};
+ });
+ assert.equal(ghost.radius,'50%','Cinema arrow has circular hit area');
+ assert.equal(ghost.background,'rgba(0, 0, 0, 0)','Cinema arrow has no resting backdrop');
+ assert.deepEqual(ghost.icon,['20px','20px'],'Cinema SVG uses unified size');
 }
 try{
  for(const width of [360,375,393,430,1280,1440,1920]){
@@ -45,6 +52,13 @@ try{
   await p.locator('.impact-award-grid-card').first().click();await p.waitForSelector('#impact-award-lightbox');await p.waitForTimeout(400);await p.mouse.move(0,0);await p.waitForTimeout(220);
   same(home,await p.locator('#impact-award-lightbox .cinema-player__navigation').evaluate(geometry));if(button)same(button,await p.locator('#impact-award-lightbox .cinema-player__close').evaluate(geometry));
   assert.equal(await p.locator('.impact-award-lightbox-close').count(),0);
+  const awardGhost=await p.locator('.impact-award-lightbox-nav--next').evaluate(el=>{
+    const s=getComputedStyle(el),svg=getComputedStyle(el.querySelector('svg'));
+    return {radius:s.borderRadius,background:s.backgroundColor,icon:[svg.width,svg.height]};
+  });
+  assert.equal(awardGhost.radius,'50%','Awards viewer arrow must be circular like Cinema');
+  assert.equal(awardGhost.background,'rgba(0, 0, 0, 0)','Awards arrow has no resting backdrop');
+  assert.deepEqual(awardGhost.icon,['20px','20px'],'Awards/Cinema SVG sizes match');
   const image=await p.locator('#impact-award-lightbox figure > img').getAttribute('src');
   await p.locator('.impact-award-lightbox-nav--next').click();await p.waitForFunction(src=>document.querySelector('#impact-award-lightbox figure > img')?.getAttribute('src')!==src,image);
   await p.locator('#impact-award-lightbox .cinema-player__language [data-switch-lang="en"]').click();assert.equal(await p.locator('html').getAttribute('lang'),'en');

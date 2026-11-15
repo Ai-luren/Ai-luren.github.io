@@ -1,13 +1,15 @@
-#projects .section-intro { display: block; max-width: none; margin-bottom: 18px; }
-#projects .section-title { margin-bottom: 0; }
-#projects .section-intro > .projects-meta-row {
+/* Desktop Featured: one heading row and one contextual library action.
+   The count caption is retired; mobile action remains below pagination. */
+#projects .section-intro {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 24px;
-  margin-top: 8px;
+  gap: 18px 24px;
+  max-width: none;
+  margin-bottom: 18px;
 }
-#projects .projects-meta-row .section-note { margin: 0; max-width: none; align-self: center; }
+#projects .section-intro > div:first-child { min-width: 0; }
+#projects .section-title { margin-bottom: 0; }
 #projects-library-link { flex-shrink: 0; }
 #projects .archive-more { display: flex; justify-content: flex-end; }
 #projects .archive-more a {
@@ -25,19 +27,21 @@
   white-space: nowrap;
   transition: color 180ms ease;
 }
-/* Static typography; the hairline fades in without moving content. */
-#projects .archive-more a::after { position: absolute; left: 4px; right: 4px; bottom: 6px; height: 1px; background: currentColor; opacity: 0; content: ''; pointer-events: none; transition: opacity 180ms var(--apple-ease); }
-#projects .archive-more a:hover, #projects .archive-more a:focus-visible { color: #fff; }
-#projects .archive-more a:hover::after, #projects .archive-more a:focus-visible::after { opacity: .68; }
-#projects .archive-more a:focus-visible { outline: 2px solid var(--accent-blue-focus); outline-offset: 4px; }
+/* The label underline is owned by navigation.css and the shared 5px token,
+   rather than a bottom-positioned pseudo-element on the 44px hit target. */
+#projects .archive-more a::after { display: none !important; content: none !important; }
+#projects .archive-more a:focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 4px;
+}
 /* A+ cards use shared flex layout on both pages. The former homepage
    subgrid split captions from the poster and left an empty 22px tail. */
 @media (max-width: 720px) {
-  #projects .section-intro { margin-bottom: 22px; }
+  #projects .section-intro { display: block; margin-bottom: 22px; }
   #projects .section-intro > .projects-meta-row { display: none; }
   #projects .archive-more { margin-top: 6px; padding-right: 4px; }
 }
-@media (prefers-reduced-motion: reduce) { #projects .archive-more a, #projects .archive-more a::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { #projects .archive-more a { transition: none; } }
 
 /* Shared cover action for Featured and All Work. The full artwork card remains
    the only button, while this single badge is permanently visible at all

@@ -91,10 +91,11 @@ try {
       await more.waitFor({state:'visible',timeout:10000});
       await page.waitForTimeout(450); // Existing GSAP alignment finishes after visibility flips.
       // Read related rectangles after the scroll entrance settles.
-      const { hit, archive, pagination, note } = await more.evaluate(element => {
+      const { hit, archive, pagination, title, header } = await more.evaluate(element => {
         const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-        return { hit: element.getBoundingClientRect().toJSON(), archive: rect('.comet-archive'), pagination: rect('.comet-archive-pagination'), note: rect('#projects-featured-note') };
+        return { hit: element.getBoundingClientRect().toJSON(), archive: rect('.comet-archive'), pagination: rect('.comet-archive-pagination'), title: rect('#projects-title'), header: rect('#projects .section-intro') };
       });
+      assert.equal(await page.locator('#projects-featured-note').count(),0,'Remove redundant Featured count caption');
       assert(hit.width >= 44 && hit.height >= 44, 'Library text link needs a visible touch target.');
       assert.equal(await more.evaluate(element => getComputedStyle(element).backgroundColor), 'rgba(0, 0, 0, 0)');
       assert(Math.abs(hit.x + hit.width - archive.x - archive.width) < 4.5, 'Library link should align with the work area right edge within responsive spacing tolerance.');
@@ -103,8 +104,9 @@ try {
         assert(hit.y <= pagination.y + pagination.height + 28, 'Mobile pagination gap should stay compact.');
         assert.equal(await page.locator('#projects-library-link a').count(), 0);
       } else {
-        assert(Math.abs(note.y + note.height / 2 - hit.y - hit.height / 2) < 2, 'Desktop note and link should share one row.');
-        assert(Math.abs(note.x - archive.x) < 2);
+        assert(hit.y>=header.y && hit.y+hit.height<=header.y+header.height+2,'Desktop link belongs in heading row.');
+        assert(Math.abs(title.y+title.height-hit.y-hit.height)<5,'Desktop link and heading share a bottom baseline.');
+        assert(Math.abs(title.x-archive.x)<2,'Desktop heading begins at content edge.');
       }
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false);
       await more.click();
@@ -114,7 +116,7 @@ try {
       await page.close();
     }
   }
-  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、说明行对齐、分页下方位置、分类、页面往返和播放器交互。');
+  console.log('作品库回归通过：8 视口 × 2 语言，唯一文字入口、桌面标题同排、手机分页下方、分类、页面往返和播放器交互。');
 } finally {
   await browser.close();
 }

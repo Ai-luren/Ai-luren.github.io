@@ -563,12 +563,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           </div>}
           <div className="cinema-player__work-nav" role="group" aria-busy={switching} aria-label={lang === 'en' ? 'Work navigation' : '作品切换'}>
             <div className="cinema-player__sequence">
-              <button type="button" onClick={() => switchWork(index-1)} disabled={switching || index <= 0}
+              <button type="button" onClick={event => { if (event.detail > 0) event.currentTarget.blur(); switchWork(index-1); }} disabled={switching || index <= 0}
                 onPointerEnter={() => warmImage(initialProjectPoster(projects[index-1]))}
                 onFocus={() => warmImage(initialProjectPoster(projects[index-1]))}
                 aria-label={lang==='en'?'Previous work':'上一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
               <span className="cinema-player__count" aria-live="polite">{index+1} / {projects.length}</span>
-              <button type="button" onClick={() => switchWork(index+1)} disabled={switching || index < 0 || index >= projects.length-1}
+              <button type="button" onClick={event => { if (event.detail > 0) event.currentTarget.blur(); switchWork(index+1); }} disabled={switching || index < 0 || index >= projects.length-1}
                 onPointerEnter={() => warmImage(initialProjectPoster(projects[index+1]))}
                 onFocus={() => warmImage(initialProjectPoster(projects[index+1]))}
                 aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>

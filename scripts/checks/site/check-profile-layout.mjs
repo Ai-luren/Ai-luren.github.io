@@ -22,12 +22,24 @@ try{
           const get=q=>document.querySelector(q);
           const bounds=el=>el.getBoundingClientRect();
           const role=get('#profile-title'),contact=get('#contact-title'),
-            brand=get('#profile .closing-footer'),dock=get('#footer-dock-react-root');
+            brand=get('#profile .closing-footer'),dock=get('#footer-dock-react-root'),
+            panel=get('#profile .closing-card'),panelStyle=getComputedStyle(panel);
           const links=[...get('#profile .footer-contact-direct').querySelectorAll('a')];
           const icons=[...dock.querySelectorAll('.floating-dock-item')];
           const visible=el=>getComputedStyle(el).display!=='none';
           return {
             roleText:role.textContent.trim(),contactText:contact.textContent.trim(),
+            contentLeft:bounds(panel).left+parseFloat(panelStyle.paddingLeft),
+            contentRight:bounds(panel).right-parseFloat(panelStyle.paddingRight),
+            cardOuterRight:bounds(panel).right,
+            minSocialTargetWidth:Math.min(...icons.map(el=>bounds(el).width)),
+            biographyLeft:bounds(role).left,
+            contactRight:bounds(contact).right,
+            contactDescriptionRight:bounds(get('#profile .footer-contact-copy > p')).right,
+            contactAlign:getComputedStyle(contact).textAlign,
+            brandLeft:bounds(brand).left,
+            iconFirstLeft:bounds(icons[0]).left,
+            iconLastRight:bounds(icons.at(-1)).right,
             roleSize:getComputedStyle(role).fontSize,
             contactSize:getComputedStyle(contact).fontSize,
             headingDelta:Math.abs(bounds(role).top-bounds(contact).top),
@@ -49,6 +61,22 @@ try{
         assert.equal(state.roleSize,state.contactSize,tag+': headline sizes differ');
         assert(width<=720||state.headingDelta<1,tag+': two desktop headings not aligned');
         assert.equal(state.brandVisible,width>760,tag+': repeated phone signature visible');
+        assert(Math.abs(state.biographyLeft-state.contentLeft)<=2,tag+': left biography follows card padding');
+        if(width<=760){
+          assert(Math.abs(state.iconFirstLeft-state.contentLeft)<=2,tag+': phone icons left aligned');
+          // Six 44px targets exceed 320px inner width; they may use the card
+          // right padding, but must stay inside its visible rounded boundary.
+          assert(state.iconLastRight<=state.cardOuterRight-3,tag+': icons fit inside card outline');
+          assert(state.minSocialTargetWidth>=44,tag+': phone icon touch target should remain 44px');
+        }else{
+          assert(Math.abs(state.iconLastRight-state.contentRight)<=2,tag+': desktop icons right aligned');
+          assert(Math.abs(state.brandLeft-state.contentLeft)<=2,tag+': brand left aligned');
+        }
+        if(width>720){
+          assert.equal(state.contactAlign,'right',tag+': two-column contact right aligned');
+          assert(Math.abs(state.contactRight-state.contentRight)<=2,tag+': contact heading right edge');
+          assert(Math.abs(state.contactDescriptionRight-state.contentRight)<=2,tag+': contact paragraph right edge');
+        }
         assert.equal(state.socialCount,6,tag+': incomplete social dock');
         assert(state.socialRowSpread<=2,tag+': social icons not on one row');
         assert.equal(state.staleLabels,false,tag+': redundant section labels returned');

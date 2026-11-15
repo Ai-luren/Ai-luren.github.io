@@ -82,7 +82,10 @@ try{
     const social=page.locator(container+' .mobile-menu__social-list a').filter({hasText:'GitHub'});
     await social.tap();
     await page.locator('.external-link-sheet').waitFor({state:'visible',timeout:3500});
-    assert((await page.locator('.external-link-sheet__domain').innerText()).includes('github.com'),kind+': external destination correctly confirmed');
+    assert.equal(await page.locator('.external-link-sheet__domain').count(),0,
+      kind+': external preview shows profile label without visible hostname');
+    assert.equal(new URL(await page.locator('.external-link-sheet__continue').getAttribute('href')).hostname,'github.com',
+      kind+': destination href remains intact');
     if(kind==='works')await page.locator('#library-menu').waitFor({state:'detached'});
     await page.locator('.external-link-sheet__cancel').click();
     await page.locator('.external-link-sheet').waitFor({state:'detached'});

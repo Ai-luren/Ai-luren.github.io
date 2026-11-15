@@ -112,12 +112,23 @@ try {
     await desktop.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
     await desktop.locator('#projects .comet-archive__cover').first().waitFor({ state: 'attached' });
     await desktop.waitForTimeout(350);
-    const firstPass = await desktop.locator('#projects .comet-archive__cover')
-      .evaluateAll(images => images.map(image => image.hasAttribute('src')));
-    assert.equal(firstPass.length, 8);
-    assert.deepEqual(firstPass, [true,true,true,true,false,false,false,false],
-      'Desktop Featured second row must not load before approaching it');
-    console.log('PASS desktop Featured: four covers, next row deferred');
+    // The Hero now consumes a full viewport before Featured. Depending on
+    // viewport and animation timing, even the *first* row may be outside
+    // the 350px IntersectionObserver margin; do not force eager loading.
+    const initial = await desktop.locator('#projects .comet-archive__cover')
+      .evaluateAll(images => images.map(image => {
+        const rect = image.getBoundingClientRect();
+        return { loaded: image.hasAttribute('src'), top: rect.top, bottom: rect.bottom };
+      }));
+    assert.equal(initial.length, 8);
+    const rootMargin = 350;
+    const windowHeight = desktop.viewportSize().height;
+    assert(initial.every(image => image.top <= windowHeight + rootMargin || !image.loaded),
+      'Desktop Featured must defer covers beyond the approaching viewport');
+    await desktop.locator('#projects .comet-archive__cover').first().scrollIntoViewIfNeeded();
+    await desktop.waitForFunction(() => [...document.querySelectorAll('#projects .comet-archive__cover')]
+      .slice(0, 4).every(image => image.complete && image.naturalWidth > 0));
+    console.log('PASS desktop Featured: far covers deferred, first-row covers decoded on approach');
   } finally { await desktop.close(); }
   assert.deepEqual(errors, [], 'No page errors');
   console.log('IMAGE_LOADING_STRATEGY_PASS');

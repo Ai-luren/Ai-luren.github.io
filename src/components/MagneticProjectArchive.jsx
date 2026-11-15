@@ -188,15 +188,13 @@ export default function MagneticProjectArchive({ onSelect }) {
   const mobilePreviousDisabled = mobilePage === 0;
   const mobileNextDisabled = mobilePage === 1;
   const libraryLinkRoot = document.getElementById('projects-library-link');
-  const featuredNoteRoot = document.getElementById('projects-featured-note');
-  const libraryLink = <div className="archive-more"><a href={WORKS_HREF}>{t('浏览全部作品', 'Browse All Work')}</a></div>;
+  const libraryLink = <div className="archive-more"><a href={WORKS_HREF}><span className="portfolio-link-label">{t('浏览全部作品', 'Browse All Work')}</span></a></div>;
 
   return (
     <>
-      {featuredNoteRoot && createPortal(t(`${FEATURED_PROJECTS.length} 部代表作品`, `${FEATURED_PROJECTS.length} Featured Works`), featuredNoteRoot)}
       {!isMobile && libraryLinkRoot && createPortal(libraryLink, libraryLinkRoot)}
       <div className={`comet-archive-mobile-shell${mobilePageTransition ? ` is-page-${mobilePageTransition}` : ''}`} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchCancel}>
-      <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={() => changeMobilePage(mobilePage - 1, -1)}>
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--prev" type="button" aria-label={lang === 'en' ? 'Previous project page' : '上一页作品'} disabled={!isMobile || mobilePreviousDisabled} onClick={event => { if (event.detail > 0) event.currentTarget.blur(); changeMobilePage(mobilePage - 1, -1); }}>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m15.5 5-7 7 7 7" /></svg>
       </button>
       <div key={isMobile ? mobilePage : 'desktop'} ref={archiveRef} className="comet-archive" role="list" aria-label={lang === 'en' ? 'AI video work archive' : 'AI 视频创作档案'} tabIndex={isMobile ? 0 : undefined} onKeyDown={handlePageKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={stopDragging} onPointerCancel={stopDragging}>
@@ -205,7 +203,7 @@ export default function MagneticProjectArchive({ onSelect }) {
           coverPriority={isMobile || index < 4 ? 'normal' : 'low'} deferUntilNear />
       ))}
       </div>
-      <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={() => changeMobilePage(mobilePage + 1, 1)}>
+      <button className="comet-archive-page-arrow comet-archive-page-arrow--next" type="button" aria-label={lang === 'en' ? 'Next project page' : '下一页作品'} disabled={!isMobile || mobileNextDisabled} onClick={event => { if (event.detail > 0) event.currentTarget.blur(); changeMobilePage(mobilePage + 1, 1); }}>
         <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m8.5 5 7 7-7 7" /></svg>
       </button>
       <div className="comet-archive-pagination" role="tablist" aria-label={lang === 'en' ? 'Select project page' : '选择作品页'}>

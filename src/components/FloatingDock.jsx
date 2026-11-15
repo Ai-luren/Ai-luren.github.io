@@ -91,7 +91,6 @@ function DockItem({ item, index, activeTooltip, setActiveTooltip, mouseX, distan
         >
           <span className="floating-dock-qr__heading">{item.qrHeading}</span>
           <span className="floating-dock-qr__image"><img src={item.href} alt={item.qrAlt} width="164" height="164" /></span>
-          <span className="floating-dock-qr__caption">{item.qrCaption}</span>
         </motion.span>
       )}
       {showLabel && (
@@ -165,7 +164,7 @@ export default function FloatingDock() {
 
   const items = [
     { contactAction: 'email', label: lang === 'en' ? (hasFinePointer ? 'Copy email' : 'Email contact') : (hasFinePointer ? '复制邮箱' : '邮箱联系'), href: 'mailto:1746850550@qq.com', address: '1746850550@qq.com', onClick: () => copy('1746850550@qq.com', { zh: '邮箱', en: 'Email' }), icon: <DockIcon name="mail" /> },
-    { contactAction: 'wechat', label: lang === 'en' ? (hasFinePointer ? 'View WeChat QR code' : 'WeChat contact') : (hasFinePointer ? '查看微信二维码' : '微信联系'), href: wechatQrCode, wechatId: '15580714085', download: 'wechat-qr-code.webp', qrHeading: lang === 'en' ? 'Scan with WeChat' : '微信扫码联系', qrAlt: lang === 'en' ? 'WeChat contact QR code' : '微信联系二维码', qrCaption: lang === 'en' ? 'WeChat ID: 15580714085' : '微信号：15580714085', icon: <DockIcon name="wechat" /> },
+    { contactAction: 'wechat', label: lang === 'en' ? (hasFinePointer ? 'View WeChat QR code' : 'WeChat contact') : (hasFinePointer ? '查看微信二维码' : '微信联系'), href: wechatQrCode, wechatId: '15580714085', download: 'wechat-qr-code.webp', qrHeading: lang === 'en' ? 'Scan with WeChat' : '微信扫码联系', qrAlt: lang === 'en' ? 'WeChat contact QR code' : '微信联系二维码', icon: <DockIcon name="wechat" /> },
     { label: lang === 'en' ? 'GitHub profile' : 'GitHub 主页', hoverLabel: lang === 'en' ? 'Open GitHub profile' : '打开 GitHub 主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'github').href, external: true, zh: 'GitHub 主页', en: 'GitHub profile', icon: <DockIcon name="github" /> },
     { label: lang === 'en' ? 'REDnote profile' : '小红书主页', hoverLabel: lang === 'en' ? 'Open REDnote profile' : '打开小红书主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'rednote').href, external: true, zh: '小红书主页', en: 'REDnote profile', icon: <DockIcon name="xiaohongshu" /> },
     { label: lang === 'en' ? 'Douyin profile' : '抖音主页', hoverLabel: lang === 'en' ? 'Open Douyin profile' : '打开抖音主页', href: SOCIAL_PROFILES.find(profile => profile.id === 'douyin').href, external: true, zh: '抖音主页', en: 'Douyin profile', icon: <DockIcon name="douyin" /> },
