@@ -64,9 +64,9 @@ try {
       });
       assert(state.ready >= 2 && !state.seeking);
       if (mobile) {
-        assert(['continuous', 'scrub'].includes(state.filmMode),
+        assert(['pingpong', 'scrub'].includes(state.filmMode),
           'Mobile film mode is missing');
-        if (state.filmMode === 'continuous') {
+        if (state.filmMode === 'pingpong') {
           assert(state.seeks <= 2, 'Continuous mobile film still triggers decoder seek storms');
           assert.equal(state.paused, false, 'Continuous mobile film failed to play');
           assert(state.actual > .1, 'Mobile playback did not advance');

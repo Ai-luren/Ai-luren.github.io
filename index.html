@@ -1678,7 +1678,7 @@
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" role="status" aria-live="off"><span class="loading-copy">AI LUREN · 影像就绪中</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="none"><source src="assets/videos/hero/hero-mobile-pingpong.mp4" type="video/mp4" media="(max-width: 760px)" /><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 0px)" data-scroll-original="true" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
   <!-- Contextual Hero scroll instruction: visible again after returning to
        the opening film; it is not a second navigation button. -->
@@ -1824,12 +1824,22 @@
       var scrubState = false;
       var ACTIVE_SCROLL_WINDOW = 160;
       var mobileScrub = window.matchMedia('(max-width: 760px)').matches;
-      // Random-access seeking a compressed 15s film every ~50ms makes mobile
-      // decoders drop visible frames. Desktop retains precise scroll-scrubbing;
-      // narrow screens play the same muted film continuously as scenery.
-      // If autoplay is unavailable, fall back to the previous scrub path.
-      var mobileContinuousVideo = mobileScrub && !reduced;
-      document.documentElement.dataset.mobileFilmMode = mobileContinuousVideo ? 'continuous' : 'scrub';
+      // Phone browsers struggle to seek an inter-frame-compressed film during
+      // rapid swipes. The default 30s forward/reverse mobile cut has matching
+      // endpoint frames and loops without the visible 15s hard reset.
+      // Explicit ?heroMode=scrub uses the original 15s footage and scroll
+      // timeline instead. Desktop always keeps exact scroll-driven playback.
+      var mobileScrollRequested = mobileScrub &&
+        new URLSearchParams(location.search).get('heroMode') === 'scrub';
+      // Vite fingerprints this hidden source at build time. Read its rewritten
+      // URL instead of a raw source path that does not exist in production.
+      var originalMobileSource = video.querySelector('source[data-scroll-original]')?.getAttribute('src');
+      if (mobileScrollRequested) {
+        var mobileSource = video.querySelector('source[media]');
+        if (mobileSource) mobileSource.setAttribute('src', originalMobileSource);
+      }
+      var mobileContinuousVideo = mobileScrub && !reduced && !mobileScrollRequested;
+      document.documentElement.dataset.mobileFilmMode = mobileContinuousVideo ? 'pingpong' : 'scrub';
       function startMobilePlayback() {
         if (!mobileContinuousVideo || document.hidden || body.classList.contains('cinema-open')) return;
         video.muted = true;
@@ -1842,8 +1852,17 @@
             document.documentElement.dataset.mobileFilmMode = 'scrub';
             video.loop = false;
             video.pause();
-            setVideoTarget();
-            scheduleSeek();
+            // Switch back to the ORIGINAL 15s asset before seeking. Seeking
+            // the 30s ping-pong timeline would no longer match document scroll.
+            var fallbackSource = video.querySelector('source[media]');
+            if (fallbackSource) fallbackSource.setAttribute('src', originalMobileSource);
+            lastProgress = -1;
+            video.addEventListener('loadedmetadata', function () {
+              lastProgress = -1;
+              setVideoTarget();
+              scheduleSeek();
+            }, { once: true });
+            video.load();
           });
         }
       }
