@@ -45,8 +45,10 @@
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
 - 修改英文标题时必须原子更新本地 MP4、两类封面与映射；**ImageKit URL 不跟随更名**。回归 `check:asset-catalog`，海外产品还需 `check:overseas-names`。
 - 卡片 3:4 封面与各视频版本原比例海报必须独立保存、校验比例并备份旧图，禁止改动无关版本。回归 `check:cover-poster`；禁用并归档未适配四分类目录的旧 `generate-player-media.mjs`（可从 Git 历史恢复）。
-- **自动化零 CDN 请求**：所有浏览器测试、截图与回归均不得访问真实 ImageKit；只用本地夹具与模拟数据，除非用户明确批准单独手动核实。
-- **Playwright 防护**：必须使用 `scripts/lib/safe-media.mjs` 中的 `createSafePage` 或 `createSafeContext`，阻断 ImageKit、替换云端 MP4，禁止 `route.continue()` 绕过防护。
+- **自动化零 CDN 请求（任何环境，强制）**：所有自动化验收、网页截图、批量遍历、性能测试、部署预览检查（含 Netlify 正式站/Deploy Preview）、临时脚本、AI/浏览器工具都不得真实访问 `*.imagekit.io`，包括 MP4、WebM、视频缩略图、带 `?updatedAt` 的原文件 URL 及任何转码/优化变体；也不得调用 ImageKit 转换、缩略图、清缓存 API。即使 Forever Free 的 500 VPU 达到上限也**不能**把套餐限额视为拦截手段：2026-11-17 曾出现 22 次集中转码、1,323 VPU 的异常，统计页面的配额口径也不一致。需要真实线上视频检查时，须提前解释可能产生的 VPU/带宽、明确申请用户批准、限定单一 URL 和检查次数。
+- **Playwright / 临时自动化防护（先拦截，再访问）**：仓库内测试统一使用 `scripts/lib/safe-media.mjs` 的 `createSafePage`/`createSafeContext`；`node_modules/.cache/`、`/tmp` 和其他临时 QA 脚本同样不得绕开，禁止裸 `browser.newPage`/`browser.newContext` 或仅靠 `resourceType === media`/`.mp4` 后缀过滤，因为实际请求可能是 `http://ik.imagekit.io/.../videos/*.mp4?updatedAt=...`，也可能产生 WebM/缩略图。导航或打开页面前，必须在 **browser context** 层按域名拦截 ImageKit 的全部请求类型（含 `http`/`https` 与子域名），拦截后只返回本地夹具或直接 abort；禁止 `route.continue()` 绕过防护。对新自写脚本先离线验证零真实 ImageKit 网络请求，再允许访问部署预览。
+- **第三方计费防护**：对任何付费/计额服务的 URL/API（不仅 ImageKit）先识别计费副作用；批量抓取、渲染、媒体格式探测、自动生成缩略图、URL 加参数、清缓存或回放线上资源前，必须使用本地替身、只读数据或拦截。异常出现先暂停相关测试、核对日志与服务端统计，不得以重复请求复现；修复流程不得未经批准直接上线或变更账户设置。
+- **ImageKit 管理后台也不等于只读**：禁止 AI 自动化或测试脚本批量打开/刷新 ImageKit `Media Library`（含 `/videos` 文件夹）、`Media use analysis`、视频详情/预览，以及直接引用 `.../videos/*.mp4/ik-thumbnail.jpg?updatedAt=...` 的页面。即使只看列表，页面也可能自动请求 `ik-thumbnail.jpg` 并产生 `Get thumbnail` VPU；不允许为了查看额度而先遍历媒体库。查询用量优先使用**已授权且确认只读的** Admin MCP 使用量接口；MCP 未连接/未授权时，不得改用高风险后台浏览器扫描来补救，可使用用户提供的截图、已导出的统计或经确认不会加载媒体的页面文本。无论使用浏览器、脚本还是 AI 工具，访问已登录后台前须评估页面隐式 CDN 请求；不得将“只读取了网页”视作零计费保证。
 - 云端播放前缀 `tr:orig-true`、按点击才加载、`preload="none"` 均为生产媒体约束；不可因离线回归改变。
 
 
