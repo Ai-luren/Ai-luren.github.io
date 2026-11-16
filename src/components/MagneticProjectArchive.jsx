@@ -94,7 +94,7 @@ export default function MagneticProjectArchive({ onSelect }) {
           {FEATURED_PROJECTS.map((project, index) => (
             <ProjectCard key={project.id} project={project} lang={lang}
               onClick={handleCardClick}
-              coverPriority={index < (isMobile ? 2 : 4) ? (isMobile ? 'high' : 'normal') : 'low'}
+              coverPriority={index < (isMobile ? 2 : 4) ? (isMobile ? 'high' : 'normal') : index < (isMobile ? 4 : 8) ? 'normal' : 'low'}
               deferUntilNear={index >= (isMobile ? 2 : 4)} />
           ))}
         </div>

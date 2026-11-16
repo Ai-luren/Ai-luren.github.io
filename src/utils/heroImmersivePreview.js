@@ -49,20 +49,27 @@ export function activateImmersive() {
   for (const id of FLIGHT_IDS) {
     const section = document.getElementById(id);
     if (!section) continue;
-    const travel = document.createElement('div');
-    travel.className = 'hero-journey-flight hero-journey-flight--after-' + id;
-    travel.setAttribute('aria-hidden', 'true');
-    // AI Lab belongs directly after Expertise, without a blank film interval
-    // separating the last Expertise evidence panel from its fourth module.
-    section.insertAdjacentElement('afterend', travel);
+    // The three film-only spacers are in HTML from initial parse. Reusing
+    // them avoids a whole-document height jump after the React first paint.
+    // Dynamic creation remains a fallback for alternate entry templates.
+    let travel = section.nextElementSibling;
+    if (!travel?.classList.contains('hero-journey-flight--after-' + id)) {
+      travel = document.createElement('div');
+      travel.className = 'hero-journey-flight hero-journey-flight--after-' + id;
+      travel.setAttribute('aria-hidden', 'true');
+      section.insertAdjacentElement('afterend', travel);
+    }
     inserted.push(travel);
   }
   const expertiseGroup = document.getElementById('expertise-group');
   if (expertiseGroup) {
-    const travel = document.createElement('div');
-    travel.className = 'hero-journey-flight hero-journey-flight--outro';
-    travel.setAttribute('aria-hidden', 'true');
-    expertiseGroup.insertAdjacentElement('afterend', travel);
+    let travel = expertiseGroup.nextElementSibling;
+    if (!travel?.classList.contains('hero-journey-flight--outro')) {
+      travel = document.createElement('div');
+      travel.className = 'hero-journey-flight hero-journey-flight--outro';
+      travel.setAttribute('aria-hidden', 'true');
+      expertiseGroup.insertAdjacentElement('afterend', travel);
+    }
     inserted.push(travel);
   }
   parallaxTargets = PARALLAX_SELECTORS.map((selector) => {

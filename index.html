@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-hero-experience="cinematic">
 <head>
   <meta charset="UTF-8" />
   <style>@view-transition { navigation: auto; }</style>
@@ -146,6 +146,25 @@
     #profile { padding: 72px 0 80px; }
     #projects { padding-top: 112px; padding-bottom: 120px; }
     #projects-react-root { min-height: clamp(500px, 60svh, 620px); }
+    /* Anchor positions must be stable BEFORE the React portals mount.
+       Empty-only geometry prevents the browser from clamping deep links to
+       a short document, then jumping when the cards and expertise appear.
+       Once populated, each portal uses its real natural content height. */
+    #projects-react-root:empty { min-height: 620px; }
+    #recognition-react-root:empty { min-height: 1280px; }
+    #experiments-react-root:empty { min-height: 280px; }
+    @media (min-width: 981px) {
+      #projects-react-root:empty { min-height: clamp(780px, calc(60vw + 60px), 925px); }
+    }
+    @media (min-width: 721px) and (max-width: 980px) {
+      #projects-react-root:empty { min-height: 620px; }
+      #recognition-react-root:empty { min-height: 1650px; }
+    }
+    @media (max-width: 720px) {
+      #projects-react-root:empty { min-height: calc(266.6667vw + 174px); }
+      #recognition-react-root:empty { min-height: calc(100vw + 995px); }
+      #experiments-react-root:empty { min-height: 370px; }
+    }
     /* 精选创作档案：标题在图片上方，平台入口轻量叠加在图片左下角，奖项落在图片下方。 */
     .comet-archive { display: grid; width: 100%; margin: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: stretch; padding: 18px 0 56px; }
     .comet-archive__item { min-width: 0; }
@@ -1737,12 +1756,14 @@
         </div>
       </div>
     </section>
+    <div class="hero-journey-flight hero-journey-flight--after-top" aria-hidden="true"></div>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
       <div class="shell"><div class="section-intro"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row" id="projects-library-link"></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
+    <div class="hero-journey-flight hero-journey-flight--after-projects" aria-hidden="true"></div>
 
     <div id="expertise-group" class="expertise-group" role="group" aria-labelledby="recognition-title">
     <section id="recognition" class="section" aria-labelledby="recognition-title">
@@ -1758,6 +1779,7 @@
       </div>
     </section>
     </div>
+    <div class="hero-journey-flight hero-journey-flight--outro" aria-hidden="true"></div>
 
     <section id="profile" class="section closing-section" aria-labelledby="profile-title">
       <div class="shell">

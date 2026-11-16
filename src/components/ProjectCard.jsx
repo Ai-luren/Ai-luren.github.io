@@ -69,7 +69,7 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
         style={{ '--comet-cover': `url(${cover})`, '--comet-cover-fit': project.featured ? 'cover' : 'contain' }}>
         <span className="comet-archive__image">
           <img className="comet-archive__cover" src={coverNear ? cover : undefined} alt="" width="600" height="800"
-            loading={coverPriority === 'high' || coverPriority === 'normal' || (coverPriority === 'auto' && project.featured) ? 'eager' : 'lazy'}
+            loading={coverNear ? 'eager' : 'lazy'}
             fetchPriority={coverPriority === 'normal' ? 'auto' : coverPriority} decoding="async"
             style={{ objectFit: project.featured ? 'cover' : 'contain' }} />
           <span className={isReady ? 'comet-archive__play-badge is-ready' : 'comet-archive__play-badge is-pending'} aria-hidden="true">
