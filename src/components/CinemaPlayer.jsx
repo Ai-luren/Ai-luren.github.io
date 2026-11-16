@@ -136,7 +136,8 @@ export default function CinemaPlayer({ project, projects = [], allProjects = [],
     // Source cards are owned by another portal and may lose activeElement
     // during React reconciliation. Preserve the original activation target.
     const trigger = returnFocusRef?.current?.isConnected ? returnFocusRef.current : document.activeElement;
-    const openedByKeyboard = trigger instanceof HTMLElement && trigger.matches(':focus-visible');
+    const openedByKeyboard = document.documentElement.dataset.navInput !== 'touch' &&
+      trigger instanceof HTMLElement && trigger.matches(':focus-visible');
     const previousOverflow = document.body.style.overflow;
     const scroll = [window.scrollX, window.scrollY];
     document.body.style.overflow = 'hidden';
@@ -182,7 +183,10 @@ export default function CinemaPlayer({ project, projects = [], allProjects = [],
       // viewer. Restore focus after its source card is connected again.
       requestAnimationFrame(() => {
         if (trigger?.isConnected && !document.querySelector('.cinema-player[open]')) {
-          trigger.focus({ preventScroll: true });
+          // Keyboard users retain semantic return focus. Touch/pointer viewers
+          // should not leave a latched blue selected card after dismissal.
+          if (openedByKeyboard) trigger.focus({ preventScroll: true });
+          else if (document.activeElement === trigger) trigger.blur();
         }
       });
     };
