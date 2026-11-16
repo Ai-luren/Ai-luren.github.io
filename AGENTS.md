@@ -22,7 +22,7 @@
 
 ## 规则
 
-- 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。
+- 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。D+ 玻璃语义 Token 以 `src/styles/card-surfaces.css` 和 `docs/设计规范.md` 为唯一依据：阅读卡、Hero 按钮、导航与播放器控件共享色调及边缘，但按内容密度分别保护文字；禁止将所有面板强制改成同一透明度或叠加第二层模糊。
 - 修改 CSS 前先确认规则归属：Hero、共享 Token、导航、玻璃和作品库拥有各自文件；禁止复制旧版调参器或无必要地在 `index.html`、共享 CSS 中叠加同选择器覆盖。
 - 首页滚动使用浏览器原生初始定位及历史恢复；**禁止主动强制归零**，尤其不能在 `load`／`pageshow` 中重置访客位置，也不能将 `history.scrollRestoration` 改为 `manual`。首次生产加载时 ScrollTrigger 刷新不得导致「专业实力」导航滚动提前结束；只允许一次受限恢复，用户主动滚动必须解除锁定。生产构建后检查 `check:home-scroll`、`check:nav-scroll` 与 `scripts/checks/site/check-desktop-primary-navigation.mjs`。
 - 导航响应式契约：**761px 及以上首页与全部作品页都展开同一套四项文字导航**；760px 及以下才使用汉堡菜单。作品库左侧「首页 / Home」明确指向 `./index.html#top` 的 Hero；浏览器 Back 保持历史位置，「精选作品」导航另走 `#projects`；作品详情/获奖/账号资料弹窗仍使用共享头像品牌导航。保留 B+++ 语言切换和 = → × 动画，不为平板单独创建导航实现。
