@@ -19,27 +19,25 @@
 
 ## 精选影像 / Selected Films
 
-四部真实作品封面。完整影片、原始显示比例及不同创意版本请前往作品集观看。
+四部来自当前精选名单的真实影像封面。点击进入网站可观看完整影片、原始画幅与不同创意版本。
 
-Four selected films — watch the complete videos and alternate cuts on the portfolio website.
-
-<p align="center">
-  <img src="./assets/images/project-covers/commercial/FormFunk Creative Commercial.webp" width="48%" alt="FormFunk 餐具创意广告 Demo 封面：蓝白植物印花浅盘" />
-  &nbsp;
-  <img src="./assets/images/project-covers/commercial/MEXC Member Perks.webp" width="48%" alt="MEXC 会员权益创意视频 Demo 封面" />
-</p>
-<p align="center"><sub>FORMFUNK · Creative Commercial Demo &nbsp; / &nbsp; MEXC · Member Perks Demo</sub></p>
+Four works from the current featured collection. Watch the films and alternate cuts on the [portfolio website](https://ailuren.netlify.app/#projects).
 
 <p align="center">
-  <img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="48%" alt="《最难的告别》情绪叙事短片封面" />
-  &nbsp;
-  <img src="./assets/images/project-covers/commercial/Lenovo Brand Commercial.webp" width="48%" alt="联想品牌创意影像封面" />
+  <img src="./assets/images/project-covers/commercial/FormFunk Creative Commercial.webp" width="49%" alt="FormFunk 餐具创意广告 Demo：青花纹理餐盘与人物创意海报">
+  <img src="./assets/images/project-covers/short-film/The Kennel Between Us.webp" width="49%" alt="《犬舍挪了，紫苏香了》AI 漫剧：南方乡村人物群像封面">
 </p>
-<p align="center"><sub>THE HARDEST GOODBYE · Short Film &nbsp; / &nbsp; LENOVO · Brand Film</sub></p>
+<p align="center"><sub>FORMFUNK · Creative Commercial Demo &nbsp; / &nbsp; THE KENNEL BETWEEN US · AI Narrative</sub></p>
+
+<p align="center">
+  <img src="./assets/images/project-covers/commercial/MEXC No More Waiting.webp" width="49%" alt="MEXC 不用等了创意广告 Demo：邮轮甲板人物与船长">
+  <img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="49%" alt="《最难的告别》AI 情绪叙事短片：持枪人物特写">
+</p>
+<p align="center"><sub>MEXC · No More Waiting Demo &nbsp; / &nbsp; THE HARDEST GOODBYE · AI Short Film</sub></p>
 
 <p align="center"><a href="https://ailuren.netlify.app/#projects"><strong>浏览精选影像 / Explore Selected Films</strong></a></p>
 
-<sub>说明：FormFunk、MEXC 作品为独立创意测试 / Demo，不代表品牌正式委托或官方发布。作品更新可能先于线上部署。</sub>
+<sub>作品说明：FormFunk 与 MEXC 为独立创意测试 / Demo，不代表品牌正式委托或官方发布。项目更新可能早于网站生产部署。</sub>
 
 ## 创作方向 / Creative Practice
 
@@ -66,9 +64,9 @@ Four selected films — watch the complete videos and alternate cuts on the port
 
 ## 关于网站 / Behind the Portfolio
 
-这是**个人 AI 视频作品展示网站**，不是在线 AI 视频生成平台。网站使用 Vite、React、Motion、OGL / WebGL，以及 GSAP / ScrollTrigger 实现部分滚动效果。
+这是**个人 AI 视频作品集**，不是在线 AI 视频生成工具。前端基于 Vite、React、Motion 和 GSAP / ScrollTrigger；背景影像采用浏览器原生视频（桌面滚动驱动、手机往返循环），当前公开版不启用旧 WebGL 后处理。
 
-- **电影化浏览 / Cinematic Viewing**：精选影像与完整作品库、电影画幅播放器、同作品 A/B/C 版本切换、双语导航与作品目录。D+ 轻透玻璃根据内容密度保护文字，让背景影像保持可感知。
+- **电影化浏览 / Cinematic Viewing**：八件精选影像、按分类浏览的完整作品库、原始比例播放器、同一作品 A/B/C 创意版本、双语导航与作品目录。D+ 玻璃根据阅读密度调整透景强度。
 - **本地作品工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
 - **媒体边界**：原始作品 MP4 不随 Git 提交。本地开发使用本地原片；正式网站使用已配置的线上视频地址。没有原片的克隆环境无法完整验证视频播放。
 
@@ -132,4 +130,4 @@ npm run check:i18n              # 中英文界面
   <a href="./LICENSE">MIT License</a>
 </p>
 
-<p align="center"><sub>© 2026 AI路人 · Ai Luren · AI Video Creator</sub></p>
+<p align="center"><sub>AI路人 · Ai Luren · AI Video Creator</sub></p>

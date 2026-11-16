@@ -227,9 +227,12 @@
 .impact-profile-lightbox.is-motion-visible::before { opacity: 1; }
 .impact-profile-lightbox.is-closing::before { opacity: 0; transition-duration: var(--apple-duration-modal-exit); }
 /* One open shows both proof images; no additional view or navigation. */
+/* Predecoded proof should be readable on the very first modal paint.
+   A fully transparent entry frame looked like a black flash after the
+   backdrop appeared; preserve a subtle finish instead of hiding content. */
 .impact-profile-dialog {
-  opacity: 0;
-  transform: translate3d(0,var(--apple-motion-modal-offset),0);
+  opacity: .68;
+  transform: translate3d(0,4px,0);
   transition: opacity var(--apple-duration-modal) var(--apple-ease),
               transform var(--apple-duration-modal) var(--apple-ease);
   position: relative;

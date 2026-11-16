@@ -258,13 +258,13 @@ export default function CinemaPlayer({ project, projects = [], allProjects = [],
         sidecar ? width - 2 * sidecar : Infinity));
       const body = bodyRef.current;
       if (mobilePlayback) {
-        // Mobile keeps the film's native aspect ratio. On regular-height phones
-        // a portrait film with multiple versions needs a modest reserved space
-        // for the 44px work arrows, otherwise the arrow row starts below the
-        // first viewport (observed on iPhone 16). Short phones still scroll,
-        // rather than making the film unwatchably small.
+        // Mobile keeps each film's native aspect ratio. On regular-height phones,
+        // reserve the same info/control budget for portrait films regardless of
+        // whether a project has versions. Otherwise next/previous navigation
+        // abruptly grows the stage and pushes the whole lower control area.
+        // Short phones still scroll instead of shrinking films excessively.
         let portraitHeight = Math.min(height * .59, 600, maxWidth / ratio);
-        if (ratio < 1 && versions.length > 1 && width <= 760 && height >= 800) {
+        if (ratio < 1 && width <= 760 && height >= 800) {
           const info = informationRef.current;
           const controls = body.querySelector('.cinema-player__mobile-controls');
           if (info && controls) {

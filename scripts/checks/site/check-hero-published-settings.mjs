@@ -94,8 +94,8 @@ try {
         },
       };
     });
-    assert(timeline.videoDuration > 14.8 && timeline.videoDuration < 15.3,
-      'Unexpected film duration in story-timing test');
+    assert(timeline.videoDuration > (viewport.mobile ? 13.7 : 14.8) && timeline.videoDuration < (viewport.mobile ? 13.9 : 15.3),
+      'Unexpected mobile optical dissolve / desktop scroll-driven film duration');
     assert.equal(timeline.cueVisible, 'visible', 'P1 first-screen scroll cue is missing');
     assert.equal(timeline.cuePointer, 'none', 'Scroll instruction must never block interaction');
     assert.equal(timeline.cueLinks, 0, 'Scroll cue must not jump past the film');

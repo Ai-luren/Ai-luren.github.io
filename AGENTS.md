@@ -24,6 +24,8 @@
 
 - 优先复用现有字体、颜色、间距和玻璃面板，不引入无必要的视觉体系。D+ 玻璃语义 Token 以 `src/styles/card-surfaces.css` 和 `docs/设计规范.md` 为唯一依据：阅读卡、Hero 按钮、导航与播放器控件共享色调及边缘，但按内容密度分别保护文字；禁止将所有面板强制改成同一透明度或叠加第二层模糊。
 - 修改 CSS 前先确认规则归属：Hero、共享 Token、导航、玻璃和作品库拥有各自文件；禁止复制旧版调参器或无必要地在 `index.html`、共享 CSS 中叠加同选择器覆盖。
+- **跨页首帧稳定**：`index.html` 静态 HTML 必须保留 after-top、after-projects、outro 三段电影穿行间隔，`heroImmersivePreview.js` 不得二次插入；三个 React 门户的 `:empty` 高度只负责首次挂载前的锚点空间。修改后检查桌面／手机从 Works 深链返回时的布局位移，不得用黑屏 Loading 掩盖。
+- **手机 Hero 与封面**：≤760px 默认约 13.83s C 光学溶接、正向循环静音背景（兼容旧文件名 hero-mobile-pingpong.mp4），`?heroMode=scrub` 保留原 15s 滚动定位对照；桌面继续滚动驱动，所有作品播放器视频必须主动点击后才加载。精选首行即请求封面，其余靠 1100px 观察器挂载 `src` 后使用 `loading="eager"`，不能再叠加原生 lazy 导致空白。回归见 `docs/播放器媒体维护.md`。
 - 首页滚动使用浏览器原生初始定位及历史恢复；**禁止主动强制归零**，尤其不能在 `load`／`pageshow` 中重置访客位置，也不能将 `history.scrollRestoration` 改为 `manual`。首次生产加载时 ScrollTrigger 刷新不得导致「专业实力」导航滚动提前结束；只允许一次受限恢复，用户主动滚动必须解除锁定。生产构建后检查 `check:home-scroll`、`check:nav-scroll` 与 `scripts/checks/site/check-desktop-primary-navigation.mjs`。
 - 导航响应式契约：**761px 及以上首页与全部作品页都展开同一套四项文字导航**；760px 及以下才使用汉堡菜单。作品库左侧「首页 / Home」明确指向 `./index.html#top` 的 Hero；浏览器 Back 保持历史位置，「精选作品」导航另走 `#projects`；作品详情/获奖/账号资料弹窗仍使用共享头像品牌导航。保留 B+++ 语言切换和 = → × 动画，不为平板单独创建导航实现。
 - **单作品链接与工作台隔离**：`works.html?watch=ID` 在作品库打开海报详情但不自动播放，使用浏览器历史返回/前进关闭和重开；`works.html?project=ID` 仅供工作台定位并高亮卡片，不自动播放。关闭恢复原卡片位置和焦点；首页精选不更改主页 URL。播放器及目录**均不显示复制作品链接 UI**，但 `?watch` 直达 URL、浏览器历史前进／后退与自动生成的站内链接仍正常。回归 `check:shareable-works`、`check:cross-page-nav`、`check:cinema-work-directory`。
@@ -43,8 +45,10 @@
 - 删除资源前先确认它没有被页面、组件或构建配置引用。
 - 修改英文标题时必须原子更新本地 MP4、两类封面与映射；**ImageKit URL 不跟随更名**。回归 `check:asset-catalog`，海外产品还需 `check:overseas-names`。
 - 卡片 3:4 封面与各视频版本原比例海报必须独立保存、校验比例并备份旧图，禁止改动无关版本。回归 `check:cover-poster`；禁用并归档未适配四分类目录的旧 `generate-player-media.mjs`（可从 Git 历史恢复）。
-- **自动化零 CDN 请求**：所有浏览器测试、截图与回归均不得访问真实 ImageKit；只用本地夹具与模拟数据，除非用户明确批准单独手动核实。
-- **Playwright 防护**：必须使用 `scripts/lib/safe-media.mjs` 中的 `createSafePage` 或 `createSafeContext`，阻断 ImageKit、替换云端 MP4，禁止 `route.continue()` 绕过防护。
+- **自动化零 CDN 请求（任何环境，强制）**：所有自动化验收、网页截图、批量遍历、性能测试、部署预览检查（含 Netlify 正式站/Deploy Preview）、临时脚本、AI/浏览器工具都不得真实访问 `*.imagekit.io`，包括 MP4、WebM、视频缩略图、带 `?updatedAt` 的原文件 URL 及任何转码/优化变体；也不得调用 ImageKit 转换、缩略图、清缓存 API。即使 Forever Free 的 500 VPU 达到上限也**不能**把套餐限额视为拦截手段：2026-11-17 曾出现 22 次集中转码、1,323 VPU 的异常，统计页面的配额口径也不一致。需要真实线上视频检查时，须提前解释可能产生的 VPU/带宽、明确申请用户批准、限定单一 URL 和检查次数。
+- **Playwright / 临时自动化防护（先拦截，再访问）**：仓库内测试统一使用 `scripts/lib/safe-media.mjs` 的 `createSafePage`/`createSafeContext`；`node_modules/.cache/`、`/tmp` 和其他临时 QA 脚本同样不得绕开，禁止裸 `browser.newPage`/`browser.newContext` 或仅靠 `resourceType === media`/`.mp4` 后缀过滤，因为实际请求可能是 `http://ik.imagekit.io/.../videos/*.mp4?updatedAt=...`，也可能产生 WebM/缩略图。导航或打开页面前，必须在 **browser context** 层按域名拦截 ImageKit 的全部请求类型（含 `http`/`https` 与子域名），拦截后只返回本地夹具或直接 abort；禁止 `route.continue()` 绕过防护。对新自写脚本先离线验证零真实 ImageKit 网络请求，再允许访问部署预览。
+- **第三方计费防护**：对任何付费/计额服务的 URL/API（不仅 ImageKit）先识别计费副作用；批量抓取、渲染、媒体格式探测、自动生成缩略图、URL 加参数、清缓存或回放线上资源前，必须使用本地替身、只读数据或拦截。异常出现先暂停相关测试、核对日志与服务端统计，不得以重复请求复现；修复流程不得未经批准直接上线或变更账户设置。
+- **ImageKit 管理后台也不等于只读**：禁止 AI 自动化或测试脚本批量打开/刷新 ImageKit `Media Library`（含 `/videos` 文件夹）、`Media use analysis`、视频详情/预览，以及直接引用 `.../videos/*.mp4/ik-thumbnail.jpg?updatedAt=...` 的页面。即使只看列表，页面也可能自动请求 `ik-thumbnail.jpg` 并产生 `Get thumbnail` VPU；不允许为了查看额度而先遍历媒体库。查询用量优先使用**已授权且确认只读的** Admin MCP 使用量接口；MCP 未连接/未授权时，不得改用高风险后台浏览器扫描来补救，可使用用户提供的截图、已导出的统计或经确认不会加载媒体的页面文本。无论使用浏览器、脚本还是 AI 工具，访问已登录后台前须评估页面隐式 CDN 请求；不得将“只读取了网页”视作零计费保证。
 - 云端播放前缀 `tr:orig-true`、按点击才加载、`preload="none"` 均为生产媒体约束；不可因离线回归改变。
 
 
