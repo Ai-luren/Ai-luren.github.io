@@ -1824,6 +1824,38 @@
       var scrubState = false;
       var ACTIVE_SCROLL_WINDOW = 160;
       var mobileScrub = window.matchMedia('(max-width: 760px)').matches;
+      // Random-access seeking a compressed 15s film every ~50ms makes mobile
+      // decoders drop visible frames. Desktop retains precise scroll-scrubbing;
+      // narrow screens play the same muted film continuously as scenery.
+      // If autoplay is unavailable, fall back to the previous scrub path.
+      var mobileContinuousVideo = mobileScrub && !reduced;
+      function startMobilePlayback() {
+        if (!mobileContinuousVideo || document.hidden || body.classList.contains('cinema-open')) return;
+        video.muted = true;
+        video.loop = true;
+        var attempt = video.play();
+        if (attempt && typeof attempt.catch === 'function') {
+          attempt.catch(function (error) {
+            if (error && error.name === 'AbortError') return;
+            mobileContinuousVideo = false;
+            video.loop = false;
+            video.pause();
+            setVideoTarget();
+            scheduleSeek();
+          });
+        }
+      }
+      if (mobileContinuousVideo && window.MutationObserver) {
+        var previousCinemaState = body.classList.contains('cinema-open');
+        var mobileFilmObserver = new MutationObserver(function () {
+          var nextState = body.classList.contains('cinema-open');
+          if (nextState === previousCinemaState) return;
+          previousCinemaState = nextState;
+          if (nextState) video.pause();
+          else startMobilePlayback();
+        });
+        mobileFilmObserver.observe(body, { attributes: true, attributeFilter: ['class'] });
+      }
 
       function publishScrubState(active) {
         if (scrubState === active) return;
@@ -1888,7 +1920,7 @@
         lastProgress = progress;
         if (rail) rail.style.transform = 'scaleY(' + progress + ')';
         document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
-        if (!video.duration || reduced) return;
+        if (!video.duration || reduced || mobileContinuousVideo) return;
         targetTime = progress * video.duration;
         scheduleSeek();
       }
@@ -1897,6 +1929,7 @@
       // requestAnimationFrame loop. Schedule work only on actual scroll,
       // available decoded frames or a pending final seek correction.
       function scheduleSeek() {
+        if (mobileContinuousVideo) return;
         if (!seekFrame && !document.hidden) seekFrame = window.requestAnimationFrame(seekLoop);
       }
       function retrySeekAfter(wait) {
@@ -1907,6 +1940,10 @@
         }, Math.max(8, wait));
       }
       function onScroll() {
+        if (mobileContinuousVideo) {
+          if (!progressRaf) progressRaf = window.requestAnimationFrame(setVideoTarget);
+          return;
+        }
         lastScrollAt = performance.now();
         publishScrubState(true);
         if (!progressRaf) progressRaf = window.requestAnimationFrame(setVideoTarget);
@@ -1942,12 +1979,19 @@
 
       video.addEventListener('seeked', scheduleSeek);
       video.addEventListener('loadeddata', function () {
+        if (mobileContinuousVideo) {
+          setVideoTarget();
+          startMobilePlayback();
+          return;
+        }
         video.pause();
         setVideoTarget();
         scheduleSeek();
       }, { once: true });
       document.addEventListener('visibilitychange', function () {
-        if (!document.hidden) { setVideoTarget(); scheduleSeek(); }
+        if (document.hidden && mobileContinuousVideo) video.pause();
+        else if (mobileContinuousVideo) startMobilePlayback();
+        else if (!document.hidden) { setVideoTarget(); scheduleSeek(); }
       });
       window.addEventListener('scroll', onScroll, { passive: true });
       var previousWidth = window.innerWidth;
