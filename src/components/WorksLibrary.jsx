@@ -45,7 +45,7 @@ export default function WorksLibrary() {
   }, []);
   const warmCategoryFirstRow = nextCategory => {
     if (nextCategory === category) return;
-    PROJECTS.filter(project => project.category === nextCategory).slice(0, 2)
+    PROJECTS.filter(project => project.category === nextCategory).slice(0, firstRowCount)
       .forEach(project => warmImage(project.cover));
   };
 

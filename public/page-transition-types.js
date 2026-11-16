@@ -108,6 +108,7 @@ addEventListener('pagereveal', (event) => {
   const type = transitionType(source, location.href);
   if (!type || !event.viewTransition?.types?.add) return;
   event.viewTransition.types.add(type);
-  showCue(type,event.viewTransition);
+  // Do not overlay a fabricated "Loading 00–100%" timer on a ready page.
+  // The native 300ms dissolve needs no progress UI.
 });
 }());

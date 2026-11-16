@@ -1,4 +1,4 @@
-// Mobile background scroll: local Hero only; never request ImageKit resources.
+// Mobile Hero film: prefer continuous hardware decode, retain scrub fallback and desktop precision.
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { chromium } from 'playwright-core';
@@ -48,6 +48,8 @@ try {
           expected: progress * video.duration,
           actual: video.currentTime,
           ready: video.readyState,
+          paused: video.paused,
+          filmMode: document.documentElement.dataset.mobileFilmMode,
           seeking: video.seeking,
           seeks: window.__scrollTest.seeks.length,
           pending: window.__scrollTest.seeks.filter(item => item.pending).length,
@@ -61,12 +63,27 @@ try {
         };
       });
       assert(state.ready >= 2 && !state.seeking);
-      assert(Math.abs(state.actual - state.expected) <= .12, 'Hero did not settle after swipe');
-      assert(state.seeks >= 8, 'Hero no longer responds to scrolling');
       if (mobile) {
-        assert(state.seeks <= 30, 'Decoder received excessive seek requests');
-        assert.equal(state.pending, 0, 'Interrupted pending decoder seek');
+        assert(['continuous', 'scrub'].includes(state.filmMode),
+          'Mobile film mode is missing');
+        if (state.filmMode === 'continuous') {
+          assert(state.seeks <= 2, 'Continuous mobile film still triggers decoder seek storms');
+          assert.equal(state.paused, false, 'Continuous mobile film failed to play');
+          assert(state.actual > .1, 'Mobile playback did not advance');
+        } else {
+          // Browser policy can block muted autoplay; old scroll scrub remains
+          // the explicit and safe fallback.
+          assert(Math.abs(state.actual - state.expected) <= .12,
+            'Mobile autoplay fallback did not settle after swipe');
+          assert(state.seeks >= 8 && state.seeks <= 30,
+            'Fallback decoder seeking is missing or excessive');
+          assert.equal(state.pending, 0, 'Interrupted pending decoder seek');
+        }
         assert(state.stableMobileHeightRule, 'Missing stable 100lvh mobile background');
+      } else {
+        assert(Math.abs(state.actual - state.expected) <= .12,
+          'Desktop Hero did not settle after swipe');
+        assert(state.seeks >= 8, 'Desktop Hero no longer responds to scrolling');
       }
       // DEV serves the original assets/videos/hero path; production Vite emits
       // fingerprinted assets/hero-*.mp4. Both refer to the same local Hero.
@@ -99,7 +116,8 @@ try {
         await page.waitForTimeout(300);
         assert.equal(await page.evaluate(() => window.__scrollTest.refreshes), 0, 'Mobile height-only resize refreshed all GSAP triggers');
       }
-      console.log('PASS ' + width + 'px: ' + state.seeks + ' seeks, ' + state.pending + ' pending overwrites, settle error ' + Math.abs(state.actual - state.expected).toFixed(3) + 's; no CDN');
+      console.log('PASS ' + width + 'px: film=' + state.filmMode +
+        ', ' + state.seeks + ' seeks, ' + state.pending + ' pending overwrites; no CDN');
     } finally { await page.close(); }
   }
 } finally { await browser.close(); }

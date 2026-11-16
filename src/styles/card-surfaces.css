@@ -253,3 +253,16 @@ header .nav-contact-icon,
     -webkit-backdrop-filter: none !important;
   }
 }
+
+/* Mobile background film changes every frame: repeated 8px per-card
+   backdrop sampling competes with video decode. Keep D+ rim, shadows and
+   readable tone, but use a stable translucent substrate on touch screens.
+   The single floating navigation may still use a lighter live blur. */
+@media (max-width: 760px) and (pointer: coarse) {
+  :root {
+    --portfolio-glass-surface: rgba(24, 26, 31, .72);
+    --portfolio-glass-blur: none;
+    --portfolio-panel-blur: blur(7px) saturate(1.02);
+    --portfolio-modal-blur: blur(12px) saturate(1.02);
+  }
+}

@@ -1,3 +1,4 @@
+import { useLayoutEffect } from 'react';
 import TextType from './TextType.jsx';
 import { useLang } from '../i18n/index.js';
 import './HeroTitle.css';
@@ -9,6 +10,12 @@ const ROTATING_WORDS = {
 
 export default function HeroTitle() {
   const lang = useLang();
+
+  // The static HTML headline is already visible during JS download. Remove it
+  // in the same commit before paint, once the real interactive title mounts.
+  useLayoutEffect(() => {
+    document.querySelector('#hero-title-react-root [data-first-paint-fallback]')?.remove();
+  }, []);
 
   // First paint must remain stable: the previous useEffect ran after the
   // full headline appeared, then forced it to opacity 0 and faded it back in.

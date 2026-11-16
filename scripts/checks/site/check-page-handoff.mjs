@@ -1,5 +1,5 @@
-/* B+C Film → Archive: native optical cut, live minimal/glowing timeline,
-   exact history scroll/frame restoration and safe media. */
+/* Film → Archive: fast, readable native handoff without fabricated loading progress;
+   retain history navigation, page scroll and media safety. */
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { chromium } from 'playwright-core';
@@ -73,19 +73,17 @@ try {
     assert(archive.nav?.type.includes('to-archive'),width+'px: missing typed transition');
     assert.equal(archive.nav.animation,'portfolio-optical-in',
       width+'px: native optical scene edit missing');
-    assert.equal(archive.nav.duration,'0.66s',width+'px: old 760ms route transition returned');
+    assert.equal(archive.nav.duration,'0.3s',width+'px: slow route transition returned');
     assert.equal(archive.nav.heading,'none',width+'px: page content fragmented into separate transition snapshots');
     assert.equal(archive.backdrop,'none',width+'px: ghost city background returned');
     assert(archive.background.includes('11, 12, 15')||archive.background.includes('11, 12, 14'),
       width+'px: archive solid near-black palette changed: '+archive.background);
     assert.equal(archive.nav.mask,'none',
       width+'px: root snapshot must not use a horizontal wipe mask');
-    assert.equal(archive.nav.cueOpen,true,
-      width+'px: fifth-concept live progress cue not in top layer');
-    assert.equal(archive.nav.cueLabel,'加载中',
-      width+'px: localized one-line progress label missing');
-    assert(archive.nav.cueGlow.includes('rgba(94, 176, 246, 0.42)'),
-      width+'px: soft blue glow missing');
+    assert.equal(archive.nav.cueOpen,false,
+      width+'px: fake loading popover must not cover a ready document');
+    assert.equal(archive.nav.cueLabel,'',
+      width+'px: no fabricated loading percentage should be displayed');
     assert.equal(archive.cards,9,width+'px: commercial grid changed');
     assert.equal(archive.videos,0,width+'px: duplicate film plays in library');
     assert.equal(archive.overflow,0,width+'px: horizontal overflow');
@@ -105,15 +103,18 @@ try {
     assert(after.nav?.type.includes('to-film'),width+'px: reverse transition missing');
     assert.equal(after.nav.animation,'portfolio-optical-in',
       width+'px: reverse optical transition missing');
-    assert.equal(after.nav.cueLabel,'加载中',
-      width+'px: backwards cue must keep the same concise label');
+    assert.equal(after.nav.cueOpen,false,
+      width+'px: returning home must not display a fabricated loading cue');
     // The explicit Home link must go to Hero, never browser-history Back.
     // Native Back still restores position; that behavior has a separate test.
     assert.equal(new URL(page.url()).hash,'#top',width+'px: Home link must target Hero');
     assert(after.y<=3,width+'px: Home link failed to show Hero '+after.y);
-    assert(after.frame<.15,width+'px: Hero film did not return to opening frame');
+    // Mobile intentionally plays the film continuously (no decoder seek storm).
+    // Desktop still maps scroll position back to the opening frame.
+    if (width > 760) assert(after.frame<.15,width+'px: desktop Hero did not return to opening frame');
+    else assert(after.frame >= 0,width+'px: mobile Hero video unavailable');
     assert.deepEqual(errors,[],width+'px: JS errors');
-    console.log('PASS '+width+'px: B+C optical handoff, single-line soft cue, filters, reverse/scroll');
+    console.log('PASS '+width+'px: fast native dissolve, no artificial loading, filters and return');
     await page.close();
   }
   const direct = await createSafePage(browser, {viewport:{width:390,height:844}});
