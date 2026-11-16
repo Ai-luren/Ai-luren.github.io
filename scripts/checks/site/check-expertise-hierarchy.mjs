@@ -28,7 +28,7 @@ try{
     for(const lang of ['zh','en'])for(const width of widths){
       // Inspect stable typographic layout with system reduced motion;
       // cinematic scrub geometry is independently validated by
-      // check-cinematic-dolly-scrub.mjs.
+      // check-editorial-once-motion.mjs.
       const page=await createSafePage(browser, {
         viewport:{width,height:900},reducedMotion:'reduce'
       });

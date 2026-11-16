@@ -16,6 +16,9 @@ try {
         const cards = page.locator('#impact-awards .impact-award-grid-card');
         await cards.first().waitFor({ state: 'attached' });
         assert.equal(await cards.count(), 8, `${width} ${lang}: all awards must be present`);
+        const hint = page.locator('#impact-awards .impact-award-enlarge-hint');
+        assert.equal(await hint.count(), 1, `${width} ${lang}: one gallery zoom affordance`);
+        assert.match(await hint.textContent(),lang==='en'?/Tap to enlarge/:/点击图片放大/);
         // Consolidated image geometry from the retired duplicate test.
         for (const index of [0, 7]) {
           const img=cards.nth(index).locator('img');

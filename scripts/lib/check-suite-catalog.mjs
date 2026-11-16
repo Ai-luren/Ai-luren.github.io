@@ -39,7 +39,7 @@ const excludeSite = new Set([
   'check:workbench-full', 'check:cover-poster', 'check:cinema-local', 'check:plan',
   // Direct aliases are useful for targeted debugging, but these exact test
   // files already run within the deep check:motion-polish composite.
-  'check:animated-content', 'check:cinematic-dolly',
+  'check:animated-content', 'check:editorial-motion',
 ]);
 const excludeWorkbench = new Set([
   'check:workbench-core', 'check:workbench-full',

@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright-core';
 import { createSafePage } from '../../lib/safe-media.mjs';
 
-// Test scroll-driven Dolly Through using measured card layouts, not just the
-// existence of GSAP tweens or one-shot completion flags.
+// Test the CURRENT once-only editorial entry and reverse-scroll stability.
+// Geometry sampling, not old scale/dolly animation snapshots, is the contract.
 const base = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
 const browser=await chromium.launch({
   executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
@@ -293,5 +293,5 @@ try{
      console.log('PASS held keyboard down/up, headline stays and cards never scale '+width);
    } finally {await page.close();}
  }
- console.log('CINEMATIC_DOLLY_SCRUB_PASS');
+ console.log('EDITORIAL_ONCE_MOTION_PASS');
 }finally{await browser.close();}

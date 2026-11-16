@@ -78,7 +78,7 @@ try {
     });
     assert(info.active,`${w} ${lang}: menu is open`);
     assert(info.headerVisible,`${w} ${lang}: original navigation must stay visible`);
-    assert.equal(info.bg,'rgba(12, 12, 13, 0.9)',`${w} ${lang}: dark glass palette unchanged`);
+    assert.equal(info.bg,'rgba(12, 12, 13, 0.97)',`${w} ${lang}: current early-opaque mobile menu scrim`);
     assert.equal(info.menuLinks.length,4,`${w} ${lang}: main navigation must stay at four links`);
     assert(info.menuLinks.every(l=>l.font>=29.5&&l.height>=58&&l.left>=0&&l.right<=w),`${w} ${lang}: menu typography/touch targets fit`);
     assert(info.menuLinks.every((l,i)=>i===0||l.top>=info.menuLinks[i-1].bottom),`${w} ${lang}: no nav overlap`);

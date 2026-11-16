@@ -5,7 +5,7 @@ import './AnimatedContent.css';
 
 /*
  * React Bits AnimatedContent — JS/CSS integration adapted to this hybrid app.
- * page="home" drives scroll-scrubbed Featured cards without inserting a div
+ * page="home" drives once-only editorial Featured cards without inserting a div
  * between a grid and its children. Normal usage renders the provided children.
  * The already bundled vendor GSAP is shared by both pages, with no duplicate
  * runtime, and content is never hidden before JavaScript mounts.

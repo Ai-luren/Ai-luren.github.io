@@ -12,6 +12,18 @@ try {
       await page.addInitScript(l=>localStorage.setItem('ailuren-lang',l),lang);
       try {
         await page.goto(new URL('index.html',base).href,{waitUntil:'domcontentloaded'});
+        // Gallery hint and original image viewer stay coupled to the current
+        // evidence section, with the same language and Escape behavior.
+        const awardHint=page.locator('#impact-awards .impact-award-enlarge-hint');
+        await awardHint.waitFor({state:'attached',timeout:9000});
+        assert.equal(await awardHint.count(),1,'Award section must have one zoom hint');
+        assert.match(await awardHint.textContent(),lang==='en'?/Tap to enlarge/:/点击图片放大/);
+        if(width===390){
+          await page.locator('#impact-awards .impact-award-grid-card').first().click();
+          await page.locator('#impact-award-lightbox').waitFor({state:'visible'});
+          await page.keyboard.press('Escape');
+          await page.locator('#impact-award-lightbox').waitFor({state:'detached'});
+        }
         await page.locator('#impact-reach [data-social-profile-trigger="douyin"]').click();
         const modal=page.locator('.impact-profile-lightbox');await modal.waitFor({state:'visible'});
         const index=modal.locator('.impact-profile-index');
@@ -71,6 +83,15 @@ try {
     if(width===1440)await p.screenshot({path:'.audit/qa-profile-polish-20261116/lab-mouse-pan-1440.png'});
     await p.keyboard.press('Escape');
     assert.equal(await p.locator('.lab-project-image-canvas.is-zoomed').count(),0,'first Escape returns fit');
+    // Image/project switching resets zoom state; Escape closes the project
+    // only after leaving image reading mode.
+    await p.locator('.lab-project-image-zoom').click();
+    assert.equal(await p.locator('.lab-project-image-zoom').getAttribute('aria-pressed'),'true');
+    await p.locator('.lab-project-image-tabs button').last().click();
+    assert.equal(await p.locator('.lab-project-image-zoom').getAttribute('aria-pressed'),'false','Image switch must reset zoom');
+    await p.locator('.lab-project-image-zoom').click();
+    await p.locator('.lab-project-pagination button').last().click();
+    assert.equal(await p.locator('.lab-project-image-zoom').getAttribute('aria-pressed'),'false','Project switch must reset zoom');
     await p.keyboard.press('Escape');await p.locator('.lab-project-lightbox').waitFor({state:'detached'});
     assert.deepEqual(errors,[]);console.log('PASS_LAB_MOUSE_PAN',width,JSON.stringify({before,during,after,nextLeft}));await p.close();
   }

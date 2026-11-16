@@ -66,7 +66,7 @@ const motionChildren = [
   'scripts/checks/site/check-motion-library-filters.mjs',
   'scripts/checks/site/check-motion-page-prefetch.mjs',
   'scripts/checks/site/check-animated-content-stability.mjs',
-  'scripts/checks/site/check-cinematic-dolly-scrub.mjs',
+  'scripts/checks/site/check-editorial-once-motion.mjs',
 ];
 const motionSource = fs.readFileSync(at(motionScript), 'utf8');
 assert(pathsByArea.site.has(motionScript), 'The motion composite must be in site deep QA');

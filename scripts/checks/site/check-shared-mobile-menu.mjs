@@ -16,6 +16,17 @@ async function load(kind,width,height,lang){
   await page.locator(kind==='home'?'header .nav-toggle':'.library-page-navigation .cinema-player__close').tap();
   const container=kind==='home'?'#mobile-nav-drawer':'#library-menu';
   await page.waitForSelector(kind==='home'?container+'.is-open':container+'[open]');
+  // The former UX-detail test's UNIQUE timing assertion now belongs here:
+  // the dark scrim resolves before the editorial menu text settles.
+  await page.waitForTimeout(175);
+  if(kind==='home') {
+    const early=await page.locator(container).evaluate(el=>({
+      opacity:Number(getComputedStyle(el).opacity),
+      bg:getComputedStyle(el).backgroundColor,
+    }));
+    assert(early.opacity>.95,`${width}/${lang}: early mobile scrim still translucent`);
+    assert.equal(early.bg,'rgba(12, 12, 13, 0.97)');
+  }
   await page.locator(container+' .mobile-menu__social-list a').first().waitFor();
   // The menu's 380ms main transition can be followed by list/layout motion.
   // Compare final geometry after the full entrance, not an intermediate

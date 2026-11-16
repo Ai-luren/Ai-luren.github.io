@@ -7,7 +7,7 @@ const suites = [
   'scripts/checks/site/check-motion-library-filters.mjs',
   'scripts/checks/site/check-motion-page-prefetch.mjs',
   'scripts/checks/site/check-animated-content-stability.mjs',
-  'scripts/checks/site/check-cinematic-dolly-scrub.mjs',
+  'scripts/checks/site/check-editorial-once-motion.mjs',
 ];
 const server = process.env.PORTFOLIO_URL ? null : spawn(process.execPath,
   ['./node_modules/vite/bin/vite.js', '--host', '127.0.0.1', '--port', String(port), '--strictPort'],
