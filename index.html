@@ -12,6 +12,10 @@
   <meta name="theme-color" content="#000000" />
   <meta name="color-scheme" content="dark" />
   <link rel="icon" href="./ai-luren-avatar.webp" type="image/webp" />
+  <!-- Decode the correct Hero still before video/network scripts: avoid a
+       black first frame on slow mobile links and a landscape/portrait flash. -->
+  <link rel="preload" as="image" type="image/webp" href="assets/images/hero-first-frame-mobile.webp" media="(max-width: 760px)" fetchpriority="high" />
+  <link rel="preload" as="image" type="image/webp" href="assets/images/hero-first-frame-desktop.webp" media="(min-width: 761px)" fetchpriority="high" />
   <link rel="canonical" href="https://ailuren.netlify.app/" />
   <title>AI路人（宁磊）｜AI 视频创意设计师 · AIGC 内容创作作品集</title>
 
@@ -297,7 +301,7 @@
       transition: opacity 360ms ease;
     }
     #video-bg:is(.is-webgl-ready, .is-video-fallback-ready) #hero-first-frame { opacity: 0; }
-    @media (max-width: 720px) {
+    @media (max-width: 760px) {
       #video-bg, #hero-first-frame { background-image: url('assets/images/hero-first-frame-mobile.webp'); }
     }
     @media (prefers-reduced-motion: reduce) {
