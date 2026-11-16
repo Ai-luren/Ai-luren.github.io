@@ -1829,6 +1829,7 @@
       // narrow screens play the same muted film continuously as scenery.
       // If autoplay is unavailable, fall back to the previous scrub path.
       var mobileContinuousVideo = mobileScrub && !reduced;
+      document.documentElement.dataset.mobileFilmMode = mobileContinuousVideo ? 'continuous' : 'scrub';
       function startMobilePlayback() {
         if (!mobileContinuousVideo || document.hidden || body.classList.contains('cinema-open')) return;
         video.muted = true;
@@ -1838,6 +1839,7 @@
           attempt.catch(function (error) {
             if (error && error.name === 'AbortError') return;
             mobileContinuousVideo = false;
+            document.documentElement.dataset.mobileFilmMode = 'scrub';
             video.loop = false;
             video.pause();
             setVideoTarget();
@@ -1882,7 +1884,7 @@
         video.addEventListener(eventName, revealPage, { once: true });
       });
       video.addEventListener('error', revealPage, { once: true });
-      window.setTimeout(revealPage, 1800);
+      window.setTimeout(revealPage, 420);
 
       // All devices preload the selected local Hero asset immediately; on
       // desktop the static first-frame layer keeps the ship visible before
