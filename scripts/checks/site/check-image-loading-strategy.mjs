@@ -43,13 +43,10 @@ try {
       top:image.getBoundingClientRect().top,
     })));
   assert.equal(initialHome.length, 8, 'Mobile Featured displays eight cards in one 2x4 grid');
-  // A scroll-driven dolly starts the cards deeper in the scene. Depending
-  // on Hero viewport height, even row one may be beyond the preload margin.
-  // Never force network work for artwork still far behind the video Hero.
-  assert(initialHome.slice(2).every(item => !item.loaded),
-    'Rows 2-4 must not compete with the Hero video');
-  assert(initialHome.every(item => !item.loaded || item.top <= 852 + 350 + 8),
-    'Only covers within the 350px preload margin may request imagery');
+  // Prefetch covers 1100px ahead of view so rapid swipes and section links
+  // rarely expose an empty card. Still defer art truly far from the viewport.
+  assert(initialHome.every(item => !item.loaded || item.top <= 852 + 1100 + 24),
+    'Only covers within the 1100px preload margin may request imagery');
   assert(await page.locator('#impact-awards .impact-award-grid-card img')
     .evaluateAll(images => images.every(image => !image.hasAttribute('src'))),
   'Distant award thumbnails must not compete with Hero');
@@ -122,16 +119,15 @@ try {
     await desktop.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
     await desktop.locator('#projects .comet-archive__cover').first().waitFor({ state: 'attached' });
     await desktop.waitForTimeout(350);
-    // The Hero now consumes a full viewport before Featured. Depending on
-    // viewport and animation timing, even the *first* row may be outside
-    // the 350px IntersectionObserver margin; do not force eager loading.
+    // The same bounded 1100px look-ahead works on desktop: no unrelated
+    // offscreen artwork burst, but cards have time to decode before arrival.
     const initial = await desktop.locator('#projects .comet-archive__cover')
       .evaluateAll(images => images.map(image => {
         const rect = image.getBoundingClientRect();
         return { loaded: image.hasAttribute('src'), top: rect.top, bottom: rect.bottom };
       }));
     assert.equal(initial.length, 8);
-    const rootMargin = 350;
+    const rootMargin = 1100;
     const windowHeight = desktop.viewportSize().height;
     assert(initial.every(image => image.top <= windowHeight + rootMargin || !image.loaded),
       'Desktop Featured must defer covers beyond the approaching viewport');
