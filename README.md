@@ -123,6 +123,8 @@ npm run check:workbench-core    # 工作台核心回归
 npm run check:i18n              # 中英文界面
 ```
 
+开发者接手：[工程架构](./ARCHITECTURE.md) · [作品数据字典](./docs/作品数据字典.md) · [历史代码待清理清单](./docs/历史代码待清理清单.md)。
+
 维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
 
 </details>

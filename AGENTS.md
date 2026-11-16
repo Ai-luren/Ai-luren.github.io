@@ -14,6 +14,7 @@
 - `assets/videos/works/` 是 Git 忽略的本地原片，开发环境禁回退 ImageKit；公开作品播放器按点击加载云端 MP4。
 - `works.html`、`src/works-main.jsx`：独立作品库的 Vite 多入口页面；站内链接使用相对路径，保持 GitHub Pages 子路径兼容。
 - `assets/`、`vendor/`：图标、视频和第三方静态资源；页面使用系统字体栈，不依赖远程字体 CDN。
+- `ARCHITECTURE.md`：新工程师的入口与职责地图；`docs/作品数据字典.md`：项目 JSON 真值、优先级与工作台写入边界；`docs/历史代码待清理清单.md`：待验证的历史债，不代表可删除。
 - `docs/`：`设计规范.md` 是公开网页的唯一视觉与交互规范；工作台专属规则见 `docs/本地封面工作流.md`，维护指南为操作说明，带日期的审计/验收文档只作历史记录。
 - `portfolio-workbench/`：本地作品工作台，使用 FFmpeg、环回端口和可恢复的归档索引维护作品；不接入正式 Vite 构建或部署。
 - `scripts/checks/site/`、`scripts/checks/workbench/` 复用 `scripts/lib/safe-media.mjs`、本地夹具；移动测试脚本同步入口和 `check:repo-layout`。
