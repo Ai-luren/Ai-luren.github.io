@@ -215,3 +215,17 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* Touch blue is the browser tap flash or focus-visible restored after a modal.
+   Never hide true keyboard focus: inputModality clears the touch marker on
+   physical-keyboard input, including keyboards attached to phones. */
+@media (hover: none) and (pointer: coarse) {
+  :is(#projects, .work-library) .portfolio-work-card--unified {
+    -webkit-tap-highlight-color: transparent;
+  }
+  html[data-nav-input="touch"] :is(#projects, .work-library)
+    .portfolio-work-card--unified:focus-visible {
+    outline: none !important;
+    border-color: var(--portfolio-work-card-border);
+  }
+}
