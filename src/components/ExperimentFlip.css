@@ -197,10 +197,12 @@
   height: min(550px,calc(100dvh - 116px));
   min-height: 0; overflow: hidden;
   padding: clamp(19px,2.7vw,32px);
-  border: 1px solid var(--portfolio-panel-border);
+  border: 1px solid var(--portfolio-glass-control-border);
   border-radius: var(--portfolio-panel-radius);
-  background: var(--portfolio-panel-surface);
-  color: var(--apple-text); box-shadow: var(--portfolio-panel-shadow);
+  background: var(--portfolio-glass-control-surface);
+  color: var(--apple-text); box-shadow: var(--portfolio-glass-control-shadow);
+  backdrop-filter: var(--portfolio-glass-control-blur);
+  -webkit-backdrop-filter: var(--portfolio-glass-control-blur);
 }
 .lab-project-intro { grid-area: intro; min-width: 0; align-self: center; }
 .lab-project-kicker { margin: 0 0 10px; color: var(--apple-tertiary); font: 500 10px/1.45 var(--font-mono); letter-spacing: .07em; }
@@ -342,7 +344,7 @@
 }
 @keyframes lab-viewer-enter { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .lab-project-lightbox { animation: none; } .lab-project-image-tabs button, .lab-project-pagination button { transition: none; } }
-@media (prefers-reduced-transparency: reduce) { .lab-project-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } .lab-project-dialog { background: var(--portfolio-panel-solid); } }
+@media (prefers-reduced-transparency: reduce) { .lab-project-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } }
 
 /* In-place image reading mode. Reuses the existing project modal: no nested
    overlay, extra close button or transform scaling (which blocks panning). */
@@ -379,9 +381,19 @@
    through the image viewer while users pan its enlarged content. This only
    strengthens the existing modal material; geometry and motion stay intact. */
 .lab-project-lightbox { background: rgba(12, 12, 13, .97); }
-.lab-project-dialog { background: var(--portfolio-panel-solid); }
+.lab-project-dialog { background: var(--portfolio-glass-control-surface); }
+.lab-project-dialog:has(.lab-project-image-canvas.is-zoomed) {
+  /* Tiny writing in zoomed proof images must not sit over moving film. */
+  background: var(--portfolio-panel-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
 @media (prefers-reduced-transparency: reduce) {
   .lab-project-lightbox { background: var(--portfolio-modal-solid); }
+  .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }
 
 /* Mouse/pen users can grab the enlarged proof image; native touch gestures,

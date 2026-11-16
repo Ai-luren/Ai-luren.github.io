@@ -8,12 +8,12 @@
   display: flex; flex-direction: column; gap: 0;
   width: clamp(288px, 23vw, 324px); min-width: 0; max-height: calc(100dvh - 110px);
   padding: 20px 16px 12px;
-  border: 1px solid var(--portfolio-panel-border);
+  border: 1px solid var(--portfolio-glass-control-border);
   border-radius: var(--portfolio-panel-radius);
-  background: var(--portfolio-glass-surface);
-  -webkit-backdrop-filter: var(--portfolio-glass-blur);
-  backdrop-filter: var(--portfolio-glass-blur);
-  box-shadow: var(--portfolio-panel-shadow);
+  background: var(--portfolio-glass-control-surface);
+  -webkit-backdrop-filter: var(--portfolio-glass-control-blur);
+  backdrop-filter: var(--portfolio-glass-control-blur);
+  box-shadow: var(--portfolio-glass-control-shadow);
   color: var(--apple-text);
   animation: cinema-directory-enter 230ms cubic-bezier(.2,.75,.25,1) both;
   contain: layout style;
@@ -84,7 +84,7 @@
     width: 100%; max-height: 80dvh; height: min(76dvh, 680px);
     border-radius: var(--portfolio-panel-radius) var(--portfolio-panel-radius) 0 0;
     border-bottom: 0; padding: 12px max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    background: var(--portfolio-panel-scrolled-surface);
+    background: var(--portfolio-glass-control-surface);
     animation-name: cinema-directory-mobile-enter;
   }
   @keyframes cinema-directory-mobile-enter {
@@ -124,9 +124,9 @@
     grid-template-rows: auto minmax(0,1fr) auto;
     column-gap: 12px;
     padding: 12px;
-    border: 1px solid var(--portfolio-panel-border);
+    border: 1px solid var(--portfolio-glass-control-border);
     border-radius: var(--portfolio-panel-radius);
-    background: var(--portfolio-panel-scrolled-surface);
+    background: var(--portfolio-glass-control-surface);
     animation-name: cinema-directory-enter;
   }
   .cinema-directory__grab { display: none; }

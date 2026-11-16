@@ -52,7 +52,7 @@ try {
         assert(info.length>=4,tag+': cards missing');
         for(const item of info){
           assert.equal(item.outerBorder,'1px',tag+': missing unified border');
-          assert.equal(item.material,'rgba(26, 27, 31, 0.82)',tag+': wrong shared glass');
+          assert.equal(item.material,'rgba(24, 26, 31, 0.33)',tag+': wrong shared glass');
           assert.equal(item.outerRadius,width<=720?'14px':'18px',tag+': outer radius');
           assert.equal(item.artRadius,width<=720?'9px':'12px',tag+': inset art radius');
           assert.equal(item.artBorder,'0px',tag+': duplicate image border');

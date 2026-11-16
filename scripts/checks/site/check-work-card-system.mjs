@@ -181,7 +181,7 @@ try{
           assert.equal(result.status.label,lang==='en'?'Play':'播放',`${tag}: ${kind} status translation wrong`);
         }
         for(const prop of ['background','border','radius','blur']) assert.equal(a.surface[prop],b.surface[prop],'A+ outer card mismatch '+prop);
-        assert.equal(a.surface.background,'rgba(26, 27, 31, 0.82)','Shared A+ card must match glass tokens');
+        assert.equal(a.surface.background,'rgba(24, 26, 31, 0.33)','Shared A+ card must match glass tokens');
         assert.equal(a.surface.radius,width<=720?'14px':'18px','A+ outer card radius');
         assert.equal(a.cover.radius,width<=720?'9px':'12px','Inset artwork radius');
         for(const prop of ['border','radius','shadow']) assert.equal(a.cover[prop],b.cover[prop],`${tag}: cover ${prop} mismatch`);

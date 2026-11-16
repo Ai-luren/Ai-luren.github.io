@@ -54,7 +54,7 @@ async function load(kind,width,height,lang){
   assert.deepEqual(data.socialLinks.map(l=>l.text),MOBILE_MENU_SOCIAL_PROFILES.map(l=>l[lang]));
   assert.equal(data.socialHeading,lang==='en'?'Social':'社交平台');
   assert.equal(data.overlay,'rgba(12, 12, 13, 0.97)',kind+': matching early-opaque menu scrim');
-  assert.equal(data.headerBackground,'rgba(28, 28, 30, 0.72)',kind+': same menu header surface');
+  assert.equal(data.headerBackground,'rgba(24, 26, 31, 0.72)',kind+': same menu header surface');
   assert(data.headerVisible&&data.disabledSearch&&data.pageOverflow<=2,kind+': no overflow/search and header visible');
   assert(data.menuItems.every((x,i,arr)=>x.r.left>=0&&x.r.right<=width&&(i===0||x.r.top>=arr[i-1].r.bottom)));
   assert(data.socialLinks.every(x=>x.r.left>=0&&x.r.right<=width&&x.r.height>=43.9),kind+': social hit areas visible');

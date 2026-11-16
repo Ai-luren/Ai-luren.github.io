@@ -57,17 +57,19 @@
 #top .hero-actions .hero-secondary {
   min-width: 136px;
   padding-inline: 20px;
-  border-color: var(--hero-secondary-border);
-  background: var(--hero-secondary-bg);
+  border-color: var(--portfolio-glass-control-border);
+  background: var(--portfolio-glass-cta-surface);
   color: var(--hero-secondary-color);
+  /* Keep the original zero-drop-shadow CTA contract; D+ identity is the
+     optical rim and reading veil, not another floating shadow. */
   box-shadow: none;
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: var(--portfolio-glass-control-blur);
+  backdrop-filter: var(--portfolio-glass-control-blur);
 }
 
 #top .hero-actions .hero-secondary:hover {
-  border-color: var(--hero-secondary-hover-border);
-  background: var(--hero-secondary-hover-bg);
+  border-color: rgba(227, 237, 250, .52);
+  background: var(--portfolio-glass-cta-hover-surface);
   color: #fff;
 }
 
@@ -79,16 +81,16 @@
   background: var(--hero-primary-hover-bg);
 }
 #top .hero-actions .hero-secondary:active {
-  border-color: var(--hero-secondary-hover-border);
-  background: var(--hero-secondary-hover-bg);
+  border-color: rgba(227, 237, 250, .52);
+  background: var(--portfolio-glass-cta-hover-surface);
 }
 #top .hero-actions button:focus-visible {
   outline: 2px solid var(--apple-blue);
   outline-offset: 3px;
 }
 #top .hero-actions .hero-secondary:focus-visible {
-  border-color: var(--hero-secondary-hover-border);
-  background: var(--hero-secondary-hover-bg);
+  border-color: rgba(227, 237, 250, .52);
+  background: var(--portfolio-glass-cta-hover-surface);
   color: #fff;
 }
 

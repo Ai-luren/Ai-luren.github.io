@@ -18,7 +18,7 @@
   border: 1px solid var(--portfolio-work-card-border);
   border-radius: var(--portfolio-work-card-radius);
   color: var(--apple-text);
-  background: var(--portfolio-work-card-surface);
+  background: var(--portfolio-glass-work-shade), var(--portfolio-work-card-surface);
   box-shadow: var(--portfolio-work-card-shadow);
   backdrop-filter: var(--portfolio-glass-blur);
   -webkit-backdrop-filter: var(--portfolio-glass-blur);
@@ -142,7 +142,8 @@
 @media (hover:hover) and (pointer:fine) {
   :is(#projects, .work-library) .comet-card:has(> .portfolio-work-card--unified):hover > .portfolio-work-card--unified {
     border-color: rgba(205,227,245,.46);
-    background: color-mix(in srgb, var(--portfolio-work-card-surface), white 5%);
+    /* Change only the substrate; preserve the static reading gradient. */
+    background-color: color-mix(in srgb, var(--portfolio-work-card-surface), white 5%);
     box-shadow: var(--portfolio-work-card-shadow-hover);
   }
   :is(#projects, .work-library) .portfolio-work-card--unified:hover .comet-archive__play-badge.is-ready {

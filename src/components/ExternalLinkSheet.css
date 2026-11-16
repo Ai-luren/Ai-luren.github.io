@@ -10,11 +10,13 @@
 }
 .external-link-sheet__panel {
   box-sizing: border-box; width: min(100%, 470px); padding: 12px 22px 24px;
-  border: 1px solid var(--portfolio-panel-border);
+  /* Security/confirmation dialogs use solid depth, but the same D+ rim.
+     The full-screen sheet already owns the blur; no second filter here. */
+  border: 1px solid var(--portfolio-glass-control-border);
   border-radius: 24px;
   background: var(--portfolio-panel-solid, #1d1e21);
   color: var(--apple-text);
-  box-shadow: 0 25px 70px rgba(0,0,0,.35);
+  box-shadow: 0 25px 70px rgba(0,0,0,.35), inset 0 1px 0 rgba(252,253,255,.22);
   animation: external-sheet-enter 230ms var(--apple-ease) both;
 }
 .external-link-sheet__handle { display: block; width: 34px; height: 4px; border-radius: 999px; background: var(--apple-tertiary); margin: 0 auto 22px; opacity: .6; }

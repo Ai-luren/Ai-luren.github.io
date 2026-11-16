@@ -5,7 +5,7 @@ body > header, body > header.is-condensed, .cinema-player__navigation {
   left: 50% !important; top: max(14px, env(safe-area-inset-top)) !important;
   transform: translateX(-50%) !important;
   width: min(980px, calc(100% - 48px)) !important; height: 58px !important;
-  box-sizing: border-box; border: 1px solid var(--portfolio-panel-border) !important;
+  box-sizing: border-box; border: 1px solid var(--portfolio-chrome-rim, rgba(235,244,255,.28)) !important;
   border-radius: var(--portfolio-panel-radius) !important;
   background: var(--portfolio-panel-surface) !important;
   -webkit-backdrop-filter: var(--portfolio-panel-blur) !important;
@@ -762,7 +762,25 @@ body.mobile-nav-open > header {
     background: rgba(12, 12, 13, .97) !important;
   }
 }
+/* Keep the mobile editorial scrim fully opaque before the first frame.
+   These more specific late rules override the normal-mode fading transition. */
 @media (prefers-reduced-transparency: reduce) and (max-width: 760px) {
   #mobile-nav-drawer.mobile-nav-drawer,
   #library-menu.library-menu::backdrop { background: var(--portfolio-modal-solid) !important; }
+  #mobile-nav-drawer.mobile-nav-drawer { transition: visibility 0s !important; }
+  #mobile-nav-drawer.mobile-nav-drawer:is(.is-open, .is-closing) {
+    opacity: 1 !important;
+    transition: visibility 0s !important;
+  }
+}
+/* Keep fallback selectors direct under @supports. Chromium's simulated
+   unsupported-feature test substitutes this condition at the CSSOM level. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  #mobile-nav-drawer.mobile-nav-drawer,
+  #library-menu.library-menu::backdrop { background: var(--portfolio-modal-solid) !important; }
+  #mobile-nav-drawer.mobile-nav-drawer { transition: visibility 0s !important; }
+  #mobile-nav-drawer.mobile-nav-drawer:is(.is-open, .is-closing) {
+    opacity: 1 !important;
+    transition: visibility 0s !important;
+  }
 }

@@ -9,19 +9,65 @@
   --portfolio-content-radius: 18px;
   --portfolio-tile-radius: 12px;
   --portfolio-control-radius: 999px;
-  --portfolio-panel-surface: rgba(28, 28, 30, .72);
+  --portfolio-panel-surface: rgba(24, 26, 31, .72);
   /* Higher-opacity chrome is shared by the scrolled homepage and Works
      landing; the Hero and viewer chrome retain the lightweight .72 layer. */
-  --portfolio-panel-scrolled-surface: rgba(28, 28, 30, .96);
+  --portfolio-panel-scrolled-surface: rgba(24, 26, 31, .96);
   --portfolio-panel-solid: #1c1c1e;
   --portfolio-panel-border: rgba(255, 255, 255, .14);
-  --portfolio-panel-blur: blur(22px) saturate(1.08);
-  /* Shared cinematic content glass: Impact, Lab, About, Hero proof and individual work cards.
-     Chrome remains lighter (.72); modal scrims remain darker (.9). */
-  --portfolio-glass-surface: rgba(26, 27, 31, .82);
+  --portfolio-chrome-rim: rgba(235, 244, 255, .28);
+  --portfolio-panel-blur: blur(14px) saturate(1.045);
+  /* D+ Cinematic Crystal Glass. Transparency is semantic: the 33% neutral
+     substrate is shared; text protection is a static background gradient.
+     No extra blurred pseudo-layers, SVG displacement or scroll-driven glare. */
+  --portfolio-glass-surface: rgba(24, 26, 31, .33);
   --portfolio-glass-solid: var(--portfolio-panel-solid);
-  --portfolio-glass-blur: blur(22px) saturate(1.04);
-  --portfolio-panel-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .08);
+  --portfolio-glass-blur: blur(8px) saturate(1.045);
+  --portfolio-glass-text-guard: .62;
+  --portfolio-glass-rim-strength: .35;
+  /* Higher-value secondary ink remains legible on bright film highlights,
+     while the page-level typography palette remains unchanged. */
+  --portfolio-glass-secondary-text: #cbd1db;
+  --portfolio-glass-tertiary-text: #b7bdc8;
+  --portfolio-glass-border: rgba(227, 237, 250, var(--portfolio-glass-rim-strength));
+  --portfolio-glass-shadow:
+    0 14px 30px rgba(0, 0, 0, .12),
+    inset 0 1px 0 rgba(252, 253, 255, calc(var(--portfolio-glass-rim-strength) * .72)),
+    inset 1px 0 0 rgba(234, 241, 255, calc(var(--portfolio-glass-rim-strength) * .17)),
+    inset -1px 0 0 rgba(205, 229, 255, calc(var(--portfolio-glass-rim-strength) * .09));
+  /* Short left-aligned labels: more open on the right, local dark veil on left. */
+  --portfolio-glass-short-shade:
+    linear-gradient(90deg,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .96)) 0%,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .94)) 25%,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .73)) 52%,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .24)) 82%,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .025)) 100%);
+  /* Multi-column reading panels: protect secondary text across full width. */
+  --portfolio-glass-reading-shade:
+    linear-gradient(180deg,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .80)) 0%,
+      rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .89)) 100%);
+  /* Work card: keep thumbnails pristine, shade only the area beneath. */
+  --portfolio-glass-work-shade:
+    linear-gradient(180deg, rgba(5, 7, 11, .02), rgba(5, 7, 11, .09) 74%, rgba(5, 7, 11, calc(var(--portfolio-glass-text-guard) * .68)));
+  /* Control Glass is the SAME D+ substrate, optical edge and one blur,
+     but a stronger STATIC reading veil protects text over video. Do not
+     substitute the nearly-transparent content variant in player menus. */
+  --portfolio-glass-control-surface:
+    linear-gradient(155deg, rgba(5, 7, 11, .66), rgba(5, 7, 11, .76)),
+    var(--portfolio-glass-surface);
+  --portfolio-glass-control-blur: var(--portfolio-glass-blur);
+  --portfolio-glass-control-border: var(--portfolio-glass-border);
+  --portfolio-glass-control-shadow: var(--portfolio-glass-shadow);
+  /* Hero's small, all-text action requires a reliably dark substrate in both
+     bright/black film frames. It still shares D+ rim, hue and 8px blur. */
+  --portfolio-glass-cta-surface: rgba(24, 26, 31, .92);
+  --portfolio-glass-cta-hover-surface: rgba(35, 38, 45, .96);
+  --portfolio-panel-shadow:
+    0 16px 42px rgba(0, 0, 0, .18),
+    inset 0 1px 0 rgba(235, 244, 255, .20),
+    inset 1px 0 0 rgba(235, 244, 255, .035);
   --portfolio-card-surface: var(--portfolio-panel-surface);
   --portfolio-card-border: var(--portfolio-panel-border);
   --portfolio-card-blur: var(--portfolio-panel-blur);
@@ -34,11 +80,11 @@
      Keep the home and library grids independent; standardize their cards. */
   /* Unified A+ work card follows the site's existing content-glass roles. */
   --portfolio-work-card-surface: var(--portfolio-glass-surface);
-  --portfolio-work-card-border: var(--portfolio-card-border);
+  --portfolio-work-card-border: var(--portfolio-glass-border);
   --portfolio-work-card-radius: var(--portfolio-content-radius);
   --portfolio-work-artwork-radius: var(--portfolio-tile-radius);
-  --portfolio-work-card-shadow: 0 12px 34px rgba(0,0,0,.22), inset 0 1px rgba(255,255,255,.06);
-  --portfolio-work-card-shadow-hover: 0 16px 37px rgba(0,0,0,.29), inset 0 1px rgba(255,255,255,.08);
+  --portfolio-work-card-shadow: var(--portfolio-glass-shadow);
+  --portfolio-work-card-shadow-hover: 0 16px 36px rgba(0,0,0,.20), inset 0 1px rgba(255,255,255,.16);
   --portfolio-work-cover-ratio: 3 / 4;
   --portfolio-work-title-gap: 10px;
   --portfolio-work-caption-gap: 5px;
@@ -81,8 +127,24 @@ header.is-condensed {
 #experiments .flip-experiment,
 #profile .closing-card,
 #top .hero-proof-card {
-  --portfolio-card-surface: var(--portfolio-glass-surface);
+  --portfolio-card-surface: var(--portfolio-glass-reading-shade), var(--portfolio-glass-surface);
+  --portfolio-card-border: var(--portfolio-glass-border);
   --portfolio-card-blur: var(--portfolio-glass-blur);
+  --portfolio-card-shadow: var(--portfolio-glass-shadow);
+  --apple-secondary: var(--portfolio-glass-secondary-text);
+  --apple-tertiary: var(--portfolio-glass-tertiary-text);
+}
+/* Labels in the impact columns additionally use their local impact tokens. */
+.impact-glass {
+  --impact-signal: var(--portfolio-glass-secondary-text);
+  --impact-muted: var(--portfolio-glass-tertiary-text);
+}
+/* The small Hero proof card is short-form and can keep the more transparent
+   right side. Its actual content and radius remain exactly as before. */
+#top .hero-proof-card {
+  --portfolio-card-surface: var(--portfolio-glass-short-shade), var(--portfolio-glass-surface);
+  /* Short card labels may extend into the brighter right-hand region. */
+  text-shadow: 0 1px 5px rgba(0, 0, 0, .38);
 }
 
 /* Content media is opaque and does not add a second blur layer. */
@@ -104,11 +166,12 @@ header.is-condensed {
 /* The interactive Dock keeps the quiet tile material. Platform credentials
    are static evidence inside a single cinematic glass panel, not buttons. */
 .floating-dock-item {
-  border: 1px solid var(--portfolio-tile-border);
+  border: 1px solid var(--portfolio-glass-border);
   border-radius: var(--portfolio-tile-radius) !important;
-  background: var(--portfolio-tile-surface);
+  background: linear-gradient(135deg, rgba(237, 246, 255, .065), transparent 65%), rgba(24, 26, 31, .27);
   color: var(--apple-text, #f5f5f7);
-  box-shadow: var(--portfolio-tile-shadow) !important;
+  box-shadow: inset 0 1px 0 rgba(245, 250, 255, .09) !important;
+  /* Already inside the blurred reading panel: no second GPU blur. */
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }

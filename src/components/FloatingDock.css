@@ -34,8 +34,8 @@
 .floating-dock-item:hover,
 .floating-dock-item:focus-visible {
   z-index: 2;
-  border-color: rgba(245, 245, 247, .28);
-  background: var(--portfolio-tile-surface-hover);
+  border-color: rgba(227, 237, 250, .52);
+  background: rgba(238, 246, 255, .14);
 }
 
 .floating-dock-icon,
@@ -106,9 +106,9 @@
   align-items: center;
   gap: 9px;
   border-radius: 15px;
-  border: 1px solid var(--portfolio-panel-border);
+  border: 1px solid var(--portfolio-glass-control-border);
   background: var(--portfolio-panel-solid, #1d1e21);
-  box-shadow: 0 14px 38px rgba(0,0,0,.32);
+  box-shadow: 0 14px 38px rgba(0,0,0,.32), inset 0 1px 0 rgba(252,253,255,.20);
   pointer-events: none;
   color: var(--apple-text);
   text-align: center;

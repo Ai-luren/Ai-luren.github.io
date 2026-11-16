@@ -368,7 +368,7 @@ const CHECKS = {
             bad.push(`内容玻璃不一致: ${el.className || el.tagName}, background=${style.backgroundColor}, blur=${style.backdropFilter}`);
           }
         }
-        if (base.backgroundColor !== 'rgba(26, 27, 31, 0.82)' || base.backdropFilter !== 'blur(22px) saturate(1.04)') {
+        if (base.backgroundColor !== 'rgba(24, 26, 31, 0.33)' || base.backdropFilter !== 'blur(8px) saturate(1.045)') {
           bad.push(`内容玻璃 Token 失效: background=${base.backgroundColor}, blur=${base.backdropFilter}`);
         }
       }

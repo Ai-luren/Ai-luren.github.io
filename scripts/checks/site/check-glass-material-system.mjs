@@ -25,8 +25,8 @@ const selectors=[
   '#profile .closing-card',
 ];
 const expected={
-  normal:{chrome:'rgba(28, 28, 30, 0.96)',glass:'rgba(26, 27, 31, 0.82)',
-    scrim:'rgba(12, 12, 13, 0.9)',chromeBlur:'blur(22px) saturate(1.08)',glassBlur:'blur(22px) saturate(1.04)',scrimBlur:'blur(28px) saturate(1.02)'},
+  normal:{chrome:'rgba(24, 26, 31, 0.96)',glass:'rgba(24, 26, 31, 0.33)',
+    scrim:'rgba(12, 12, 13, 0.9)',chromeBlur:'blur(14px) saturate(1.045)',glassBlur:'blur(8px) saturate(1.045)',scrimBlur:'blur(28px) saturate(1.02)'},
   fallback:{chrome:'rgb(28, 28, 30)',glass:'rgb(28, 28, 30)',
     scrim:'rgb(12, 12, 13)',chromeBlur:'none',glassBlur:'none',scrimBlur:'none'},
 };

@@ -72,7 +72,7 @@ try{
   // the initial Hero and modal viewers intentionally use the .72 surface.
   const worksChrome=await p.locator('.library-page-navigation .cinema-player__navigation').evaluate(geometry);
   same(home,worksChrome,{compareSurface:false});
-  assert.equal(worksChrome.surface,'rgba(28, 28, 30, 0.96)');
+  assert.equal(worksChrome.surface,'rgba(24, 26, 31, 0.96)');
   if(button)same(button,await p.locator('.library-page-navigation .cinema-player__close').evaluate(geometry));
   if([393,1440].includes(width))await shot(p,`${width}-works-navigation`);
   if(width<=760){
@@ -123,7 +123,10 @@ try{
   };
   const material=async(selector,pseudo=null)=>{
    const style=await p.locator(selector).evaluate((el,pseudo)=>{const s=getComputedStyle(el,pseudo);return {bg:s.backgroundColor,blur:s.backdropFilter,webkit:s.getPropertyValue('-webkit-backdrop-filter'),opacity:getComputedStyle(el).opacity};},pseudo);
-   assert.equal(style.bg,mode==='normal'?'rgba(12, 12, 13, 0.9)':'rgb(12, 12, 13)');
+   // Works mobile menu uses the established 97% editorial backdrop;
+   // award viewer uses the generic 90% modal scrim.
+   const normalColor=selector==='.library-menu'?'rgba(12, 12, 13, 0.97)':'rgba(12, 12, 13, 0.9)';
+   assert.equal(style.bg,mode==='normal'?normalColor:'rgb(12, 12, 13)');
    assert.equal(style.blur,mode==='normal'?'blur(28px) saturate(1.02)':'none');
    assert.equal(style.opacity,'1');
   };

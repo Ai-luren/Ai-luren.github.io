@@ -13,8 +13,10 @@ function surface(selector,pseudo=null){
  const ancestors=[];for(let n=el;n;n=n.parentElement) ancestors.push(Number(getComputedStyle(n).opacity));
  return {background:s.backgroundColor,blur:s.backdropFilter,opacity:Number(s.opacity),ancestors,image:s.backgroundImage};
 }
-function checkSurface(s,mode){
- assert.equal(s.background,mode==='normal'?'rgba(12, 12, 13, 0.9)':'rgb(12, 12, 13)');
+function checkSurface(s,mode,{mobileEditorialScrim=false}={}) {
+ assert.equal(s.background,mode==='normal'
+   ? (mobileEditorialScrim?'rgba(12, 12, 13, 0.97)':'rgba(12, 12, 13, 0.9)')
+   : 'rgb(12, 12, 13)');
  assert.equal(s.blur,mode==='normal'?'blur(28px) saturate(1.02)':'none');
  assert.equal(s.opacity,1);assert(s.ancestors.every(v=>v===1));assert.equal(s.image,'none');
 }
@@ -48,12 +50,15 @@ try{
   await page.locator('#projects').scrollIntoViewIfNeeded();
   if(width===393){
    await page.locator('.nav-toggle').click();
+   // Test the visible drawer, not the microtask before the menu's open class
+   // is committed; any pre-open frame remains hidden and cannot leak content.
+   await page.locator('#mobile-nav-drawer.is-open').waitFor({state:'attached'});
    if(mode!=='normal'){
     const immediate=await page.evaluate(()=>getComputedStyle(document.querySelector('#mobile-nav-drawer')).opacity);
     assert.equal(immediate,'1','Fallback scrim must not fade through underlying content');
    }
    await page.waitForTimeout(600);
-   checkSurface(await page.evaluate(`(${surface.toString()})('#mobile-nav-drawer')`),mode);
+   checkSurface(await page.evaluate(`(${surface.toString()})('#mobile-nav-drawer')`),mode,{mobileEditorialScrim:true});
    if(out)await page.screenshot({path:`${out}/${width}-${lang}-${mode}-menu.png`});
    await page.locator('.nav-toggle').click();
    if(mode!=='normal')assert.equal(await page.locator('#mobile-nav-drawer').evaluate(el=>getComputedStyle(el).opacity),'1');
