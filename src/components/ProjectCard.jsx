@@ -40,7 +40,7 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
         setCoverNear(true);
         observer.disconnect();
       }
-    }, { rootMargin: '350px 0px' });
+    }, { rootMargin: '1100px 0px' });
     observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, [deferUntilNear]);
