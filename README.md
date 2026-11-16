@@ -15,6 +15,13 @@
   <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
 </p>
 
+<p align="center"><sub>
+  备用访问 / Alternate access:
+  <a href="https://ai-luren.github.io/">GitHub Pages</a>
+  &nbsp;·&nbsp;
+  <a href="https://ailuren.pages.dev/">Cloudflare Pages</a>
+</sub></p>
+
 ---
 
 ## 精选影像 / Selected Films
@@ -64,11 +71,11 @@ Four works from the current featured collection. Watch the films and alternate c
 
 ## 关于网站 / Behind the Portfolio
 
-这是**个人 AI 视频作品集**，不是在线 AI 视频生成工具。前端基于 Vite、React、Motion 和 GSAP / ScrollTrigger；背景影像采用浏览器原生视频（桌面滚动驱动、手机往返循环），当前公开版不启用旧 WebGL 后处理。
+这是**个人 AI 视频作品集**，不是在线 AI 视频生成工具。前端基于 Vite、React、Motion 和 GSAP / ScrollTrigger；背景影像采用浏览器原生视频（桌面滚动驱动、手机 C 版正向光学溶接循环），当前公开版不启用旧 WebGL 后处理。
 
 - **电影化浏览 / Cinematic Viewing**：八件精选影像、按分类浏览的完整作品库、原始比例播放器、同一作品 A/B/C 创意版本、双语导航与作品目录。D+ 玻璃根据阅读密度调整透景强度。
 - **本地作品工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
-- **媒体边界**：原始作品 MP4 不随 Git 提交。本地开发使用本地原片；正式网站使用已配置的线上视频地址。没有原片的克隆环境无法完整验证视频播放。
+- **媒体边界**：作品原片 MP4 不随 Git 提交（Hero 背景 MP4 例外）。本地开发使用本地原片，公开播放器按用户点击才请求 ImageKit。没有原片的克隆环境无法完整验证作品视频播放。
 
 <details>
 <summary><strong>本地运行 / Run Locally</strong></summary>
@@ -130,4 +137,4 @@ npm run check:i18n              # 中英文界面
   <a href="./LICENSE">MIT License</a>
 </p>
 
-<p align="center"><sub>AI路人 · Ai Luren · AI Video Creator</sub></p>
+<p align="center"><sub>AI路人 · Ai Luren · AI Video Creator · <a href="https://ai-luren.github.io/">备用镜像 / Backup site</a></sub></p>

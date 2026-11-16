@@ -23,7 +23,9 @@ try {
       await card.hover();await p.waitForTimeout(420);
       const s=await image.evaluate(el=>{
         const card=el.closest('.comet-archive__card'),surf=getComputedStyle(card),art=getComputedStyle(el);
-        return {border:surf.borderColor,shadow:surf.boxShadow,background:surf.backgroundColor,
+        return {border:surf.borderColor,shadow:surf.boxShadow,
+          shadowToken:surf.getPropertyValue('--portfolio-work-card-shadow-hover').trim(),
+          background:surf.backgroundColor,
           imageBorder:art.borderTopWidth,imageShadow:art.boxShadow,
           pseudoOpacity:getComputedStyle(el,'::after').opacity,
           pseudoDisplay:getComputedStyle(el,'::after').display,
@@ -34,7 +36,9 @@ try {
       });
       assert(s.hover,'Card must respond to hover');
       assert.equal(s.border,'rgba(205, 227, 245, 0.46)','A+ outer card border hover');
-      assert(s.shadow.includes('16px 37px'),'A+ uses one soft outer shadow');
+      const tokenDimensions=s.shadowToken.match(/^0(?:px)?\s+(\d+)px\s+(\d+)px/);
+      assert(tokenDimensions && s.shadow.includes(`0px ${tokenDimensions[1]}px ${tokenDimensions[2]}px 0px`)
+        && s.shadow.includes(' inset'), 'A+ hover uses the current shared outer-shadow token and inset edge');
       assert.equal(s.imageBorder,'0px','Artwork must not have second border');
       assert.equal(s.imageShadow,'none','Artwork must not have second shadow');
       assert(s.pseudoDisplay==='none'||Number(s.pseudoOpacity)===0,'Artwork must not darken under a gradient');
