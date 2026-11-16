@@ -152,7 +152,7 @@ function AwardGallery() {
   const [awardMotionVisible, setAwardMotionVisible] = useState(false);
   const viewerTargetIndexRef = useRef(0);
   const viewerRequestRef = useRef(0);
-  const [railRef, awardGridNear] = useNearViewport('350px');
+  const [railRef, awardGridNear] = useNearViewport('1000px');
   const triggerRef = useRef(null);
   const dialogRef = useRef(null);
   const closeTimerRef = useRef(null);
