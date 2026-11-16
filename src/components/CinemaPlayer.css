@@ -435,6 +435,17 @@
   .cinema-player__fullscreen-hint { margin: 0; padding: 3px; color: var(--apple-secondary); font: 12px/1.5 var(--font-body); text-align: center; }
   .cinema-player__information { gap: 13px; margin-top: 15px; }
   .cinema-player[data-format="portrait"] .cinema-player__information { gap: 12px; margin-top: 12px; }
+  /* On regular-height phones the information region reserves room for a
+     version row even when a work only has one cut. Coupled with the shared
+     height budget in CinemaPlayer.jsx, next/previous keeps portrait films and
+     the bottom arrow controls at stable positions instead of jumping ~80px.
+     Short phones retain natural content height and scroll normally. */
+  @media (min-height: 800px) {
+    .cinema-player[data-format="portrait"] .cinema-player__information {
+      min-height: 186px;
+      justify-content: space-between;
+    }
+  }
   .cinema-player__caption { order: 0; }
   .cinema-player__versions { order: 1; }
   .cinema-player__work-nav { order: 2; }
