@@ -11,31 +11,24 @@
 @keyframes portfolio-page-exit { to { opacity: 0; } }
 @keyframes portfolio-page-enter { from { opacity: 0; } to { opacity: 1; } }
 
-/* Film ↔ Archive · B+C: 660ms optical focus + fifth-style editorial cue.
-   Only the native root snapshot is transitioned: actual document/scroll/video
-   state remains owned by the browser (including history/back-forward cache).
-   No split masks, horizontal wipe, cloned players, or non-target routes. */
+/* Film ↔ Archive: brief optical handoff without an intentional blank
+   first half. Cross-document navigation still owns history and scroll. A new
+   page is readable from its very first transition frame, not after 350ms. */
 :root:active-view-transition-type(to-archive)::view-transition-old(root),
 :root:active-view-transition-type(to-film)::view-transition-old(root) {
-  animation: 660ms linear both portfolio-optical-out;
-  transform-origin: center center;
+  animation: 300ms ease-in both portfolio-optical-out;
 }
 :root:active-view-transition-type(to-archive)::view-transition-new(root),
 :root:active-view-transition-type(to-film)::view-transition-new(root) {
-  animation: 660ms linear both portfolio-optical-in;
-  transform-origin: center center;
+  animation: 300ms ease-out both portfolio-optical-in;
 }
 @keyframes portfolio-optical-out {
-  0% { opacity: 1; filter: blur(0); transform: scale(1); }
-  28% { opacity: 1; filter: blur(.8px); transform: scale(1.004); }
-  52.5% { opacity: 1; filter: blur(1.8px); transform: scale(1.01); }
-  53.5%, 100% { opacity: 0; filter: blur(1.8px); transform: scale(1.01); }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 @keyframes portfolio-optical-in {
-  0%, 52.5% { opacity: 0; filter: blur(1.8px); transform: scale(1.012); }
-  53.5% { opacity: 1; filter: blur(1.8px); transform: scale(1.012); }
-  79% { opacity: 1; filter: blur(.8px); transform: scale(1.005); }
-  95%, 100% { opacity: 1; filter: blur(0); transform: scale(1); }
+  from { opacity: .45; }
+  to { opacity: 1; }
 }
 
 /* Live, borderless fifth-concept cue. It is shown in a non-interactive manual
