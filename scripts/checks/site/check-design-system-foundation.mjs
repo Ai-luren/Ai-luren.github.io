@@ -1,3 +1,5 @@
+// Layout invariants are measured without foreground reveal transforms;
+// the cinematic suite separately tests motion and its interactions.
 import { createSafePage, createSafeContext } from '../../lib/safe-media.mjs';
 /**
  * Step 01: preserve current surface, typography and navigation contract.
@@ -34,10 +36,22 @@ try {
     for(const width of [360,390,760,1024,1440])for(const lang of ['zh','en']) {
       const pages={};
       for(const kind of ['home','library']) {
-        const page=await createSafePage(browser, {viewport:{width,height:900}});
+        const page=await createSafePage(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
         await page.goto(new URL(kind==='home'?'index.html#impact-reach':'works.html',base).href);
         await page.locator(kind==='home'?'#impact-reach .impact-glass':'.library-grid .comet-archive__image').first().waitFor();
+        if(kind==='home'){
+          // Initial React mount may precede native hash scroll restoration.
+          // Compare settled off-Hero chrome (.96) with Works, not transient
+          // Hero chrome (.72) before the hash target reaches the viewport.
+          await page.waitForFunction(()=>{
+            const target=document.querySelector('#impact-reach');
+            if(!target)return false;
+            const rect=target.getBoundingClientRect();
+            return !document.body.classList.contains('is-on-hero') &&
+              rect.top < innerHeight && rect.bottom > 0;
+          });
+        }
         pages[kind]=await page.evaluate(kind=>{
           const get=selector=>{
             const el=document.querySelector(selector);if(!el)return null;
@@ -55,7 +69,7 @@ try {
             media:'#impact-reach .impact-glass',
             lab:'#experiments .flip-experiment',
             about:'#profile .closing-card',
-            mobileWorks:'#projects .comet-archive-mobile-shell',
+            mobileWorks:'#projects .portfolio-work-card--unified',
           }:{
             nav:'.library-page-navigation .cinema-player__navigation',
             title:'.library-intro .page-title',
@@ -84,13 +98,13 @@ try {
       if(width<=720) {
         const mobile=home.elements.mobileWorks;
         assert(mobile&&mobile.width>0,tag+': mobile work panel missing');
-        assert.equal(mobile.surface,glass.surface,tag+': mobile surface');
-        assert.equal(mobile.radius,glass.radius,tag+': mobile radius');
+        assert.equal(mobile.surface,glass.surface,tag+': individual Featured card glass material');
+        assert.equal(mobile.radius,'14px',tag+': individual Featured card radius');
       }
       for(const pageData of [home,library]){
         const cover=pageData.elements.cover;
         assert(cover&&cover.width>0&&cover.height>0,tag+': work cover missing');
-        assert.equal(cover.radius,'18px',tag+': cover radius');
+        assert.equal(cover.radius,width<=720?'9px':'12px',tag+': inner artwork radius');
         assert(near(cover.width/cover.height,.75,.02),tag+': 3:4 cover');
       }
       assert(near(home.elements.title.fontSize,library.elements.title.fontSize),tag+': heading scale differs');

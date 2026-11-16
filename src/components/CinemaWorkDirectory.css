@@ -1,0 +1,186 @@
+/* The existing cinema <dialog> is the ONLY modal. Its directory adopts the
+   same site-wide cinematic glass, editorial typography, low-contrast tile,
+   icon hover and content radii as Impact/Lab/Works; no new global tokens. */
+.cinema-directory__scrim { display: none; }
+.cinema-directory {
+  position: fixed; z-index: 16;
+  top: 92px; bottom: 18px; right: 18px;
+  display: flex; flex-direction: column; gap: 0;
+  width: clamp(288px, 23vw, 324px); min-width: 0; max-height: calc(100dvh - 110px);
+  padding: 20px 16px 12px;
+  border: 1px solid var(--portfolio-glass-control-border);
+  border-radius: var(--portfolio-panel-radius);
+  background: var(--portfolio-glass-control-surface);
+  -webkit-backdrop-filter: var(--portfolio-glass-control-blur);
+  backdrop-filter: var(--portfolio-glass-control-blur);
+  box-shadow: var(--portfolio-glass-control-shadow);
+  color: var(--apple-text);
+  animation: cinema-directory-enter 230ms cubic-bezier(.2,.75,.25,1) both;
+  contain: layout style;
+}
+@keyframes cinema-directory-enter {
+  from { opacity: 0; transform: translate3d(12px,0,0); }
+  to { opacity: 1; transform: translate3d(0,0,0); }
+}
+.cinema-directory__grab { display: none; }
+.cinema-directory__header { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 0 0 16px; }
+.cinema-directory__header h3 { margin: 0; font: 600 18px/1.32 var(--font-display,system-ui); letter-spacing: -.018em; }
+.cinema-directory__header p { margin: 5px 0 0; color: var(--apple-secondary); font: 400 11px/1.5 var(--font-body); }
+.cinema-directory__close { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 1px solid transparent; border-radius: 50%; color: var(--apple-secondary); background: transparent; cursor: pointer; }
+.cinema-directory__close svg { width: 18px; height: 18px; }
+@media (hover:hover) and (pointer:fine) { .cinema-directory__close:hover { color: var(--apple-text); background: var(--portfolio-icon-hover-surface); } }
+.cinema-directory__close:active { background: var(--portfolio-icon-active-surface); }
+.cinema-directory__filters { display: grid; flex: 0 0 auto; min-width: 0; gap: 9px; padding: 0 0 13px; }
+.cinema-directory__filter-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; min-width: 0; }
+.cinema-directory__filter-grid--categories { border-top: 1px solid var(--portfolio-tile-border); padding-top: 9px; }
+.cinema-directory__filter {
+  display: flex; align-items: center; justify-content: space-between; gap: 3px;
+  width: 100%; min-width: 0; min-height: 44px; padding: 8px 9px;
+  border: 1px solid var(--portfolio-tile-border);
+  border-radius: calc(var(--portfolio-tile-radius) - 4px);
+  background: var(--portfolio-tile-surface);
+  color: var(--apple-secondary);
+  font: 500 11px/1.25 var(--font-body); text-align: left;
+  cursor: pointer; touch-action: manipulation;
+  transition: background 180ms var(--apple-ease), color 180ms var(--apple-ease), border-color 180ms var(--apple-ease);
+}
+.cinema-directory__filter > span:first-child { min-width: 0; white-space: nowrap; }
+.cinema-directory__filter-count { flex: 0 0 auto; color: var(--apple-secondary); font: 500 10px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.cinema-directory__filter[aria-pressed="true"] { color: var(--apple-text); border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-surface); }
+.cinema-directory__filter[aria-pressed="true"] .cinema-directory__filter-count { color: var(--apple-text); }
+@media (hover:hover) and (pointer:fine) { .cinema-directory__filter:hover:not(:disabled) { color: var(--apple-text); background: var(--portfolio-tile-surface-hover); } }
+.cinema-directory__filter:disabled { opacity: .5; cursor: progress; }
+.cinema-directory__list { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-color: rgba(180,183,189,.32) transparent; scrollbar-width: thin; }
+.cinema-directory__item {
+  display: flex; align-items: center; gap: 10px; width: 100%; min-width: 0;
+  min-height: 66px; padding: 7px; margin-bottom: 4px;
+  border: 1px solid transparent;
+  border-radius: var(--portfolio-tile-radius);
+  background: transparent; color: var(--apple-text);
+  text-align: left; cursor: pointer; touch-action: manipulation;
+  transition: background-color 180ms var(--apple-ease), border-color 180ms var(--apple-ease);
+}
+.cinema-directory__item img { width: 42px; height: 54px; flex: 0 0 auto; object-fit: cover; border-radius: 7px; background: var(--portfolio-modal-solid); }
+.cinema-directory__item-description { display: grid; align-content: center; flex: 1; min-width: 0; gap: 4px; }
+.cinema-directory__item-title { display: block; min-width: 0; color: var(--apple-text); font: 500 12px/1.45 var(--font-body); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cinema-directory__item-meta { display: block; min-width: 0; color: var(--apple-secondary); font: 400 10px/1.5 var(--font-body); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.cinema-directory__now { flex: 0 0 auto; border: 1px solid var(--portfolio-tile-border); border-radius: 6px; padding: 4px 5px; color: var(--apple-secondary); font: 500 10px/1.2 var(--font-body); }
+.cinema-directory__item[aria-current="true"] { border-color: var(--portfolio-panel-border); background: var(--portfolio-tile-surface-hover); }
+.cinema-directory__item:disabled { opacity: .55; cursor: progress; }
+@media (hover:hover) and (pointer:fine) { .cinema-directory__item:hover:not(:disabled) { background: var(--portfolio-tile-surface-hover); } }
+.cinema-directory__footer { flex: 0 0 auto; border-top: 1px solid var(--portfolio-tile-border); padding: 9px 0 0; margin: 8px 0 0; color: var(--apple-secondary); font: 400 10px/1.5 var(--font-body); }
+.cinema-directory__footer p { margin: 0; }
+.cinema-directory :is(button):focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+
+/* A temporary overlay is necessary below the dock threshold: giving a
+   1024px viewer a 320px permanent sidecar would collapse widescreen video. */
+@media (min-width:761px) and (max-width:1319px) {
+  .cinema-directory__scrim { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0,0,0,.35); }
+}
+@media (max-width:760px) {
+  .cinema-directory__scrim { display: block; position: fixed; inset: 0; z-index: 15; background: rgba(0,0,0,.55); }
+  .cinema-directory {
+    inset: auto 0 0;
+    width: 100%; max-height: 80dvh; height: min(76dvh, 680px);
+    border-radius: var(--portfolio-panel-radius) var(--portfolio-panel-radius) 0 0;
+    border-bottom: 0; padding: 12px max(16px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    background: var(--portfolio-glass-control-surface);
+    animation-name: cinema-directory-mobile-enter;
+  }
+  @keyframes cinema-directory-mobile-enter {
+    from { opacity: .78; transform: translate3d(0,18px,0); }
+    to { opacity: 1; transform: translate3d(0,0,0); }
+  }
+  .cinema-directory__grab { display: block; flex: 0 0 auto; align-self: center; width: 38px; height: 4px; margin: 1px 0 15px; border-radius: 99px; background: var(--portfolio-icon-border); }
+  .cinema-directory__header { padding-bottom: 12px; }
+  .cinema-directory__header h3 { font-size: 17px; }
+  .cinema-directory__filters { gap: 7px; padding-bottom: 10px; }
+  .cinema-directory__filter { min-height: 44px; }
+  .cinema-directory__list { min-height: 0; }
+  .cinema-directory__footer { padding-top: 8px; margin-top: 7px; }
+}
+@media (max-width:350px) {
+  .cinema-directory__filter { padding-inline: 7px; font-size: 10.5px; }
+  .cinema-directory__item { gap: 8px; }
+  .cinema-directory__item img { width: 38px; height: 50px; }
+}
+/* On rotated phones and unusually short desktop windows the normal
+   stacked filter header can consume every pixel of the thumbnail list.
+   Show filters and projects side-by-side instead, still within the SAME
+   cinema dialog. The short, narrow case stays single-column but uses a
+   space-efficient two-row filter grid with intact 44px touch targets. */
+@media (max-height:600px) and (min-width:521px) {
+  .cinema-directory__scrim {
+    display: block; position: fixed; inset: 0; z-index: 15;
+    background: rgba(0,0,0,.42);
+  }
+  .cinema-directory {
+    inset: 8px 8px 8px auto;
+    width: min(720px, calc(100vw - 16px));
+    height: calc(100dvh - 16px);
+    max-height: none;
+    display: grid;
+    grid-template-columns: minmax(0,.95fr) minmax(0,1.2fr);
+    grid-template-rows: auto minmax(0,1fr) auto;
+    column-gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--portfolio-glass-control-border);
+    border-radius: var(--portfolio-panel-radius);
+    background: var(--portfolio-glass-control-surface);
+    animation-name: cinema-directory-enter;
+  }
+  .cinema-directory__grab { display: none; }
+  .cinema-directory__header { grid-column: 1; grid-row: 1; padding-bottom: 8px; }
+  .cinema-directory__header p, .cinema-directory__footer p { display: none; }
+  .cinema-directory__filters { grid-column: 1; grid-row: 2; align-self: start; gap: 7px; padding: 0; }
+  .cinema-directory__filter-grid--categories { padding-top: 7px; }
+  .cinema-directory__list { grid-column: 2; grid-row: 1 / 4; min-height: 0; }
+  .cinema-directory__footer { grid-column: 1; grid-row: 3; padding-top: 5px; margin-top: 0; }
+}
+
+@media (max-height:600px) and (max-width:520px) {
+  .cinema-directory {
+    inset: 0;
+    width: 100%; height: 100dvh; max-height: 100dvh;
+    padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+    border-radius: 0; display: flex;
+  }
+  .cinema-directory__grab { display: none; }
+  .cinema-directory__header { align-items: center; padding-bottom: 4px; }
+  .cinema-directory__header h3 { font-size: 15px; }
+  .cinema-directory__header p { display: none; }
+  /* In extremely low heights keep two rows instead of three: scope buttons
+     left, category 2×2 grid right, preserving both semantic groups. */
+  .cinema-directory__filters {
+    grid-template-columns: minmax(0,1fr) minmax(0,2fr);
+    align-items: start; gap: 5px; padding-bottom: 4px;
+  }
+  .cinema-directory__filter-grid { gap: 4px; }
+  .cinema-directory__filter-grid--scope { grid-template-columns: 1fr; }
+  .cinema-directory__filter-grid--categories {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    border-top: 0; padding-top: 0;
+  }
+  .cinema-directory__filter { min-height: 44px; padding: 3px 4px; gap: 2px; font-size: 9.5px; }
+  .cinema-directory__filter-count { font-size: 9px; }
+  .cinema-directory__list { min-height: 55px; }
+  .cinema-directory__item { min-height: 49px; padding: 3px; }
+  .cinema-directory__item img { width: 34px; height: 44px; }
+  .cinema-directory__item-title { font-size: 11px; }
+  .cinema-directory__item-meta { font-size: 9px; }
+  .cinema-directory__footer { padding-top: 3px; margin-top: 3px; }
+  .cinema-directory__footer p { display: none; }
+}
+@media (max-height:340px) and (max-width:520px) {
+  .cinema-directory__footer { display: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .cinema-directory { background: var(--portfolio-glass-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .cinema-directory { background: var(--portfolio-glass-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinema-directory { animation: none; }
+  .cinema-directory__filter, .cinema-directory__item { transition: none; }
+}

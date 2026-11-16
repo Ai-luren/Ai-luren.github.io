@@ -36,6 +36,7 @@ try {
   const card=page.locator('#ux-gallery .ux-project[data-id="01"]');
   await card.locator('.ux-project-image').click();
   assert(await page.locator('#ux-editor').isVisible());
+  await page.locator('[data-ux-panel=artwork]').click();
   assert.equal(await page.locator('#ux-history-cover').isVisible(),true);
   await page.locator('#ux-change-cover').click();
   assert(await page.locator('#ux-inline-cover').isVisible());

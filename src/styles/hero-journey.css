@@ -1,0 +1,180 @@
+/*
+ * Homepage only: published 15s cinematic scroll journey.
+ * Brief transparent flights show moving film WITHOUT changing project grids,
+ * card geometry, mobile composition, hash IDs, or footer spacing.
+ * Never introduce bounded black masks or section seam overlays.
+ */
+/* One native video on every device. Mobile must not inherit the retired
+   CRT, scanlines, color grading or backdrop masks from the former WebGL Hero.
+   The same source frame and color are used for both preloading and scrolling. */
+html[data-hero-experience="cinematic"] #video-webgl,
+html[data-hero-experience="cinematic"] #hero-profile-mask,
+html[data-hero-experience="cinematic"] #video-dim,
+html[data-hero-experience="cinematic"] #video-overlay,
+html[data-hero-experience="cinematic"] #video-vignette {
+  display: none !important;
+}
+html[data-hero-experience="cinematic"] #hero-video {
+  opacity: 1 !important;
+  filter: none !important;
+  visibility: visible !important;
+}
+/* Cinematic discovery cue: a lightweight instruction, never a fake play
+   button. It returns whenever the Hero dominates the viewport; no overlay,
+   blur, new scroll height or persistent first-visit state. */
+.hero-scroll-guide {
+  position: fixed;
+  z-index: 30;
+  /* Full-width centered flex container keeps the horizontal anchor fixed
+     while Chinese/English font metrics settle during refresh. */
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 4svh, 44px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  max-width: 100%;
+  color: rgba(246, 248, 251, .90);
+  font: 500 12px/1.4 var(--font-body, var(--sans, sans-serif));
+  letter-spacing: .055em;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .56);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  /* Enter downward from above, never animate the horizontal position. */
+  transform: translateY(-9px);
+  transition: opacity 280ms ease-out,
+    transform 340ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s 340ms;
+}
+.hero-scroll-guide[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 280ms ease-out,
+    transform 340ms cubic-bezier(.22, 1, .36, 1),
+    visibility 0s;
+}
+/* Hold the starting pose until loading completes, so the first entrance
+   remains vertical even when fonts, video or hydration settle late. */
+body.is-loading .hero-scroll-guide { opacity: 0; transform: translateY(-9px); }
+.hero-scroll-guide__mobile { display: none; }
+.hero-scroll-guide svg { display: block; opacity: .8; }
+body.is-loaded .hero-scroll-guide[data-visible="true"] svg {
+  animation: hero-scroll-cue-drift 1.8s ease-in-out infinite;
+}
+@keyframes hero-scroll-cue-drift {
+  0%, 100% { transform: translateY(-1px); opacity: .78; }
+  50% { transform: translateY(3px); opacity: 1; }
+}
+@media (max-width: 760px) {
+  .hero-scroll-guide {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    font-size: 11px;
+    gap: 6px;
+  }
+  .hero-scroll-guide__desktop { display: none; }
+  .hero-scroll-guide__mobile { display: inline; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-guide,
+  .hero-scroll-guide[data-visible="true"] { transition: none; }
+  body.is-loaded .hero-scroll-guide[data-visible="true"] svg { animation: none; }
+}
+/* Match the actual B+C loading line: same cool-blue gradient, 2px rail,
+   and subtle glow, rotated into a vertical reading-progress indicator.
+   Its fill remains scroll-driven, never a second loading timer. */
+html[data-hero-experience="cinematic"] .scroll-rail {
+  width: 2px;
+  height: 118px;
+  border-radius: 3px;
+  background: rgba(218,231,242,.32);
+}
+html[data-hero-experience="cinematic"] .scroll-rail > span {
+  width: 100%;
+  height: 100%;
+  margin-left: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg,#438edd,#83cfff,#b7e8ff);
+  box-shadow: 0 0 5px rgba(94,176,246,.42),0 0 10px rgba(53,151,250,.15);
+  transform-origin: top center;
+}
+
+/* The film-only travel intervals are desktop-only; existing mobile content
+   spacing remains compact and unaffected by the cinematic timeline. */
+@media (min-width: 761px) and (prefers-reduced-motion: no-preference) {
+  html[data-hero-experience="cinematic"] .hero-journey-flight {
+    display: block;
+    height: clamp(280px, 40svh, 460px);
+    width: 100%;
+    position: relative;
+    pointer-events: none;
+  }
+  html[data-hero-experience="cinematic"] .hero-journey-flight--after-projects {
+    height: clamp(320px, 50svh, 560px);
+  }
+  /* Give the one chapter transition AFTER all four expertise submodules
+     enough film to breathe; never insert a flight before AI Lab. */
+  html[data-hero-experience="cinematic"] .hero-journey-flight--outro {
+    height: clamp(340px, 55svh, 620px);
+  }
+  /* Parallax is independent of existing GSAP transforms and card hover. */
+  /* Background/video and media can breathe with the film, but section
+     headings are stable reading landmarks in either scroll direction. */
+  html[data-hero-experience="cinematic"] #projects .motion-stage,
+  html[data-hero-experience="cinematic"] #recognition .recognition-react-root {
+    translate: 0 var(--hero-journey-offset, 0px);
+  }
+  html[data-hero-experience="cinematic"] #projects .section-note,
+  html[data-hero-experience="cinematic"] #projects .projects-meta-row,
+  html[data-hero-experience="cinematic"] #recognition .section-intro,
+  html[data-hero-experience="cinematic"] #experiments .section-intro {
+    text-shadow: 0 1px 6px rgba(0,0,0,.35);
+  }
+  html[data-hero-experience="cinematic"] #experiments .section-title {
+    text-shadow: 0 1px 6px rgba(0,0,0,.42);
+  }
+}
+/* Mobile follows the same three-chapter cinematic structure as desktop,
+   but with shorter, touch-friendly flights. No flight inside Expertise:
+   AI Lab stays immediately after the AI self-media evidence module. */
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+  html[data-hero-experience="cinematic"] .hero-journey-flight {
+    display: block;
+    position: relative;
+    width: 100%;
+    pointer-events: none;
+  }
+  html[data-hero-experience="cinematic"] .hero-journey-flight--after-top {
+    height: clamp(70px, 10svh, 100px);
+  }
+  /* Eight complete Featured cards already form a long mobile chapter.
+     Leave a short film breath, not another empty reading screen. */
+  html[data-hero-experience="cinematic"] .hero-journey-flight--after-projects {
+    height: clamp(68px, 9svh, 96px);
+  }
+  html[data-hero-experience="cinematic"] .hero-journey-flight--outro {
+    height: clamp(110px, 18svh, 170px);
+  }
+}
+/* Preserve reduced-motion expectations on every screen size: the film-only
+   spacer is optional, and must never force additional scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-hero-experience="cinematic"] .hero-journey-flight {
+    display: none;
+    height: 0;
+  }
+}
+
+/* Editorial titles reveal once and never replay on reverse scroll.
+   The JS writes Y/opacity for chapter-level groups ONLY; no CSS entrance
+   transition, no one-shot reveal and no extra animation on card inner text. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-hero-experience="cinematic"] [data-editorial-title] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

@@ -28,16 +28,13 @@ try{
       // archive; verify decoded readiness after navigating to that section.
       await page.locator('#projects').scrollIntoViewIfNeeded();
       await page.waitForFunction(()=>[...document.querySelectorAll('#projects .comet-archive__cover')].every(img=>img.complete && img.naturalWidth>0),null,{timeout:15000});
-      assert.equal(await cover.count(),4);
-      const first=await page.locator('#projects .comet-archive__title').first().textContent();
-      await page.locator('#projects .comet-archive-pagination button').last().evaluate(e=>e.click());
-      await page.waitForTimeout(80);
-      const interim=await page.locator('#projects .comet-archive__title').first().textContent();
-      if(interim===first){
-        assert(await cover.evaluateAll(imgs=>imgs.every(img=>img.complete&&img.naturalWidth>0)),'Outgoing projects were cleared');
-      }
-      await page.waitForFunction(()=>document.querySelector('#projects .comet-archive-pagination button:last-child')?.getAttribute('aria-selected')==='true',null,{timeout:14000});
-      assert(await cover.evaluateAll(imgs=>imgs.length===4 && imgs.every(img=>img.complete&&img.naturalWidth>0)),'Blank new featured cover');
+      assert.equal(await cover.count(),8);
+      assert.equal(await page.locator('#projects .comet-archive-pagination').count(),0);
+      await cover.last().scrollIntoViewIfNeeded();
+      await page.waitForFunction(()=>[...document.querySelectorAll('#projects .comet-archive__cover')]
+        .every(img=>img.complete&&img.naturalWidth>0),null,{timeout:14000});
+      assert(await cover.evaluateAll(imgs=>imgs.length===8&&imgs.every(img=>img.naturalWidth>0)),
+        'All eight Featured covers decode during normal scrolling');
       assert.equal(await page.locator('#projects .comet-archive__item').first().evaluate(el=>getComputedStyle(el).opacity),'1');
 
       await page.locator('#impact-awards').scrollIntoViewIfNeeded();

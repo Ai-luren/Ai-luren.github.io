@@ -4,6 +4,7 @@ import { createSafePage, createSafeContext } from '../../lib/safe-media.mjs';
 
 import { chromium } from 'playwright-core';
 import { existsSync } from 'node:fs';
+import { DICT } from '../../../src/i18n/dictionary.js';
 
 const URL = process.env.PORTFOLIO_URL || 'http://127.0.0.1:5174/';
 const BROWSER_CANDIDATES = [
@@ -23,11 +24,6 @@ const context = await createSafeContext(browser, {
   deviceScaleFactor: 1,
 });
 const page = await context.newPage();
-
-const activePage = () => page.evaluate(() => (
-  [...document.querySelectorAll('.comet-archive-pagination button')]
-    .findIndex((button) => button.classList.contains('is-active'))
-));
 
 async function swipe(selector, { dx, dy }) {
   const box = await page.locator(selector).boundingBox();
@@ -61,41 +57,36 @@ try {
   await page.locator('#projects').scrollIntoViewIfNeeded();
   await page.waitForTimeout(250);
 
-  const styles = await page.evaluate(() => ({
-    shellTouchAction: getComputedStyle(document.querySelector('.comet-archive-mobile-shell')).touchAction,
-    nextTouchAction: getComputedStyle(document.querySelector('.comet-archive-page-arrow--next')).touchAction,
-    dotTouchAction: getComputedStyle(document.querySelector('.comet-archive-pagination button')).touchAction,
-    pagination: (() => {
-      const wrapper = document.querySelector('.comet-archive-pagination');
-      const active = wrapper?.querySelector('button.is-active');
-      const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
-      const dotStyle = active ? getComputedStyle(active, '::before') : null;
-      return {
-        background: wrapperStyle?.backgroundColor,
-        border: wrapperStyle?.borderStyle,
-        activeDotWidth: dotStyle?.width,
-      };
-    })(),
-  }));
-  if (styles.shellTouchAction !== 'pan-y') {
-    throw new Error(`作品卡片容器 touch-action 应为 pan-y，实际为 ${styles.shellTouchAction}`);
+  const layout=await page.evaluate(()=>{
+    const cards=[...document.querySelectorAll('#projects .comet-archive__card')];
+    const grid=document.querySelector('#projects .comet-archive');
+    const rows=cards.map(x=>x.getBoundingClientRect().top);
+    const columns=getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+    return {
+      count:cards.length, columns,
+      pager:document.querySelectorAll('#projects .comet-archive-pagination button').length,
+      shell:getComputedStyle(document.querySelector('.comet-archive-mobile-shell')).display,
+      touch:getComputedStyle(grid).touchAction,
+      rows
+    };
+  });
+  if(layout.count!==8||layout.columns!==2||layout.pager!==0||layout.shell!=='contents'||layout.touch!=='pan-y') {
+    throw Error('Featured mobile must be an unframed vertical 2x4 grid: '+JSON.stringify(layout));
   }
-  if (styles.nextTouchAction !== 'manipulation' || styles.dotTouchAction !== 'manipulation') {
-    throw new Error(`分页控件 touch-action 应为 manipulation，实际为 ${JSON.stringify(styles)}`);
+  if(!(layout.rows[0]===layout.rows[1]&&layout.rows[2]===layout.rows[3]&&
+    layout.rows[4]===layout.rows[5]&&layout.rows[6]===layout.rows[7]&&
+    layout.rows[0]<layout.rows[2]&&layout.rows[2]<layout.rows[4]&&layout.rows[4]<layout.rows[6])) {
+    throw Error('Mobile row reading order changed: '+JSON.stringify(layout.rows));
   }
-  if (styles.pagination.background !== 'rgba(0, 0, 0, 0)' || styles.pagination.border !== 'none' || styles.pagination.activeDotWidth !== '20px') {
-    throw new Error(`作品分页点视觉样式异常：${JSON.stringify(styles.pagination)}`);
+  await swipe('#projects .comet-archive', {dx:-140,dy:0});
+  if(await page.locator('#projects .comet-archive__card').count()!==8) {
+    throw Error('Horizontal gesture unexpectedly hides Featured cards');
   }
-
-  await swipe('.comet-archive-mobile-shell', { dx: -140, dy: 0 });
-  await page.waitForFunction(()=>document.querySelectorAll('.comet-archive-pagination button')[1]?.classList.contains('is-active'),{timeout:10000});
-  if (await activePage() !== 1) throw new Error('横向左滑没有切换到第 2 页');
-
-  await page.locator('.comet-archive-pagination button').first().click();
-  await page.waitForTimeout(100);
-  await swipe('.comet-archive-mobile-shell', { dx: 12, dy: 140 });
-  if (await activePage() !== 0) throw new Error('纵向滑动错误地切换了作品页');
-
+  await page.locator('#projects .comet-archive__card').nth(5).click();
+  await page.locator('.cinema-player[open]').waitFor();
+  await page.locator('.cinema-player__close').click();
+  await page.locator('.cinema-player').waitFor({state:'detached'});
+  console.log('PASS Featured mobile 2x4, no swipe page, no outer frame, player still opens');
   await page.locator('#profile').scrollIntoViewIfNeeded();
   await page.waitForTimeout(350);
   const aboutState = await page.evaluate(() => {
@@ -103,22 +94,28 @@ try {
     const description = section?.querySelector('.about-description');
     const role = section?.querySelector('.about-role');
     const text = description?.textContent.trim() || '';
+    // The cinematic edition inserts a transparent film-only flight between
+    // Expertise (including the AI Lab) and About; ignore that ARIA-hidden
+    // spacer when validating the actual content order.
+    const previous = section?.previousElementSibling;
+    const previousContent = previous?.classList.contains('hero-journey-flight')
+      ? previous.previousElementSibling : previous;
     return {
       title: section?.querySelector('#profile-title')?.textContent.trim(),
       role: role?.textContent.trim(),
       description: text,
-      previousSection: section?.previousElementSibling?.id,
-      lastExpertiseSection: section?.previousElementSibling?.lastElementChild?.id,
+      previousSection: previousContent?.id,
+      lastExpertiseSection: previousContent?.lastElementChild?.id,
       contactWithinSection: Boolean(section?.querySelector('#contact')),
       oldCareerElements: section?.querySelectorAll('.career-strip, .career-tabs, .career-detail, .career-image, [data-career-direction], [data-career-pagination-index]').length ?? -1,
       textOverflow: description ? description.scrollWidth > description.clientWidth + 1 : true,
       boundsOverflow: description ? description.getBoundingClientRect().right > innerWidth + 1 : true,
     };
   });
-  if (aboutState.title !== '关于我' || aboutState.role !== 'AI 影像创作者') {
+  if (aboutState.title !== 'AI 影像创作者' || aboutState.role !== 'AI 影像创作者') {
     throw new Error(`关于我标题或职业定位异常：${JSON.stringify(aboutState)}`);
   }
-  if (aboutState.description !== '从动效、特效到 AI 图像与视频效果，曾在快手、小米积累创意制作与产品实践经验。现在专注 AI 视频创作，探索商业广告、创意短片和新的视觉表达。') {
+  if (aboutState.description !== DICT.zh['about.description']) {
     throw new Error('关于我中文正文与确认文案不一致');
   }
   if (aboutState.previousSection !== 'expertise-group' || aboutState.lastExpertiseSection !== 'experiments' || !aboutState.contactWithinSection) {
@@ -136,7 +133,7 @@ try {
   await page.locator('#nav-lang [data-switch-lang="en"]').click();
   await page.waitForFunction(() => document.documentElement.lang === 'en');
   const aboutEnglish = await page.locator('#profile').innerText();
-  if (!aboutEnglish.includes('About Me') || !aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes('I now create AI videos for commercials')) {
+  if (!aboutEnglish.includes('AI Video Creator') || !aboutEnglish.includes("Let's Work Together") || !aboutEnglish.includes(DICT.en['about.description'])) {
     throw new Error('关于我英文标题、职业定位或正文未按字典切换');
   }
 
@@ -146,7 +143,7 @@ try {
   await swipe('.impact-award-shell', { dx: 12, dy: 140 });
   if (await page.locator('#impact-awards .impact-award-grid-card').count() !== 8) throw new Error('纵向滚动不应改变获奖卡片');
 
-  console.log('移动端卡片手势回归通过（393px：精选卡片横滑、获奖网格纵向滚动、快速点击防缩放策略）。');
+  console.log('移动端卡片手势回归通过（393px：精选八卡连续纵向浏览，横滑不分页，获奖网格独立手势，播放器可打开）。');
 } finally {
   await browser.close();
 }

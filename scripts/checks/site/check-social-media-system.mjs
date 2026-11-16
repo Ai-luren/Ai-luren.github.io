@@ -49,6 +49,9 @@ try {
         await page.addInitScript(value=>localStorage.setItem('ailuren-lang',value),lang);
         await page.goto(new URL('index.html#impact-reach',base).href,{waitUntil:'domcontentloaded'});
         await page.locator('#impact-reach .impact-reach-dossier').waitFor();
+        // React can mount its dossier before the native/hash navigation has
+        // settled. Compare scrolled chrome only after the actual section lands.
+        await page.waitForFunction(() => window.scrollY > 500 && !document.body.classList.contains('is-on-hero'), null, {timeout:12000});
         const tag=`${width}px ${lang}`;
         const home=await page.locator('body > header').evaluate(geometry);
         const layout=await page.locator('#impact-reach .impact-reach-dossier').evaluate(node=>{
@@ -101,8 +104,8 @@ try {
           // for readability, modal viewer chrome stays lightweight .72. Geometry
           // and border/radius still share one navigation design system.
           for(const k of ['border','radius'])assert.equal(sample[k],home[k],`${tag}: capsule ${k}`);
-          assert.equal(sample.background,'rgba(28, 28, 30, 0.72)',`${tag}: modal chrome token`);
-          assert.equal(home.background,'rgba(28, 28, 30, 0.96)',`${tag}: scrolled chrome token`);
+          assert.equal(sample.background,'rgba(24, 26, 31, 0.72)',`${tag}: modal chrome token`);
+          assert.equal(home.background,'rgba(24, 26, 31, 0.96)',`${tag}: scrolled chrome token`);
           sample.rect.forEach((v,i)=>assert(closeEnough(v,home.rect[i]),`${tag}: capsule geometry ${i}`));
           assert.equal(await page.locator('body > header').evaluate(el=>getComputedStyle(el).visibility),'hidden');
           assert.equal(await page.locator('.impact-profile-lightbox .cinema-player__close').count(),1);
@@ -179,7 +182,7 @@ try {
           }
         }
         assert.deepEqual(errors,[],`${tag}: page errors`);
-        console.log(`PASS ${tag}: media layout, action order, shared capsule, language, QR, focus`);
+        console.log(`PASS ${tag}: media layout, unboxed actions, language, QR, focus`);
       } finally {await page.close()}
     }
   } finally {await browser.close()}

@@ -1,3 +1,5 @@
+// Layout invariants are measured without foreground reveal transforms;
+// the cinematic suite separately tests motion and its interactions.
 import { createSafePage, createSafeContext } from '../../lib/safe-media.mjs';
 /**
  * Step 03: shared ProjectCard visual contract on Featured & All Work.
@@ -50,8 +52,8 @@ try{
   const browser=await chromium.launch({executablePath,headless:true});
   try{
     for(const width of widths) for(const lang of ['zh','en']){
-      const home=await createSafePage(browser, {viewport:{width,height:900}});
-      const works=await createSafePage(browser, {viewport:{width,height:900}});
+      const home=await createSafePage(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
+      const works=await createSafePage(browser, {viewport:{width,height:900},reducedMotion:'reduce'});
       try{
         const errors=[];
         home.on('pageerror',e=>errors.push('home: '+e.message));
@@ -79,24 +81,29 @@ try{
         if (width >= 721) {
           const columns = await home.locator('#projects .comet-archive').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
           assert.equal(columns, 4, `${width}px ${lang}: Featured must use four columns`);
-          const rows = await home.locator('#projects .comet-archive__card').evaluateAll(cards => cards.map(card => ({ top: card.querySelector('.comet-archive__image').getBoundingClientRect().top, detail: card.querySelector('.comet-archive__details').getBoundingClientRect().top })));
+          const rows = await home.locator('#projects .comet-archive__card').evaluateAll(cards => cards.map(card => ({ top: card.querySelector('.comet-archive__image').getBoundingClientRect().top, detail: card.querySelector('.comet-archive__details').getBoundingClientRect().bottom })));
           for (let i = 0; i < rows.length; i += 4) {
             const group = rows.slice(i, i + 4);
             assert(Math.max(...group.map(item => item.detail)) - Math.min(...group.map(item => item.detail)) <= 1, `${width}px ${lang}: Featured details do not align`);
           }
         }
         if ([320, 390, 720].includes(width)) {
-          for (const pageIndex of [0, 1]) {
-            await home.locator('#projects .comet-archive-pagination button').nth(pageIndex).evaluate(button => button.click());
-            await home.waitForFunction(index => document.querySelectorAll('#projects .comet-archive-pagination button')[index]?.getAttribute('aria-selected') === 'true', pageIndex);
-            await home.waitForTimeout(400);
-            const positions = await home.locator('#projects .comet-archive__card').evaluateAll(cards => cards.map(card => card.querySelector('.comet-archive__details').getBoundingClientRect().top));
-            assert.equal(positions.length, 4, `${width}px ${lang}: expected four mobile cards`);
-            for (let i = 0; i < positions.length; i += 2) assert(Math.abs(positions[i] - positions[i + 1]) <= 1, `${width}px ${lang}: mobile page ${pageIndex + 1} details do not align`);
+          const positions=await home.locator('#projects .comet-archive__card').evaluateAll(cards=>cards.map(card=>({
+            detail:card.querySelector('.comet-archive__details').getBoundingClientRect().bottom,
+            top:card.getBoundingClientRect().top,
+            left:card.getBoundingClientRect().left
+          })));
+          assert.equal(positions.length,8,width+'px '+lang+': mobile has eight visible cards');
+          assert.equal(await home.locator('#projects .comet-archive-pagination').count(),0,
+            width+'px '+lang+': no obsolete Featured page controls');
+          for(let i=0;i<positions.length;i+=2) {
+            assert(Math.abs(positions[i].detail-positions[i+1].detail)<=1,
+              width+'px '+lang+': mobile row '+(i/2+1)+' captions misaligned');
+            assert(positions[i].left<positions[i+1].left,
+              width+'px '+lang+': mobile row '+(i/2+1)+' column order');
+            if(i>=2) assert(positions[i].top>positions[i-2].top,
+              width+'px '+lang+': mobile rows overlap');
           }
-          await home.locator('#projects .comet-archive-pagination button').first().evaluate(button => button.click());
-          await home.waitForFunction(() => document.querySelector('#projects .comet-archive-pagination button')?.getAttribute('aria-selected') === 'true');
-          await home.waitForTimeout(400);
         }
         const get=async(page,scope,index=0)=>page.evaluate(({selector,index})=>{
           const root=document.querySelector(selector);
@@ -130,6 +137,8 @@ try{
           const txt=element=>element.textContent.trim().replace(/\s+/g,' ');
           return {
             title:txt(title),detail:txt(description),
+            surface: {background:getComputedStyle(item).backgroundColor,border:getComputedStyle(item).borderTopColor,
+              radius:getComputedStyle(item).borderRadius,blur:getComputedStyle(item).backdropFilter},
             cover: {ratio:coverCSS.aspectRatio,border:coverCSS.borderTopColor,radius:coverCSS.borderRadius,
               shadow:coverCSS.boxShadow,width:imgRect.width,height:imgRect.height,size:coverCSS.backgroundSize},
             typography:{font:titleCSS.fontSize,weight:titleCSS.fontWeight,line:titleCSS.lineHeight,
@@ -171,14 +180,18 @@ try{
           assert.equal(result.status.containment,true,`${tag}: ${kind} badge escaped the artwork`);
           assert.equal(result.status.label,lang==='en'?'Play':'播放',`${tag}: ${kind} status translation wrong`);
         }
+        for(const prop of ['background','border','radius','blur']) assert.equal(a.surface[prop],b.surface[prop],'A+ outer card mismatch '+prop);
+        assert.equal(a.surface.background,'rgba(24, 26, 31, 0.33)','Shared A+ card must match glass tokens');
+        assert.equal(a.surface.radius,width<=720?'14px':'18px','A+ outer card radius');
+        assert.equal(a.cover.radius,width<=720?'9px':'12px','Inset artwork radius');
         for(const prop of ['border','radius','shadow']) assert.equal(a.cover[prop],b.cover[prop],`${tag}: cover ${prop} mismatch`);
         for(const prop of ['font','weight','line','detailSize','detailLine']) assert.equal(a.typography[prop],b.typography[prop],`${tag}: typography ${prop} mismatch`);
-        const expectedTitle=width<=720?8:10,expectedDetail=width<=720?4:5;
+        const expectedTitle=width<=720?7:9,expectedDetail=4;
         for(const [kind,result] of [['featured',a],['library',b]]){
           assert(near(result.gapTitle,expectedTitle),`${tag}: ${kind} cover-to-title gap expected ${expectedTitle}px, got ${result.gapTitle}`);
-          assert(near(result.gapDetail,expectedDetail),`${tag}: ${kind} title-to-meta gap expected ${expectedDetail}px, got ${result.gapDetail}`);
+          assert(result.gapDetail>=expectedDetail-1&&result.gapDetail<=45,`${tag}: ${kind} title-to-meta gap expected ${expectedDetail}px, got ${result.gapDetail}`);
         }
-        assert.equal(a.cards,width<=720?4:8,`${tag}: Featured count or mobile paging changed`);
+        assert.equal(a.cards,8,`${tag}: Featured count or mobile paging changed`);
         assert.equal(b.cards,defaultCount,`${tag}: default commercial category count`);
         if(width<=760){
           const filters=await works.locator('.library-filters button').evaluateAll(elements=>elements.map(el=>{
@@ -189,11 +202,11 @@ try{
           for(const f of filters) assert(f.w>=43.5&&f.h>=43.5,`${tag}: filter ${f.label} is less than 44px target (${f.w}×${f.h})`);
         }
         assert.deepEqual(errors,[],`${tag}: page errors`);
-        console.log(`PASS ${tag}: shared 3:4 / 18px covers, type, gaps, 8/18 works, filter targets`);
+        console.log(`PASS ${tag}: A+ 3:4 art, shared glass card, bottom-aligned metadata, filter targets`);
       } finally{await home.close();await works.close()}
     }
   }finally{await browser.close()}
-  console.log('PASS: Step 03 works design, 14 widths × 2 languages × 2 pages');
+  console.log('PASS: A+ work card sync, 18 widths × 2 languages × 2 pages');
 }finally{
   if(server){server.kill('SIGTERM');await new Promise(resolve=>setTimeout(resolve,200));}
 }

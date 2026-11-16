@@ -68,8 +68,8 @@ Four selected films — watch the complete videos and alternate cuts on the port
 
 这是**个人 AI 视频作品展示网站**，不是在线 AI 视频生成平台。网站使用 Vite、React、Motion、OGL / WebGL，以及 GSAP / ScrollTrigger 实现部分滚动效果。
 
-- **作品体验**：精选影像、完整作品库、影院播放器、视频版本切换、荣誉与双语导航。
-- **本地作品工作台**：管理视频版本、顺序、3:4 作品封面与原比例播放器海报，不随网站部署。
+- **电影化浏览 / Cinematic Viewing**：精选影像与完整作品库、电影画幅播放器、同作品 A/B/C 版本切换、双语导航与作品目录。D+ 轻透玻璃根据内容密度保护文字，让背景影像保持可感知。
+- **本地作品工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
 - **媒体边界**：原始作品 MP4 不随 Git 提交。本地开发使用本地原片；正式网站使用已配置的线上视频地址。没有原片的克隆环境无法完整验证视频播放。
 
 <details>
@@ -108,7 +108,9 @@ docs/                        设计规范与维护指南
 
 ```bash
 npm run build                   # 生产构建
+npm run check:plan              # 只读查看测试覆盖与重复检查
 npm run check:smoke             # 基础构建、目录与媒体安全
+npm run check:project           # 网站与工作台核心回归（非全部深测）
 npm run check:cinema-controls   # 手机播放器交互
 npm run check:cinema-local      # 本地视频缓冲与防黑屏
 npm run check:cinema-version-motion # A/B 版本切换动画
@@ -116,7 +118,7 @@ npm run check:workbench-core    # 工作台核心回归
 npm run check:i18n              # 中英文界面
 ```
 
-维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
+维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
 
 </details>
 

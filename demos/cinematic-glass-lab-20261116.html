@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Cinematic Glass Lab · AI Luren</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;color:#f5f5f7;background:#07080b;--ease:cubic-bezier(.22,1,.36,1)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px}button,input{font:inherit}button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid #76baff;outline-offset:3px}
+.stage{position:fixed;inset:0;z-index:0;overflow:hidden;background:#0b1018 url('../assets/images/hero-first-frame-desktop.webp') center/cover no-repeat}
+.stage::before{content:"";position:absolute;inset:-8%;background:radial-gradient(ellipse at 20% 26%,rgba(92,126,156,.35),transparent 36%),radial-gradient(ellipse at 82% 65%,rgba(132,83,63,.38),transparent 38%),linear-gradient(125deg,#142131,#171019 55%,#0b0f16);z-index:0;animation:drift 18s ease-in-out infinite alternate}
+.stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:1;filter:none;opacity:0;transition:opacity .6s ease}
+.stage.has-video video{opacity:1}
+/* The published homepage is a native film with filter:none, no vignette, no dark scrim. */
+.stage.is-legacy-dark video{filter:brightness(.8) saturate(.86)}
+.stage-shade{position:absolute;inset:0;z-index:2;background:rgba(0,0,0,var(--scene-dim,0));pointer-events:none}
+.stage-vignette{display:none;position:absolute;inset:0;z-index:3;background:linear-gradient(180deg,rgba(0,0,0,.46) 0%,rgba(0,0,0,.07) 22%,rgba(0,0,0,.03) 72%,rgba(0,0,0,.45) 100%);pointer-events:none}
+.stage.is-legacy-dark .stage-vignette{display:block}
+@keyframes drift{to{transform:scale(1.12) translate(-2.5%,2%);filter:hue-rotate(16deg)}}
+.page{position:relative;z-index:1;max-width:1460px;margin:0 auto;padding:24px clamp(18px,4vw,58px) 85px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 19px;border:1px solid rgba(255,255,255,.15);border-radius:21px;background:rgba(19,22,28,.77);backdrop-filter:blur(18px) saturate(1.08);-webkit-backdrop-filter:blur(18px) saturate(1.08);box-shadow:inset 0 1px rgba(255,255,255,.06)}
+.brand{display:flex;align-items:center;gap:13px;font-size:12px;letter-spacing:.09em;font-weight:650}.brand-mark{display:grid;place-items:center;width:33px;height:33px;border:1px solid rgba(255,255,255,.27);border-radius:50%;font-size:13px;letter-spacing:-.06em}.brand em{display:block;font-size:10px;letter-spacing:.16em;font-style:normal;color:#a7acb6;margin-top:4px;font-weight:450}.top-meta{font:500 11px ui-monospace,SFMono-Regular,monospace;color:#b4bac7;letter-spacing:.06em}
+.intro{padding:70px 0 26px;max-width:930px}.eyebrow{font:550 11px ui-monospace,SFMono-Regular,monospace;letter-spacing:.18em;text-transform:uppercase;color:#c2cfdf}.intro h1{font-weight:630;letter-spacing:-.055em;font-size:clamp(34px,5.6vw,77px);line-height:1.09;margin:17px 0 19px}.intro p{font-size:clamp(14px,1.3vw,17px);line-height:1.8;color:#d5d9e0;max-width:745px;margin:0}.intro strong{color:white}
+.toolbar{padding:19px 22px;background:rgba(11,13,18,.82);border:1px solid rgba(255,255,255,.13);border-radius:22px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;flex-wrap:wrap;align-items:end;gap:18px 25px;margin-bottom:32px;box-shadow:0 18px 56px rgba(0,0,0,.15)}
+.field{display:flex;flex-direction:column;gap:8px;min-width:150px;flex:1}.field span,.control-label{font-size:11px;color:#b9bec8;letter-spacing:.04em}.field-row{display:flex;align-items:center;gap:10px}.field-row input[type="range"]{width:100%;accent-color:#d1dce8;cursor:pointer}.field-row output{font:500 12px ui-monospace,monospace;min-width:38px;text-align:right;color:#f4f6f9}
+.btn{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.085);border-radius:12px;color:#f0f2f6;padding:10px 13px;min-height:42px;font-size:12px;transition:background .18s var(--ease),border-color .18s var(--ease)}.btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.36)}.btn.primary{background:#edf0f4;color:#171b22;border-color:transparent;font-weight:650}.btn.primary:hover{background:white}
+.video-info{font-size:11px;color:#aeb4bf;flex-basis:100%;line-height:1.5}
+.upload{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center}.upload input{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:15px;margin:25px 0 18px}.section-head h2{margin:0;font-size:24px;font-weight:600;letter-spacing:-.035em}.section-head p{font-size:12px;color:#b9bfca;margin:0}
+.comparison-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}.variant-cell{content-visibility:auto;contain-intrinsic-size:auto 375px;min-width:0;display:flex;flex-direction:column;gap:12px;border:1px solid rgba(255,255,255,.14);background:rgba(10,12,17,.13);padding:11px;border-radius:24px;transition:border-color .2s,background .2s}.variant-cell[data-active="true"]{border-color:rgba(207,225,245,.72);background:rgba(20,28,39,.3)}
+.cell-label{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:3px 6px 0}.cell-label strong{font-size:14px;font-weight:600}.tag{font-size:10px;color:#bac5d4;letter-spacing:.04em}.cell-note{color:#c3c8d1;font-size:12px;line-height:1.65;margin:0 6px;min-height:39px}.cell-foot{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:0 5px 2px}.cell-foot code{font:10px ui-monospace,monospace;color:#b8c0cc}.cell-foot button{font-size:12px;white-space:nowrap}
+.demo-glass{--alpha:.48;--blur:12px;--guard:.57;--rim:.38;position:relative;isolation:isolate;overflow:hidden;display:flex;min-height:232px;border-radius:18px;border:1px solid rgba(227,237,250,var(--rim));background:rgba(24,26,31,var(--alpha));backdrop-filter:blur(var(--blur)) saturate(1.045);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.045);box-shadow:0 17px 37px rgba(0,0,0,.13),inset 0 1px 0 rgba(255,255,255,calc(var(--rim) * .54)),inset 1px 0 0 rgba(255,255,255,calc(var(--rim) * .2)),inset 0 -1px 0 rgba(160,191,218,calc(var(--rim)*.19));}
+.demo-glass::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(148deg,rgba(247,250,255,calc(var(--rim)*.23)) 0%,transparent 30%,transparent 65%,rgba(222,236,255,calc(var(--rim)*.10)) 100%);}
+/* Static, continuous reading-grade shadow. It does not add another blur pass. */
+.demo-glass::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(5,8,12,calc(var(--guard)*.07)) 0%,rgba(5,8,12,calc(var(--guard)*.32)) 24%,rgba(5,8,12,calc(var(--guard)*.68)) 55%,rgba(5,8,12,var(--guard)) 100%);}
+/* Four related materials: the same neutral color system, different light behavior. */
+.demo-glass[data-variant="a"]::before{background:linear-gradient(154deg,rgba(255,255,255,.035),transparent 47%,rgba(221,230,245,.03));}
+.demo-glass[data-variant="b"]::before{background:linear-gradient(136deg,rgba(245,250,255,calc(var(--rim)*.34)) 0%,rgba(229,240,255,calc(var(--rim)*.08)) 14%,transparent 42%,transparent 70%,rgba(210,229,252,calc(var(--rim)*.13)) 100%);}
+.demo-glass[data-variant="c"]::after{background:linear-gradient(180deg,rgba(5,7,12,0) 0%,rgba(5,7,12,calc(var(--guard)*.13)) 24%,rgba(5,7,12,calc(var(--guard)*.78)) 61%,rgba(5,7,12,var(--guard)) 100%);}
+.demo-glass[data-variant="d"]{box-shadow:0 14px 30px rgba(0,0,0,.12),inset 0 1px 0 rgba(252,253,255,calc(var(--rim)*.72)),inset 1px 0 0 rgba(234,241,255,calc(var(--rim)*.17)),inset -1px 0 0 rgba(205,229,255,calc(var(--rim)*.09)),inset 0 -1px 0 rgba(199,221,252,calc(var(--rim)*.14));}
+.demo-glass[data-variant="d"]::before{background:linear-gradient(123deg,rgba(248,252,255,calc(var(--rim)*.30)) 0%,rgba(248,251,255,calc(var(--rim)*.055)) 13%,transparent 35%,transparent 67%,rgba(197,222,255,calc(var(--rim)*.07)) 100%);}
+/* D+: directional reading veil darkens behind left-aligned copy, leaves the right side optically open. */
+.demo-glass[data-variant="d"]::after{background:linear-gradient(90deg,rgba(5,7,11,calc(var(--guard)*.96)) 0%,rgba(5,7,11,calc(var(--guard)*.94)) 25%,rgba(5,7,11,calc(var(--guard)*.73)) 52%,rgba(5,7,11,calc(var(--guard)*.24)) 82%,rgba(5,7,11,calc(var(--guard)*.025)) 100%),linear-gradient(180deg,transparent 55%,rgba(5,7,11,calc(var(--guard)*.095)) 100%);}
+/* True historical comparison: old parameter values AND original veil geometry. */
+.legacy-mode .demo-glass{background:rgba(26,27,31,var(--alpha));backdrop-filter:blur(var(--blur)) saturate(1.06);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.06);box-shadow:0 18px 42px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,calc(var(--rim)*.58)),inset 1px 0 0 rgba(255,255,255,calc(var(--rim)*.12));}
+.legacy-mode .demo-glass::before{background:linear-gradient(136deg,rgba(247,250,255,calc(var(--rim)*.23)) 0%,transparent 36%,transparent 70%,rgba(220,232,255,calc(var(--rim)*.1)) 100%);}
+.legacy-mode .demo-glass::after{inset:22% 0 0;background:linear-gradient(180deg,transparent 0%,rgba(5,7,10,calc(var(--guard)*.45)) 37%,rgba(5,7,10,var(--guard)) 100%);}
+.demo-glass[data-variant="current"]::before{background:linear-gradient(136deg,rgba(247,250,255,calc(var(--rim)*.23)),transparent 36%,transparent 70%,rgba(220,232,255,calc(var(--rim)*.1)));}
+.demo-glass[data-variant="current"]::after{background:linear-gradient(180deg,transparent,rgba(5,7,10,calc(var(--guard)*.45)) 60%,rgba(5,7,10,var(--guard)));}
+.sample-inner{position:relative;z-index:1;display:flex;flex-direction:column;width:100%;min-width:0;padding:23px}.sample-kicker{font:550 10px ui-monospace,monospace;letter-spacing:.15em;color:#c8d7e9;margin-bottom:21px;text-shadow:0 1px 5px rgba(0,0,0,.48)}.sample-title{margin:0 0 9px;font-weight:630;font-size:24px;line-height:1.2;letter-spacing:-.035em;text-shadow:0 1px 8px rgba(0,0,0,.38)}.sample-copy{font-size:12px;line-height:1.75;color:#e3e6eb;margin:0;max-width:36ch;text-shadow:0 1px 7px rgba(0,0,0,.42)}.sample-footer{margin-top:auto;padding-top:28px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#c7d2df;font:500 10px ui-monospace,monospace}.sample-footer span{display:inline-flex;align-items:center;gap:6px}.sample-footer span:before{content:"";width:5px;height:5px;background:#d4e8ff;border-radius:50%}
+.preview-poster{display:none;aspect-ratio:16/9;width:100%;background:#1b2028 url('../assets/images/hero-first-frame-desktop.webp') center/cover no-repeat;border-radius:12px;margin-bottom:16px;border:1px solid rgba(255,255,255,.16)}
+.poster-mode .sample-kicker{margin-bottom:12px}.poster-mode .preview-poster{display:block}.poster-mode .sample-inner{padding:15px}.poster-mode .sample-title{font-size:20px}.poster-mode .sample-footer{padding-top:16px}.poster-mode .demo-glass{min-height:320px}
+.focus-section{margin-top:66px}.focus-layout{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(300px,.84fr);gap:22px;align-items:stretch}.focus-frame{padding:18px;border-radius:27px;border:1px solid rgba(255,255,255,.12);background:rgba(8,10,14,.15);display:flex;min-height:385px}.focus-frame .demo-glass{flex:1;border-radius:24px;min-height:340px}.focus-frame .sample-inner{padding:35px}.focus-frame .sample-kicker{font-size:12px;margin-bottom:38px}.focus-frame .sample-title{font-size:clamp(28px,3vw,41px)}.focus-frame .sample-copy{font-size:15px;max-width:40ch}.focus-frame .sample-footer{font-size:12px}.focus-frame .preview-poster{aspect-ratio:19/8}
+.inspect{border-radius:24px;background:rgba(11,13,18,.87);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:25px;display:flex;flex-direction:column;gap:18px}.inspect-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}.inspect-top h3{margin:0;font-size:19px;font-weight:600}.inspect-top small{color:#bfc7d2;font:11px ui-monospace,monospace}.inspect-desc{font-size:13px;line-height:1.8;color:#d0d5de;margin:-5px 0 0}.inspect .field{width:100%;flex:none}.inspect-buttons{margin-top:auto;display:flex;flex-wrap:wrap;gap:9px}.readability{border-top:1px solid rgba(255,255,255,.13);padding-top:14px;color:#bac3cf;font-size:12px;line-height:1.7}
+.perf-lite .comparison-grid .demo-glass{backdrop-filter:none;-webkit-backdrop-filter:none;} .perf-lite .comparison-grid .cell-label .tag{color:#e1dfce} .perf-lite #comparisonGrid::before{content:"性能优先：下方缩略卡暂时关闭背景模糊；单张放大视图仍显示真实效果。";display:block;grid-column:1/-1;border-left:2px solid rgba(214,227,243,.6);padding:4px 12px;color:#d3d9e2;font-size:12px;} .footnote{margin-top:29px;color:#c3c9d2;font-size:12px;line-height:1.8;max-width:960px}
+.toast{position:fixed;z-index:10;bottom:24px;left:50%;transform:translateX(-50%) translateY(12px);background:#e6eaf0;color:#101317;border-radius:13px;padding:11px 18px;font-size:12px;font-weight:600;opacity:0;pointer-events:none;transition:.2s}.toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:1090px){.comparison-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.focus-layout{grid-template-columns:1fr}.inspect{min-height:unset}}
+@media(max-width:650px){.page{padding:13px 14px 70px}.intro{padding:48px 5px 20px}.intro h1{font-size:39px}.comparison-grid{grid-template-columns:1fr;gap:13px}.toolbar{padding:14px;gap:13px}.field{min-width:125px}.top-meta{display:none}.section-head{align-items:start;flex-direction:column;gap:5px}.focus-section{margin-top:46px}.focus-frame{min-height:350px;padding:10px}.focus-frame .sample-inner{padding:23px}.focus-frame .sample-title{font-size:29px}.focus-frame .sample-copy{font-size:13px}.inspect{padding:20px}.variant-cell{padding:10px}.demo-glass{min-height:220px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+@media(prefers-reduced-transparency:reduce){.demo-glass{background:#24262c!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.topbar,.toolbar,.inspect{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.demo-glass{background:#24262c!important}.topbar,.toolbar,.inspect{background:#191b22!important}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage" aria-hidden="true"><video id="bgVideo" autoplay loop muted playsinline preload="metadata" poster="../assets/images/hero-first-frame-desktop.webp"><source src="../assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)"><source src="../assets/videos/hero/hero.mp4" type="video/mp4"></video><div class="stage-shade"></div><div class="stage-vignette"></div></div>
+<main class="page">
+<header class="topbar"><div class="brand"><span class="brand-mark">AL</span><span>AI LUREN<em>GLASS MATERIAL LAB</em></span></div><span class="top-meta">ISOLATED DEMO / NO PRODUCTION CHANGES</span></header>
+<section class="intro"><span class="eyebrow">2026 / MATERIAL STUDY</span><h1>让视频透过卡片。<br>让文字仍然清晰。</h1><p>使用<strong>你作品集的真实 Hero 视频</strong>，对比现有深色玻璃与四种升级后的轻玻璃。背景默认复现正式首页的原片色彩与亮度，不额外调暗；所有卡片共用同一个视频背景；A+ / B+ / C+ / D+ 优化透景与文字保护；边缘反射只由静态 CSS 实现。不引入 WebGL、SVG 折射或持续重绘的光效。</p></section>
+<section class="toolbar" aria-label="背景视频和预览设置">
+<label class="field"><span>额外背景压暗（首页为 0%）</span><div class="field-row"><input type="range" id="stageDim" min="0" max=".46" step=".01" value="0"><output id="stageDimValue">0%</output></div></label>
+<label class="field"><span>视频时间位置</span><div class="field-row"><input type="range" id="videoSeek" min="0" max="100" value="28" step="1"><output id="videoSeekValue">28%</output></div></label>
+<button class="btn" id="videoToggle" type="button">暂停视频</button>
+<button class="btn" id="bgModeToggle" type="button" aria-pressed="false">模拟旧 Demo 的偏暗视频</button>
+<label class="btn upload">选择其他测试视频<input type="file" id="videoFile" accept="video/*" aria-label="选择其他测试视频"></label>
+<button class="btn" id="modeToggle" type="button" aria-pressed="false">切换为作品卡示例</button>
+<button class="btn" id="legacyToggle" type="button" aria-pressed="false">查看升级前 A–D</button>
+<button class="btn" id="perfToggle" type="button" aria-pressed="false">性能优先模式：关</button>
+<div class="video-info"><strong id="bgModeStatus">背景色彩：正式首页原片（100% 亮度、100% 饱和度、无暗角）</strong><span id="videoStatus" role="status"> · 使用项目 assets/videos/hero/hero.mp4；单独移动 HTML 后可手动选择视频。</span></div>
+</section>
+<section aria-label="五种玻璃材质横向比较"><div class="section-head"><h2>01 / 五种材质横向比较</h2><p>原版 00 对照 · A+ / B+ / C+ / D+ · 同一真实视频</p></div><div class="comparison-grid" id="comparisonGrid"></div></section>
+<section class="focus-section" aria-label="单独查看与参数实验"><div class="section-head"><h2>02 / 单张放大与调节</h2><p>修改参数只影响当前选中的材质</p></div><div class="focus-layout"><div class="focus-frame" id="focusFrame"></div>
+<aside class="inspect"><div class="inspect-top"><h3 id="inspectorName">B+ / 光学轻玻璃</h3><small id="inspectorCode">CINEMATIC GLASS</small></div><p class="inspect-desc" id="inspectorDesc"></p>
+<label class="field"><span>深色遮蔽 Alpha（越低越通透）</span><div class="field-row"><input type="range" min=".25" max=".9" step=".01" id="alphaControl"><output id="alphaValue"></output></div></label>
+<label class="field"><span>背景模糊（px）</span><div class="field-row"><input type="range" min="0" max="30" step="1" id="blurControl"><output id="blurValue"></output></div></label>
+<label class="field"><span>文字区局部暗化保护</span><div class="field-row"><input type="range" min="0" max=".8" step=".01" id="guardControl"><output id="guardValue"></output></div></label>
+<label class="field"><span>边缘高光强度（0% 关闭 · 100% 最亮）</span><div class="field-row"><input type="range" min="0" max="1" step=".01" id="rimControl"><output id="rimValue"></output></div></label>
+<div class="readability" id="readabilityNote"></div>
+<div class="inspect-buttons"><button type="button" class="btn primary" id="copyCSS">复制当前材质 CSS</button><button type="button" class="btn" id="resetCurrent">恢复本方案默认值</button></div>
+</aside></div><p class="footnote">性能策略：整页只有一个背景视频；玻璃模糊不参与动画；所有折射、内反射、文字暗部均由静态 CSS 与伪元素绘制；离屏对比卡启用 content-visibility。必要时开启上方的性能优先模式，保留单张放大视图的真实材质效果。<br>说明：页面展示的是实际 CSS backdrop-filter 玻璃，不是静态假图。视频可能在移动设备上因省电或浏览器策略暂停；文字对比度最终仍要使用视频明暗极端帧、Safari 与真机验证。实际网站可保留统一的材质 Token，但为 Hero、阅读卡和作品卡分配不同的透光等级，不必牺牲统一性。</p></section>
+</main>
+<div class="toast" role="status" id="toast"></div>
+<script>
+(function(){
+'use strict';
+const defaults=[
+{id:'current',index:'00',name:'当前基线 / 现行规范',label:'REFERENCE',alpha:.82,blur:22,guard:0,rim:.14,desc:'用于和你的当前网站材质比较：遮蔽高、透景偏弱。',hint:'这是对照组，不会跟随 A–D 的升级前后切换。'},
+{id:'a',index:'A+',name:'透明轻纱 / Air Veil',label:'MAXIMUM PRESENCE',alpha:.34,blur:8,guard:.58,rim:.22,desc:'主打视频存在感：减轻整体遮蔽，柔化活动背景，并用无额外模糊的柔和文字阴影层控制干扰。',hint:'最通透的方案之一；复杂的明亮画面要重点验证正文。'},
+{id:'b',index:'B+',name:'光学轻玻璃 / Optical',label:'BALANCED LIGHT',alpha:.48,blur:12,guard:.57,rim:.39,desc:'保留亮而克制的边缘反射：背景明显可见，文字底部得到渐进保护，不会成为发亮的塑料卡片。',hint:'适合文字量中等、需要全局统一材质感的大面板。'},
+{id:'c',index:'C+',name:'影院渐层 / Cinema',label:'TEXT FIRST',alpha:.37,blur:9,guard:.76,rim:.26,desc:'上半部尽可能透出视频，下半部采用连续渐层承载多行说明，强调电影式的信息层级。',hint:'文字最多时优先考虑，避免画面高亮时灰字漂浮。'},
+{id:'d',index:'D+',name:'晶透边缘 / Crystal',label:'CRYSTAL REFINED V2',alpha:.33,blur:8,guard:.62,rim:.35,desc:'D+ 第二轮微调：将背景遮蔽从 38% 降至 33%，银灰边缘更柔和；保护层集中在左侧文字范围，右侧为视频留出透景空间。',hint:'文字区采用偏左的保护渐层，非文字区域更清透；请在最亮视频帧检查正文及灰色小字。'}
+];
+const oldPresets={
+a:{index:'A',alpha:.45,blur:9,guard:.30,rim:.13},
+b:{index:'B',alpha:.56,blur:14,guard:.34,rim:.30},
+c:{index:'C',alpha:.41,blur:11,guard:.68,rim:.18},
+d:{index:'D',alpha:.32,blur:6,guard:.52,rim:.58}
+};
+let legacy=false;
+const variants=defaults.map(x=>Object.assign({},x));let selected='d',poster=false,videoUrl=null,toastTimer=null;
+const $=id=>document.getElementById(id);
+const video=$('bgVideo'),stage=$('stage'),grid=$('comparisonGrid'),frame=$('focusFrame');
+const pct=n=>Math.round(n*100)+'%';
+const current=()=>variants.find(v=>v.id===selected);
+function styleFor(v){return '--alpha:'+v.alpha+';--blur:'+v.blur+'px;--guard:'+v.guard+';--rim:'+v.rim+';';}
+function sample(v){return '<div class="demo-glass" data-variant="'+v.id+'" style="'+styleFor(v)+'">'+
+'<div class="sample-inner"><div class="preview-poster" aria-hidden="true"></div>'+
+'<div class="sample-kicker">AI LUREN / SELECTED WORK</div>'+
+'<h3 class="sample-title">AI 创意影像设计</h3>'+
+'<p class="sample-copy">以电影语言与生成式 AI 探索创意表达。让真实影像的光影、叙事与情绪，成为作品本身的一部分。</p>'+
+'<div class="sample-footer"><span>视觉叙事 / AI VIDEO</span><span>01 — 05</span></div></div></div>';}
+function renderAll(){
+$('legacyToggle').textContent=legacy?'返回升级后 A+–D+':'查看升级前 A–D';
+$('legacyToggle').setAttribute('aria-pressed',String(legacy));
+grid.innerHTML=variants.map(v=>'<article class="variant-cell" data-cell="'+v.id+'" data-active="'+(v.id===selected)+'">'+
+'<div class="cell-label"><strong>'+v.index+' / '+v.name+'</strong><span class="tag">'+v.label+'</span></div>'+
+sample(v)+'<p class="cell-note">'+v.desc+'</p><div class="cell-foot"><code>'+pct(v.alpha)+' · '+v.blur+'px · 边缘 '+pct(v.rim)+'</code>'+
+'<button type="button" class="btn" data-choose="'+v.id+'" aria-pressed="'+(v.id===selected)+'">'+(v.id===selected?'正在查看':'放大查看')+'</button></div></article>').join('');
+frame.innerHTML=sample(current());setInspector();
+}
+function setInspector(){
+const v=current();$('inspectorName').textContent=v.index+' / '+v.name;$('inspectorCode').textContent=v.label;$('inspectorDesc').textContent=v.desc;
+for(const [key,id] of [['alpha','alphaControl'],['blur','blurControl'],['guard','guardControl'],['rim','rimControl']])$(id).value=v[key];
+setOutputs();
+$('readabilityNote').textContent=v.hint+' 这里仅提供视觉预览，不自动宣称符合 WCAG 对比度。';
+}
+function setOutputs(){
+const v=current();$('alphaValue').textContent=pct(v.alpha);$('blurValue').textContent=v.blur+'px';$('guardValue').textContent=pct(v.guard);$('rimValue').textContent=pct(v.rim);
+}
+function updateMaterial(){
+const v=current();
+document.querySelectorAll('.demo-glass[data-variant="'+v.id+'"]').forEach(el=>{
+el.style.setProperty('--alpha',v.alpha);el.style.setProperty('--blur',v.blur+'px');el.style.setProperty('--guard',v.guard);el.style.setProperty('--rim',v.rim);
+});
+const cell=document.querySelector('.variant-cell[data-cell="'+v.id+'"]');if(cell)cell.querySelector('code').textContent=pct(v.alpha)+' · '+v.blur+'px · 边缘 '+pct(v.rim);
+setOutputs();
+$('readabilityNote').textContent=(v.alpha<.45&&v.guard<.48?'注意：背景亮帧中说明文字可能不够清晰。 ':'')+v.hint+' 请用实际视频的亮帧、暗帧确认。';
+}
+grid.addEventListener('click',event=>{const btn=event.target.closest('[data-choose]');if(!btn)return;selected=btn.dataset.choose;renderAll();if(window.innerWidth<651) $('focusFrame').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});});
+for(const [key,id] of [['alpha','alphaControl'],['blur','blurControl'],['guard','guardControl'],['rim','rimControl']]){
+$(id).addEventListener('input',e=>{current()[key]=Number(e.target.value);updateMaterial();});
+}
+$('resetCurrent').addEventListener('click',()=>{
+ const original=defaults.find(v=>v.id===selected), now=current();
+ Object.assign(now,original,legacy && now.id!=='current'?oldPresets[now.id]:{});
+ if(legacy&&now.id!=='current'){
+ now.label='BEFORE / V1';now.desc='升级前原始 '+now.index+' 版本：文字保护与透景层次尚未优化。';now.hint='旧版参数仅用于对比。';
+ }
+ renderAll();notice('已恢复 '+now.index+' 方案的默认参数');
+});
+$('legacyToggle').addEventListener('click',()=>{
+  legacy=!legacy;
+  document.body.classList.toggle('legacy-mode',legacy);
+  for(const v of variants){
+    if(v.id==='current')continue;
+    const base=defaults.find(x=>x.id===v.id);
+    Object.assign(v,base,legacy?oldPresets[v.id]:{});
+    if(legacy){v.label='BEFORE / V1';v.desc='升级前原始 '+v.index+' 版本：文字保护与透景层次尚未优化。';v.hint='旧版参数仅用于对比。'}
+  }
+  renderAll();
+  notice(legacy?'正在查看原始 A–D':'已恢复升级版 A+–D+');
+});
+$('perfToggle').addEventListener('click',e=>{
+ const enabled=document.body.classList.toggle('perf-lite');
+ e.currentTarget.setAttribute('aria-pressed',String(enabled));
+ e.currentTarget.textContent='性能优先模式：'+(enabled?'开':'关');
+ notice(enabled?'缩略卡背景模糊已关闭，放大卡保持真实效果':'已恢复全部玻璃对比');
+});
+$('modeToggle').addEventListener('click',e=>{poster=!poster;document.body.classList.toggle('poster-mode',poster);e.currentTarget.setAttribute('aria-pressed',String(poster));e.currentTarget.textContent=poster?'切换为阅读面板示例':'切换为作品卡示例';});
+const sceneDim=$('stageDim'), modeButton=$('bgModeToggle'), modeStatus=$('bgModeStatus');
+function applySceneDim(value){
+ const n=Number(value);
+ stage.style.setProperty('--scene-dim',n);
+ sceneDim.value=String(n);
+ $('stageDimValue').textContent=pct(n);
+}
+sceneDim.addEventListener('input',e=>applySceneDim(e.target.value));
+modeButton.addEventListener('click',()=>{
+ const old=stage.classList.toggle('is-legacy-dark');
+ modeButton.setAttribute('aria-pressed',String(old));
+ modeButton.textContent=old?'恢复正式首页原片背景':'模拟旧 Demo 的偏暗视频';
+ modeStatus.textContent=old?'背景色彩：旧 Demo（80% 亮度、86% 饱和度、13% 暗层、上下暗角）':'背景色彩：正式首页原片（100% 亮度、100% 饱和度、无暗角）';
+ applySceneDim(old?.13:0);
+});
+const seek=$('videoSeek');let seeking=false;
+seek.addEventListener('input',()=>{seeking=true;$('videoSeekValue').textContent=seek.value+'%';if(Number.isFinite(video.duration)&&video.duration>0){try{video.currentTime=video.duration*Number(seek.value)/100;}catch(e){}}});
+seek.addEventListener('change',()=>seeking=false);
+video.addEventListener('timeupdate',()=>{if(!seeking&&Number.isFinite(video.duration)&&video.duration>0){const x=Math.round(100*video.currentTime/video.duration);seek.value=x;$('videoSeekValue').textContent=x+'%';}});
+let initialSeekPending=true;
+video.addEventListener('loadedmetadata',()=>{if(initialSeekPending && Number.isFinite(video.duration) && video.duration>0){initialSeekPending=false;try{video.currentTime=video.duration*.28;}catch(err){}}stage.classList.add('has-video');$('videoStatus').textContent='视频已载入：'+(videoUrl?'你选择的本地视频':'项目 Hero 原片')+'。可拖动时间位置对比亮暗场景。';});
+video.addEventListener('error',()=>{stage.classList.remove('has-video');$('videoStatus').textContent='默认视频无法加载：请在上方选择本地视频（或将此文件保留在项目 demos 目录）。';});
+$('videoToggle').addEventListener('click',async e=>{
+if(video.paused){try{await video.play();e.currentTarget.textContent='暂停视频';}catch(err){notice('浏览器阻止了自动播放，可手动尝试。');}}
+else{video.pause();e.currentTarget.textContent='播放视频';}
+});
+$('videoFile').addEventListener('change',async e=>{const file=e.target.files&&e.target.files[0];if(!file)return;if(videoUrl)URL.revokeObjectURL(videoUrl);videoUrl=URL.createObjectURL(file);video.src=videoUrl;video.load();try{await video.play();$('videoToggle').textContent='暂停视频';}catch(err){$('videoToggle').textContent='播放视频';}});
+function cssExport(){
+const v=current(),el=document.querySelector('#focusFrame .demo-glass');
+const base=getComputedStyle(el),front=getComputedStyle(el,'::before'),rear=getComputedStyle(el,'::after');
+const name=v.id==='current'?'Cinematic Content Glass / Current':legacy?'Cinematic Glass V1 / '+v.index:'Cinematic Glass 2.0 / '+v.index;
+const inset=el=>[el.top,el.right,el.bottom,el.left].join(' ');
+return [
+'/* '+name+' — isolated demo material. Validate contrast and cost before integrating. */',
+'/* Semantic baseline: content glass only. Keep navigation and modal layers separate. */',
+':root {',
+'  --portfolio-glass-surface: '+base.backgroundColor+';',
+'  --portfolio-glass-blur: '+base.backdropFilter+';',
+'  --portfolio-glass-text-guard: '+v.guard.toFixed(2)+';',
+'  --portfolio-glass-rim: '+v.rim.toFixed(2)+';',
+'}',
+'.portfolio-glass-2 {',
+'  position: relative; isolation: isolate; overflow: hidden;',
+'  border: '+base.borderTopWidth+' solid '+base.borderTopColor+';',
+'  border-radius: '+base.borderRadius+';',
+'  background: '+base.backgroundColor+';',
+'  backdrop-filter: '+base.backdropFilter+';',
+'  -webkit-backdrop-filter: '+base.backdropFilter+';',
+'  box-shadow: '+base.boxShadow+';',
+'}',
+'.portfolio-glass-2::before, .portfolio-glass-2::after {',
+'  content: ""; position: absolute; pointer-events: none; z-index: 0;',
+'}',
+'.portfolio-glass-2::before {',
+'  inset: '+inset(front)+';',
+'  background: '+front.backgroundImage+';',
+'}',
+'.portfolio-glass-2::after {',
+'  inset: '+inset(rear)+';',
+'  background: '+rear.backgroundImage+';',
+'}',
+'.portfolio-glass-2 > * { position: relative; z-index: 1; }',
+'/* Prefer static materials; do not animate blur or recreate extra blur layers. */',
+'@media (prefers-reduced-transparency: reduce) {',
+'  .portfolio-glass-2 { background: #1c1c1e; backdrop-filter: none; -webkit-backdrop-filter: none; }',
+'  .portfolio-glass-2::before, .portfolio-glass-2::after { display: none; }',
+'}'
+].join('\n');
+}
+$('copyCSS').addEventListener('click',async()=>{const content=cssExport();try{await navigator.clipboard.writeText(content);notice('材质参数已复制');}
+catch(err){const t=document.createElement('textarea');t.value=content;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();const copied=document.execCommand('copy');t.remove();notice(copied?'材质参数已复制':'请从控制台复制材质参数');if(!copied)console.log(content);}});
+function notice(msg){const el=$('toast');el.textContent=msg;el.classList.add('visible');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('visible'),2400);}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){video.pause();$('videoToggle').textContent='播放视频';}
+renderAll();
+})();
+</script>
+</body>
+</html>

@@ -26,7 +26,12 @@ try{
   const browser=await chromium.launch({headless:true,executablePath:browserPath});
   try{
     for(const lang of ['zh','en'])for(const width of widths){
-      const page=await createSafePage(browser, {viewport:{width,height:900}});
+      // Inspect stable typographic layout with system reduced motion;
+      // cinematic scrub geometry is independently validated by
+      // check-editorial-once-motion.mjs.
+      const page=await createSafePage(browser, {
+        viewport:{width,height:900},reducedMotion:'reduce'
+      });
       const tag=width+'px '+lang;
       try{
         const errors=[];
@@ -59,7 +64,20 @@ try{
             measure('#experiments .flip-experiment'),
           ];
           const children=[award,creator,media,lab];
-          return {main,project,children,cardTitle,cards,
+          const evidence=[...document.querySelectorAll('#recognition .impact-evidence-row')];
+          const peerSpacing=evidence.slice(1).map((row,i)=>
+            row.getBoundingClientRect().top-evidence[i].getBoundingClientRect().bottom);
+          // Use the evidence row's layout edge rather than its animated
+          // inner glass child; entrance transforms can skew one frame.
+          const labHandoff=lab.top-evidence.at(-1).getBoundingClientRect().bottom;
+          // ScrollTrigger may animate element positions while the test runs.
+          // The authoritative spacing contract is the actual CSS layout gap.
+          const labLayoutGap=parseFloat(getComputedStyle(document.querySelector('#recognition')).paddingBottom)
+            +parseFloat(getComputedStyle(document.querySelector('#experiments')).paddingTop);
+          const peerLayoutGap=parseFloat(getComputedStyle(document.querySelector('#recognition .impact-evidence')).rowGap);
+          return {main,project,children,cardTitle,cards,peerSpacing,labHandoff,labLayoutGap,peerLayoutGap,
+            labIsNested:document.getElementById('expertise-group')?.contains(document.getElementById('experiments')),
+            noInternalFilm:!document.querySelector('#expertise-group .hero-journey-flight'),
             gapToFirst:award.top-main.bottom,
             gaps:children.map((title,i)=>cards[i].top-title.bottom),
             overflow:document.documentElement.scrollWidth-innerWidth};
@@ -68,13 +86,20 @@ try{
         assert(Math.abs(result.main.size-result.project.size)<1,tag+': unequal top-level titles');
         assert(result.children.every(t=>t?.visible),tag+': missing child heading');
         const sub=result.children[0].size;
-        assert(result.main.size>sub+2,tag+': primary title too small');
+        assert(result.main.size>sub+5,tag+': primary title must clearly outrank secondary titles');
         assert(result.children.every(t=>Math.abs(t.size-sub)<.5),tag+': uneven subheadings');
         assert(result.children.every(t=>Math.abs(t.x-result.main.x)<=1.5),tag+': H2 left edges must align with Expertise: '+result.children.map(t=>t.x).join('/')+' vs '+result.main.x);
         assert(!result.children.some(t=>t.overflow),tag+': clipped child title');
         if(width<=760)assert(result.cardTitle && result.cardTitle.size<=sub-3,tag+': creator tile label must be smaller than section heading');
         const target=width<=760?20:28;
         for(const [i,gap] of result.gaps.entries())assert(Math.abs(gap-target)<=1.25,tag+': gap '+i+'='+gap.toFixed(2)+' expected '+target);
+        // The mobile fourth submodule should follow the same vertical
+        // rhythm as its three Expertise peers, never a new chapter gap.
+        assert(result.labIsNested && result.noInternalFilm,tag+': Lab split from Expertise');
+        assert(result.peerSpacing.length===2,tag+': missing Expertise modules');
+        assert(Math.abs(result.labLayoutGap-result.peerLayoutGap)<=1,
+          tag+': AI Lab layout gap differs from Expertise peers ('+
+          result.labLayoutGap.toFixed(1)+'px vs '+result.peerLayoutGap.toFixed(1)+'px)');
         assert(result.overflow<=2,tag+': horizontal overflow');
         assert.deepEqual(errors,[],tag+': page errors');
         console.log('PASS '+tag+': main '+result.main.size+' > sub '+sub+(width<=760?' > tile '+result.cardTitle.size:'')+'; gaps '+result.gaps.map(Math.round).join('/')+'px');

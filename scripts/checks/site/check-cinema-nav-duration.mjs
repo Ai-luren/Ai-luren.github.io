@@ -38,7 +38,10 @@ try {
     const prev=nav.locator('.cinema-player__sequence > button').first();
     assert.equal(await prev.evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)',
       'Work arrows should be subtle ghost controls, not heavy outlined circles');
-    assert.equal(await prev.evaluate(el=>getComputedStyle(el).borderTopWidth),'0px');
+    const ring=await prev.evaluate(el=>{const css=getComputedStyle(el);return {width:css.borderTopWidth,color:css.borderTopColor,radius:css.borderTopLeftRadius};});
+    assert.equal(ring.width,'1px','Ghost circle keeps a stable transparent border');
+    assert.equal(ring.color,'rgba(0, 0, 0, 0)','The resting arrow ring must be invisible');
+    assert.equal(ring.radius,'50%','Work navigation arrow must remain circular');
     assert((await prev.boundingBox()).width>=44,'Work-arrow tap target must be >=44px');
     assert.equal(await player.locator('video').getAttribute('src'),null,'No video requested on open');
     assert.equal(getSafeMediaReport(page).urls.length,0,'Opening work must not fetch ImageKit MP4');
@@ -64,8 +67,10 @@ try {
   const page=await createSafePage(browser,{viewport:{width:390,height:844}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(new URL('index.html#projects',base).href,{waitUntil:'domcontentloaded'});
-  // Mobile featured archive is paginated 4 + 4; projects 16 and 18 are on page two.
-  await page.locator('#projects .comet-archive-pagination [role="tab"]').nth(1).click();
+  // Featured is one continuous 2x4 grid on phones; later cards are already mounted.
+  await page.locator('#projects .comet-archive__card').first().waitFor({state:'attached'});
+  assert.equal(await page.locator('#projects .comet-archive__card').count(),8);
+  assert.equal(await page.locator('#projects .comet-archive-pagination').count(),0);
   await page.locator('#projects .comet-archive__card[data-project-id="16"]').click();
   await page.waitForFunction(()=>document.querySelector('.cinema-player[open]')?.classList.contains('is-motion-visible'));
   const modal=page.locator('.cinema-player[open]');

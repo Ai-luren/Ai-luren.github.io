@@ -25,8 +25,8 @@ const selectors=[
   '#profile .closing-card',
 ];
 const expected={
-  normal:{chrome:'rgba(28, 28, 30, 0.96)',glass:'rgba(26, 27, 31, 0.82)',
-    scrim:'rgba(12, 12, 13, 0.9)',chromeBlur:'blur(22px) saturate(1.08)',glassBlur:'blur(22px) saturate(1.04)',scrimBlur:'blur(28px) saturate(1.02)'},
+  normal:{chrome:'rgba(24, 26, 31, 0.96)',glass:'rgba(24, 26, 31, 0.33)',
+    scrim:'rgba(12, 12, 13, 0.9)',chromeBlur:'blur(14px) saturate(1.045)',glassBlur:'blur(8px) saturate(1.045)',scrimBlur:'blur(28px) saturate(1.02)'},
   fallback:{chrome:'rgb(28, 28, 30)',glass:'rgb(28, 28, 30)',
     scrim:'rgb(12, 12, 13)',chromeBlur:'none',glassBlur:'none',scrimBlur:'none'},
 };
@@ -57,6 +57,15 @@ try {
         }
         await page.goto(new URL('index.html#impact-reach',base).href);
         await page.locator('#impact-reach .impact-glass').waitFor();
+        // Dynamic sections can mount before native hash restoration. Material
+        // comparisons need the settled Expertise nav surface, not Hero chrome.
+        await page.locator('#impact-reach').scrollIntoViewIfNeeded();
+        await page.waitForFunction(()=>{
+          const node=document.querySelector('#impact-reach');
+          const r=node?.getBoundingClientRect();
+          return r && r.top<innerHeight && r.bottom>0 &&
+            !document.body.classList.contains('is-on-hero');
+        },null,{timeout:7000});
         if(mode==='unsupported'){
           const replaced=await page.evaluate(()=>{
             let count=0;
@@ -78,6 +87,10 @@ try {
           });
           assert(replaced>0,'No unsupported-filter fallback rules were activated');
         }
+        // Background-color has a 220ms transition on A+ cards. Rewriting an
+        // @supports condition is a dynamic style change; sample its settled
+        // material rather than the earlier rgba transition frame.
+        if (mode === 'unsupported') await page.waitForTimeout(320);
         const evidence=await page.evaluate(selectors=>{
           function material(selector,pseudo=null){
             const el=document.querySelector(selector);
@@ -92,13 +105,72 @@ try {
           const fields=Object.fromEntries(selectors.map(selector=>[selector,material(selector)]));
           return {
             fields,chrome:material('body > header'),
-            mobile:material('#projects .comet-archive-mobile-shell'),
+            mobile:material('#projects .portfolio-work-card--unified'),
             hero:material('#top .hero-proof-card'),
+            // Branding now belongs to the closing card itself. It is
+            // noninteractive and no separate footer bar/copyright remains.
+            footerPlacement:(()=>{
+              const card=document.querySelector('#profile .closing-card');
+              const footer=document.querySelector('.closing-footer');
+              if(!card||!footer)return null;
+              const style=getComputedStyle(footer);
+              const brand=card.querySelector('.closing-footer');
+              const brandDisplay=brand ? getComputedStyle(brand).display : 'missing';
+              const logo=card.querySelector('.closing-footer .footer-avatar')?.getBoundingClientRect();
+              const social=card.querySelector('.floating-dock-item')?.getBoundingClientRect();
+              const socialButtons=[...card.querySelectorAll('.closing-social .floating-dock-item')];
+              return {
+                brandDisplay,
+                mobileDockOneRow:socialButtons.length===6 &&
+                  Math.max(...socialButtons.map(x=>x.getBoundingClientRect().top))-
+                  Math.min(...socialButtons.map(x=>x.getBoundingClientRect().top))<2,
+                circleGeometry:brandDisplay!=='none'&&logo&&social ? {
+                  logoDiameter:logo.width, socialDiameter:social.width,
+                  logoHeight:logo.height, socialHeight:social.height,
+                  centerDelta:(logo.top+logo.height/2)-(social.top+social.height/2),
+                } : null,
+                insideCard:card.contains(footer),
+                outerFooterCount:document.querySelectorAll('body > footer').length,
+                brandInsideCard:!!card.querySelector('.footer-brand:not(a)'),
+                noCopyright:!card.querySelector('.footer-bottom-copy'),
+                brandNotClickable:!card.querySelector('.footer-brand[href]'),
+                socialDockInsideCard:!!card.querySelector('#footer-dock-react-root'),
+                isolation:style.isolation,
+                zIndex:style.zIndex,
+                pseudoDisplay:getComputedStyle(footer,'::before').display,
+                background:style.backgroundColor,
+              };
+            })(),
             pageOverflow:document.documentElement.scrollWidth-innerWidth,
           };
         },selectors);
         const name=width+'px '+lang+' '+mode,exp=expected[mode==='normal'?'normal':'fallback'];
         assert(evidence.pageOverflow<=2,name+': viewport overflow');
+        const placement=evidence.footerPlacement;
+        assert(placement,name+': missing closing footer inside card');
+        assert.equal(placement.insideCard,true,name+': closing footer must be INSIDE the contact glass card');
+        assert.equal(placement.outerFooterCount,0,name+': avoid a detached footer below the card');
+        assert(placement.brandInsideCard&&placement.noCopyright&&placement.brandNotClickable&&placement.socialDockInsideCard,
+          name+': brand and dock share the card, with no navigation or redundant copyright');
+        assert.equal(placement.isolation,'auto',name+': footer must not isolate a transparent compositing layer');
+        assert.equal(placement.zIndex,'auto',name+': footer must not create a positive stacking layer');
+        assert.equal(placement.pseudoDisplay,'none',name+': remove transparent footer pseudo');
+        assert.equal(placement.background,'rgba(0, 0, 0, 0)',name+': footer remains transparent inside card');
+        assert(placement.mobileDockOneRow,name+': social dock icons should share one row');
+        const circles=placement.circleGeometry;
+        if(width<=760){
+          assert.equal(placement.brandDisplay,'none',name+': repeated creator brand must be hidden on phones');
+          assert.equal(circles,null,name+': hidden mobile creator logo should not occupy space');
+        }else{
+          assert.equal(placement.brandDisplay,'flex',name+': desktop creator brand must remain');
+          assert(circles,name+': desktop brand and dock controls need measurable circles');
+          assert(Math.abs(circles.logoDiameter-circles.socialDiameter)<=1,
+            name+': desktop logo and social button widths differ');
+          assert(Math.abs(circles.logoHeight-circles.socialHeight)<=1,
+            name+': desktop logo and social button heights differ');
+          assert(Math.abs(circles.centerDelta)<=2,
+            name+': desktop logo and social icons are not vertically aligned');
+        }
         for(const [selector,panel] of Object.entries(evidence.fields)){
           assert(panel&&panel.visible,name+': missing '+selector);
           assert.equal(panel.background,exp.glass,name+': glass color '+selector);
@@ -107,8 +179,8 @@ try {
         }
         for(const panel of [evidence.hero,evidence.mobile]){
           if(!panel?.visible)continue;
-          assert.equal(panel.background,exp.glass,name+': hero / mobile archive glass');
-          assert.equal(panel.blur,exp.glassBlur,name+': hero / mobile archive blur');
+          assert.equal(panel.background,exp.glass,name+': Hero and individual Featured card glass');
+          assert.equal(panel.blur,exp.glassBlur,name+': Hero and individual Featured card blur');
         }
         assert.equal(evidence.chrome.background,exp.chrome,name+': chrome surface');
         assert.equal(evidence.chrome.blur,exp.chromeBlur,name+': chrome blur');

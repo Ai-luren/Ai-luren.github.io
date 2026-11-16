@@ -31,7 +31,12 @@ try{
  assert.equal(await page.locator('#ux-categories .ux-filter').count(),5);
  assert.equal(await page.locator('#ux-categories [data-filter="all"]').count(),0);
  assert.equal(await page.locator('#ux-categories [data-filter="featured"]').getAttribute('aria-pressed'),'true');
- for(const [category,count] of [['commercial',9],['short-film',3],['social',4],['visual',2],['featured',8]]){
+ const source=(await(await fetch(studio.url+'/api/bootstrap')).json());
+ const expectedCounts=Object.fromEntries(['commercial','short-film','social','visual'].map(category=>[
+   category,source.ordering.projects.filter(project=>project.category===category).length,
+ ]));
+ assert.equal(source.ordering.featured.length,8,'Featured still has exactly eight works');
+ for(const [category,count] of [...Object.entries(expectedCounts),['featured',source.ordering.featured.length]]){
   await page.locator('#ux-categories [data-filter="'+category+'"]').click();
   assert.equal(await page.locator('#ux-gallery .ux-project').count(),count,'Wrong '+category+' count');
  }

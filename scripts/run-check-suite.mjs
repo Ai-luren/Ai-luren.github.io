@@ -1,20 +1,11 @@
 import { spawnSync } from 'node:child_process';
-
-const suites = {
-  smoke: ['build', 'check:repo-layout', 'check:asset-catalog', 'check:curated-order', 'check:featured-hover-menu', 'check:shared-mobile-menu', 'check:media-safety', 'check:image-loading', 'check:cinema-fullscreen', 'check:cinema-controls', 'check:cinema-nav-duration', 'check:cinema-version-motion'],
-  workbench: [
-    'check:workbench-storage', 'check:workbench-backdrops', 'check:workbench-full-flow',
-    'check:workbench-ux', 'check:workbench-phase3', 'check:workbench-history',
-    'check:workbench-icon-alignment', 'check:workbench-preview-sync', 'check:workbench-version-labels',
-    'check:workbench-simple-versions', 'check:workbench-recycle',
-  ],
-};
+import { quickPlan } from './lib/check-suite-catalog.mjs';
 const preset = process.argv[2] || 'smoke';
 if (!['smoke', 'workbench', 'all'].includes(preset)) {
   console.error('用法：node scripts/run-check-suite.mjs [smoke|workbench|all]');
   process.exit(2);
 }
-const queue = [...new Set(preset === 'all' ? [...suites.smoke, ...suites.workbench] : suites[preset])];
+const queue = quickPlan(preset);
 console.log('运行验证集合：', preset, '（', queue.length, '项）');
 const start = Date.now();
 for (const [index, name] of queue.entries()) {

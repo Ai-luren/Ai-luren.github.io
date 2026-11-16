@@ -60,7 +60,7 @@ try {
      assert(output.overflow<=2,tag+': horizontal overflow');
      assert.equal(output.ratio,'3 / 4');
      assert(Math.abs(output.coverWidth/output.coverHeight-.75)<.01);
-     assert.equal(output.round,'18px');
+     assert.equal(output.round,width<=720?'9px':'12px','Inset cover radius');
      assert(output.badgeVisible,tag+': shared badge must always be visible');
      assert(output.badgeInside,tag+': status badge must stay inside the cover');
      assert.equal(output.orphanCount,0,tag+': orphan status below the caption');

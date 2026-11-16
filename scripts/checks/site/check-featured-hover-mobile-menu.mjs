@@ -20,22 +20,27 @@ try {
       const card=p.locator(selector).first(),image=card.locator('.comet-archive__image');
       await card.waitFor();await card.scrollIntoViewIfNeeded();
       const before=await image.boundingBox();
-      await card.hover();await p.waitForTimeout(260);
-      const s=await image.evaluate(el=>({border:getComputedStyle(el).borderColor,
-        shadow:getComputedStyle(el).boxShadow,
-        pseudoOpacity:getComputedStyle(el,'::after').opacity,
-        pseudoDisplay:getComputedStyle(el,'::after').display,
-        transform:getComputedStyle(el).transform,
-        badge:getComputedStyle(el.querySelector('.comet-archive__play-badge')).display,
-        hover:el.closest('.comet-archive__card').matches(':hover'),
-        width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height}));
-      assert(s.hover,`Hover must target actual card: ${url}`);
-      assert.equal(s.border,'rgba(255, 255, 255, 0.42)',`${url} border focus`);
-      assert(s.shadow.includes('12px 26px'),`${url} uses single consistent soft shadow`);
-      assert(s.pseudoDisplay==='none'||Number(s.pseudoOpacity)===0,`${url} must not darken the photo with a hover overlay`);
-      assert.equal(s.transform,'none',`${url} hover must not scale or shift cover`);
-      assert.notEqual(s.badge,'none',`${url} existing play badge remains visible`);
-      assert(Math.abs(s.width-before.width)<1 && Math.abs(s.height-before.height)<1,`${url} dimensions remain stable`);
+      await card.hover();await p.waitForTimeout(420);
+      const s=await image.evaluate(el=>{
+        const card=el.closest('.comet-archive__card'),surf=getComputedStyle(card),art=getComputedStyle(el);
+        return {border:surf.borderColor,shadow:surf.boxShadow,background:surf.backgroundColor,
+          imageBorder:art.borderTopWidth,imageShadow:art.boxShadow,
+          pseudoOpacity:getComputedStyle(el,'::after').opacity,
+          pseudoDisplay:getComputedStyle(el,'::after').display,
+          transform:art.transform,
+          badge:getComputedStyle(el.querySelector('.comet-archive__play-badge')).display,
+          hover:card.matches(':hover'),
+          width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height};
+      });
+      assert(s.hover,'Card must respond to hover');
+      assert.equal(s.border,'rgba(205, 227, 245, 0.46)','A+ outer card border hover');
+      assert(s.shadow.includes('16px 37px'),'A+ uses one soft outer shadow');
+      assert.equal(s.imageBorder,'0px','Artwork must not have second border');
+      assert.equal(s.imageShadow,'none','Artwork must not have second shadow');
+      assert(s.pseudoDisplay==='none'||Number(s.pseudoOpacity)===0,'Artwork must not darken under a gradient');
+      assert.equal(s.transform,'none','Artwork must not scale');
+      assert.notEqual(s.badge,'none','Single icon badge remains present');
+      assert(Math.abs(s.width-before.width)<1 && Math.abs(s.height-before.height)<1,'Artwork dimensions remain stable');
       looks.push({lang,url,border:s.border,shadow:s.shadow});
     }
     assert.deepEqual(errors,[],`card hover JS errors ${lang}`);
@@ -73,7 +78,7 @@ try {
     });
     assert(info.active,`${w} ${lang}: menu is open`);
     assert(info.headerVisible,`${w} ${lang}: original navigation must stay visible`);
-    assert.equal(info.bg,'rgba(12, 12, 13, 0.9)',`${w} ${lang}: dark glass palette unchanged`);
+    assert.equal(info.bg,'rgba(12, 12, 13, 0.97)',`${w} ${lang}: current early-opaque mobile menu scrim`);
     assert.equal(info.menuLinks.length,4,`${w} ${lang}: main navigation must stay at four links`);
     assert(info.menuLinks.every(l=>l.font>=29.5&&l.height>=58&&l.left>=0&&l.right<=w),`${w} ${lang}: menu typography/touch targets fit`);
     assert(info.menuLinks.every((l,i)=>i===0||l.top>=info.menuLinks[i-1].bottom),`${w} ${lang}: no nav overlap`);
@@ -83,7 +88,7 @@ try {
     assert(Math.abs(info.header.left-old.left)<1&&Math.abs(info.header.width-old.width)<1,`${w} ${lang}: persistent glass header not shifted`);
     assert(info.footerText.includes(lang==='zh'?'社交平台':'Social'),`${w} ${lang}: social heading localizes`);
     assert(await p.locator('#mobile-nav-drawer .mobile-menu__social-list a').count()===4,`${w} ${lang}: four social links rendered`);
-    assert(info.footerText.includes('2024-2026'),`${w} ${lang}: original copyright reused`);
+    assert(!info.footerText.includes('2024-2026'),`${w} ${lang}: copyright intentionally removed`);
     assert.deepEqual(errors,[],`${w} ${lang}: no JS errors`);
     assert.equal(getSafeMediaReport(p).urls.length,0);
     await p.keyboard.press('Escape');

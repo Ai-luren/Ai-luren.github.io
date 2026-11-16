@@ -27,7 +27,9 @@ try {
     assert((await lab.locator('.lab-project-image-frame img').evaluate(e=>e.naturalWidth))>0);
     await page.keyboard.press('ArrowRight');
     await page.waitForFunction(language => document.querySelector('#lab-project-title')?.textContent.includes(language==='zh'?'图片对比':'Comparison'), lang);
-    assert.equal(await lab.locator('.lab-project-source--primary').getAttribute('href'),'https://ai-luren.github.io/Image-comparison/');
+    assert.equal(await lab.locator('.lab-project-source').count(),1,'Comparison detail has only GitHub source');
+    assert.equal(await lab.locator('.lab-project-source').getAttribute('href'),'https://github.com/Ai-luren/Image-comparison');
+    assert.equal(await lab.locator('.lab-project-source--primary').count(),0,'Removed live demo must not remain');
     assert.equal(await lab.locator('.lab-project-source').filter({hasText:'↗'}).count(),0,'lab links must not use ↗ glyphs');
     assert.equal(await lab.locator('.lab-project-pagination button svg').count(),2);
     await page.keyboard.press('ArrowLeft');
@@ -36,8 +38,12 @@ try {
       await lab.locator('.lab-project-source').click();
       const topSheet = page.locator('.external-link-sheet');
       await topSheet.waitFor({state:'visible'});
-      assert((await topSheet.locator('.external-link-sheet__domain').innerText()).includes('github.com'));
-      assert.equal(await topSheet.locator('.external-link-sheet__domain').innerText(),'github.com');
+      assert.equal(await topSheet.locator('.external-link-sheet__domain').count(),0,'No separate visible hostname row');
+      assert.equal(await topSheet.locator('.external-link-sheet__copy,.external-link-sheet__hint').count(),0,
+        'Removed GitHub copy control and related copy-only explanation');
+      assert.equal(await topSheet.locator('.external-link-sheet__actions > *').count(),2,
+        'GitHub confirmation only offers continue and stay');
+      assert.equal(new URL(await topSheet.locator('.external-link-sheet__continue').getAttribute('href')).hostname,'github.com');
       assert(!((await topSheet.locator('.external-link-sheet__continue').innerText()).includes('↗')),'confirmation action should have a plain-text label');
       assert.equal(await topSheet.locator('.external-link-sheet__continue').getAttribute('target'),'_blank');
       await page.keyboard.press('Escape');
@@ -67,7 +73,10 @@ try {
         await sheet.waitFor({state:'visible'});
         assert.equal(await sheet.count(),1,'only one external confirmation sheet is allowed');
         assert.equal(await sheet.locator('.external-link-sheet__destination').innerText(),label);
-        assert((await sheet.locator('.external-link-sheet__domain').innerText()).includes(domain));
+        assert.equal(await sheet.locator('.external-link-sheet__domain').count(),0,'External domain row must stay absent');
+        assert.doesNotMatch(await sheet.innerText(),new RegExp(domain.replaceAll('.','\\.')));
+        assert(new URL(await sheet.locator('.external-link-sheet__continue').getAttribute('href')).hostname.includes(domain),
+          'Original verified external URL is preserved');
         assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('href'),actualHref);
         assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('target'),'_blank');
         assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('data-external-confirmed'),'true');
@@ -87,7 +96,7 @@ try {
       await page.locator('#test-future-external-link').click();
       const fallback=page.locator('.external-link-sheet');
       await fallback.waitFor({state:'visible'});
-      assert.equal(await fallback.locator('.external-link-sheet__domain').innerText(),'example.org');
+      assert.equal(await fallback.locator('.external-link-sheet__domain').count(),0,'Fallback link also has no domain row');
       assert.equal(await fallback.locator('.external-link-sheet__continue').getAttribute('href'),'https://example.org/portfolio');
       await fallback.locator('.external-link-sheet__cancel').click();
       await fallback.waitFor({state:'detached'});
@@ -105,7 +114,6 @@ try {
       '.flip-experiment__link',
       '.lab-project-source',
       '.impact-reach-action--external',
-      '.external-link-sheet__domain',
       '.external-link-sheet__continue',
     ].join(', '));
     assert.equal(await externalArrowTargets.filter({hasText:'↗'}).count(),0,
@@ -123,31 +131,64 @@ try {
       await dock.nth(0).click();
       const emailSheet=page.locator('.external-link-sheet');
       await emailSheet.waitFor({state:'visible'});
-      assert.equal(await emailSheet.locator('.external-link-sheet__contact-value').innerText(),'1746850550@qq.com');
-      assert.equal(await emailSheet.locator('.external-link-sheet__cancel').getAttribute('href'),'mailto:1746850550@qq.com');
+      assert.equal(await emailSheet.locator('.external-link-sheet__contact-value').count(),0,
+        'Email address box should not be duplicated in the mobile sheet');
+      assert.doesNotMatch(await emailSheet.innerText(),/1746850550@qq\.com/,
+        'Email address remains in the card and copy action, but not in the confirmation sheet');
+      assert.equal(await emailSheet.locator('.external-link-sheet__actions > *').count(),2,'Email contact offers only copy and stay');
+      assert.equal(await emailSheet.locator('.external-link-sheet__cancel').getAttribute('href'),null,
+        'Staying in the portfolio must not launch a mail app');
+      assert.match(await emailSheet.locator('.external-link-sheet__cancel').innerText(),/留在作品集|Stay in portfolio/);
       assert.match(await emailSheet.locator('.external-link-sheet__continue').innerText(),/复制邮箱地址|Copy email address/);
+      assert.equal(await emailSheet.locator('.external-link-sheet__dismiss').count(),0,'No redundant third close');
       assert.equal(downloadEvents,0,'touch email must never trigger a download');
-      await emailSheet.locator('.external-link-sheet__dismiss').click();
+      await emailSheet.locator('.external-link-sheet__cancel').click();
       await emailSheet.waitFor({state:'detached'});
 
       await dock.nth(1).click();
       const wechatSheet=page.locator('.external-link-sheet');
       await wechatSheet.waitFor({state:'visible'});
-      assert.equal(await wechatSheet.locator('.external-link-sheet__contact-value').innerText(),'15580714085');
+      assert.equal(await wechatSheet.locator('.external-link-sheet__contact-value').count(),0,
+        'WeChat number is not repeated below the QR');
+      assert.doesNotMatch(await wechatSheet.innerText(),/15580714085/);
       await wechatSheet.locator('.external-link-sheet__qr img').evaluate(img=>img.decode());
       assert.equal(await wechatSheet.locator('.external-link-sheet__qr img').count(),1);
-      assert.equal(await wechatSheet.locator('.external-link-sheet__cancel').getAttribute('download'),'wechat-qr-code.webp');
-      assert.match(await wechatSheet.locator('.external-link-sheet__continue').innerText(),/复制微信号|Copy WeChat ID/);
-      assert.equal(downloadEvents,0,'touch WeChat must not auto-download its QR image');
+      assert.equal(await wechatSheet.locator('.external-link-sheet__actions > *').count(),2,'WeChat has only combined action and stay');
+      assert.equal(await wechatSheet.locator('.external-link-sheet__cancel').getAttribute('download'),null,'Stay is not a download');
+      assert.match(await wechatSheet.locator('.external-link-sheet__cancel').innerText(),/留在作品集|Stay in portfolio/);
+      assert.equal(await wechatSheet.locator('.external-link-sheet__continue').getAttribute('download'),'wechat-qr-code.webp');
+      assert.match(await wechatSheet.locator('.external-link-sheet__continue').innerText(),/复制并保存二维码|Copy ID & save QR code/);
+      assert.equal(await wechatSheet.locator('.external-link-sheet__dismiss').count(),0,'No third close');
+      assert.equal(downloadEvents,0,'Opening WeChat sheet alone must not download');
+      // One user gesture must request the QR download and copy the original WeChat ID.
+      await page.evaluate(() => {
+        window.__copiedWeChatForTest = null;
+        Object.defineProperty(navigator, 'clipboard', {
+          configurable: true,
+          value: { writeText: async value => { window.__copiedWeChatForTest = value; } },
+        });
+      });
+      const qrDownload = page.waitForEvent('download',{timeout:10000});
+      await wechatSheet.locator('.external-link-sheet__continue').click();
+      const qrFile = await qrDownload;
+      assert.equal(qrFile.suggestedFilename(),'wechat-qr-code.webp');
+      await page.waitForFunction(() => window.__copiedWeChatForTest !== null);
+      assert.equal(await page.evaluate(() => window.__copiedWeChatForTest),'15580714085',
+        'Copy button still uses the actual contact value without showing it as a separate line');
+      assert.match(await wechatSheet.locator('.external-link-sheet__continue').innerText(),/已复制微信号|ID copied/);
+      assert.equal(downloadEvents,1,'WeChat combined action must request exactly one QR download');
       const sheetBounds=await wechatSheet.locator('.external-link-sheet__panel').boundingBox();
       assert(sheetBounds.width<=width+1,'mobile contact sheet must fit viewport');
-      await wechatSheet.locator('.external-link-sheet__dismiss').click();
+      await wechatSheet.locator('.external-link-sheet__cancel').click();
       await wechatSheet.waitFor({state:'detached'});
       for (const [index,domain] of [[2,'github.com'],[3,'xiaohongshu.com'],[4,'douyin.com'],[5,'feishu.cn']]) {
         await dock.nth(index).click();
         const sheet=page.locator('.external-link-sheet');
         await sheet.waitFor({state:'visible'});
-        assert((await sheet.locator('.external-link-sheet__domain').innerText()).includes(domain));
+        assert.equal(await sheet.locator('.external-link-sheet__domain').count(),0,'External domain row must stay absent');
+        assert.doesNotMatch(await sheet.innerText(),new RegExp(domain.replaceAll('.','\\.')));
+        assert(new URL(await sheet.locator('.external-link-sheet__continue').getAttribute('href')).hostname.includes(domain),
+          'Original verified external URL is preserved');
         assert.equal(await sheet.locator('.external-link-sheet__continue').getAttribute('target'),'_blank');
         await sheet.locator('.external-link-sheet__cancel').click();
         await sheet.waitFor({state:'detached'});
@@ -162,8 +203,9 @@ try {
       await qrPreview.waitFor({state:'visible'});
       await qrPreview.locator('img').evaluate(img=>img.decode());
       assert.match(await qrPreview.innerText(),/微信扫码联系|Scan with WeChat/);
-      assert.match(await qrPreview.innerText(),/微信号：15580714085|WeChat ID: 15580714085/);
-      assert.doesNotMatch(await qrPreview.innerText(),/扫码添加微信|Scan to connect/,'QR caption should add useful contact information, not repeat the title');
+      assert.equal(await qrPreview.locator('.floating-dock-qr__caption').count(),0,
+        'WeChat desktop hover preview has only title and QR');
+      assert.doesNotMatch(await qrPreview.innerText(),/15580714085/);
       assert.equal(await page.locator('.floating-dock-label:visible').count(),0,'QR card replaces old download tooltip');
       await dock.nth(1).click();
       assert.equal(downloadEvents,0,'desktop WeChat icon must not download on click');

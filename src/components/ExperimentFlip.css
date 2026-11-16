@@ -8,7 +8,8 @@
   grid-template-columns: 48px minmax(190px, .9fr) minmax(0, 1.8fr) 84px;
   gap: clamp(14px, 2vw, 26px);
   align-items: center;
-  padding-inline: 24px;
+  /* Match AI Creator and AI Media panels: 28px inset on each side. */
+  padding-inline: 28px;
 }
 
 .flip-experiment__header {
@@ -85,33 +86,6 @@
   color: var(--apple-tertiary);
 }
 
-.flip-experiment__link {
-  display: inline-flex;
-  min-width: 64px;
-  min-height: 44px;
-  align-items: center;
-  justify-self: end;
-  gap: 6px;
-  padding: 0 2px;
-  border-bottom: 1px solid rgba(237, 244, 249, .32);
-  color: var(--apple-secondary);
-  font: 500 13px/1.4 var(--font-body, system-ui);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
-}
-
-.flip-experiment__link:hover,
-.flip-experiment__link:focus-visible {
-  border-color: var(--apple-text);
-  color: var(--apple-text);
-}
-
-.flip-experiment__link:focus-visible {
-  outline: 2px solid var(--accent-blue-focus, rgba(41, 151, 255, .88));
-  outline-offset: 3px;
-}
-
 @media (max-width: 720px) {
   .flip-experiment {
     margin-top: 24px;
@@ -126,7 +100,8 @@
     gap: 8px 10px;
     min-height: 0;
     align-items: start;
-    padding: 16px;
+    /* Match the mobile AI Media card inner gutter (14px). */
+    padding: 14px;
   }
 
   .flip-experiment__index {
@@ -138,8 +113,7 @@
     line-height: 1.25;
   }
 
-  .flip-experiment__meta,
-  .flip-experiment__link {
+  .flip-experiment__meta {
     grid-column: 1 / -1;
   }
 
@@ -155,16 +129,10 @@
   .flip-experiment__facts {
     font-size: 11px;
   }
-
-  .flip-experiment__link {
-    justify-self: start;
-    margin-top: -2px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flip-experiment__row,
-  .flip-experiment__link {
+  .flip-experiment__row {
     transition: none;
   }
 }
@@ -175,42 +143,33 @@
 }
 .flip-experiment__actions { display: flex; align-items: center; justify-content: flex-end; gap: 9px; flex-wrap: wrap; }
 .flip-experiment__detail {
-  min-height: 38px; padding: 0 13px;
-  border: 1px solid var(--portfolio-panel-border); border-radius: var(--portfolio-control-radius);
-  background: var(--portfolio-tile-surface-hover); color: var(--apple-text);
-  font: 500 12px/1.4 var(--font-body); white-space: nowrap; cursor: pointer;
-  transition: background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
+  display: inline-flex; align-items: center; justify-content: flex-start;
+  box-sizing: border-box; min-height: 44px; min-width: 0; padding: 0;
+  border: 0; border-radius: 0; background: transparent; box-shadow: none;
+  color: var(--apple-text); font: 500 12px/1.4 var(--font-body);
+  text-align: left; white-space: nowrap; cursor: pointer;
+  transition: color var(--apple-duration-control) var(--apple-ease);
 }
-.flip-experiment__detail:hover { border-color: var(--portfolio-icon-border); background: var(--portfolio-icon-hover-surface); }
-.flip-experiment__actions .flip-experiment__link { position: relative; min-width: 0; min-height: 38px; padding: 0 2px; border-bottom: 0; font-size: 12px; }
-.flip-experiment__tooltip {
-  position: absolute; right: 0; bottom: calc(100% + 8px);
-  width: max-content; max-width: 240px; padding: 8px 11px;
-  background: var(--portfolio-panel-solid, #25262a);
-  border: 1px solid var(--portfolio-panel-border); border-radius: 10px;
-  color: var(--apple-text); opacity: 0; pointer-events: none;
-  font: 500 11px/1.4 var(--font-body);
-  transform: translateY(3px);
-  transition: opacity 180ms var(--apple-ease), transform 180ms var(--apple-ease);
-}
-.flip-experiment__link:is(:hover,:focus-visible) .flip-experiment__tooltip { opacity: 1; transform: translateY(0); }
-.flip-experiment__detail:focus-visible, .flip-experiment__link:focus-visible {
+.flip-experiment__detail:focus-visible {
   outline: 2px solid var(--apple-blue); outline-offset: 3px;
 }
 @media (min-width: 721px) and (max-width: 1000px) {
   .flip-experiment__header, .flip-experiment__row {
     grid-template-columns: 27px minmax(150px, .7fr) minmax(0, 1.6fr) 130px;
-    gap: 12px; padding-inline: 12px;
+    gap: 12px;
+    /* Inherit the 28px desktop inset; a 12px override broke alignment
+       with the neighboring creator and media cards. */
   }
-  .flip-experiment__actions { justify-content: flex-start; }
+  .flip-experiment__actions { justify-content: flex-end; }
 }
 @media (max-width: 720px) {
+  /* Reassert phone columns after the desktop four-track layout above.
+     This is not redundant with the earlier mobile block: the later base rule
+     would otherwise force a 384px row and overflow 320–390px screens. */
   .flip-experiment__row { grid-template-columns: 28px minmax(0, 1fr); }
   .flip-experiment__meta, .flip-experiment__actions { min-width: 0; grid-column: 1/-1; }
   .flip-experiment__actions { justify-content: flex-start; margin-top: 3px; }
   .flip-experiment__detail { min-height: 44px; }
-  .flip-experiment__actions .flip-experiment__link { min-height: 44px; }
-  .flip-experiment__tooltip { display: none; }
 }
 
 /* AI Lab / shared cinema vocabulary: a readable editorial gallery, not
@@ -238,10 +197,12 @@
   height: min(550px,calc(100dvh - 116px));
   min-height: 0; overflow: hidden;
   padding: clamp(19px,2.7vw,32px);
-  border: 1px solid var(--portfolio-panel-border);
+  border: 1px solid var(--portfolio-glass-control-border);
   border-radius: var(--portfolio-panel-radius);
-  background: var(--portfolio-panel-surface);
-  color: var(--apple-text); box-shadow: var(--portfolio-panel-shadow);
+  background: var(--portfolio-glass-control-surface);
+  color: var(--apple-text); box-shadow: var(--portfolio-glass-control-shadow);
+  backdrop-filter: var(--portfolio-glass-control-blur);
+  -webkit-backdrop-filter: var(--portfolio-glass-control-blur);
 }
 .lab-project-intro { grid-area: intro; min-width: 0; align-self: center; }
 .lab-project-kicker { margin: 0 0 10px; color: var(--apple-tertiary); font: 500 10px/1.45 var(--font-mono); letter-spacing: .07em; }
@@ -322,21 +283,14 @@
 .lab-project-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
 .lab-project-source {
   box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
-  min-height: 39px; padding: 0; border: none; border-bottom: 1px solid transparent;
+  min-height: 39px; padding: 0; border: 0;
   background: transparent; color: var(--apple-secondary);
   font: 500 12px/1.4 var(--font-body); text-decoration: none; white-space: nowrap;
 }
-.lab-project-source:hover { border-color: currentColor; color: var(--apple-text); }
-.lab-project-source--primary { padding: 0 13px; color: var(--apple-text); background: var(--portfolio-tile-surface-hover); border: 1px solid var(--portfolio-icon-border); border-radius: 999px; }
-.lab-project-source--primary:hover { background: var(--portfolio-icon-hover-surface); border-color: var(--portfolio-icon-border); }
+.lab-project-source:hover { color: var(--apple-text); }
 .lab-project-source:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
 .lab-project-pagination { grid-area: pager; align-self: end; display: flex; align-items: center; justify-content: center; gap: 22px; margin-top: 4px; }
 .lab-project-pagination span { min-width: 48px; color: var(--apple-secondary); text-align: center; font: 500 12px/1.4 var(--font-mono); font-variant-numeric: tabular-nums; }
-.lab-project-pagination button { display: grid; place-items: center; box-sizing: border-box; width: 43px; height: 43px; padding: 0; line-height: 0; border: 1px solid var(--portfolio-icon-border); border-radius: 50%; background: var(--portfolio-icon-surface); color: var(--apple-text); cursor: pointer; transition: background-color 180ms var(--apple-ease); }
-.lab-project-pagination button svg { display: block; width: 18px; height: 18px; }
-.lab-project-pagination button:hover { background: var(--portfolio-icon-hover-surface); }
-.lab-project-pagination button:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
-.lab-project-pagination button:disabled { opacity: .45; cursor: progress; }
 .flip-experiment__detail[aria-busy="true"], .lab-project-image-tabs button[aria-busy="true"] { opacity: .6; cursor: progress; }
 
 /* Tablet landscape preserves the paired layout while minimizing dead space. */
@@ -377,7 +331,6 @@
   .lab-project-footer { justify-self: center; }
   .lab-project-source { font-size: 11px; min-height: 34px; }
   .lab-project-pagination { justify-self: center; gap: 23px; margin-top: 0; }
-  .lab-project-pagination button { width: 40px; height: 40px; }
 }
 @media (max-width: 760px) and (max-height: 680px) {
   .lab-project-lightbox { padding-top: 74px; padding-bottom: 8px; }
@@ -386,10 +339,67 @@
   .lab-project-lead { font-size: 10.5px; }
   .lab-project-image-tabs { flex-basis: 31px; min-height: 31px; }
   .lab-project-image-tabs button { height: 31px; width: 45px; }
-  .lab-project-pagination button { width: 36px; height: 36px; }
   .lab-project-image-frame .lab-project-image-canvas > img:not(.lab-project-comparison-inset) { max-height: clamp(100px,calc(100dvh - 390px),260px); }
   .lab-project-showcase--news .lab-project-image-frame { height: clamp(105px,calc(100dvh - 420px),250px); }
 }
 @keyframes lab-viewer-enter { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .lab-project-lightbox { animation: none; } .lab-project-image-tabs button, .lab-project-pagination button { transition: none; } }
-@media (prefers-reduced-transparency: reduce) { .lab-project-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } .lab-project-dialog { background: var(--portfolio-panel-solid); } }
+@media (prefers-reduced-transparency: reduce) { .lab-project-lightbox { background: var(--portfolio-modal-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; } }
+
+/* In-place image reading mode. Reuses the existing project modal: no nested
+   overlay, extra close button or transform scaling (which blocks panning). */
+.lab-project-image-utilities { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 8px; }
+.lab-project-image-zoom {
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  min-height: 44px; padding: 0 4px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--apple-secondary);
+  font: 500 11px/1.3 var(--font-body); white-space: nowrap; cursor: pointer;
+  transition: color 180ms var(--apple-ease);
+}
+.lab-project-image-zoom:hover, .lab-project-image-zoom[aria-pressed="true"] { color: var(--apple-text); }
+.lab-project-image-zoom:focus-visible, .lab-project-image-canvas.is-zoomed:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+.lab-project-image-zoom svg { width: 14px; height: 14px; }
+.lab-project-image-canvas.is-zoomed {
+  display: block; width: 100%; height: 100%; min-height: 130px;
+  overflow: auto !important; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y;
+  scrollbar-width: thin;
+}
+.lab-project-image-frame .lab-project-image-canvas.is-zoomed > img:not(.lab-project-comparison-inset),
+.lab-project-showcase--news .lab-project-image-canvas.is-zoomed > img {
+  display: block; width: max(100%, min(900px, 170vw)) !important;
+  height: auto !important; max-width: none !important; max-height: none !important;
+  min-width: 100%; object-fit: contain;
+}
+@media (max-width: 760px) {
+  .lab-project-image-zoom { font-size: 10px; }
+  .lab-project-image-utilities { gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) { .lab-project-image-zoom { transition: none; } }
+
+/* Proof screenshots contain small text. Prevent other sections from reading
+   through the image viewer while users pan its enlarged content. This only
+   strengthens the existing modal material; geometry and motion stay intact. */
+.lab-project-lightbox { background: rgba(12, 12, 13, .97); }
+.lab-project-dialog { background: var(--portfolio-glass-control-surface); }
+.lab-project-dialog:has(.lab-project-image-canvas.is-zoomed) {
+  /* Tiny writing in zoomed proof images must not sit over moving film. */
+  background: var(--portfolio-panel-solid);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .lab-project-lightbox { background: var(--portfolio-modal-solid); }
+  .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lab-project-dialog { background: var(--portfolio-panel-solid); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* Mouse/pen users can grab the enlarged proof image; native touch gestures,
+   trackpad scroll and keyboard panning retain the same scroll viewport. */
+@media (hover: hover) and (pointer: fine) {
+  .lab-project-image-canvas.is-zoomed { cursor: grab; }
+  .lab-project-image-canvas.is-zoomed.is-dragging { cursor: grabbing; }
+}
+.lab-project-image-canvas.is-zoomed > img { user-select: none; -webkit-user-drag: none; }

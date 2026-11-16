@@ -1,8 +1,7 @@
 /* Post-base enhancements: creation flow, ImageKit controls, detail status and drag feedback.
    Keep cascade order after style.css. Avoid modifying legacy .workspace styles. */
 /* 2026-11 workbench creation: step order, separate artwork inputs, fixed save */
-#ux-new-editor #ux-new-right>.crop-panel{order:0;flex:0 0 auto!important;overflow:visible!important}
-#ux-new-editor #ux-new-right>.create-work{order:1;flex:0 0 auto!important}
+#ux-new-editor #ux-new-right>.crop-panel{overflow:visible!important}
 #ux-new-editor .ux-new-editor-footer{gap:14px;min-height:56px}
 #ux-new-editor .ux-new-footer-actions{display:flex;align-items:center;justify-content:flex-end;gap:15px;margin-left:auto;flex-shrink:0}
 #ux-new-editor #ux-new-save{min-width:148px;min-height:38px;display:inline-flex;align-items:center;justify-content:center;padding:8px 18px;font-size:12px;border-radius:9px}
@@ -134,11 +133,10 @@
   min-height:32px;width:100%;padding:6px 8px;color:#eef3fb;
   border:1px solid #ffffff32;border-radius:7px;background:#111d2b;font-size:11px;
 }
-#ux-editor .ux-version-label-form .ux-version-form-actions {display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px}
+#ux-editor .ux-version-label-form .ux-version-form-actions {grid-template-columns:90px minmax(0,1fr)}
 #ux-editor .ux-version-label-form .ux-version-form-actions button {min-height:32px;margin:0;font-size:11px}
 #ux-editor .ux-version-label-form .ux-version-form-actions .primary {background:#edf4fd;color:#192536}
 #ux-editor .ux-name-section .ux-section-heading {flex-wrap:wrap;gap:4px 8px}
-#ux-editor .ux-name-section .ux-section-heading .muted {font-size:9px;color:#8197ad}
 
 /* Work library: discoverable creation and unambiguous cross-category search. */
 body[data-workflow='library'] #ux-create-quick{
@@ -231,16 +229,16 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor .ux-detail-tabs button:hover:not([aria-pressed=true]){background:#1d2e3f;color:#ecf6ff}
 #ux-editor .ux-detail-tabs button:focus-visible{outline:2px solid #a6d1f4;outline-offset:2px}
 #ux-editor [data-ux-section][hidden]{display:none!important}
-#ux-editor .ux-version-section{border-top:0;padding-top:6px}
+#ux-editor .ux-version-section{padding-top:6px}
 #ux-editor .ux-cover-section{border-top:0;padding-top:6px}
-#ux-editor .ux-name-section{border-top:0;padding-top:6px}
+#ux-editor .ux-name-section{padding-top:6px}
 #ux-editor .ux-version-section>.ux-section-heading{margin-bottom:17px}
 #ux-editor .ux-version-section .ux-section-heading h3{font-size:15px}
 #ux-editor #ux-add-variant{min-height:37px;font-size:12px;padding:7px 12px;background:#30475f;color:#edf5fe;border:1px solid #7695b65d;border-radius:8px}
 #ux-editor #ux-add-variant:hover{background:#3d6080}
 #ux-editor .ux-version-switcher{padding:13px;background:#101b27;border:1px solid #607a9455;border-radius:11px}
 #ux-editor .ux-version-switcher-row{display:flex;align-items:flex-start;gap:9px;min-width:0}
-#ux-editor .ux-version-switcher .ux-variant-chips{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;overflow:visible;gap:8px;min-height:38px}
+#ux-editor .ux-version-switcher .ux-variant-chips{display:flex;flex:1 1 auto;min-width:0;flex-wrap:wrap;overflow:visible;gap:8px}
 #ux-editor .ux-version-switcher .ux-variant-item{display:inline-flex;align-items:center;border:1px solid #586d865e;background:#213245;border-radius:9px;padding:3px 4px;min-height:37px}
 #ux-editor .ux-version-switcher .ux-variant{min-height:31px;padding:6px 11px;border:0;background:transparent;color:#c3d1df;font-size:12px}
 #ux-editor .ux-version-switcher .ux-variant[aria-pressed=true]{background:#456b91;color:#fff}
@@ -262,7 +260,7 @@ body[data-workflow='library'] #ux-create-quick{
 #ux-editor .ux-danger-subtle{background:transparent;color:#d49a9d;border:1px solid #8f535761;border-radius:9px}
 #ux-editor .ux-danger-subtle:hover:not(:disabled){background:#452b34;color:#ffe2e2;border-color:#c0717c}
 #ux-editor .ux-danger-subtle:disabled{opacity:.52;cursor:not-allowed}
-#ux-editor .ux-safe-archive{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:18px 0;border-top:1px solid #ffffff1a}
+#ux-editor .ux-safe-archive{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid #ffffff1a}
 #ux-editor .ux-safe-archive>div{min-width:0}
 #ux-editor .ux-safe-archive strong{font-size:13px;color:#cfdce9}
 #ux-editor .ux-safe-archive p{margin:5px 0 0;max-width:320px;font-size:11px;color:#8ba6ba;line-height:1.65}

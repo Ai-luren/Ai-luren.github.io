@@ -10,11 +10,12 @@ export default function DesktopPrimaryNavigation({ page = 'home' }) {
   const initialHash = typeof window === 'undefined' ? '' : window.location.hash.slice(1);
   const inExpertise = /^(recognition|experiments|impact-(awards|programs|reach))$/.test(initialHash);
   const inContact = /^(contact|profile)$/.test(initialHash);
+  const inFeatured = /^(projects)$/.test(initialHash);
 
   return <ul className="site-primary-nav" aria-label={lang === 'en' ? 'Primary navigation' : '主导航'}>
-    <li><a className={!isLibrary && !inExpertise && !inContact ? 'is-active' : ''} href={homeLink('projects')}>{lang === 'en' ? 'Featured' : '精选作品'}</a></li>
-    <li><a className={isLibrary ? 'is-active' : ''} href={workHref}>{lang === 'en' ? 'All Work' : '全部作品'}</a></li>
-    <li><a data-impact-nav="true" className={!isLibrary && inExpertise ? 'is-active' : ''} href={homeLink('recognition')}>{lang === 'en' ? 'Expertise' : '专业实力'}</a></li>
-    <li><a className={!isLibrary && inContact ? 'is-active' : ''} href={homeLink('contact')}>{lang === 'en' ? 'Contact' : '联系'}</a></li>
+    <li><a className={!isLibrary && inFeatured ? 'is-active' : ''} href={homeLink('projects')}><span className="portfolio-link-label">{lang === 'en' ? 'Featured' : '精选作品'}</span></a></li>
+    <li><a data-impact-nav="true" className={!isLibrary && inExpertise ? 'is-active' : ''} href={homeLink('recognition')}><span className="portfolio-link-label">{lang === 'en' ? 'Expertise' : '专业实力'}</span></a></li>
+    <li><a className={!isLibrary && inContact ? 'is-active' : ''} href={homeLink('contact')}><span className="portfolio-link-label">{lang === 'en' ? 'Contact' : '联系'}</span></a></li>
+    <li className="site-primary-nav__library-item"><a className={'site-primary-nav__library-link' + (isLibrary ? ' is-active' : '')} href={workHref} title={lang === 'en' ? 'Open the complete work library' : '前往独立作品库页面'}><span className="portfolio-link-label">{lang === 'en' ? 'All Work' : '全部作品'}</span></a></li>
   </ul>;
 }

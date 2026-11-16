@@ -1,17 +1,197 @@
-/* Shared by both Vite HTML entry points so the browser can opt in before
-   either document paints during a same-origin page navigation. */
+/* Native cross-document transitions are progressive enhancement.
+   Shared on both HTML entries; film/archive alone use a transient, inert
+   live progress popover. No cloned videos, route interception, or overlays
+   on unrelated links. */
 ::view-transition-old(root) {
   animation: 160ms cubic-bezier(.32,.72,.28,1) both portfolio-page-exit;
 }
-
 ::view-transition-new(root) {
   animation: 240ms cubic-bezier(.32,.72,.28,1) both portfolio-page-enter;
 }
-
 @keyframes portfolio-page-exit { to { opacity: 0; } }
 @keyframes portfolio-page-enter { from { opacity: 0; } to { opacity: 1; } }
 
+/* Film ↔ Archive · B+C: 660ms optical focus + fifth-style editorial cue.
+   Only the native root snapshot is transitioned: actual document/scroll/video
+   state remains owned by the browser (including history/back-forward cache).
+   No split masks, horizontal wipe, cloned players, or non-target routes. */
+:root:active-view-transition-type(to-archive)::view-transition-old(root),
+:root:active-view-transition-type(to-film)::view-transition-old(root) {
+  animation: 660ms linear both portfolio-optical-out;
+  transform-origin: center center;
+}
+:root:active-view-transition-type(to-archive)::view-transition-new(root),
+:root:active-view-transition-type(to-film)::view-transition-new(root) {
+  animation: 660ms linear both portfolio-optical-in;
+  transform-origin: center center;
+}
+@keyframes portfolio-optical-out {
+  0% { opacity: 1; filter: blur(0); transform: scale(1); }
+  28% { opacity: 1; filter: blur(.8px); transform: scale(1.004); }
+  52.5% { opacity: 1; filter: blur(1.8px); transform: scale(1.01); }
+  53.5%, 100% { opacity: 0; filter: blur(1.8px); transform: scale(1.01); }
+}
+@keyframes portfolio-optical-in {
+  0%, 52.5% { opacity: 0; filter: blur(1.8px); transform: scale(1.012); }
+  53.5% { opacity: 1; filter: blur(1.8px); transform: scale(1.012); }
+  79% { opacity: 1; filter: blur(.8px); transform: scale(1.005); }
+  95%, 100% { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+/* Live, borderless fifth-concept cue. It is shown in a non-interactive manual
+   popover, in the browser top layer above the native view transition.
+   The line reports transition elapsed time, never network buffering. */
+.portfolio-route-cue:popover-open {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: #edf4fa;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0,0,0,.85);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  z-index: 2147483647;
+}
+.portfolio-route-cue::backdrop { background: transparent; pointer-events: none; }
+.portfolio-route-cue__depth {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  backdrop-filter: blur(1.2px);
+  -webkit-backdrop-filter: blur(1.2px);
+  -webkit-mask-image: radial-gradient(ellipse 27% 34% at 50% 47%,transparent 20%,rgba(0,0,0,.16) 39%,#000 92%);
+  mask-image: radial-gradient(ellipse 27% 34% at 50% 47%,transparent 20%,rgba(0,0,0,.16) 39%,#000 92%);
+  animation: 660ms linear both portfolio-route-depth;
+}
+@keyframes portfolio-route-depth {
+  0%, 12%, 100% { opacity: 0; }
+  30% { opacity: .5; }
+  48% { opacity: .74; }
+  80% { opacity: .17; }
+}
+.portfolio-route-cue__indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  width: min(45%, 460px);
+  transform: translateX(-50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  isolation: isolate;
+  animation: 660ms linear both portfolio-route-indicator;
+}
+/* Feathered, transparent contrast veil: keeps white readouts legible over
+   bright thumbnails without restoring a panel, capsule or solid background. */
+.portfolio-route-cue__indicator::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -10px -18px;
+  background: linear-gradient(90deg,transparent,rgba(1,5,10,.43) 15%,rgba(1,5,10,.43) 85%,transparent);
+  filter: blur(9px);
+  pointer-events: none;
+}
+@keyframes portfolio-route-indicator {
+  0%, 9% { opacity: 0; transform: translateX(-50%) translateY(5px); }
+  16%, 87% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-3px); }
+}
+.portfolio-route-cue__head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+.portfolio-route-cue__label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font: 580 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .06em;
+  color: #edf5ff;
+}
+html[lang^="zh"] .portfolio-route-cue__label { letter-spacing: 0; }
+.portfolio-route-cue__rail {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 24px;
+  height: 2px;
+  border-radius: 4px;
+  background: rgba(218,231,242,.46);
+  isolation: isolate;
+}
+.portfolio-route-cue__fill {
+  display: block;
+  position: relative;
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#438edd,#83cfff,#b7e8ff);
+  box-shadow: 0 0 5px rgba(94,176,246,.42), 0 0 10px rgba(53,151,250,.15);
+  will-change: width;
+}
+.portfolio-route-cue__fill::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  width: 9px;
+  height: 6px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse,rgba(211,244,255,.78),rgba(100,185,254,.28) 42%,transparent 78%);
+  filter: blur(1.6px);
+}
+.portfolio-route-cue__playhead {
+  position: absolute;
+  left: 0;
+  top: -3px;
+  width: 1px;
+  height: 8px;
+  background: #e7f7ff;
+  box-shadow: 0 0 4px rgba(132,220,255,.42);
+}
+.portfolio-route-cue__percent {
+  flex: 0 0 auto;
+  min-width: 42px;
+  text-align: right;
+  font: 560 14px/1.1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.portfolio-route-cue__percent small { color: #d9e8f5; font: 460 11px/1 ui-monospace, Menlo, monospace; }
+@media (max-width: 760px) {
+  .portfolio-route-cue__depth {
+    -webkit-mask-image: radial-gradient(ellipse 46% 24% at 50% 48%,transparent 18%,rgba(0,0,0,.18) 44%,#000 95%);
+    mask-image: radial-gradient(ellipse 46% 24% at 50% 48%,transparent 18%,rgba(0,0,0,.18) 44%,#000 95%);
+    backdrop-filter: blur(.8px);
+    -webkit-backdrop-filter: blur(.8px);
+  }
+  .portfolio-route-cue__indicator { bottom: 13%; width: 84%; max-width: 340px; }
+  .portfolio-route-cue__head { gap: 10px; }
+  .portfolio-route-cue__label { font-size: 11px; letter-spacing: 0; }
+  .portfolio-route-cue__percent { min-width: 38px; font-size: 12px; }
+  .portfolio-route-cue__percent small { font-size: 9px; }
+}
+/* User preferences override ALL other transition motion. */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root),
-  ::view-transition-new(root) { animation-duration: 1ms; }
+  ::view-transition-new(root) {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transform: none !important;
+    scale: 1 !important;
+    filter: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+  .portfolio-route-cue:popover-open { display: none !important; }
 }

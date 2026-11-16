@@ -253,7 +253,12 @@ function AwardGallery() {
       if (event.key === 'ArrowRight') {event.preventDefault();step(1);}
       if (event.key === 'ArrowLeft') {event.preventDefault();step(-1);}
       if (event.key === 'Tab') {
-        const controls = [...dialog.querySelectorAll('a[href],button:not(:disabled)')];
+        // The desktop-only award thumbnail rail remains mounted on phones.
+        // Hidden thumbnails must NOT become keyboard-trap sentinels: otherwise
+        // Tab escapes after the last visible previous/next arrow.
+        const controls = [...dialog.querySelectorAll('a[href],button:not(:disabled)')]
+          .filter(element => element.getClientRects().length > 0 &&
+            getComputedStyle(element).visibility !== 'hidden');
         const first = controls[0], last = controls.at(-1);
         if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {event.preventDefault();last?.focus();}
         else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {event.preventDefault();first?.focus();}
@@ -291,10 +296,11 @@ function AwardGallery() {
       const verticalPadding = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
       const ratio = image.naturalWidth / image.naturalHeight;
       const arrowSpace = mobile ? 0 : 136; // 48px controls + 20px gaps
-      const maxWidth = Math.min(960, width - horizontalPadding - arrowSpace);
+      const railSpace = width >= 1100 ? 208 : 0; // thumbnail evidence index on wide desktops
+      const maxWidth = Math.min(960, width - horizontalPadding - arrowSpace - railSpace);
       let mediaWidth = maxWidth;
       for (let pass = 0; pass < 4; pass++) {
-        figure.style.width = `${mediaWidth + arrowSpace}px`;
+        figure.style.width = `${mediaWidth + arrowSpace + railSpace}px`
         const informationHeight = caption.getBoundingClientRect().height + 14 + (mobile ? 62 : 0);
         const availableHeight = height - verticalPadding - informationHeight;
         let nextWidth = Math.min(maxWidth, Math.max(160, availableHeight) * ratio);
@@ -303,9 +309,9 @@ function AwardGallery() {
         if (Math.abs(nextWidth - mediaWidth) < .1) break;
         mediaWidth = nextWidth;
       }
-      figure.style.width = `${mediaWidth + arrowSpace}px`;
-      setViewerSize(previous => previous && Math.abs(previous.width - mediaWidth) < .1 && Math.abs(previous.height - mediaWidth / ratio) < .1 && previous.mobile === mobile
-        ? previous : {width: mediaWidth, height: mediaWidth / ratio, figureWidth: mediaWidth + arrowSpace, mobile});
+      figure.style.width = `${mediaWidth + arrowSpace + railSpace}px`
+      setViewerSize(previous => previous && Math.abs(previous.width - mediaWidth) < .1 && Math.abs(previous.height - mediaWidth / ratio) < .1 && previous.mobile === mobile && previous.figureWidth === mediaWidth + arrowSpace + railSpace
+        ? previous : {width: mediaWidth, height: mediaWidth / ratio, figureWidth: mediaWidth + arrowSpace + railSpace, mobile});
     };
     fit();
     image.addEventListener('load', fit);
@@ -324,7 +330,13 @@ function AwardGallery() {
   const active = isOpen ? awards[openIndex] : null;
   return (
     <div className="impact-glass impact-award-shell impact-award-shell--grid">
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span><span>{lang === 'en' ? 'CLICK TO VIEW' : '点击查看'}</span></div>
+      <div id="impact-award-gallery-note" className="impact-evidence-note">
+        <span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span>
+        <span className="impact-award-enlarge-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="10.5" cy="10.5" r="6.3"/><path d="M15.2 15.2 21 21M7.8 10.5h5.4M10.5 7.8v5.4"/></svg>
+          <span>{lang === 'en' ? 'Tap to enlarge' : '点击图片放大'}</span>
+        </span>
+      </div>
       <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases' : 'AI 创作赛事获奖、入围及展映记录'}</p>
       <ul ref={railRef} className="impact-award-grid" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'}>
         {awards.map((award, index) => (
@@ -363,6 +375,17 @@ function AwardGallery() {
             <button type="button" className="impact-award-lightbox-nav impact-award-lightbox-nav--next" aria-label={lang === 'en' ? 'Next award' : '下一张'} aria-controls="impact-award-lightbox" onClick={() => step(1)}>
               <svg className="impact-award-nav-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10 5 7 7-7 7" /></svg>
             </button>
+            <div className="impact-award-viewer-rail" role="group" aria-label={lang === 'en' ? 'Jump to an award' : '快速切换奖项'}>
+              <div className="impact-award-viewer-rail-meta"><span>{lang === 'en' ? 'AWARD INDEX' : '获奖索引'}</span><span>{openIndex + 1} / {awards.length}</span></div>
+              {awards.map((award, index) => (
+                <button type="button" key={award.image} className="impact-award-viewer-thumb"
+                  aria-pressed={index === openIndex}
+                  aria-label={lang === 'en' ? `View award ${index + 1}: ${award.title.en}` : `查看第 ${index + 1} 项：${award.title.zh}`}
+                  onClick={() => step(index - viewerTargetIndexRef.current)}>
+                  <img src={award.thumbnail} alt="" loading="lazy" decoding="async" />
+                </button>
+              ))}
+            </div>
           </figure>
 
         </div>,
@@ -395,7 +418,6 @@ function LogoIndex() {
       <div className="impact-platform-desktop-card">
         <div className="impact-platform-desktop-head">
           <span>{lang === 'en' ? 'CREATOR PLATFORMS' : '创作平台'}</span>
-          <span>{lang === 'en' ? 'CREATOR PARTNER' : '合作创作者'}</span>
         </div>
         <p className="impact-platform-desktop-description">{lang === 'en' ? 'Recognized through AI creator programs' : '多个 AI 视频平台的合作创作者'}</p>
         <div className="impact-platform-desktop-grid">
@@ -411,7 +433,6 @@ function LogoIndex() {
         <div className="impact-platform-mobile-network">
           <div className="impact-platform-mobile-network-head">
             <span>{lang === 'en' ? 'PLATFORMS' : '创作平台'}</span>
-            <span>{lang === 'en' ? 'CREDENTIALS' : '创作者身份'}</span>
           </div>
           <div className="impact-platform-mobile-grid">
             {logos.map((logo) => (
@@ -463,13 +484,11 @@ function ReachDossier() {
     setActiveProfile(card);
   };
 
-  // A decoded, in-place account-to-account transition. Preserve the current
-  // screenshot/QR until the next account is ready, as the opening path does.
-  // A request token prevents a late decode from replacing a newer selection.
-  const stepProfile = async (direction) => {
-    if (!activeProfile || profileClosingRef.current) return;
-    const currentIndex = reachCards.findIndex(card => card.id === activeProfile.id);
-    const nextCard = reachCards[(currentIndex + direction + reachCards.length) % reachCards.length];
+  // Single transition path for arrows, keyboard AND desktop thumbnail index.
+  // The current screenshot / QR stay visible while the destination decodes;
+  // request tokens ignore stale responses from rapid switching.
+  const selectProfile = async nextCard => {
+    if (!activeProfile || profileClosingRef.current || nextCard.id === activeProfile.id) return;
     const request = ++profileOpenRequestRef.current;
     setPreparingProfileId(nextCard.id);
     const [screenshotReady, qrReady] = await warmImages([nextCard.screenshot, nextCard.qrCode]);
@@ -477,6 +496,11 @@ function ReachDossier() {
     setProfileImageFailed({ screenshot: !screenshotReady, qr: !qrReady });
     setPreparingProfileId(null);
     setActiveProfile(nextCard);
+  };
+  const stepProfile = direction => {
+    if (!activeProfile || profileClosingRef.current) return;
+    const currentIndex = reachCards.findIndex(card => card.id === activeProfile.id);
+    void selectProfile(reachCards[(currentIndex + direction + reachCards.length) % reachCards.length]);
   };
   profileStepRef.current = stepProfile;
 
@@ -591,14 +615,14 @@ function ReachDossier() {
         data-social-profile-trigger={card.id} aria-busy={preparingProfileId === card.id}
         aria-haspopup="dialog" aria-label={card.platform[lang] + ' · ' + t('查看账号资料', 'View account details')}
         onClick={(event) => openProfile(card, event)}>
-        {t('查看资料', 'View details')}
+        <span className="portfolio-link-label">{t('查看资料', 'View details')}</span>
       </button>
       {card.link && <a className="impact-reach-action impact-reach-action--external"
         href={card.link} target="_blank" rel="noopener noreferrer"
         data-external-label-zh={`${card.platform.zh}主页`}
         data-external-label-en={`${card.platform.en} profile`}
         aria-label={card.platform[lang] + ' · ' + t('访问主页（新窗口）', 'Visit profile (new tab)')}>
-        <span>{t('访问主页', 'Visit Profile')}</span>
+        <span className="portfolio-link-label">{t('访问主页', 'Visit Profile')}</span>
       </a>}
     </div>
   );
@@ -607,7 +631,6 @@ function ReachDossier() {
     <div className="impact-glass impact-reach-dossier">
       <div className="impact-reach-dossier-head">
         <span>{t('跨平台影响力', 'CROSS-PLATFORM REACH')}</span>
-        <small>{t('4 个平台', '4 platforms')}</small>
       </div>
       <div className="impact-reach-compact-grid">
         {reachCards.map((card) => (
@@ -676,6 +699,27 @@ function ReachDossier() {
                     {t('保存二维码', 'Save QR code')}
                   </a>
                 )}
+              </aside>
+              <aside className="impact-profile-index" aria-label={t('自媒体账号索引', 'Social profile index')}>
+                <div className="impact-profile-index-head">
+                  <span>{t('账号索引', 'PROFILES')}</span>
+                  <span>{reachCards.findIndex(card => card.id === activeProfile.id) + 1} / {reachCards.length}</span>
+                </div>
+                <div className="impact-profile-index-grid" role="group" aria-label={t('直接切换平台账号', 'Choose a platform profile')}>
+                  {reachCards.map(card => (
+                    <button key={card.id} type="button" className="impact-profile-index-item"
+                      aria-pressed={card.id === activeProfile.id}
+                      aria-label={t(`查看${card.platform.zh}账号`, `View ${card.platform.en} profile`)}
+                      aria-busy={preparingProfileId === card.id}
+                      disabled={Boolean(preparingProfileId)}
+                      onClick={() => void selectProfile(card)}>
+                      <span className="impact-profile-index-preview">
+                        <img src={card.screenshot} alt="" loading="eager" decoding="async" />
+                      </span>
+                      <span className="impact-profile-index-name">{card.platform[lang]}</span>
+                    </button>
+                  ))}
+                </div>
               </aside>
             </div>
             <div className="impact-profile-pagination" role="group" aria-label={t('切换平台账号', 'Browse platform profiles')}>

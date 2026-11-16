@@ -25,13 +25,12 @@
   --hero-cta-font-size: 16px;
   --hero-cta-font-size-mobile: 15px;
   --hero-cta-font-weight: 600;
-  --hero-primary-bg: var(--apple-blue);
-  --hero-primary-hover-bg: #4aa8ff;
-  --hero-secondary-bg: rgba(30, 33, 40, .92);
-  --hero-secondary-border: rgba(255, 255, 255, .3);
+  /* White 15–16px CTA labels require 4.5:1; #2997ff was only ~3.02:1.
+     Keep the site's accent-blue elsewhere; the filled BUTTON alone uses
+     Apple's stronger solid-blue role, not an ambient blue halo. */
+  --hero-primary-bg: #0071e3;
+  --hero-primary-hover-bg: #0066cc;
   --hero-secondary-color: #f5f5f7;
-  --hero-secondary-hover-bg: rgba(39, 43, 50, .96);
-  --hero-secondary-hover-border: rgba(255, 255, 255, .44);
   --hero-subtitle-color: rgba(245, 245, 247, .88);
   --apple-hairline: rgba(255, 255, 255, .14);
   --apple-hairline-soft: rgba(255, 255, 255, .09);
@@ -395,12 +394,6 @@ header .nav-contact-icon {
 .impact-evidence-note,
 .impact-logo-head,
 .impact-reach-dossier-head { color: var(--apple-tertiary); font-family: var(--font-mono); }
-.impact-award-card { box-shadow: none !important; transition: border-color var(--apple-duration-control) var(--apple-ease), box-shadow var(--apple-duration-card) var(--apple-ease) !important; }
-#recognition .impact-award-card { box-shadow: none !important; }
-.impact-award-card:hover,
-.impact-award-card:focus-visible { border-color: rgba(255, 255, 255, .5) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .08), 0 16px 34px rgba(0, 0, 0, .28) !important; }
-.impact-award-rail-nav { transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease) !important; }
-.impact-award-rail-nav:hover:not(:disabled) { border-color: rgba(255, 255, 255, .34) !important; background: var(--apple-surface-raised) !important; }
 .impact-reach-profile-media { clip-path: inset(0 round var(--portfolio-content-radius)); }
 .impact-reach-profile {
   transition: transform var(--apple-duration-card) var(--apple-ease);
@@ -469,16 +462,12 @@ header .nav-contact-icon {
   .impact-evidence-row > div:last-child { width: 100%; }
   .impact-evidence-row.is-desktop-active > div:last-child > .impact-glass { min-height: 0; }
   .impact-award-shell { display: flex; flex-direction: column; justify-content: center; min-height: 0; }
-  .impact-award-rail { height: 390px; }
-  .impact-award-card { display: flex; flex-direction: column; align-items: stretch; justify-content: space-between; gap: 10px; padding: 10px 10px 12px; }
-  .impact-award-card img { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; object-fit: contain; }
   .impact-logo-shell { min-height: 0; padding: 20px 28px; }
   .impact-logo-shell > .impact-logo-head,
   .impact-logo-shell > .logo-loop { display: none; }
   /* Keep desktop visibility above the component default after CSS chunk extraction. */
   .impact-logo-shell > .impact-platform-desktop-card { display: block; }
   .impact-platform-desktop-head { display: flex; justify-content: space-between; gap: 20px; color: var(--apple-tertiary); font: 500 10px/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
-  .impact-platform-desktop-head span:last-child { color: var(--apple-secondary); }
   .impact-platform-desktop-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -524,18 +513,6 @@ header .nav-contact-icon {
   box-shadow: var(--apple-shadow-panel);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-}
-
-@keyframes impact-mobile-anchor-enter {
-  from { opacity: .68; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-
-@media (max-width: 720px) {
-  .impact-evidence-row.is-mobile-anchor-enter > .impact-evidence-label,
-  .impact-evidence-row.is-mobile-anchor-enter > div:last-child {
-    animation: impact-mobile-anchor-enter 420ms var(--apple-ease) both;
-  }
 }
 
 /* Selected-work and AI-media links share one quiet, anchored CTA treatment. */
@@ -588,14 +565,13 @@ footer::before { background: transparent !important; }
   margin-bottom: 28px;
   padding: clamp(32px, 5vw, 56px) clamp(24px, 6vw, 70px);
 }
-.footer-contact-kicker { color: var(--apple-secondary) !important; font-family: var(--font-mono); }
 .footer-contact-copy h2 { font: 600 clamp(2.8rem, 6vw, 5rem)/.98 var(--font-display); letter-spacing: -.065em; }
-.footer-contact-copy > p:not(.footer-contact-kicker) { color: #f0f4f6 !important; font: 400 15px/1.65 var(--font-body); }
+.footer-contact-copy > p { color: #f0f4f6 !important; font: 400 15px/1.65 var(--font-body); }
 .footer-contact-direct strong { color: var(--apple-text); font: 500 14px/1.4 var(--font-body); }
 .footer-contact-direct a:hover,
 .footer-contact-direct a:focus-visible { color: var(--apple-blue); }
 .floating-dock-item:hover,
-.floating-dock-item:focus-visible { border-color: rgba(255, 255, 255, .28); background: rgba(255, 255, 255, .1); }
+.floating-dock-item:focus-visible { border-color: rgba(227, 237, 250, .52); background: rgba(238, 246, 255, .14); }
 .footer-bottom { margin-top: 34px; padding-top: 22px; border-top-color: var(--apple-hairline-soft) !important; }
 .footer-bottom-copy { color: var(--apple-tertiary); font: 400 12px/1.5 var(--font-body); }
 
@@ -635,15 +611,13 @@ footer::before { background: transparent !important; }
   .impact-evidence { gap: 48px; }
   .impact-evidence-row { gap: 18px; }
   .impact-award-shell { border-radius: var(--apple-radius-panel) !important; }
-  .impact-award-rail { height: 304px; padding-inline: 52px; clip-path: inset(0 52px); }
-  .impact-award-rail > li { flex-basis: calc((100% - 14px) / 2); width: calc((100% - 14px) / 2); }
   .impact-logo-shell { border-radius: var(--apple-radius-panel) !important; }
   .impact-reach-dossier { border-radius: var(--apple-radius-panel) !important; }
   footer { padding: 96px 0 28px !important; }
   .footer-topline { padding-bottom: 20px; }
   .footer-contact-copy { padding: 30px 22px; border-radius: var(--apple-radius-panel) !important; text-align: left; }
   .footer-contact-copy h2 { font-size: clamp(2.8rem, 14vw, 4rem); }
-  .footer-contact-copy > p:not(.footer-contact-kicker) { margin-left: 0; }
+  .footer-contact-copy > p { margin-left: 0; }
   .footer-contact-direct { justify-content: flex-start; justify-items: start; }
   .footer-contact-direct a { text-align: left; }
   .footer-contact-panel { justify-self: start; }
@@ -701,10 +675,8 @@ footer::before { background: transparent !important; }
 
 .hero-actions a:active,
 .comet-archive__card:active,
-.impact-award-card:active,
 .impact-reach-profile-shot--link:active,
 .impact-reach-profile-qr:active,
-.flip-experiment__link:active,
 .floating-dock-item:active,
 header .nav-lang:active,
 header .nav-contact-icon:active,
@@ -771,20 +743,18 @@ header .nav-contact-icon:active,
   .impact-award-lightbox.is-closing,
   .impact-qr-lightbox.is-closing { opacity: 0 !important; }
   .floating-dock-item:hover,
-  .floating-dock-item:focus-visible,
-  .hero-actions a:active,
-  .comet-archive__card:active,
-  .impact-award-card:active,
-  .impact-reach-profile-shot--link:active,
-  .impact-reach-profile-qr:active,
-  .flip-experiment__link:active,
-  .floating-dock-item:active,
-  header .nav-lang:active,
-  header .nav-contact-icon:active,
-  .nav-toggle:active,
-  .mobile-nav-close:active,
-  .footer-social a:active,
-  .impact-qr-dialog-actions a:active { transform: none !important; }
+.floating-dock-item:focus-visible,
+.hero-actions a:active,
+.comet-archive__card:active,
+.impact-reach-profile-shot--link:active,
+.impact-reach-profile-qr:active,
+.floating-dock-item:active,
+header .nav-lang:active,
+header .nav-contact-icon:active,
+.nav-toggle:active,
+.mobile-nav-close:active,
+.footer-social a:active,
+.impact-qr-dialog-actions a:active { transform: none !important; }
 }
 
 @media (max-width: 760px) and (prefers-reduced-motion: reduce) {
@@ -816,28 +786,20 @@ header .nav-contact-icon:active,
   align-items: start;
   gap: clamp(28px, 4vw, 56px);
 }
-#profile .closing-about .section-intro { display: block; margin-bottom: 16px; }
-#profile .closing-column-kicker,
-#profile .footer-contact-kicker {
-  margin: 0 0 10px;
-  color: var(--apple-tertiary);
-  font: 500 10px/1.5 var(--font-mono);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-#profile .closing-card .section-title,
+/* Two equal reading columns: one role heading and one action heading. */
+#profile .closing-about .section-intro { display: block; margin: 0 0 15px; }
+#profile .closing-card #profile-title.about-role,
 #profile .footer-contact-copy h2 {
   margin: 0;
   color: var(--apple-label);
-  font-size: clamp(30px, 2.4vw, 36px);
-  font-weight: 600;
-  line-height: 1.12;
-  letter-spacing: -.025em;
+  font: 600 clamp(24px, 2.3vw, 32px)/1.2 var(--font-display);
+  letter-spacing: -.03em;
+  text-wrap: balance;
 }
 #profile .about-copy { width: min(100%, 660px); max-width: 660px; margin: 0; }
-#profile .about-role { margin: 0 0 10px; }
 #profile .about-description {
-  max-width: 66ch;
+  margin: 0;
+  max-width: 62ch;
   color: rgba(245, 245, 247, .78);
   font-size: clamp(16px, 1.15vw, 17px);
   line-height: 1.72;
@@ -858,9 +820,9 @@ header .nav-contact-icon:active,
   backdrop-filter: none;
   text-align: left;
 }
-#profile .footer-contact-copy > p:not(.footer-contact-kicker) {
+#profile .footer-contact-copy > p {
   max-width: 34ch;
-  margin: 12px 0 0;
+  margin: 15px 0 0;
   color: rgba(245, 245, 247, .78);
   line-height: 1.7;
 }
@@ -871,7 +833,48 @@ header .nav-contact-icon:active,
   gap: 12px 20px;
   margin-top: 18px;
 }
-#profile .footer-contact-direct a { min-width: 0; margin: 0; padding: 0; border: 0; }
+/* P1 / 2026-11-16 — contacts are primary actions, not passive metadata.
+   Keep the established unboxed, right-aligned desktop composition, but
+   provide full 44px targets and more legible values without adding buttons. */
+#profile .footer-contact-direct a,
+#profile .footer-contact-direct a:last-child {
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 5px 0;
+  border: 0;
+  display: inline-grid;
+  align-content: center;
+  gap: 3px;
+  text-underline-offset: 4px;
+}
+#profile .footer-contact-direct span {
+  font: 500 10px/1.45 var(--font-body);
+  letter-spacing: .04em;
+  color: var(--apple-secondary);
+}
+#profile .footer-contact-direct strong {
+  color: var(--apple-text);
+  font: 600 15px/1.4 var(--font-body);
+  letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) and (pointer: fine) {
+  #profile .footer-contact-direct a:hover strong {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+  }
+}
+#profile .footer-contact-direct a:focus-visible {
+  outline: 2px solid var(--apple-blue);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+#profile .footer-contact-direct a:focus-visible strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
 .closing-social {
   display: flex;
   align-items: center;
@@ -880,6 +883,22 @@ header .nav-contact-icon:active,
   margin-top: clamp(22px, 2.6vw, 32px);
   padding-top: 16px;
   border-top: 1px solid var(--apple-hairline-soft);
+}
+/* Desktop footer shares the editorial columns used by the headings.
+   At tablet widths, retain the flexible row to protect six-icon controls. */
+@media (min-width: 1024px) {
+  #profile .closing-social {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    align-items: center;
+    column-gap: clamp(28px, 4vw, 56px);
+  }
+  #profile .closing-social #footer-dock-react-root {
+    width: 100%;
+    justify-content: flex-start;
+    min-width: 0;
+  }
+  #profile .closing-social .floating-dock-panel { gap: 8px; }
 }
 .closing-social-label {
   flex: 0 0 auto;
@@ -926,35 +945,82 @@ header .nav-contact-icon:active,
   transform: none;
   white-space: normal;
 }
-.closing-footer {
-  padding: 16px 0 max(32px, env(safe-area-inset-bottom)) !important;
-  background: transparent !important;
+/* Profile card composition: left editorial biography, right aligned contact.
+   Social dock follows the right column edge on desktop, while phone pages
+   stay naturally left-aligned. Match inner card padding, not viewport edges. */
+@media (min-width: 721px) {
+  #profile .closing-contact {
+    display: flex;
+    justify-content: flex-end;
+  }
+  #profile .footer-contact-copy {
+    margin-left: auto;
+    text-align: right;
+  }
+  #profile .footer-contact-copy > p { margin-left: auto; }
+  #profile .footer-contact-direct { justify-content: flex-end; }
+  #profile .footer-contact-direct a { text-align: right; }
+  #profile .closing-social #footer-dock-react-root { justify-content: flex-end; }
+  #profile .closing-social .floating-dock-panel { justify-content: flex-end; }
 }
-.closing-footer::before { background: transparent !important; }
-.closing-footer .footer-stack {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-.closing-footer .footer-topline { margin: 0; padding: 0 !important; border: 0 !important; }
-.closing-footer .footer-bottom { width: auto; margin: 0; padding: 0 !important; border: 0 !important; }
-.closing-footer .footer-copyright-row .footer-bottom-copy { width: auto; padding: 0 !important; border: 0 !important; }
 
+/* The brand is now a noninteractive visual mark within the contact card.
+   Give it the same circular geometry as the adjacent social icon controls.
+   No separate footer stacking context, copyright row or decorative line. */
+#profile .closing-social .closing-footer {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-width: 0;
+  height: 46px;
+  margin: 0;
+  padding: 0 !important;
+  background: transparent !important;
+  isolation: auto;
+  z-index: auto;
+}
+#profile .closing-footer::before { display: none; }
+#profile .closing-social .footer-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  width: auto;
+  min-height: 46px;
+  height: 46px;
+  margin: 0;
+  padding: 0;
+  color: var(--apple-text);
+  cursor: default;
+  pointer-events: none;
+}
+#profile .closing-social .footer-avatar {
+  box-sizing: border-box;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  margin: 0;
+}
+#profile .closing-social .footer-brand-copy strong {
+  font-size: 17px;
+  line-height: 1.15;
+}
 @media (max-width: 720px) {
-  #profile.closing-section { padding: 48px 0 18px; }
-  #profile .closing-card { padding: 22px 20px 16px; border-radius: 20px; }
-  .closing-card-main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  #profile .closing-about .section-intro { margin-bottom: 14px; }
-  #profile .closing-column-kicker,
-  #profile .footer-contact-kicker { margin-bottom: 8px; }
-  #profile .closing-card .section-title,
-  #profile .footer-contact-copy h2 { font-size: clamp(30px, 8vw, 34px); }
+  #profile.closing-section { padding: 36px 0 14px; }
+  #profile .closing-card { padding: 19px 18px 16px; border-radius: 20px; }
+  .closing-card-main { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  #profile .closing-about .section-intro { margin-bottom: 11px; }
+  #profile .closing-card #profile-title.about-role,
+  #profile .footer-contact-copy h2 { font-size: clamp(27px, 7.5vw, 32px); }
   #profile .about-copy { width: 100%; max-width: none; }
-  #profile .about-description { font-size: 16px; line-height: 1.75; }
+  #profile .about-description { font-size: 15.5px; line-height: 1.64; }
   #profile .closing-contact { padding-top: 0; }
   #profile .footer-contact-copy { width: 100%; max-width: none; }
-  #profile .footer-contact-direct { display: grid; gap: 0; margin-top: 14px; }
+  #profile .footer-contact-copy > p {
+    margin-top: 11px;
+    line-height: 1.55;
+  }
+  #profile .footer-contact-direct { display: grid; gap: 0; margin-top: 10px; }
   #profile .footer-contact-direct a,
   #profile .footer-contact-direct a:last-child {
     display: grid;
@@ -962,20 +1028,32 @@ header .nav-contact-icon:active,
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 12px 0;
+    min-height: 44px;
+    padding: 7px 0;
     border-top: 1px solid var(--apple-hairline-soft);
   }
   #profile .footer-contact-direct strong { overflow-wrap: anywhere; }
-  .closing-social { align-items: flex-start; flex-direction: column; gap: 8px; margin-top: 18px; padding-top: 12px; }
+  .closing-social { align-items: flex-start; flex-direction: column; gap: 0; margin-top: 19px; padding-top: 18px; }
   .closing-social #footer-dock-react-root { width: 100%; justify-content: flex-start; }
+  #profile .closing-social .floating-dock-shell,
+  #profile .closing-social .floating-dock-panel { justify-content: flex-start; }
   .closing-social .floating-dock-shell { max-width: 100%; }
   .closing-social .floating-dock-panel { gap: clamp(2px, 1.2vw, 4px); }
   .closing-social .floating-dock-icon,
   .closing-social .floating-dock-icon img { width: 18px; height: 18px; }
-  .closing-footer { padding: 12px 0 max(26px, env(safe-area-inset-bottom)) !important; }
-  .closing-footer .footer-stack { flex-direction: column; gap: 12px; }
-  .closing-footer .footer-brand { justify-content: center; }
-  .closing-footer .footer-bottom-copy { text-align: center; }
+  /* Mobile already identifies the creator in the global navigation.
+     Hide the repeated brand row; leave the social icons in one clean line. */
+  #profile .closing-social .closing-footer { display: none; }
+  #profile .closing-social .floating-dock-item { min-width: 40px; min-height: 40px; }
+}
+
+/* Phone navigation spans up to 760px; hide the repeated footer signature
+   through that breakpoint, including landscape phones (721–760px). */
+@media (min-width: 721px) and (max-width: 760px) {
+  #profile .closing-social .closing-footer { display: none; }
+  #profile .closing-social { justify-content: flex-start; }
+  #profile .closing-social #footer-dock-react-root { width: 100%; justify-content: flex-start; }
+  #profile .closing-social .floating-dock-panel { justify-content: flex-start; }
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -1011,7 +1089,6 @@ header .nav-contact-icon:active,
 .comet-archive__image { border-color: rgba(255, 255, 255, .18) !important; }
 .comet-card:hover .comet-archive__image,
 .comet-card:focus-within .comet-archive__image { transform: none !important; }
-.impact-award-card { background: rgba(0, 0, 0, .58) !important; }
 
 /* 作品图默认保持干净的媒体边界；只有交互发生时才出现承托跳转标签的渐变，
    避免桌面端每张图的底部都像多出一块黑色漏边。 */
@@ -1024,9 +1101,6 @@ header .nav-contact-icon:active,
   .comet-card:focus-within .comet-archive__image::after {
     opacity: 1;
   }
-}
-
-@media (max-width: 720px) {
 }
 
 /* Icon controls share the language button's quiet feedback: edge, surface and
@@ -1085,30 +1159,12 @@ header .nav-contact-icon:focus-visible {
 
 /* Work history uses option A: five compact stage labels above one focused
    detail card. Mobile keeps all five labels visible and removes carousel peek. */
-@media (max-width: 760px) {
-
-  /* Keep the English history panels on one shared mobile rhythm. The shorter
-     copy above brings every stage inside the 2018–2019 baseline; this height
-     scales with the viewport so the image and its surrounding padding remain
-     fully visible at the supported phone widths. */
-}
 
 /* Mobile work history mirrors the award gallery's paging language. The
    existing five stage tabs remain the primary control; these dots provide a
    thumb-friendly second entry point at the end of the card. */
 /* Mobile controls sit below media, never over the artwork. */
 @media (max-width: 720px) {
-  #projects .comet-archive-mobile-shell .comet-archive {
-    padding: 16px 16px 8px !important;
-    row-gap: 16px !important;
-    grid-template-rows: auto auto !important;
-  }
-  #projects .comet-archive-mobile-shell { padding-bottom: 60px; }
-  #projects .comet-archive-mobile-shell .comet-archive__title {
-    height: auto !important;
-    min-height: 0 !important;
-    padding-top: var(--portfolio-work-title-gap-mobile) !important;
-  }
   #projects .comet-archive-mobile-shell .comet-archive__details,
   #projects .comet-archive-mobile-shell .comet-archive__details strong {
     height: auto !important;
@@ -1125,27 +1181,9 @@ header .nav-contact-icon:focus-visible {
     font: 500 11px/1.4 var(--font-body);
     color: var(--apple-secondary);
   }
-  #projects .comet-archive-page-arrow,
-  #impact-awards .impact-award-rail-nav {
-    top: auto !important;
-    bottom: 8px !important;
-    transform: none !important;
-  }
-  #projects .comet-archive-page-arrow--prev,
-  #impact-awards .impact-award-rail-nav--prev { left: 12px !important; }
-  #projects .comet-archive-page-arrow--next,
-  #impact-awards .impact-award-rail-nav--next { right: 12px !important; }
-  #projects .comet-archive-pagination {
-    position: absolute;
-    bottom: 8px;
-    left: 64px;
-    right: 64px;
-    padding: 0 !important;
-  }
   #impact-awards .impact-award-shell:not(.impact-award-shell--grid) {
     padding-bottom: 60px !important;
   }
-  #impact-awards .impact-award-rail { padding: 12px 24px !important; }
   #impact-awards .impact-award-pagination {
     bottom: 8px;
     left: 58px;
@@ -1160,90 +1198,22 @@ header .nav-contact-icon:focus-visible {
 
 .comet-archive__mobile-link,
 .impact-reach-mobile-link { display: none; }
-.comet-archive-page-arrow svg,
-.impact-award-rail-nav svg {
-  display: block;
-  width: 18px;
-  height: 18px;
-  margin: auto;
-  flex: none;
-}
-.comet-archive-page-arrow,
-.comet-archive-pagination button,
-.impact-award-rail-nav,
 .impact-award-pagination button,
 .impact-award-lightbox-nav,
 .impact-award-lightbox-close {
   touch-action: manipulation;
 }
-@media (max-width: 720px) {
-}
-@media (max-width: 760px) {
-}
 
-@media (prefers-reduced-motion: reduce) {
-}
-
-/* Selected work mobile B: one controlled carousel, four complete cards per
-   page. The current page is the only page rendered, so adjacent artwork can
-   never peek through the clipped stage. */
+/* Featured on phones is an eight-card, two-column continuous archive.
+   The retired 4-card carousel, swipe offset, paging arrows, dots and
+   forward/back keyframes had no mounted React consumers and are removed.
+   Keep only the artwork/caption consistency rules still used by ProjectCard;
+   the CURRENT grid geometry is owned at the end of this file by #projects. */
 .comet-archive-mobile-shell { display: contents; }
 .comet-archive-page-arrow,
 .comet-archive-pagination { display: none; }
 .comet-archive__meta { text-decoration: none !important; }
 @media (max-width: 720px) {
-  .comet-archive-mobile-shell {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    touch-action: pan-y;
-    border: 1px solid var(--apple-hairline);
-    border-radius: var(--apple-radius-panel);
-    background: var(--portfolio-card-surface);
-    box-shadow: var(--portfolio-card-shadow);
-    -webkit-backdrop-filter: var(--portfolio-card-blur);
-    backdrop-filter: var(--portfolio-card-blur);
-  }
-  .comet-archive-mobile-shell .comet-archive {
-    --mobile-swipe-x: 0px;
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
-    grid-auto-flow: row !important;
-    column-gap: 10px !important;
-    row-gap: 10px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 22px 42px !important;
-    overflow: hidden !important;
-    overscroll-behavior: none !important;
-    transform: translate3d(var(--mobile-swipe-x), 0, 0);
-    transition: transform var(--apple-duration-card) var(--apple-ease);
-    will-change: transform;
-  }
-  .comet-archive-mobile-shell .comet-archive.is-touch-dragging { transition: none; }
-  @keyframes comet-mobile-page-forward {
-    from { transform: translate3d(18px, 0, 0); }
-    to { transform: translate3d(0, 0, 0); }
-  }
-  @keyframes comet-mobile-page-back {
-    from { transform: translate3d(-18px, 0, 0); }
-    to { transform: translate3d(0, 0, 0); }
-  }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item {
-    animation-duration: var(--apple-duration-card);
-    animation-timing-function: var(--apple-ease);
-    animation-fill-mode: both;
-  }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item { animation-name: comet-mobile-page-forward; }
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation-name: comet-mobile-page-back; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(2),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(2) { animation-delay: 18ms; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(3),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(3) { animation-delay: 36ms; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item:nth-child(4),
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item:nth-child(4) { animation-delay: 54ms; }
   .comet-archive-mobile-shell .comet-archive__item {
     min-width: 0 !important;
     min-height: 0 !important;
@@ -1256,20 +1226,10 @@ header .nav-contact-icon:focus-visible {
     min-height: 0 !important;
     gap: 0 !important;
   }
-  .comet-archive-mobile-shell .comet-archive__title {
-    order: 2 !important;
-    height: auto !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 2px 1px 0 !important;
-    align-items: flex-start !important;
-    overflow: visible !important;
-  }
   .comet-archive-mobile-shell .comet-archive__title-content--forced-break .comet-archive__title-line {
     display: block !important;
   }
   .comet-archive-mobile-shell .comet-archive__image {
-    order: 1 !important;
     aspect-ratio: 3 / 4 !important;
     background-color: var(--portfolio-content-surface) !important;
     background-position: center !important;
@@ -1280,173 +1240,18 @@ header .nav-contact-icon:focus-visible {
   .comet-archive-mobile-shell .comet-archive__image > .comet-archive__meta {
     display: none !important;
   }
-  .comet-archive-mobile-shell .comet-archive__copy {
-    display: grid !important;
-    order: 3 !important;
-    gap: 2px !important;
-    min-height: 0 !important;
-    padding: var(--portfolio-work-caption-gap-mobile) 1px 0 !important;
-  }
   .comet-archive-mobile-shell .comet-archive__details {
     height: auto !important;
     min-height: 0 !important;
     min-width: 0 !important;
   }
-  @supports (grid-template-rows: subgrid) {
-    #projects .comet-archive-mobile-shell .comet-archive { grid-template-rows: none !important; row-gap: 0 !important; }
-    #projects .comet-archive-mobile-shell .comet-archive__item { display: grid; grid-row: span 3; grid-template-rows: subgrid; padding-bottom: 16px; }
-    #projects .comet-archive-mobile-shell .comet-archive__card { display: grid !important; grid-row: span 3; grid-template-rows: subgrid; align-content: stretch; }
-    #projects .comet-archive-mobile-shell .comet-archive__image { grid-row: 1; }
-    #projects .comet-archive-mobile-shell .comet-archive__title { grid-row: 2; }
-    #projects .comet-archive-mobile-shell .comet-archive__copy { grid-row: 3; }
-  }
-  .comet-archive-page-arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 4;
-    display: grid !important;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 50%;
-    background: rgba(25, 25, 28, .96);
-    color: var(--apple-text);
-    cursor: pointer;
-    touch-action: manipulation;
-    transform: translateY(-50%);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03), 0 4px 12px rgba(0, 0, 0, .18);
-    transition: background-color var(--apple-duration-control) var(--apple-ease), opacity var(--apple-duration-control) var(--apple-ease), border-color var(--apple-duration-control) var(--apple-ease);
-  }
-  .comet-archive-page-arrow--prev { left: 4px; }
-  .comet-archive-page-arrow--next { right: 4px; }
-  .comet-archive-page-arrow span { font: 300 26px/1 var(--font-body); }
-  .comet-archive-page-arrow span {
-    display: block;
-    width: 1em;
-    height: 1em;
-    line-height: .82;
-    text-align: center;
-    transform: translateY(-1px);
-  }
-  .comet-archive-page-arrow:hover:not(:disabled),
-  .comet-archive-page-arrow:focus-visible { border-color: rgba(255,255,255,.42); background: var(--apple-surface-raised); outline: none; }
-  .comet-archive-page-arrow:disabled { opacity: .28; cursor: default; }
-  .comet-archive-pagination {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    min-height: 28px;
-    padding: 0 0 12px;
-  }
-  .comet-archive-pagination button {
-    width: 7px;
-    height: 7px;
-    flex: 0 0 auto;
-    padding: 0;
-    border: 0;
-    border-radius: 999px;
-    background: rgba(255,255,255,.22);
-    cursor: pointer;
-    touch-action: manipulation;
-    transform: scaleX(1);
-    transform-origin: center;
-    transition: transform var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
-  }
-  .comet-archive-pagination button.is-active { background: var(--apple-text); transform: scaleX(3.43); }
-  .comet-archive-pagination button:focus-visible { outline: 2px solid var(--apple-text); outline-offset: 4px; }
-}
-
-@media (max-width: 720px) {
-  /* English labels need the same rhythm, but their extra glyphs do not need
-     the generous Chinese-page breathing room. */
-  html[lang="en"] .comet-archive-mobile-shell .comet-archive {
-    row-gap: 10px !important;
-    padding-block: 16px !important;
-  }
-  html[lang="en"] .comet-archive-mobile-shell .comet-archive-pagination {
-    padding-bottom: 8px !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .comet-archive-page-arrow,
-  .comet-archive-pagination button,
-  .comet-archive-mobile-shell .comet-archive,
-  .impact-award-rail { transition: none !important; }
-  .comet-archive-mobile-shell.is-page-forward .comet-archive__item,
-  .comet-archive-mobile-shell.is-page-back .comet-archive__item { animation: none !important; }
 }
 
 /* Mobile award gallery: one complete portrait at a time, with Apple-style
    paging dots and fixed side controls instead of a clipped carousel peek. */
 .impact-award-pagination { display: none; }
-.impact-award-card-caption { display: none; }
 @media (max-width: 720px) {
   #impact-awards .impact-award-shell { touch-action: pan-y; }
-  .impact-award-rail {
-    --mobile-swipe-x: 0px;
-    padding: 18px 60px !important;
-    overflow: hidden !important;
-    touch-action: pan-y;
-    clip-path: none !important;
-    scroll-snap-type: x mandatory !important;
-    transform: translate3d(var(--mobile-swipe-x), 0, 0);
-    transition: transform var(--apple-duration-card) var(--apple-ease);
-    will-change: transform;
-  }
-  .impact-award-rail.is-touch-dragging { transition: none; }
-  .impact-award-rail > li {
-    flex: 0 0 100% !important;
-    width: 100% !important;
-    height: 100% !important;
-    scroll-snap-align: start !important;
-    animation: impact-award-mobile-enter var(--apple-duration-card) var(--apple-ease) both;
-  }
-  .impact-award-card {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    justify-content: space-between !important;
-    gap: 10px !important;
-    min-height: 0 !important;
-    padding: 10px 10px 12px !important;
-  }
-  .impact-award-card img {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    height: 100% !important;
-    object-fit: contain !important;
-  }
-  .impact-award-card-caption {
-    display: grid !important;
-    align-items: baseline !important;
-    justify-content: space-between !important;
-    gap: 10px !important;
-    min-width: 0 !important;
-    padding: 0 2px !important;
-    text-align: left !important;
-  }
-  .impact-award-card-caption strong {
-    min-width: 0 !important;
-    color: var(--apple-text) !important;
-    font: 600 var(--type-supporting)/1.3 var(--font-display) !important;
-  }
-  .impact-award-card-caption small {
-    flex: 0 0 auto !important;
-    color: var(--apple-secondary) !important;
-    font: 400 var(--type-meta)/1.3 var(--font-mono) !important;
-    white-space: normal !important;
-    overflow-wrap: break-word;
-    min-width: 0;
-  }
-  .impact-award-rail-nav {
-    top: calc(50% + 8px) !important;
-  }
-  .impact-award-rail-nav--prev { left: 8px !important; }
-  .impact-award-rail-nav--next { right: 8px !important; }
   .impact-award-pagination {
     position: absolute;
     right: 0;
@@ -1487,17 +1292,10 @@ header .nav-contact-icon:focus-visible {
   to { transform: none; }
 }
 
-@media (max-width: 500px) {
-  .impact-award-rail { height: 408px !important; padding-inline: 60px !important; }
-}
-
 /* Mobile impact modules: one shared panel height and one title-to-card rhythm. */
 @media (max-width: 720px) {
   .impact-evidence {
     --impact-mobile-card-height: 600px;
-  }
-  .impact-platform-mobile-network {
-    padding: 16px 16px 14px;
   }
   .impact-platform-mobile-grid { margin-top: 10px; }
   .impact-platform-mobile-tile {
@@ -1567,9 +1365,7 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .impact-award-pagination button,
-  .impact-award-rail { transition: none !important; }
-  .impact-award-rail > li { animation: none !important; }
+  .impact-award-pagination button { transition: none !important; }
 }
 
 /* Desktop award cards keep the full portrait and expose its context below. */
@@ -1626,9 +1422,6 @@ header .nav-contact-icon:focus-visible {
     height: auto;
     padding: 20px 0 56px;
   }
-  .impact-award-rail {
-    height: clamp(400px, 112vw, 440px) !important;
-  }
 }
 
 /* Typography roles: the impact modules share the same editorial hierarchy.
@@ -1637,8 +1430,7 @@ header .nav-contact-icon:focus-visible {
 #experiments .section-title,
 .impact-platform-desktop-tile strong,
 .impact-platform-mobile-tile strong,
-.impact-reach-profile-caption strong,
-.impact-award-card-caption strong {
+.impact-reach-profile-caption strong {
   font-family: var(--font-display);
   font-weight: 600;
 }
@@ -1655,22 +1447,8 @@ header .nav-contact-icon:focus-visible {
 .impact-platform-desktop-head,
 .impact-platform-mobile-network-head,
 .impact-reach-dossier-head,
-.impact-reach-profile-caption span,
-.impact-award-card-caption small {
+.impact-reach-profile-caption span {
   font-family: var(--font-mono);
-}
-
-@media (min-width: 761px) {
-  /* Match the AI Lab section-title scale at 1024/1280/1440 instead of
-     letting the three impact labels become a separate, oversized tier. */
-  /* Long English award names keep their context instead of being ellipsized. */
-  html[lang="en"] .impact-award-card-caption strong {
-    overflow: visible;
-    text-overflow: clip;
-    white-space: normal;
-    text-wrap: balance;
-    line-height: 1.3;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1698,45 +1476,6 @@ header .nav-contact-icon:focus-visible {
 }
 
 @media (max-width: 720px) {
-  /* Preserve the compact visual controls while giving each one a thumb-sized
-     button box. The dot itself remains 7px/24px, and arrow circles remain
-     visually close to their original size. */
-  .comet-archive-page-arrow,
-  .impact-award-rail-nav {
-    width: 44px !important;
-    height: 44px !important;
-    border: 1px solid rgba(255, 255, 255, .38) !important;
-    background: rgba(25, 25, 28, .96) !important;
-    box-shadow: none !important;
-  }
-
-  .comet-archive-page-arrow::before {
-    position: absolute;
-    width: 34px;
-    height: 34px;
-    border: 1px solid rgba(255, 255, 255, .14);
-    border-radius: 50%;
-    background: rgba(25, 25, 28, .96);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03), 0 4px 12px rgba(0, 0, 0, .18);
-    content: none;
-  }
-
-  .comet-archive-page-arrow:hover:not(:disabled)::before,
-  .comet-archive-page-arrow:focus-visible::before {
-    border-color: rgba(255, 255, 255, .42);
-    background: var(--apple-surface-raised);
-  }
-
-  .comet-archive-page-arrow:focus-visible {
-    border: 0;
-    background: transparent;
-    outline: 2px solid var(--apple-blue);
-    outline-offset: 2px;
-  }
-
-  .comet-archive-page-arrow span { position: relative; z-index: 1; }
-
-  .comet-archive-pagination,
   .impact-award-pagination {
     width: fit-content !important;
     max-width: 100%;
@@ -1749,16 +1488,13 @@ header .nav-contact-icon:focus-visible {
     box-shadow: none !important;
   }
 
-  /* 分页点的定位基准必须是完整轮播壳，而不是左右箭头预留区；
-     否则精选创作和获奖作品会整体偏向左侧。 */
-  #projects .comet-archive-pagination,
+  /* Award paging indicators are centered against the full gallery. */
   #impact-awards .impact-award-pagination {
     left: 50% !important;
     right: auto !important;
     transform: translateX(-50%) !important;
   }
 
-  .comet-archive-pagination button,
   .impact-award-pagination button {
     position: relative;
     display: grid;
@@ -1775,7 +1511,6 @@ header .nav-contact-icon:focus-visible {
     transform: none !important;
   }
 
-  .comet-archive-pagination button::before,
   .impact-award-pagination button::before {
     display: block;
     width: 7px;
@@ -1788,7 +1523,6 @@ header .nav-contact-icon:focus-visible {
     transition: width var(--apple-duration-control) var(--apple-ease), background-color var(--apple-duration-control) var(--apple-ease);
   }
 
-  .comet-archive-pagination button.is-active::before,
   .impact-award-pagination button.is-active::before {
     width: 20px;
     height: 7px;
@@ -1796,27 +1530,13 @@ header .nav-contact-icon:focus-visible {
     transform: none;
   }
 
-  .comet-archive-pagination button:focus-visible,
   .impact-award-pagination button:focus-visible {
     outline: 2px solid var(--apple-blue) !important;
     outline-offset: -1px;
   }
 
-  .impact-award-rail-nav {
-    width: 44px !important;
-    height: 44px !important;
-  }
-
   /* Award titles are content, not a one-line status label. Let the English
      caption wrap naturally on narrow cards instead of hiding its context. */
-  .impact-award-card-caption strong {
-    overflow: visible !important;
-    text-overflow: clip !important;
-    white-space: normal !important;
-    overflow-wrap: anywhere;
-    line-height: 1.3 !important;
-    text-wrap: balance;
-  }
 
   .impact-reach-profile-qr {
     min-width: 44px;
@@ -1834,8 +1554,6 @@ header .nav-contact-icon:focus-visible {
     width: 24px !important;
     flex: 0 0 24px !important;
   }
-  #impact-awards .impact-award-rail-nav--prev { left: 0 !important; }
-  #impact-awards .impact-award-rail-nav--next { right: 0 !important; }
 }
 
 /* Round 2: use one vertical rhythm for the impact group and the Lab handoff.
@@ -1887,15 +1605,6 @@ header .nav-contact-icon:focus-visible {
    lightbox hover feedback from sticking after a tap. Focus and :active remain
    available for keyboard and press feedback. */
 @media (hover: none), (pointer: coarse) {
-  .impact-award-card:hover:not(:focus-visible) {
-    border-color: var(--impact-border) !important;
-    box-shadow: none !important;
-    transform: none !important;
-  }
-
-  .impact-award-card:hover:not(:focus-visible) .impact-award-card-zoom {
-    opacity: 0;
-  }
 
   .impact-award-lightbox-nav:hover:not(:focus-visible) {
     transform: none !important;
@@ -1977,7 +1686,8 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
    and Lab list margin combined into inconsistent title-to-panel distances.
    Own those distances here without changing cards, content or animations. */
 :root {
-  --expertise-subheading-size: var(--impact-title-size);
+  /* P2: clear hierarchy below the 64px primary section headline. */
+  --expertise-subheading-size: clamp(34px, 2.75vw, 40px);
   --expertise-title-panel-gap: 28px;
   --expertise-main-subheading-gap: 44px;
 }
@@ -2012,7 +1722,7 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
 #experiments .flip-experiment { margin-top: 0; }
 @media (max-width: 760px) {
   :root {
-    --expertise-subheading-size: var(--impact-title-size-mobile);
+    --expertise-subheading-size: clamp(26px, 7.3vw, 30px);
     --expertise-title-panel-gap: 20px;
     --expertise-main-subheading-gap: 36px;
     --expertise-card-heading-size: clamp(24px, 6.8vw, 28px);
@@ -2029,12 +1739,95 @@ body.mobile-nav-open header .nav-toggle:focus-visible,
   }
 }
 
-/* About is the primary story; contact is the actionable secondary heading.
-   Preserve the same two-column card and existing mobile one-column flow. */
-#profile .footer-contact-copy h2 {
-  font-size: clamp(25px, 2vw, 30px);
-  line-height: 1.18;
+
+/* AI Lab is the fourth Expertise submodule, not a standalone page chapter.
+   Its #experiments anchor, project previews and bilingual text remain intact. */
+#expertise-group #experiments.expertise-lab-subsection {
+  padding-top: 32px;
+  padding-bottom: clamp(30px, 3vw, 44px);
 }
+#expertise-group #experiments.expertise-lab-subsection .section-title {
+  text-shadow: 0 1px 6px rgba(0,0,0,.42);
+}
+/* The three Expertise evidence modules use a 28px vertical gap on
+   narrow phones (<=720px). AI Lab uses that SAME gap. At 721–760px,
+   Expertise itself uses the wider 64px row rhythm, so we keep its shared
+   32px + 32px gap rather than making AI Lab feel unusually compressed. */
 @media (max-width: 720px) {
-  #profile .footer-contact-copy h2 { font-size: clamp(26px, 7vw, 30px); }
+  #expertise-group #recognition {
+    padding-bottom: 0;
+  }
+  #expertise-group #experiments.expertise-lab-subsection {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+}
+/* Copyright is plain metadata, never a second thin divider beneath the logo. */
+#profile .closing-footer .footer-copyright-row .footer-bottom-copy {
+  display: block !important;
+  border: 0 !important;
+}
+
+
+@media (max-width: 359px) {
+  /* Keep six 44px touch targets inside the footer card even at 320px:
+     6 × 44px = 264px, so this narrow-only card needs 12px insets. */
+  #profile .closing-card { padding-inline: 12px; }
+  #profile .closing-social .floating-dock-panel {
+    gap: 0;
+    max-width: 100%;
+    width: auto;
+    justify-content: flex-start;
+    padding: 0;
+  }
+  #profile .closing-social #footer-dock-react-root {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* 2026-11 | Featured mobile editorial grid — all eight works, no carousel.
+   One 2-column / 4-row continuous gallery. Remove the redundant enclosing
+   glass/frame; individual ProjectCards retain the identical A+ glass surface
+   used on Works. Desktop four-column layout is untouched. */
+@media (max-width: 720px) {
+  #projects .comet-archive-mobile-shell {
+    display: contents !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    overflow: visible !important;
+  }
+  #projects .comet-archive-mobile-shell .comet-archive {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto !important;
+    grid-auto-flow: row !important;
+    column-gap: clamp(10px, 3vw, 14px) !important;
+    row-gap: clamp(12px, 3.5vw, 16px) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+    touch-action: pan-y !important;
+    transform: none !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+  #projects .comet-archive-page-arrow,
+  #projects .comet-archive-pagination { display: none !important; }
+  #projects .archive-more {
+    justify-content: flex-start;
+    margin-top: 0;
+  }
+  /* More room is gained from two extra real rows; don't insert empty screens. */
+  #projects { padding-bottom: 42px; }
 }

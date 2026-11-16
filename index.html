@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <style>@view-transition { navigation: auto; }</style>
   <link rel="stylesheet" href="./src/styles/page-transitions.css" />
+  <script src="./page-transition-types.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script>try { if (window.localStorage.getItem('ailuren-lang') === 'en') document.documentElement.lang = 'en'; } catch (error) {}</script>
   <meta name="description" content="AI路人（宁磊），9 年动态设计经验（快手/小米），专注 AI 视频创意与 AIGC 内容创作，涵盖 AI 广告、概念短片、文旅宣传。获可灵超棒奖、通义官方宣传片、MJ 官方优秀作品等奖项，抖音单视频千万播放。" />
@@ -68,6 +69,11 @@
     html { background: var(--space-black); --anchor-offset: 88px; scroll-behavior: auto; scroll-padding-top: var(--anchor-offset); }
     body { margin: 0; overflow-x: hidden; color: var(--mist); background: var(--space-black); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
     body.is-loading { overflow: hidden; }
+    /* React portals fill the Selected Work / Expertise chapters after the
+       static HTML is parsed. Do not let browser scroll anchoring silently
+       move a reader who already swiped while the 8-card grid mounts.
+       Browser history scroll restoration remains native and unchanged. */
+    #main-content { overflow-anchor: none; }
     a { color: inherit; text-decoration: none; }
     button { color: inherit; font: inherit; }
     ::selection { color: var(--space-black); background: var(--accent-blue); }
@@ -100,10 +106,7 @@
     .brand { color: var(--mist); font: 500 13px var(--tech); letter-spacing: .12em; white-space: nowrap; }
     nav { display: flex; align-items: center; gap: 24px; }
     nav a { position: relative; font: 500 14px/1.2 var(--tech); letter-spacing: .04em; }
-    nav a::after { position: absolute; right: 0; bottom: -10px; left: 0; height: 1px; content: ''; transform: scaleX(0); transform-origin: left; transition: transform var(--motion-duration-control) var(--motion-ease-control); }
-    nav a.is-active::after { transform: scaleX(1); }
     .nav-contact { padding: 7px 12px; border: 1px solid rgba(232,240,245,.24); color: rgba(231,236,244,.78); }
-    .nav-contact::after { display: none; }
     .nav-lang { display: inline-flex; flex-shrink: 0; align-items: center; gap: 5px; border: 1px solid rgba(232,240,245,.24); background: transparent; color: rgba(231,236,244,.78); font: 500 12px/1 var(--tech); letter-spacing: .06em; white-space: nowrap; cursor: pointer; transition: color var(--motion-duration-control) ease, border-color var(--motion-duration-control) ease; }
     .nav-lang i { color: rgba(255,255,255,.4); font-style: normal; }
     .nav-lang [data-lang-part] { opacity: .55; transition: opacity var(--motion-duration-control) ease, color var(--motion-duration-control) ease; }
@@ -132,7 +135,6 @@
     .hero-title { margin: 18px 0 0; text-wrap: balance; }
     .hero-title span { font-weight: 600; }
     .hero-subtitle { text-shadow: 0 1px 9px rgba(3,10,18,.58); text-wrap: pretty; }
-    .scroll-cue { display: none; }
     .hero-readout { position: absolute; right: 0; bottom: 0; display: grid; gap: 7px; color: rgba(237,244,249,.52); font: 500 10px var(--tech); text-align: right; }
     .hero-readout strong { color: var(--signal); font-weight: 400; }
     .scroll-rail { display: none; position: fixed; top: 50%; right: 24px; z-index: 35; width: 1px; height: 118px; background: rgba(255,255,255,.25); transform: translateY(-50%); pointer-events: none; }
@@ -261,11 +263,11 @@
 
     /* 色彩系统：深空底色、蓝灰信息层、单一蓝色交互层。 */
 
-    /* A first-frame still underlies native video and WebGL until decoding succeeds. */
+    /* One responsive first-frame layer covers the native video until decoding.
+       No separate video poster URL: inline JS URLs were not fingerprinted in production. */
     #video-bg { background: var(--space-black) url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat; }
-    /* Keep the actual ship frame above the native video and canvas while
-       desktop metadata/texture decoding catches up. This is a still from
-       the SAME film, not an added visual or an altered Hero color preset. */
+    /* Exact opening frame, extracted from the SAME film for each viewport;
+       shown above the native decoder until the first decoded frame is ready. */
     #hero-first-frame {
       position: absolute; inset: 0; z-index: 2; pointer-events: none;
       background: #000 url('assets/images/hero-first-frame-desktop.webp') center / cover no-repeat;
@@ -290,8 +292,9 @@
     .section-note { color: var(--body-text); }
 
     /* 动效系统：视频持续推进，章节只承担一次有方向的进场。 */
-    nav a { transition: color var(--motion-duration-control) ease, transform var(--motion-duration-control) var(--motion-ease-control); }
-    nav a:hover, nav a:focus-visible { transform: translateY(-1px); }
+    /* Navigation labels stay on one baseline in resting, active, hover and
+       keyboard-focus states. Selected state is expressed by the underline. */
+    nav a { transition: color var(--motion-duration-control) ease; }
 
     /* 画面连续性：让视频成为贯穿全页的背景，不被 section 色块切断。 */
     :root { --signal: #a1a1a6; }
@@ -962,9 +965,6 @@
       text-decoration-color: currentColor;
     }
 
-    @media (max-width: 720px) {
-    }
-
     /* 移动端主导航：03 的胶囊入口 + 01 的清晰菜单行为。 */
     .mobile-nav-drawer { display: none; }
     .nav-toggle-label, .nav-toggle-code { display: none; }
@@ -1010,9 +1010,8 @@
     #experiments::before { background: transparent !important; }
     #projects { overflow: hidden; }
     .footer-contact-copy { display: grid; gap: 10px; }
-    .footer-contact-kicker { margin: 0; color: var(--accent-blue-on-dark); font: 500 10px/1.5 var(--tech); letter-spacing: .1em; }
     .footer-contact-copy h2 { margin: 0; color: #f0f4f6; font: 700 clamp(2rem, 4vw, 3.2rem)/1.05 var(--display); letter-spacing: -.05em; }
-    .footer-contact-copy > p:not(.footer-contact-kicker) { max-width: 34ch; margin: 0 auto; color: var(--body-text); font-size: 14px; line-height: 1.7; }
+    .footer-contact-copy > p { max-width: 34ch; margin: 0 auto; color: var(--body-text); font-size: 14px; line-height: 1.7; }
     .footer-contact-direct { display: flex; flex-wrap: wrap; }
     .footer-contact-direct a { display: grid; gap: 3px; color: var(--body-on-dark); text-decoration: none; text-align: left; }
     .footer-contact-direct a:hover, .footer-contact-direct a:focus-visible { color: var(--accent-blue-on-dark); outline: none; }
@@ -1029,8 +1028,6 @@
     /* 文字层级只做收敛：标题承担叙事，元数据和说明退到第二层。 */
     body, button, input, textarea, select { font-optical-sizing: auto; }
     .about-role { text-wrap: balance; }
-    @media (max-width: 720px) {
-    }
 
     /* 让系统的可读性偏好优先于玻璃和视频质感。 */
     @media (prefers-reduced-transparency: reduce) {
@@ -1089,7 +1086,7 @@
       text-align: left;
     }
     .footer-contact-copy h2 { font-size: clamp(2.6rem, 5vw, 4.8rem); }
-    .footer-contact-copy > p:not(.footer-contact-kicker) { margin-left: 0; }
+    .footer-contact-copy > p { margin-left: 0; }
     .footer-contact-direct { justify-content: flex-start; gap: 0; margin-top: 26px; }
     .footer-contact-direct a { min-width: 190px; padding-right: 28px; margin-right: 28px; border-right: 1px solid rgba(255, 255, 255, .2); }
     .footer-contact-direct a:last-child { padding-right: 0; margin-right: 0; border-right: 0; }
@@ -1115,7 +1112,7 @@
       }
       .footer-contact-copy { width: 100%; max-width: none; padding: 0; text-align: left; }
       .footer-contact-copy h2 { font-size: clamp(2.55rem, 13vw, 4rem); }
-      .footer-contact-copy > p:not(.footer-contact-kicker) { max-width: 26ch; margin-left: 0; }
+      .footer-contact-copy > p { max-width: 26ch; margin-left: 0; }
       .footer-contact-direct { display: grid; gap: 0; margin-top: 22px; }
       .footer-contact-direct a,
       .footer-contact-direct a:last-child { min-width: 0; padding: 13px 0; margin: 0; border-top: 1px solid rgba(255, 255, 255, .18); border-right: 0; }
@@ -1503,30 +1500,18 @@
         letter-spacing: 0;
         text-shadow: none;
       }
-      #primary-nav .nav-list a::after {
-        display: block !important;
-        right: 11px;
-        bottom: -7px;
-        left: 11px;
-        height: 1px;
-        background: rgba(245, 245, 247, .82);
-        transform: scaleX(0);
-        transition: transform var(--motion-duration-control) var(--motion-ease-control);
-      }
       #primary-nav .nav-list a:hover,
       #primary-nav .nav-list a:focus-visible,
       #primary-nav .nav-list a.is-active {
         background: transparent;
         color: var(--body-on-dark);
       }
-      #primary-nav .nav-list a.is-active::after { transform: scaleX(1); }
       #primary-nav .nav-list a.nav-contact {
         display: none !important;
         padding-inline: 11px;
         border: 0;
         color: rgba(245, 245, 247, .52);
       }
-      #primary-nav .nav-list a.nav-contact::after { display: none !important; }
       header .nav-lang {
         border-color: rgba(245, 245, 247, .18);
         background: transparent;
@@ -1614,16 +1599,6 @@
     }
 
     /* 影响力模块：外层面板承担层级，奖项与截图只保留轻边框，不再发光。 */
-    .impact-award-card {
-      border-radius: var(--radius-card) !important;
-      background: var(--surface-card-inset) !important;
-      box-shadow: none !important;
-    }
-    .impact-award-card:hover,
-    .impact-award-card:focus-visible {
-      border-color: rgba(255, 255, 255, .46) !important;
-      box-shadow: none !important;
-    }
     .impact-reach-profile-media {
       border-radius: var(--radius-card) !important;
       clip-path: inset(0 round var(--radius-card));
@@ -1649,14 +1624,13 @@
       display: none !important;
     }
 
-    /* Improve chapter-title legibility against bright moving film frames.
-       Only local text shadows: no section-sized overlays or video adjustments. */
+    /* One small contact shadow for moving film; the old diffuse 28px halo
+       made crisp headings look muddy over brighter cloud frames. */
     #projects .section-title,
     #recognition .section-title,
     #recognition .impact-evidence-label h2,
     #experiments .section-title {
-      text-shadow: 0 2px 14px rgba(0, 0, 0, .78),
-                   0 0 28px rgba(0, 0, 0, .38);
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .42);
     }
 
     /* 导航材质统一：桌面与移动端都使用网站其他面板的中性深黑磨砂层。 */
@@ -1692,43 +1666,24 @@
     #top .hero-title,
     #top .hero-subtitle { text-shadow: 0 2px 12px rgba(0, 0, 0, .42) !important; }
 
-    /* Editorial Hero readability: a feathered *local* shadow behind copy.
-       Keep the scroll-driven film and all following chapters untouched. */
-    #top .hero-copy { isolation: isolate; }
-    #top .hero-copy::before {
-      content: '';
-      display: block !important;
-      position: absolute;
-      inset: -64px -88px -60px -68px;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(ellipse at 34% 52%,
-        rgba(4, 7, 12, .49) 0%, rgba(4, 7, 12, .30) 46%,
-        rgba(4, 7, 12, .13) 68%, transparent 86%);
-      border: 0;
-    }
-    /* Tablet shells sit close to the viewport edge; never let the decorative
-       vignette create horizontal document overflow. */
-    @media (min-width: 761px) and (max-width: 1060px) {
-      #top .hero-copy::before { left: -16px; right: -16px; }
-    }
-    @media (max-width: 760px) {
-      #top .hero-copy::before {
-        /* Keep the vignette inside narrow 320px viewports. */
-        inset: -42px -12px -48px -12px;
-        background: radial-gradient(ellipse at 35% 50%,
-          rgba(4, 7, 12, .52) 0%, rgba(4, 7, 12, .29) 51%,
-          rgba(4, 7, 12, .1) 72%, transparent 88%);
-      }
-    }
-
+    /* Hero readability is handled by #hero-profile-mask and restrained text
+       shadows. Do not add a bounded pseudo-element gradient behind the copy:
+       its rectangular containing box produces visible vertical/horizontal
+       seams over bright video frames. */
   </style>
 </head>
 <body class="is-loading is-on-hero">
   <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
   <div id="loading" aria-live="polite"><span class="loading-copy" data-i18n="loading.copy">正在进入创作舱</span><span class="loading-line"></span></div>
-  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata" poster="assets/images/hero-first-frame-mobile.webp"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
+  <div id="video-bg" aria-hidden="true"><video id="hero-video" muted playsinline preload="metadata"><source src="assets/videos/hero/hero-mobile.mp4" type="video/mp4" media="(max-width: 720px)" /><source src="assets/videos/hero/hero.mp4" type="video/mp4" /></video><div id="hero-first-frame"></div><div id="hero-profile-mask"></div><div id="video-overlay"></div><div id="video-vignette"></div><div id="video-dim"></div></div>
   <div class="scroll-rail" aria-hidden="true"><span></span></div>
+  <!-- Contextual Hero scroll instruction: visible again after returning to
+       the opening film; it is not a second navigation button. -->
+  <div id="hero-scroll-guide" class="hero-scroll-guide" aria-hidden="true">
+    <span class="hero-scroll-guide__desktop" data-i18n="hero.scrollGuide.desktop">向下滚动 · 探索影像</span>
+    <span class="hero-scroll-guide__mobile" data-i18n="hero.scrollGuide.mobile">上滑探索</span>
+    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 9 7 7 7-7"/></svg>
+  </div>
   <header>
     <div class="nav-inner shell">
       <a class="brand" href="#top" aria-label="AI路人，返回顶部" data-i18n-aria="brand.aria"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /><span class="nav-brand-name" data-i18n="brand.name">AI路人</span></a>
@@ -1751,14 +1706,14 @@
     <nav id="mobile-primary-nav" class="mobile-menu__links" aria-label="主导航" data-i18n-aria="nav.aria">
       <ul class="nav-list">
         <li><a href="#projects"><span data-i18n="nav.projects">精选创作</span><span class="nav-short" data-i18n="nav.projects.short">作品</span></a></li>
-        <li><a href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
         <li><a href="#recognition"><span data-i18n="nav.expertise">专业实力</span><span class="nav-short" data-i18n="nav.expertise.short">实力</span></a></li>
         <li><a class="nav-contact" href="#contact"><span data-i18n="nav.contact">联系我</span><span class="nav-short" data-i18n="nav.contact.short">联系</span></a></li>
+        <li class="nav-library-item"><a class="nav-library-link" href="./works.html"><span data-i18n="nav.allWork">全部作品</span></a></li>
       </ul>
     </nav>
     <div class="mobile-nav-drawer-foot mobile-menu__footer">
       <div id="mobile-menu-social-root"></div>
-      <span class="mobile-menu__copyright" data-i18n="footer.copyright">© 2024-2026 AI路人 · 保留所有权利</span>
+
     </div>
   </div>
 
@@ -1768,11 +1723,10 @@
         <div class="hero-copy">
           <p class="hero-positioning" data-i18n="hero.positioning">AI 视频创意 · 影像效果设计</p>
           <div id="hero-title-react-root"></div>
-          <p class="hero-subtitle reveal" data-i18n="hero.subtitle">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</p>
-          <div class="hero-actions reveal">
+          <p class="hero-subtitle" data-i18n="hero.subtitle">为品牌创作 AI 广告、产品影像与创意短片，从创意构思到最终成片。</p>
+          <div class="hero-actions">
             <div id="hero-actions-react-root"></div>
           </div>
-          <a class="scroll-cue reveal" href="#projects" aria-label="继续阅读" data-i18n-aria="hero.scrollCue.aria"><span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-proof reveal" aria-label="创作能力方向" data-i18n-aria="hero.proof.aria">
           <div class="hero-proof-card"><strong data-i18n="hero.proof1.title">AI 视频制作</strong><span data-i18n="hero.proof1.desc">品牌广告 · 创意短片</span></div>
@@ -1782,7 +1736,7 @@
     </section>
 
     <section id="projects" class="section" aria-labelledby="projects-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row"><p id="projects-featured-note" class="section-note"></p><div id="projects-library-link"></div></div></div>
+      <div class="shell"><div class="section-intro"><div><p class="eyebrow">02 / SELECTED WORK</p><h2 id="projects-title" class="section-title" data-i18n="projects.title">精选创作档案</h2></div><div class="projects-meta-row" id="projects-library-link"></div></div>
         <div id="projects-react-root" class="motion-stage"></div>
       </div>
     </section>
@@ -1790,13 +1744,13 @@
     <div id="expertise-group" class="expertise-group" role="group" aria-labelledby="recognition-title">
     <section id="recognition" class="section" aria-labelledby="recognition-title">
       <div class="shell">
-        <div class="section-intro reveal"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
+        <div class="section-intro"><div><p class="eyebrow">03 / EXPERTISE</p><h2 id="recognition-title" class="section-title" data-i18n="recognition.title">专业实力</h2></div></div>
         <div id="recognition-react-root" class="recognition-react-root" aria-label="专业实力" data-i18n-aria="recognition.root.aria"></div>
       </div>
     </section>
 
-    <section id="experiments" class="section" aria-labelledby="experiments-title">
-      <div class="shell"><div class="section-intro reveal"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
+    <section id="experiments" class="section expertise-lab-subsection" aria-labelledby="experiments-title">
+      <div class="shell"><div class="section-intro"><div><p class="eyebrow">03.4 / AI LAB</p><h2 id="experiments-title" class="section-title" data-i18n="experiments.title">AI 实验室</h2></div></div>
         <div id="experiments-react-root" class="experiments-react-root" aria-label="AI 实验室项目" data-i18n-aria="experiments.root.aria"></div>
       </div>
     </section>
@@ -1807,20 +1761,17 @@
         <div class="closing-card">
           <div class="closing-card-main">
             <div class="closing-about">
-              <div class="section-intro reveal">
-                <p class="closing-column-kicker" data-i18n="about.kicker">个人简介</p>
-                <div><h2 id="profile-title" class="section-title" data-i18n="about.title">关于我</h2></div>
+              <div class="section-intro">
+                <h2 id="profile-title" class="section-title about-role" data-i18n="about.role">AI 影像创作者</h2>
               </div>
-              <div class="about-copy reveal">
-                <h3 class="about-role" data-i18n="about.role">AI 影像创作者</h3>
-                <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验。</p>
+              <div class="about-copy">
+                <p class="about-description" data-i18n="about.description">专注 AI 商业广告、产品影像与创意短片，从视觉概念、AI 画面生成到视频剪辑与最终成片。曾在快手、小米积累创意制作与产品实践经验</p>
               </div>
             </div>
             <section id="contact" class="closing-contact" aria-labelledby="contact-title">
               <div class="footer-contact-copy">
-                <p class="footer-contact-kicker" data-i18n="footer.contact.kicker">合作联系</p>
                 <h2 id="contact-title" data-i18n="footer.contact.title">开始合作</h2>
-                <p data-i18n="footer.contact.desc">AI 广告、短片与视觉设计合作，欢迎直接联系。</p>
+                <p data-i18n="footer.contact.desc">AI 广告与短片合作，欢迎直接联系</p>
                 <div class="footer-contact-direct">
                   <a href="mailto:1746850550@qq.com"><span data-i18n="footer.contact.emailLabel">邮箱</span><strong>1746850550@qq.com</strong></a>
                   <a class="copy-link" href="#copy-wechat" data-copy="15580714085" data-i18n-aria="footer.contact.copyWechat" aria-label="点击复制微信号"><span data-i18n="footer.contact.phoneLabel">微信</span><strong>155 8071 4085</strong></a>
@@ -1829,27 +1780,18 @@
             </section>
           </div>
           <div class="closing-social" aria-label="社交媒体与作品链接">
-            <span class="closing-social-label" data-i18n="footer.social.kicker">社交平台</span>
+            <footer class="closing-footer" aria-label="个人品牌">
+              <div class="footer-brand" aria-label="AI路人">
+                <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></span>
+                <span class="footer-brand-copy"><strong data-i18n="brand.name">AI路人</strong></span>
+              </div>
+            </footer>
             <div id="footer-dock-react-root"></div>
           </div>
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="closing-footer">
-    <div class="shell footer-stack">
-      <div class="footer-topline">
-        <a class="footer-brand" href="#top" aria-label="AI路人，返回顶部" data-i18n-aria="brand.aria">
-          <span class="footer-avatar"><img src="assets/images/ai-luren-avatar.webp" alt="" width="1254" height="1254" decoding="async" /></span>
-          <span class="footer-brand-copy"><strong data-i18n="brand.name">AI路人</strong></span>
-        </a>
-      </div>
-      <div class="footer-bottom footer-copyright-row">
-        <p class="footer-bottom-copy" data-i18n="footer.copyright">© 2024-2026 AI路人 · 保留所有权利</p>
-      </div>
-    </div>
-  </footer>
   <div class="copy-status" role="status" aria-live="polite"></div>
 
   <script src="./vendor/gsap.min.js"></script>
@@ -1873,6 +1815,9 @@
       var lastScrollAt = -Infinity;
       var lastProgress = -1;
       var progressRaf = 0;
+      var seekFrame = 0;
+      var correctionTimer = 0;
+      var scrollIdleTimer = 0;
       var scrubState = false;
       var ACTIVE_SCROLL_WINDOW = 160;
       var mobileScrub = window.matchMedia('(max-width: 760px)').matches;
@@ -1942,42 +1887,65 @@
         document.documentElement.style.setProperty('--scroll-progress', progress.toFixed(4));
         if (!video.duration || reduced) return;
         targetTime = progress * video.duration;
+        scheduleSeek();
       }
 
+      // The film is scroll-driven, NOT an animation that needs a permanent
+      // requestAnimationFrame loop. Schedule work only on actual scroll,
+      // available decoded frames or a pending final seek correction.
+      function scheduleSeek() {
+        if (!seekFrame && !document.hidden) seekFrame = window.requestAnimationFrame(seekLoop);
+      }
+      function retrySeekAfter(wait) {
+        if (correctionTimer) window.clearTimeout(correctionTimer);
+        correctionTimer = window.setTimeout(function () {
+          correctionTimer = 0;
+          scheduleSeek();
+        }, Math.max(8, wait));
+      }
       function onScroll() {
         lastScrollAt = performance.now();
         publishScrubState(true);
         if (!progressRaf) progressRaf = window.requestAnimationFrame(setVideoTarget);
+        if (scrollIdleTimer) window.clearTimeout(scrollIdleTimer);
+        // One settle tick replaces the former perpetual 60fps polling loop.
+        scrollIdleTimer = window.setTimeout(function () {
+          scrollIdleTimer = 0;
+          publishScrubState(false);
+          scheduleSeek();
+        }, ACTIVE_SCROLL_WINDOW + 20);
       }
 
       function seekLoop(now) {
+        seekFrame = 0;
         var activelyScrubbing = now - lastScrollAt < ACTIVE_SCROLL_WINDOW;
-        publishScrubState(activelyScrubbing);
         var delta = targetTime - video.currentTime;
-        // A phone decoder cannot keep up with 40+ random seeks per second,
-        // especially while an OGL texture is being uploaded. Coalesce seeks,
-        // never interrupt a pending seek, and settle on the exact frame once
-        // scrolling stops. Desktop keeps its existing high-frequency response.
+        // Coalesce in-flight seeks on both desktop and mobile. Never overwrite
+        // a seek in progress, and preserve the published decoder cadence.
         var seekInterval = mobileScrub ? (activelyScrubbing ? 50 : 80) : (activelyScrubbing ? 24 : 72);
         var targetChanged = Math.abs(targetTime - lastRequestedTime) > (mobileScrub ? .055 : .012);
         var needsCorrection = Math.abs(delta) > (mobileScrub ? .06 : (activelyScrubbing ? .025 : .01));
-        var canSeek = mobileScrub ? !video.seeking : (activelyScrubbing ? targetChanged : !video.seeking);
-        if (mobileScrub && activelyScrubbing && !targetChanged) canSeek = false;
-        if (loaded && !reduced && video.duration && canSeek && needsCorrection && now - lastSeekAt >= seekInterval) {
-          // 快速滚动只提交最新目标，避免重复提交同一个未完成的 seek 把解码器拖成队列。
-          // 大跳跃先用关键帧快速到位，停止滚动后再用精确时间补齐。
-          if (!mobileScrub && activelyScrubbing && Math.abs(delta) > 1.4 && typeof video.fastSeek === 'function') video.fastSeek(targetTime);
-          else video.currentTime = targetTime;
-          lastRequestedTime = targetTime;
-          lastSeekAt = now;
-        }
-        window.requestAnimationFrame(seekLoop);
+        if (!loaded || reduced || !video.duration || !needsCorrection || video.seeking) return;
+        if (activelyScrubbing && !targetChanged) return; // final tick handles it
+        var remaining = seekInterval - (now - lastSeekAt);
+        if (remaining > 0) { retrySeekAfter(remaining); return; }
+        // Preserve fast keyframe seek for large desktop jumps, and precise
+        // correction when the user stops moving the scroll position.
+        if (!mobileScrub && activelyScrubbing && Math.abs(delta) > 1.4 && typeof video.fastSeek === 'function') video.fastSeek(targetTime);
+        else video.currentTime = targetTime;
+        lastRequestedTime = targetTime;
+        lastSeekAt = now;
       }
 
+      video.addEventListener('seeked', scheduleSeek);
       video.addEventListener('loadeddata', function () {
         video.pause();
         setVideoTarget();
+        scheduleSeek();
       }, { once: true });
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) { setVideoTarget(); scheduleSeek(); }
+      });
       window.addEventListener('scroll', onScroll, { passive: true });
       var previousWidth = window.innerWidth;
       window.addEventListener('resize', function () {
@@ -1990,24 +1958,24 @@
         window.clearTimeout(window.__refreshTimer);
         window.__refreshTimer = window.setTimeout(function () {
           setVideoTarget();
+          scheduleSeek();
           if (window.ScrollTrigger) window.ScrollTrigger.refresh();
         }, 180);
       }, { passive: true });
-      function showReveals() {
-        var nodes = document.querySelectorAll('.reveal');
-        if (window.gsap && window.ScrollTrigger && !reduced) return;
-        if (reduced || !('IntersectionObserver' in window)) { nodes.forEach(function (node) { node.classList.add('is-visible'); }); return; }
-        var observer = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
-          });
-        }, { threshold: .14 });
-        nodes.forEach(function (node) { observer.observe(node); });
-      }
-      showReveals();
+      // Hero text, CTA and supporting proof render fully opaque from the
+      // initial HTML / first React commit. No reveal observer is needed.
 
       var floatingHeader = document.querySelector('header');
       var initialHashAligned = false;
+      var reactSectionsReadyForHash = false;
+      var initialHashCancelled = false;
+      var startingHash = window.location.hash;
+      // The browser can dispatch `load` while React work cards have not yet
+      // expanded the document. Never mark a deep link aligned at that point.
+      // `back_forward` scroll restoration is handled separately by the browser.
+      var navigationKind = performance.getEntriesByType('navigation')[0]?.type;
+      var shouldAlignInitialHash = hasInitialSectionAnchor &&
+        navigationKind !== 'back_forward' && navigationKind !== 'reload';
       function getAnchorOffset() {
         var rootStyle = window.getComputedStyle(document.documentElement);
         var configuredOffset = parseFloat(rootStyle.getPropertyValue('--anchor-offset')) || parseFloat(rootStyle.scrollPaddingTop) || 0;
@@ -2019,7 +1987,12 @@
         if (!target) return false;
         // 对齐章节标题而不是 section 外框：section 自身保留节奏留白，
         // 但点击导航后应让用户立即看到该模块的语义入口。
-        var mobileImpactHeading = window.matchMedia && window.matchMedia('(max-width: 720px)').matches
+        // The Expertise parent contains multiple nested evidence headings.
+        // Align its OWN chapter title, not the first Awards subheading.
+        // Only direct impact-* destinations may prefer their nested h2.
+        var isImpactSubsection = /^impact-(awards|programs|reach)$/.test(sectionId);
+        var mobileImpactHeading = isImpactSubsection && window.matchMedia &&
+          window.matchMedia('(max-width: 720px)').matches
           ? target.querySelector('.impact-evidence-label h2')
           : null;
         var anchor = mobileImpactHeading
@@ -2028,14 +2001,6 @@
         var currentScroll = window.scrollY || window.pageYOffset || 0;
         var targetTop = anchor.getBoundingClientRect().top + currentScroll - getAnchorOffset();
         window.scrollTo({ top: Math.max(0, targetTop), behavior: behavior || 'auto' });
-        var isMobileImpactTarget = window.innerWidth <= 760 && /^impact-(awards|programs|reach)$/.test(sectionId);
-        if (isMobileImpactTarget) {
-          target.classList.remove('is-mobile-anchor-enter');
-          window.requestAnimationFrame(function () {
-            target.classList.add('is-mobile-anchor-enter');
-            window.setTimeout(function () { target.classList.remove('is-mobile-anchor-enter'); }, 520);
-          });
-        }
         return true;
       }
       function scrollToContactCard(behavior) {
@@ -2046,73 +2011,64 @@
         return true;
       }
       function alignInitialHash() {
-        if (initialHashAligned || !hasInitialSectionAnchor) return;
+        if (!shouldAlignInitialHash || !reactSectionsReadyForHash ||
+            initialHashAligned || initialHashCancelled ||
+            window.location.hash !== startingHash) return;
         var sectionId = decodeURIComponent(window.location.hash.slice(1));
         if (!sectionId || sectionId === 'top') return;
-        if (sectionId === 'contact') {
-          scrollToContactCard('auto');
-          initialHashAligned = true;
-          return;
+        // Recognition / Contact sit BELOW dynamic React cards. In particular,
+        // scrolling to their old layout and setting initialHashAligned=true
+        // before the cards mount permanently strands mobile readers mid-page.
+        if (!document.querySelector('#projects .comet-card')) return;
+        var aligned = sectionId === 'contact'
+          ? scrollToContactCard('instant')
+          : scrollToSectionAnchor(sectionId, 'instant');
+        if (aligned) initialHashAligned = true;
+      }
+      // A real gesture during arrival always wins over automated alignment.
+      ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (name) {
+        window.addEventListener(name, function () { initialHashCancelled = true; },
+          { passive: true, once: true });
+      });
+      function correctInitialHashAfterLayout() {
+        if (!shouldAlignInitialHash || !reactSectionsReadyForHash ||
+            initialHashCancelled || window.location.hash !== startingHash) return;
+        var sectionId = decodeURIComponent(window.location.hash.slice(1));
+        var target = sectionId === 'contact'
+          ? document.querySelector('#profile .closing-card')
+          : document.getElementById(sectionId)?.querySelector('.section-intro')
+            || document.getElementById(sectionId);
+        if (!target) return;
+        var desired = getAnchorOffset();
+        var top = target.getBoundingClientRect().top;
+        var max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+        // Contact is the final card: the bottom of the document can limit
+        // alignment to its true card-top. Do not append an empty screen.
+        if (Math.abs(top - desired) > 5 &&
+            !(scrollY >= max - 2 && top > desired)) {
+          if (sectionId === 'contact') scrollToContactCard('instant');
+          else scrollToSectionAnchor(sectionId, 'instant');
         }
-        if (!scrollToSectionAnchor(sectionId, 'auto')) return;
-        initialHashAligned = true;
       }
       window.addEventListener('portfolio:react-ready', function () {
-        // React 挂载前浏览器已经做过一次原生 hash 定位；等动态模块补齐高度后再对齐一次。
+        reactSectionsReadyForHash = true;
+        // React and ScrollTrigger can still adjust layout during the first
+        // 200ms of a cross-page scene transition. Two idempotent corrections
+        // prevent a visible 70px residual offset on iPhone widths.
         window.requestAnimationFrame(function () {
           window.requestAnimationFrame(alignInitialHash);
         });
+        window.setTimeout(correctInitialHashAfterLayout, 260);
+        window.setTimeout(correctInitialHashAfterLayout, 520);
       });
       window.addEventListener('load', function () {
-        window.requestAnimationFrame(alignInitialHash);
+        // Only a post-React fallback; the earlier `load` must NEVER latch.
+        if (reactSectionsReadyForHash) window.requestAnimationFrame(alignInitialHash);
       }, { once: true });
-      if (window.gsap && window.ScrollTrigger && !reduced) {
+      if (window.gsap && window.ScrollTrigger) {
+        // Other sections still use ScrollTrigger for existing film position
+        // refreshes; Hero typography deliberately has no entrance timeline.
         gsap.registerPlugin(ScrollTrigger);
-        /* 入场动画统一 token：所有入场调用共享相同的缓动与节奏，避免参数碎片化。 */
-        var compactMotion = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
-        var ANIM = compactMotion ? {
-          ease: 'power3.out',
-          intro: { duration: 0.36, y: 6 },
-          hero: { duration: 0.4, y: 8, stagger: 0.04 },
-          stage: { duration: 0.38, y: 6 },
-          footer: { duration: 0.36, y: 6 }
-        } : {
-          ease: 'power3.out',
-          intro: { duration: 0.4, y: 10 },
-          hero: { duration: 0.44, y: 12, stagger: 0.06 },
-          stage: { duration: 0.42, y: 8 },
-          footer: { duration: 0.4, y: 8 }
-        };
-        function entrance(selector, fromVars, toVars, trigger, options) {
-          var settings = options || {};
-          var attempt = arguments.length > 5 ? arguments[5] : 0;
-          var targetNode = document.querySelector(selector);
-          var triggerNode = typeof trigger === 'string' ? document.querySelector(trigger) : trigger;
-          if (!targetNode || (trigger && !triggerNode)) {
-            if (attempt < 20) {
-              window.setTimeout(function () {
-                entrance(selector, fromVars, toVars, trigger, settings, attempt + 1);
-              }, 50);
-            }
-            return;
-          }
-          var scrollTrigger = settings.scrollTrigger || { trigger: triggerNode || targetNode, start: settings.start || 'top 84%', once: true };
-          var target = Object.assign({ autoAlpha: 1, duration: .6, ease: ANIM.ease, scrollTrigger: scrollTrigger }, settings);
-          delete target.start;
-          delete target.scrollTrigger;
-          target.scrollTrigger = scrollTrigger;
-          gsap.fromTo(selector, fromVars, Object.assign(target, toVars));
-        }
-        entrance('#top .hero-copy .reveal', { autoAlpha: 0, y: ANIM.hero.y }, { y: 0 }, '#top', { duration: ANIM.hero.duration, stagger: ANIM.hero.stagger });
-        entrance('#profile .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#profile', { duration: ANIM.intro.duration });
-        entrance('#profile .about-copy', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#profile', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#projects .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#projects', { duration: ANIM.intro.duration });
-        entrance('#projects .motion-stage', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#projects .motion-stage', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#recognition .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#recognition', { duration: ANIM.intro.duration });
-        entrance('#recognition .recognition-react-root', { autoAlpha: 0, y: ANIM.stage.y }, { y: 0 }, '#recognition .recognition-react-root', { duration: ANIM.stage.duration, start: 'top 78%' });
-        entrance('#experiments .section-intro', { autoAlpha: 0, y: ANIM.intro.y }, { y: 0 }, '#experiments', { duration: ANIM.intro.duration });
-        entrance('.closing-footer .footer-brand', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#profile', { duration: ANIM.footer.duration });
-        entrance('#footer-dock-react-root .floating-dock-shell', { autoAlpha: 0, y: ANIM.footer.y }, { y: 0 }, '#contact', { duration: ANIM.footer.duration, delay: .08 });
       }
 
       var status = document.querySelector('.copy-status');
@@ -2319,7 +2275,8 @@
 
       var links = document.querySelectorAll('#primary-nav a[href^="#"], #mobile-primary-nav a[href^="#"], .footer-nav a[href^="#"]');
       function primaryNavSection(sectionId) {
-        if (sectionId === 'top' || sectionId === 'projects') return 'projects';
+        if (sectionId === 'top') return null;
+        if (sectionId === 'projects') return 'projects';
         if (sectionId === 'recognition' || sectionId === 'experiments' || /^impact-(awards|programs|reach)$/.test(sectionId)) return 'recognition';
         if (sectionId === 'contact' || sectionId === 'profile' || sectionId === 'footer') return 'contact';
         return null;
@@ -2344,6 +2301,21 @@
         var intent = { section: primaryNavSection(sectionId) };
         intent.onEnd = function () {
           if (navScrollIntent !== intent) return;
+          // ScrollTrigger's first-load refresh may end a smooth scroll before
+          // the Expertise section enters the viewport. Recover that interrupted
+          // navigation once; wheel/touch/key interruptions still release it.
+          if (sectionId === 'recognition' && !intent.recovered) {
+            var section = document.getElementById('recognition');
+            var rect = section && section.getBoundingClientRect();
+            var sampleLine = window.innerHeight * .47;
+            if (rect && (rect.top > sampleLine || rect.bottom <= sampleLine)) {
+              intent.recovered = true;
+              window.requestAnimationFrame(function () {
+                if (navScrollIntent === intent) scrollToSectionAnchor(sectionId, 'smooth');
+              });
+              return;
+            }
+          }
           releaseNavScrollIntent(intent);
           setNavActive(sectionId);
         };
@@ -2358,6 +2330,32 @@
         window.addEventListener('keydown', intent.onKeyDown);
         // No-op target scrolls may not dispatch scrollend. Never keep a stale lock.
         intent.timeout = window.setTimeout(intent.onEnd, 2200);
+      }
+      // IntersectionObserver only reports threshold crossings. A section can
+      // remain intersecting as its neighbour becomes active, leaving the
+      // navigation underline stale after a manual scroll (notably near AI Lab).
+      // Reconcile the actual viewport position on scroll without competing
+      // with the explicit destination lock used during navigation clicks.
+      var navViewportFrame = 0;
+      function syncNavActiveToViewport() {
+        navViewportFrame = 0;
+        if (navScrollIntent) return;
+        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) {
+          setNavActive('contact');
+          return;
+        }
+        var sampleLine = window.innerHeight * .47;
+        var section = null;
+        ['top', 'projects', 'recognition', 'experiments', 'profile'].forEach(function (id) {
+          var element = document.getElementById(id);
+          if (!element) return;
+          var rect = element.getBoundingClientRect();
+          if (rect.top <= sampleLine && rect.bottom > sampleLine) section = id;
+        });
+        if (section) setNavActive(section);
+      }
+      function scheduleNavViewportSync() {
+        if (!navViewportFrame) navViewportFrame = window.requestAnimationFrame(syncNavActiveToViewport);
       }
       function setNavActive(sectionId) {
         var activeSection = primaryNavSection(sectionId);
@@ -2432,7 +2430,7 @@
       if ('IntersectionObserver' in window) {
       // is-on-hero 由 Hero 占比观察器独立管理；导航观察器换章时不能顺带抹掉它，
       // 否则 Hero 离场途中蒙版会瞬间消失又在下个阈值恢复（01→02 背景闪跳的根源）。
-        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { var sectionId = entry.target.id; setNavActive(sectionId); var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + sectionId); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
+        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (entry) { if (entry.isIntersecting) { var sectionId = entry.target.id; var heroVisible = document.body.classList.contains('is-on-hero'); document.body.className = document.body.className.replace(/\bis-on-[^ ]+/g, '').replace(/\s{2,}/g, ' ').trim(); document.body.classList.add('is-on-' + sectionId); if (heroVisible || entry.target.id === 'top') document.body.classList.add('is-on-hero'); } }); scheduleNavViewportSync(); }, { rootMargin: '-42% 0px -48% 0px', threshold: 0 });
         var observeNavSections = function () {
           document.querySelectorAll('main section, footer').forEach(function (section) {
             if (window.innerWidth > 760 && section.id === 'recognition') return;
@@ -2446,12 +2444,11 @@
           window.requestAnimationFrame(function () { window.requestAnimationFrame(observeNavSections); });
         });
       }
-      window.addEventListener('scroll', function () {
-        if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) setNavActive('contact');
-      }, { passive: true });
+      window.addEventListener('scroll', scheduleNavViewportSync, { passive: true });
+      window.addEventListener('resize', scheduleNavViewportSync);
 
       setVideoTarget();
-      window.requestAnimationFrame(seekLoop);
+      scheduleSeek();
       }());
     }());
   </script>

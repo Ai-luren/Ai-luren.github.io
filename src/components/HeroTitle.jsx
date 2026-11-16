@@ -1,6 +1,4 @@
-import { useEffect, useRef } from 'react';
 import TextType from './TextType.jsx';
-import { getGsap } from '../gsap-runtime.js';
 import { useLang } from '../i18n/index.js';
 import './HeroTitle.css';
 
@@ -10,35 +8,21 @@ const ROTATING_WORDS = {
 };
 
 export default function HeroTitle() {
-  const titleRef = useRef(null);
   const lang = useLang();
 
-  useEffect(() => {
-    const title = titleRef.current;
-    if (!title) return undefined;
-    const gsap = getGsap();
-    if (!gsap) return undefined;
-
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const context = gsap.context(() => {
-      gsap.fromTo(
-        title,
-        { autoAlpha: reducedMotion ? 1 : 0, y: reducedMotion ? 0 : 18 },
-        { autoAlpha: 1, y: 0, duration: reducedMotion ? 0 : 0.65, ease: 'power2.out' },
-      );
-    }, title);
-
-    return () => context.revert();
-  }, []);
+  // First paint must remain stable: the previous useEffect ran after the
+  // full headline appeared, then forced it to opacity 0 and faded it back in.
+  // TextType still handles subsequent rotating role labels independently.
 
   return (
-    <h1 ref={titleRef} id="hero-title" className="hero-title">
+    <h1 id="hero-title" className="hero-title">
       <span className="hero-title__prefix">{lang === 'en' ? 'AI Creative' : 'AI 创意'}</span>
       <TextType
         key={lang}
         as="span"
         className="hero-title__rotating"
         text={ROTATING_WORDS[lang]}
+        startWithFullText
         typingSpeed={lang === 'en' ? 50 : 90}
         deletingSpeed={lang === 'en' ? 30 : 50}
         pauseDuration={1600}

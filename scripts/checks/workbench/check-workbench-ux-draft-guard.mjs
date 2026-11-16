@@ -63,6 +63,8 @@ try{
  console.log('SAVE_IMAGEKIT_ADDRESS_AND_CLOSE_PASS');
 
  await p.locator('.ux-project .ux-project-image').first().click();
+ const beforeVariantIds=JSON.parse(await fs.readFile(data('auto-projects.json'),'utf8'))
+   .find(project=>project.id==='16').variants.map(variant=>variant.id);
  await p.locator('#ux-add-variant').click();
  assert(await p.locator('#ux-version-form').isVisible());
  await p.locator('#ux-version-file').setInputFiles(path.join(root,'scripts/fixtures/test-landscape.mp4'));
@@ -71,7 +73,9 @@ try{
  assert(await p.locator('#ux-unsaved-save').isHidden());
  await p.locator('#ux-unsaved-discard').click();
  assert(await p.locator('#ux-editor').isHidden());
- assert.equal((await fs.readFile(data('auto-projects.json'),'utf8')).includes('Version C'),false);
+ const afterVariantIds=JSON.parse(await fs.readFile(data('auto-projects.json'),'utf8'))
+   .find(project=>project.id==='16').variants.map(variant=>variant.id);
+ assert.deepEqual(afterVariantIds,beforeVariantIds,'Discarding an unsaved MP4 must not add a version to the target work');
  console.log('UNSAVED_MP4_GUARD_WITHOUT_FAKE_SAVE_PASS');
 
  assert.equal(getSafeMediaReport(p).urls.length,0);

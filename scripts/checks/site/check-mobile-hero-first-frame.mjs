@@ -21,7 +21,7 @@ try {
     const failures = [];
     page.on('pageerror', error => failures.push(error.message));
     // Simulates cellular media load delays without downloading Hero MP4.
-    await page.route(/\/assets\/hero(?:-mobile)?-[^/]+\.mp4$/, route => route.abort('blockedbyclient'));
+    await page.route(/\/assets\/videos\/hero\/hero(?:-mobile)?(?:-[a-z0-9_-]+)?\.mp4(?:[?#].*)?$/i, route => route.abort('blockedbyclient'));
     await page.goto(new URL('index.html', base).href, { waitUntil: 'load' });
     await page.waitForTimeout(800); // includes the existing loader fade-out transition
     const state = await page.evaluate(() => {
@@ -38,18 +38,41 @@ try {
         loader: getComputedStyle(document.getElementById('loading')).visibility,
       };
     });
-    const target = width === 390 ? 'hero-first-frame-mobile-' : 'hero-first-frame-desktop-';
-    assert(state.backgroundImage.includes(target), `Missing ${width}px fallback image: ${state.backgroundImage}`);
-    assert(state.poster.includes('hero-first-frame-mobile-'), 'No media element poster');
+    // Accept both fingerprinted production assets and local .webp?t= revisions.
+    const target = width === 390 ? 'hero-first-frame-mobile' : 'hero-first-frame-desktop';
+    const imageFile = new RegExp(target + '(?:-[A-Za-z0-9]+)?\\.webp(?:[?#]|[\"\\x27)]|$)');
+    assert(imageFile.test(state.backgroundImage), 'Missing '+width+'px fallback image: '+state.backgroundImage);
+    assert.equal(state.poster, '', 'Native poster must be absent; CSS first-frame is the only source');
     assert.equal(state.preload, 'auto', 'Mobile and desktop must preload Hero from first paint');
     assert(state.stillImage.includes(target), 'First-frame foreground fallback missing');
     assert.equal(state.stillOpacity, '1', 'Still must cover pending media and WebGL');
-    assert.equal(state.prematureWebgl, false, 'Black WebGL canvas may be exposed before video decode');
+    assert.equal(state.prematureWebgl, false, 'No WebGL renderer should initialize while the native video loads');
     assert.equal(state.loader, 'hidden', 'Loader never exited when media failed');
-    const posterResponse = await page.request.get(state.poster);
-    assert.equal(posterResponse.status(), 200);
-    assert.match(posterResponse.headers()['content-type'] ?? '', /image\/webp/);
+    const imageUrl = state.stillImage.match(/url\(["']?(.+?)["']?\)/)?.[1];
+    assert(imageUrl, 'CSS first-frame URL missing for '+width+'px');
+    const stillResponse = await page.request.get(imageUrl);
+    assert.equal(stillResponse.status(), 200, 'Vite first-frame asset missing in production');
+    assert.match(stillResponse.headers()['content-type'] ?? '', /image\/webp/);
     assert.deepEqual(failures, []);
+    // Cursor blink is a compositor CSS animation, not a permanent GSAP tween.
+    // The offscreen Hero must not keep an infinite JS ticker awake.
+    const cursor = await page.locator('#hero-title .text-type__cursor').evaluate(el => ({
+      name: getComputedStyle(el).animationName,
+      duration: getComputedStyle(el).animationDuration,
+      gsapTweens: window.gsap?.getTweensOf(el)?.length ?? 0,
+    }));
+    assert.equal(cursor.name, 'text-type-cursor-blink');
+    assert.equal(cursor.duration, '0.5s');
+    assert.equal(cursor.gsapTweens, 0, 'Hero cursor must not own an infinite GSAP tween');
+    await page.evaluate(() => scrollTo({top:Math.max(0,document.querySelector('#recognition').offsetTop),behavior:'instant'}));
+    await page.waitForTimeout(180);
+    assert.equal(await page.locator('#hero-title .text-type__cursor').evaluate(
+      el => getComputedStyle(el).animationPlayState), 'paused',
+    'Offscreen Hero cursor animation should be paused');
+    const completeRole = await page.locator('#hero-title .text-type__content').textContent();
+    await page.waitForTimeout(2200);
+    assert.equal(await page.locator('#hero-title .text-type__content').textContent(), completeRole,
+      'Offscreen Hero must not keep rerendering the typewriter');
     const report = getSafeMediaReport(page);
     assert.equal(report.fulfilled + report.blocked, 0, 'Unexpected ImageKit request');
     console.log(`PASS ${width}px: fallback poster available, ${state.preload} preload, no black WebGL/loader deadlock`);

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <style>@view-transition { navigation: auto; }</style>
     <link rel="stylesheet" href="./src/styles/page-transitions.css" />
+    <script src="./page-transition-types.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#0B0C0F" />
@@ -21,10 +22,18 @@
     <meta property="og:image:alt" content="AI路人 · AI 视频创意设计师作品集" />
     <meta property="og:locale" content="zh_CN" />
     <title>全部作品 · AI路人</title>
-    <style>html{--library-bg:var(--portfolio-page-surface,#0B0C0F)}body{margin:0;background:var(--library-bg);color:#f5f5f7}button,a{-webkit-tap-highlight-color:transparent}button{touch-action:manipulation}</style>
+    <style>html{--library-bg:var(--portfolio-page-surface,#0B0C0F)}body{margin:0;background:var(--library-bg);color:#f5f5f7}button,a{-webkit-tap-highlight-color:transparent}button{touch-action:manipulation}
+    /* Before React mounts, reserve approximately the initial works-grid height.
+       This prevents a zero-height document from clamping restored scroll
+       positions; the reservation disappears as soon as the root is populated. */
+    #works-root:empty{display:block;min-height:max(100dvh,1840px)}
+    @media(max-width:760px){#works-root:empty{min-height:max(100dvh,1900px)}}
+    </style>
   </head>
   <body>
     <div id="works-root"></div>
+    <script defer src="./vendor/gsap.min.js"></script>
+    <script defer src="./vendor/ScrollTrigger.min.js"></script>
     <script type="module" src="./src/works-main.jsx"></script>
   </body>
 </html>
