@@ -51,7 +51,7 @@ try {
           overflow: document.documentElement.scrollWidth - innerWidth,
         };
       });
-      const version = width <= 720 ? 'hero-mobile' : 'hero';
+      const version = width <= 760 ? 'hero-mobile-pingpong' : 'hero';
       const poster = width <= 720 ? 'hero-first-frame-mobile' : 'hero-first-frame-desktop';
       assert.equal(data.experience, 'cinematic', width + 'px: homepage journey missing');
       assert.equal(data.webgl, false, width + 'px: WebGL post-processing must remain retired');
@@ -62,8 +62,8 @@ try {
       assert(data.poster === null || data.poster === '', width + 'px: native poster duplicates the responsive first-frame layer');
       assert(data.backgroundPoster.includes(poster), width + 'px: wrong first-frame still');
       assert(data.src.includes(version), width + 'px: wrong film source ' + data.src);
-      assert(data.duration >= 14.8 && data.duration <= 15.3,
-        width + 'px: unexpected film duration ' + data.duration);
+      assert(data.duration >= (width <= 760 ? 29.9 : 14.8) && data.duration <= (width <= 760 ? 30.1 : 15.3),
+        width + 'px: unexpected mobile ping-pong / desktop scrub film duration ' + data.duration);
       assert.equal(data.overflow, 0, width + 'px: horizontal overflow');
 
       await page.evaluate(() => scrollTo({
