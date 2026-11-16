@@ -1861,6 +1861,31 @@
       // Vite fingerprints this hidden source at build time. Read its rewritten
       // URL instead of a raw source path that does not exist in production.
       var originalMobileSource = video.querySelector('source[data-scroll-original]')?.getAttribute('src');
+      // Cloudflare Pages returns HTTP 200 even for Range requests (instead of
+      // 206 Partial Content). Desktop scroll scrubbing requires seeking to
+      // arbitrary frames, which stalls on its static MP4 asset response.
+      // Reuse the same immutable video hash published on our GitHub Pages site,
+      // which supports 206. Mobile C remains locally hosted/continuous.
+      // If a Hero asset changes, publish the new hash to GitHub Pages before
+      // relying on its Cloudflare preview mirror.
+      if (/(?:^|\.)pages\.dev$/i.test(window.location.hostname)) {
+        function rangeReadyHeroSource(src, stem) {
+          if (!src) return src;
+          var path = new URL(src, window.location.href).pathname;
+          var valid = stem === 'hero'
+            ? /^\/assets\/hero-[A-Za-z0-9_-]+\.mp4$/.test(path)
+            : /^\/assets\/hero-mobile-[A-Za-z0-9_-]+\.mp4$/.test(path);
+          return valid ? 'https://ai-luren.github.io' + path : src;
+        }
+        var desktopHeroSource = video.querySelector('source:not([media])');
+        if (desktopHeroSource && !mobileScrub) {
+          desktopHeroSource.setAttribute('src',
+            rangeReadyHeroSource(desktopHeroSource.getAttribute('src'), 'hero'));
+        }
+        // Explicit ?heroMode=scrub and autoplay-denied mobile fallback also
+        // seek, so they must use a byte-range-capable mirror.
+        originalMobileSource = rangeReadyHeroSource(originalMobileSource, 'hero-mobile');
+      }
       if (mobileScrollRequested) {
         var mobileSource = video.querySelector('source[media]');
         if (mobileSource) mobileSource.setAttribute('src', originalMobileSource);
