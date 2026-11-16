@@ -55,7 +55,9 @@ try {
    assert.equal(result.labCSS.align,'left',tag+': lab action text alignment');
    assert(result.soc.every(x=>x.css.border==='0px'&&x.css.bg==='rgba(0, 0, 0, 0)'),tag+': social old pill');
    assert(result.soc.every(x=>x.css.align==='left'),tag+': social action text alignment');
-   assert(result.soc.every(x=>x.box.h >= (w<=720?44:40)),tag+': social touch target size');
+   assert(result.soc.every(x=>x.box.h >=43.99),tag+': social touch target size');
+   assert(result.ext.every(x=>x.box.h >=43.99),tag+': external link touch target size');
+   assert(result.labBtn.h>=43.99,tag+': Lab detail target size');
    assert(result.overflow<=2,tag+': horizontal overflow '+result.overflow);
    if(w>=1024){
      assert(Math.abs(result.contact.r-result.dock.r)<=1.5,

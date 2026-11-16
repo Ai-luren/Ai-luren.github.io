@@ -55,78 +55,51 @@ async function sample(page,sel,index=0){
 }
 
 try{
- for(const filename of ['index.html']){
-  const isHome=filename==='index.html';
-  for(const width of [390,1440])for(const lang of ['zh','en']){
-   const {page,errors}=await setup(filename,width,lang);
-   try{
-    const selector=isHome?'#projects .comet-card':'.library-grid .comet-card';
-    await page.locator(selector).first().waitFor({state:'attached'});
-    const metadata=await page.evaluate(()=>({
-      source:window.__cinematicReveal.source,
-      activeGrids:window.__cinematicReveal.activeGrids,
-      reversible:window.__cinematicReveal.reversible,
-      mode:window.__cinematicReveal.mode,
-    }));
-    assert.equal(metadata.mode,'scrub');
-    assert.equal(metadata.reversible,true);
-    assert(metadata.activeGrids>=1,'GSAP ScrollTrigger must be active');
-    // Home: 2x4 mobile / 4x2 desktop. Works can start mid-card at page top,
-    // so use a card on the next row to observe the whole approach curve.
-    const count=await page.locator(selector).count();
-    const index=isHome?Math.min(4,count-1):Math.min(width<=720?4:6,count-1);
-    const samples=[];
-    for(const progress of [0,.1,.2,.4,.62,.85,1,.85,.4,.2,0]){
-      await position(page,selector,index,progress);
-      await page.waitForTimeout(100);
-      samples.push({target:progress,...await sample(page,selector,index)});
-    }
-    const [start,early,mid,hold,hold2,exit,far,reverseExit,reverseHold,reverseEnter,reverseStart]=samples;
-    const [expectedY,expectedScale]=isHome
-      ? width<=720?[84,.936]:[138,.885]
-      : width<=720?[70,.945]:[92,.92];
-    assert(Math.abs(start.y-expectedY)<=3,
-      filename+'/'+width+'/'+lang+' must visibly fly in '+JSON.stringify(start));
-    assert(Math.abs(start.scale-expectedScale)<.005,
-      filename+'/'+width+'/'+lang+' approach depth '+JSON.stringify(start));
-    assert(early.y<start.y-(width<=720?10:16) && early.scale>start.scale,
-      filename+'/'+width+'/'+lang+' camera must approach continuously');
-    assert(Math.abs(hold.y)<.2&&Math.abs(hold.scale-1)<.002,
-      'Reading stage must be full-size, stable and sharp');
-    assert(Math.abs(hold2.y)<.2&&Math.abs(hold2.scale-1)<.002,
-      'Reading stage must be held over scroll distance');
-    // A short Works category may end before its last row fully exits.
-    // We intentionally do not add artificial blank space just to animate it.
-    if (exit.p>.78) {
-      assert(exit.y<-3&&exit.scale>1,
-        filename+'/'+width+'/'+lang+' outbound stage while scrollable');
-    }
-    if(far.p>.80){
-      assert(far.y<exit.y&&far.scale>exit.scale,
-        filename+'/'+width+'/'+lang+' exit increases with scroll distance');
-    }
-    assert(Math.abs(reverseExit.y-exit.y)<2 && Math.abs(reverseExit.scale-exit.scale)<.004,
-      'Reverse scrolling must return exactly through exit position');
-    assert(Math.abs(reverseStart.y-start.y)<3 && Math.abs(reverseStart.scale-start.scale)<.006,
-      'Reverse scrolling must return exactly through entrance position');
-    assert(samples.every(s=>s.opacity===1 && Math.abs(s.x)<.5 && Math.abs(s.rotated)<.001 && s.is2D),
-      'No opacity flicker, horizontal drift, rotation, or 3D projection');
-    if (!isHome) {
-      // Even in a short category, the first row must actually retreat when
-      // the visitor reaches the last scrollable part of the library.
-      await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
-      await page.waitForTimeout(110);
-      const firstRowExit=await sample(page,selector,0);
-      assert(firstRowExit.y < -3 && firstRowExit.scale > 1,
-        filename+'/'+width+'/'+lang+' first row must have a real departure: '+JSON.stringify(firstRowExit));
-    }
-    assert.deepEqual(errors,[],filename+'/'+width+'/'+lang+' JS errors');
-    console.log('PASS scrub + reverse '+filename+' '+width+' '+lang,
-      'entrance:'+Math.round(start.y)+'px',
-      'exit:'+Math.round(far.y)+'px',
-      'grids:'+metadata.activeGrids);
-   }finally{await page.close();}
-  }
+ // Apple iPhone Duo editorial rule: a card enters ONCE with vertical Y only;
+ // the artwork must remain scale 1, and reverse scrolling never replays it.
+ for(const width of [390,1440]) for(const lang of ['zh','en']) {
+   const {page,errors}=await setup('index.html',width,lang);
+   try {
+     const metadata=await page.evaluate(()=>({
+       mode:window.__cinematicReveal.mode,
+       reversible:window.__cinematicReveal.reversible,
+       grids:window.__cinematicReveal.activeGrids,
+     }));
+     assert.equal(metadata.mode,'entrance-once');
+     assert.equal(metadata.reversible,false);
+     assert(metadata.grids>0,'the first entrance must still be discoverable');
+     const index=4;
+     const samples=[];
+     for(const progress of [0,.1,.35,.65,.9,1,.4,.1,0]) {
+       await position(page,'#projects .comet-card',index,progress);
+       await page.waitForTimeout(90);
+       samples.push(await sample(page,'#projects .comet-card',index));
+     }
+     const enterY=width<=760?22:30;
+     assert(Math.abs(samples[0].y-enterY)<2,
+       width+'/'+lang+' first entrance should be a small vertical rise');
+     assert(samples[1].y>0 && samples[1].y<enterY,
+       'initial entry should ease smoothly toward its final position');
+     assert(samples.every(s=>Math.abs(s.scale-1)<.0002 && s.opacity===1 &&
+       Math.abs(s.x)<.2 && Math.abs(s.rotated)<.0002 && s.is2D),
+       'Artwork must NEVER shrink, grow, turn, drift, or fade');
+     assert(samples.slice(2).every(s=>s.state==='reading'&&s.transform==='none'),
+       'After first reveal, cards must remain static on exit AND reverse scroll');
+     // The information panels use the same no-scale, no-exit contract.
+     for(const selector of ['#recognition .impact-glass',
+       '#experiments .flip-experiment','#profile .closing-card']){
+       await page.locator(selector).first().scrollIntoViewIfNeeded();
+       await page.waitForTimeout(80);
+       const panel=await sample(page,selector);
+       assert.equal(panel.scale,1,'Informational panels must not zoom: '+selector);
+       await page.evaluate(()=>scrollBy({top:-400,behavior:'instant'}));
+       await page.waitForTimeout(70);
+       const reversed=await sample(page,selector);
+       assert.equal(reversed.scale,1,'Reverse panel movement cannot zoom: '+selector);
+     }
+     assert.deepEqual(errors,[]);
+     console.log('PASS one-time unscaled cards/panels '+width+' '+lang);
+   }finally{await page.close()}
  }
 
  for(const filename of ['index.html']){
@@ -206,21 +179,59 @@ try{
        const exit=await place(selector,95);
        const back=await place(selector,765);
        const readAgain=await place(selector,450);
-       assert.equal(enter.state,'entering');
-       assert.equal(read.state,'reading');
-       assert.equal(exit.state,'reading');
-       assert(enter.opacity<read.opacity-.05,
-         'Headings reveal below but never fade out at the TOP boundary');
-       assert.equal(exit.opacity,1,'Reverse scroll must preserve heading legibility');
-       assert(Math.abs(back.opacity-enter.opacity)<.06 && Math.abs(readAgain.opacity-read.opacity)<.015,
-         'Lower-edge entrance must remain reversible with scroll');
+       // Initial viewport / browser restore may have revealed this title
+       // before our synthetic test scroll. That must be stable, not replayed.
+       if(enter.state==='entering') {
+         assert(enter.opacity<read.opacity-.05,
+           'Unseen headings should fade gently on first appearance');
+       } else {
+         assert.equal(enter.state,'stable');
+         assert.equal(enter.opacity,1,'Already seen titles must never replay');
+       }
+       assert(['reading','stable'].includes(read.state), 'Heading must settle to its final pose');
+       assert.equal(exit.state,'stable');
+       assert.equal(exit.opacity,1,'Titles stay fully readable at the top');
+       assert.equal(back.opacity,1,'Upward scrolling must NEVER replay the fade');
+       assert.equal(back.transform,'none','Upward scrolling must not slide the heading');
+       assert.equal(readAgain.opacity,1,'Re-entering an already seen chapter stays stable');
        assert.equal(read.transform,'none','Reading headlines remain sharp');
      }
      assert.deepEqual(errors,[]);
-     console.log('PASS reversible section/subsection titles '+width);
+     console.log('PASS one-time section/subsection titles '+width);
    } finally {await page.close();}
  }
 
+ // iPhone Duo comparison: confirm a genuinely unseen title enters gently,
+ // reaches its final pose, then NEVER animates when reversed below the fold.
+ for(const width of [390,1440]) {
+   const {page,errors}=await setup('index.html',width,'zh');
+   try {
+     const selector='#impact-awards .impact-evidence-label';
+     const place=async y=>{
+       await page.evaluate(({selector,y})=>{
+         const node=document.querySelector(selector);
+         const top=node.getBoundingClientRect().top;
+         scrollTo({top:Math.max(0,scrollY+top-y),behavior:'instant'});
+       },{selector,y});
+       await page.waitForTimeout(120);
+       return page.locator(selector).evaluate(el=>({
+         state:el.dataset.editorialTitle,
+         opacity:Number(getComputedStyle(el).opacity),
+         transform:getComputedStyle(el).transform,
+       }));
+     };
+     const entering=await place(765);
+     const settled=await place(450);
+     const reverse=await place(765);
+     assert.equal(entering.state,'entering','Unseen title needs its first entry');
+     assert(entering.opacity<.96 && entering.transform!=='none');
+     assert(settled.opacity===1 && settled.transform==='none');
+     assert(reverse.opacity===1 && reverse.transform==='none' && reverse.state==='stable',
+       'Previously seen titles cannot replay on ArrowUp/scroll reversal');
+     assert.deepEqual(errors,[]);
+     console.log('PASS real unseen headline enters once then stays on reverse '+width);
+   } finally { await page.close(); }
+ }
  // Direct hash navigation, browser scroll restoration and reduced motion must
  // never replay a hidden headline during the initial document paint.
  for(const [width,hash,selector] of [
@@ -238,9 +249,8 @@ try{
      assert.deepEqual(state,{opacity:'1',transform:'none'},'Deep-link target must be stable');
    } finally {await page.close();}
  }
- // Regression for the specific real-world complaint: holding an arrow key
- // produces repeated keydown events. Headings must NOT dim near the top,
- // and the dolly must pass the camera rather than shrink on departure.
+ // Regression for holding ArrowUp/ArrowDown: no title fades on return,
+ // and ALL card scaling must remain exactly 1 while keys are held.
  for (const width of [390,1440]) {
    const {page,errors}=await setup('index.html',width,'zh');
    try {
@@ -278,9 +288,9 @@ try{
        directionData.push({key,start,end,samples});
      }
      const scales=directionData.flatMap(x=>x.samples.map(s=>s.cardScale));
-     assert(scales.some(x=>x>1.005),width+' exit should advance past camera');
+     assert(scales.every(x=>Math.abs(x-1)<.0003),width+' no scaling during held keys');
      assert.deepEqual(errors,[]);
-     console.log('PASS held keyboard down/up, top headline opacity and dolly depth '+width);
+     console.log('PASS held keyboard down/up, headline stays and cards never scale '+width);
    } finally {await page.close();}
  }
  console.log('CINEMATIC_DOLLY_SCRUB_PASS');

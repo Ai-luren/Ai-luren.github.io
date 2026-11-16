@@ -1967,6 +1967,15 @@
 
       var floatingHeader = document.querySelector('header');
       var initialHashAligned = false;
+      var reactSectionsReadyForHash = false;
+      var initialHashCancelled = false;
+      var startingHash = window.location.hash;
+      // The browser can dispatch `load` while React work cards have not yet
+      // expanded the document. Never mark a deep link aligned at that point.
+      // `back_forward` scroll restoration is handled separately by the browser.
+      var navigationKind = performance.getEntriesByType('navigation')[0]?.type;
+      var shouldAlignInitialHash = hasInitialSectionAnchor &&
+        navigationKind !== 'back_forward' && navigationKind !== 'reload';
       function getAnchorOffset() {
         var rootStyle = window.getComputedStyle(document.documentElement);
         var configuredOffset = parseFloat(rootStyle.getPropertyValue('--anchor-offset')) || parseFloat(rootStyle.scrollPaddingTop) || 0;
@@ -1978,7 +1987,12 @@
         if (!target) return false;
         // 对齐章节标题而不是 section 外框：section 自身保留节奏留白，
         // 但点击导航后应让用户立即看到该模块的语义入口。
-        var mobileImpactHeading = window.matchMedia && window.matchMedia('(max-width: 720px)').matches
+        // The Expertise parent contains multiple nested evidence headings.
+        // Align its OWN chapter title, not the first Awards subheading.
+        // Only direct impact-* destinations may prefer their nested h2.
+        var isImpactSubsection = /^impact-(awards|programs|reach)$/.test(sectionId);
+        var mobileImpactHeading = isImpactSubsection && window.matchMedia &&
+          window.matchMedia('(max-width: 720px)').matches
           ? target.querySelector('.impact-evidence-label h2')
           : null;
         var anchor = mobileImpactHeading
@@ -1997,25 +2011,59 @@
         return true;
       }
       function alignInitialHash() {
-        if (initialHashAligned || !hasInitialSectionAnchor) return;
+        if (!shouldAlignInitialHash || !reactSectionsReadyForHash ||
+            initialHashAligned || initialHashCancelled ||
+            window.location.hash !== startingHash) return;
         var sectionId = decodeURIComponent(window.location.hash.slice(1));
         if (!sectionId || sectionId === 'top') return;
-        if (sectionId === 'contact') {
-          scrollToContactCard('auto');
-          initialHashAligned = true;
-          return;
+        // Recognition / Contact sit BELOW dynamic React cards. In particular,
+        // scrolling to their old layout and setting initialHashAligned=true
+        // before the cards mount permanently strands mobile readers mid-page.
+        if (!document.querySelector('#projects .comet-card')) return;
+        var aligned = sectionId === 'contact'
+          ? scrollToContactCard('instant')
+          : scrollToSectionAnchor(sectionId, 'instant');
+        if (aligned) initialHashAligned = true;
+      }
+      // A real gesture during arrival always wins over automated alignment.
+      ['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(function (name) {
+        window.addEventListener(name, function () { initialHashCancelled = true; },
+          { passive: true, once: true });
+      });
+      function correctInitialHashAfterLayout() {
+        if (!shouldAlignInitialHash || !reactSectionsReadyForHash ||
+            initialHashCancelled || window.location.hash !== startingHash) return;
+        var sectionId = decodeURIComponent(window.location.hash.slice(1));
+        var target = sectionId === 'contact'
+          ? document.querySelector('#profile .closing-card')
+          : document.getElementById(sectionId)?.querySelector('.section-intro')
+            || document.getElementById(sectionId);
+        if (!target) return;
+        var desired = getAnchorOffset();
+        var top = target.getBoundingClientRect().top;
+        var max = Math.max(0, document.documentElement.scrollHeight - innerHeight);
+        // Contact is the final card: the bottom of the document can limit
+        // alignment to its true card-top. Do not append an empty screen.
+        if (Math.abs(top - desired) > 5 &&
+            !(scrollY >= max - 2 && top > desired)) {
+          if (sectionId === 'contact') scrollToContactCard('instant');
+          else scrollToSectionAnchor(sectionId, 'instant');
         }
-        if (!scrollToSectionAnchor(sectionId, 'auto')) return;
-        initialHashAligned = true;
       }
       window.addEventListener('portfolio:react-ready', function () {
-        // React 挂载前浏览器已经做过一次原生 hash 定位；等动态模块补齐高度后再对齐一次。
+        reactSectionsReadyForHash = true;
+        // React and ScrollTrigger can still adjust layout during the first
+        // 200ms of a cross-page scene transition. Two idempotent corrections
+        // prevent a visible 70px residual offset on iPhone widths.
         window.requestAnimationFrame(function () {
           window.requestAnimationFrame(alignInitialHash);
         });
+        window.setTimeout(correctInitialHashAfterLayout, 260);
+        window.setTimeout(correctInitialHashAfterLayout, 520);
       });
       window.addEventListener('load', function () {
-        window.requestAnimationFrame(alignInitialHash);
+        // Only a post-React fallback; the earlier `load` must NEVER latch.
+        if (reactSectionsReadyForHash) window.requestAnimationFrame(alignInitialHash);
       }, { once: true });
       if (window.gsap && window.ScrollTrigger) {
         // Other sections still use ScrollTrigger for existing film position

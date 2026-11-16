@@ -1,13 +1,13 @@
 /**
- * Cinematic editorial typography — reversible and linked to scroll position.
+ * Apple-inspired editorial typography — reveal once on first entry.
  *
  * Only section-level editorial headings are targets. Text INSIDE the closing
  * card ("AI 影像创作者" / "开始合作") is content, never a chapter animation.
  * Hero and the All Work catalogue are intentionally outside this timeline.
  *
- * This is not a replay-on-intersection animation: scroll up and down retraces
- * the same restrained lower-edge entrance; headings do not fade out at the
- * upper edge, keeping reverse scrolling and held-arrow reading consistent.
+ * Entrance is scrubbed against the lower viewport, but completes once.
+ * Reverse scroll never repeats a fade or repositions a title (as observed
+ * on the ordinary editorial headlines of Apple's iPhone Duo / AirPods 5).
  */
 const TARGETS = Object.freeze([
   ['#projects .section-intro', 'chapter'],
@@ -74,6 +74,7 @@ export function initEditorialHeadings(root) {
         // Back/Forward or during the React first commit.
         freezeUntilScroll: firstPaint && (directHash || (top < innerHeight * .88 && top + node.offsetHeight > 0)),
         isDirectHashTarget: directHash,
+        revealed: firstPaint && (directHash || (top < innerHeight * .88 && top + node.offsetHeight > 0)),
         lastSignature: null,
       });
     }
@@ -98,8 +99,8 @@ export function initEditorialHeadings(root) {
     // Read layout first; write transforms only after all headings are measured.
     for (const rec of records.values()) {
       if (!rec.node.isConnected) continue;
-      if (rec.freezeUntilScroll) {
-        stages.push([rec, 'stable', 0, 1, 0]);
+      if (rec.freezeUntilScroll || rec.revealed) {
+        stages.push([rec, 'stable', 0, 1, 1]);
         continue;
       }
       let anchorTop = anchorTops.get(rec.anchor);
@@ -116,15 +117,16 @@ export function initEditorialHeadings(root) {
       let y = 0;
       let opacity = 1;
       let state = 'reading';
-      if (progress < ENTER_END) {
+      if (progress < ENTER_END - .004) {
         const t = smooth(progress / ENTER_END);
         y = enterY * (1 - t);
         opacity = setting.enterOpacity + (1 - setting.enterOpacity) * t;
         state = 'entering';
+      } else {
+        rec.revealed = true;
       }
-      // Once a heading is readable, never dim it while passing the TOP
-      // boundary. Apple-style editorial anchors remain legible when the
-      // visitor holds ArrowUp or reverses quickly through a section.
+      // A fully revealed heading stays opaque and static, even if it crosses
+      // back through the lower viewport while holding ArrowUp.
       stages.push([rec, state, y, opacity, progress]);
     }
     for (const [rec, state, y, opacity, progress] of stages) {

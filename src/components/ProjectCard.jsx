@@ -49,6 +49,11 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
   const detail = project.typeLabel?.[lang]
     || project.award[lang]
     || PROJECT_CATEGORIES.find(item => item.id === project.category)?.label[lang];
+  // Avoid a one-glyph second line on narrow two-column mobile cards.
+  // For mixed Latin-brand + Chinese-title names (e.g. FormFunk 餐具创意广告),
+  // keep the Chinese phrase intact when it fits; longer phrases still wrap
+  // with the shared overflow-wrap fallback. Preserve the original aria label.
+  const mixedLatinCjk = lang === 'zh' && /^[A-Za-z][A-Za-z0-9.+&-]*\s+[\u3400-\u9fff]/u.test(project.title[lang]);
   const isReady = Boolean(projectVideoVersions(project)[0]?.videoUrl?.trim());
   const status = isReady
     ? (lang === 'en' ? 'Play' : '播放')
@@ -74,7 +79,7 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
             <span className={isReady ? 'portfolio-work-card__play-text' : undefined}>{status}</span>
           </span>
         </span>
-        <strong className="comet-archive__title">{renderTitle(project.title[lang])}</strong>
+        <strong className={`comet-archive__title${mixedLatinCjk ? ' comet-archive__title--mixed-latin-cjk' : ''}`}>{renderTitle(project.title[lang])}</strong>
         <span className="comet-archive__copy">
           <span className="comet-archive__details"><strong>{detail}</strong></span>
         </span>

@@ -107,9 +107,11 @@ try {
       width+'px: reverse optical transition missing');
     assert.equal(after.nav.cueLabel,'加载中',
       width+'px: backwards cue must keep the same concise label');
-    assert(Math.abs(after.y-before.y)<=15,
-      width+'px: previous scroll position not restored '+before.y+' → '+after.y);
-    assert(Math.abs(after.frame-before.frame)<.12,width+'px: previous movie frame not restored');
+    // The explicit Home link must go to Hero, never browser-history Back.
+    // Native Back still restores position; that behavior has a separate test.
+    assert.equal(new URL(page.url()).hash,'#top',width+'px: Home link must target Hero');
+    assert(after.y<=3,width+'px: Home link failed to show Hero '+after.y);
+    assert(after.frame<.15,width+'px: Hero film did not return to opening frame');
     assert.deepEqual(errors,[],width+'px: JS errors');
     console.log('PASS '+width+'px: B+C optical handoff, single-line soft cue, filters, reverse/scroll');
     await page.close();
@@ -121,8 +123,9 @@ try {
   assert.equal(await direct.evaluate(()=>document.documentElement.dataset.archiveArrival),undefined);
   await direct.locator('.library-page-navigation .cinema-player__brand--home-return')
     .click({noWaitAfter:true});
-  await direct.waitForURL('**/index.html');
-  console.log('PASS direct works link and normal Home navigation');
+  await direct.waitForURL('**/index.html#top');
+  assert((await direct.evaluate(()=>scrollY))<=3,'Direct Works Home must show Hero');
+  console.log('PASS direct works link and explicit Hero navigation');
   await direct.close();
 
   const reduced = await createSafePage(browser,{viewport:{width:1440,height:900}});

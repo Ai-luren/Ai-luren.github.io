@@ -253,7 +253,12 @@ function AwardGallery() {
       if (event.key === 'ArrowRight') {event.preventDefault();step(1);}
       if (event.key === 'ArrowLeft') {event.preventDefault();step(-1);}
       if (event.key === 'Tab') {
-        const controls = [...dialog.querySelectorAll('a[href],button:not(:disabled)')];
+        // The desktop-only award thumbnail rail remains mounted on phones.
+        // Hidden thumbnails must NOT become keyboard-trap sentinels: otherwise
+        // Tab escapes after the last visible previous/next arrow.
+        const controls = [...dialog.querySelectorAll('a[href],button:not(:disabled)')]
+          .filter(element => element.getClientRects().length > 0 &&
+            getComputedStyle(element).visibility !== 'hidden');
         const first = controls[0], last = controls.at(-1);
         if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) {event.preventDefault();last?.focus();}
         else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) {event.preventDefault();first?.focus();}
@@ -325,7 +330,13 @@ function AwardGallery() {
   const active = isOpen ? awards[openIndex] : null;
   return (
     <div className="impact-glass impact-award-shell impact-award-shell--grid">
-      <div id="impact-award-gallery-note" className="impact-evidence-note"><span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span></div>
+      <div id="impact-award-gallery-note" className="impact-evidence-note">
+        <span>{lang === 'en' ? 'AWARDS & SHOWCASES' : '荣誉与展映'}</span>
+        <span className="impact-award-enlarge-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="10.5" cy="10.5" r="6.3"/><path d="M15.2 15.2 21 21M7.8 10.5h5.4M10.5 7.8v5.4"/></svg>
+          <span>{lang === 'en' ? 'Tap to enlarge' : '点击图片放大'}</span>
+        </span>
+      </div>
       <p className="impact-award-description">{lang === 'en' ? 'AI contest awards, selections and public showcases' : 'AI 创作赛事获奖、入围及展映记录'}</p>
       <ul ref={railRef} className="impact-award-grid" aria-label={lang === 'en' ? 'Awards and recognition images' : '获奖荣誉图片'}>
         {awards.map((award, index) => (
@@ -473,13 +484,11 @@ function ReachDossier() {
     setActiveProfile(card);
   };
 
-  // A decoded, in-place account-to-account transition. Preserve the current
-  // screenshot/QR until the next account is ready, as the opening path does.
-  // A request token prevents a late decode from replacing a newer selection.
-  const stepProfile = async (direction) => {
-    if (!activeProfile || profileClosingRef.current) return;
-    const currentIndex = reachCards.findIndex(card => card.id === activeProfile.id);
-    const nextCard = reachCards[(currentIndex + direction + reachCards.length) % reachCards.length];
+  // Single transition path for arrows, keyboard AND desktop thumbnail index.
+  // The current screenshot / QR stay visible while the destination decodes;
+  // request tokens ignore stale responses from rapid switching.
+  const selectProfile = async nextCard => {
+    if (!activeProfile || profileClosingRef.current || nextCard.id === activeProfile.id) return;
     const request = ++profileOpenRequestRef.current;
     setPreparingProfileId(nextCard.id);
     const [screenshotReady, qrReady] = await warmImages([nextCard.screenshot, nextCard.qrCode]);
@@ -487,6 +496,11 @@ function ReachDossier() {
     setProfileImageFailed({ screenshot: !screenshotReady, qr: !qrReady });
     setPreparingProfileId(null);
     setActiveProfile(nextCard);
+  };
+  const stepProfile = direction => {
+    if (!activeProfile || profileClosingRef.current) return;
+    const currentIndex = reachCards.findIndex(card => card.id === activeProfile.id);
+    void selectProfile(reachCards[(currentIndex + direction + reachCards.length) % reachCards.length]);
   };
   profileStepRef.current = stepProfile;
 
@@ -685,6 +699,27 @@ function ReachDossier() {
                     {t('保存二维码', 'Save QR code')}
                   </a>
                 )}
+              </aside>
+              <aside className="impact-profile-index" aria-label={t('自媒体账号索引', 'Social profile index')}>
+                <div className="impact-profile-index-head">
+                  <span>{t('账号索引', 'PROFILES')}</span>
+                  <span>{reachCards.findIndex(card => card.id === activeProfile.id) + 1} / {reachCards.length}</span>
+                </div>
+                <div className="impact-profile-index-grid" role="group" aria-label={t('直接切换平台账号', 'Choose a platform profile')}>
+                  {reachCards.map(card => (
+                    <button key={card.id} type="button" className="impact-profile-index-item"
+                      aria-pressed={card.id === activeProfile.id}
+                      aria-label={t(`查看${card.platform.zh}账号`, `View ${card.platform.en} profile`)}
+                      aria-busy={preparingProfileId === card.id}
+                      disabled={Boolean(preparingProfileId)}
+                      onClick={() => void selectProfile(card)}>
+                      <span className="impact-profile-index-preview">
+                        <img src={card.screenshot} alt="" loading="eager" decoding="async" />
+                      </span>
+                      <span className="impact-profile-index-name">{card.platform[lang]}</span>
+                    </button>
+                  ))}
+                </div>
               </aside>
             </div>
             <div className="impact-profile-pagination" role="group" aria-label={t('切换平台账号', 'Browse platform profiles')}>

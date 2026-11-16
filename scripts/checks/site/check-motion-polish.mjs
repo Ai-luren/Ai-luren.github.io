@@ -29,7 +29,7 @@ try {
       child.once('exit',code=>code===0?resolve():reject(new Error(script+' failed ('+code+')')));
     });
   }
-  console.log('PASS: five motion checks - modal, filters, prefetch, Hero no-flash, reversible cinematic dolly');
+  console.log('PASS: five motion checks - modal, filters, prefetch, Hero no-flash, Apple-style one-time editorial reveal');
 } finally {
   if(server){server.kill('SIGTERM');await wait(130);}
 }

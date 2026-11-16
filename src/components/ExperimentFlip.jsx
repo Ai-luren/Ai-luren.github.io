@@ -92,17 +92,61 @@ const IconArrow = ({ direction = 'right' }) => (
 
 // One focused screenshot and compact selectors per project. README content
 // remains in GitHub; the viewer is a one-screen proof, not a documentation page.
-function ProjectShowcase({ active, lang, selectedIndex, onSelect, imagePending }) {
+function ProjectShowcase({ active, lang, selectedIndex, onSelect, imagePending, zoomed, onToggleZoom, canvasRef }) {
   const image = active.gallery[selectedIndex] ?? active.gallery[0];
+  const dragRef = useRef(null);
+  const startDrag = event => {
+    // Native touch/trackpad panning remains untouched. Only a primary mouse or
+    // pen drag translates the image within its existing scroll container.
+    if (!zoomed || !event.isPrimary || event.button !== 0 || event.pointerType === 'touch') return;
+    const canvas = event.currentTarget;
+    if (canvas.scrollWidth <= canvas.clientWidth && canvas.scrollHeight <= canvas.clientHeight) return;
+    dragRef.current = {
+      pointerId: event.pointerId, x: event.clientX, y: event.clientY,
+      left: canvas.scrollLeft, top: canvas.scrollTop,
+    };
+    canvas.setPointerCapture(event.pointerId);
+    canvas.classList.add('is-dragging');
+    canvas.focus({ preventScroll: true });
+    event.preventDefault();
+  };
+  const moveDrag = event => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const canvas = event.currentTarget;
+    canvas.scrollLeft = drag.left + drag.x - event.clientX;
+    canvas.scrollTop = drag.top + drag.y - event.clientY;
+    event.preventDefault();
+  };
+  const stopDrag = event => {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    dragRef.current = null;
+    const canvas = event.currentTarget;
+    canvas.classList.remove('is-dragging');
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+  };
   return <section className={`lab-project-showcase lab-project-showcase--${active.id}`}
     aria-label={lang === 'zh' ? '项目实际展示' : 'Project visuals'}>
     <figure className="lab-project-image-frame">
-      <div className="lab-project-image-canvas" style={{ '--lab-image-ambient': `url("${image.src}")` }}>
-        <img src={image.src} alt={pick(image.title, lang)} loading="eager" decoding="sync" />
+      <div ref={canvasRef} className={`lab-project-image-canvas${zoomed ? ' is-zoomed' : ''}`}
+        role={zoomed ? 'region' : undefined} tabIndex={zoomed ? 0 : undefined}
+        aria-label={zoomed ? (lang === 'en' ? 'Enlarged image, scroll or drag to explore' : '已放大图片，可滚动或拖拽查看细节') : undefined}
+        onPointerDown={startDrag} onPointerMove={moveDrag}
+        onPointerUp={stopDrag} onPointerCancel={stopDrag}
+        style={{ '--lab-image-ambient': `url("${image.src}")` }}>
+        <img src={image.src} draggable={false} onDragStart={event => event.preventDefault()}
+          alt={pick(image.title, lang)} loading="eager" decoding="sync" />
       </div>
       <figcaption>
         <span>{pick(image.title, lang)}</span>
-        {active.gallery.length > 1 && <span className="lab-project-showcase-count">{selectedIndex + 1} / {active.gallery.length}</span>}
+        <span className="lab-project-image-utilities">
+          {active.gallery.length > 1 && <span className="lab-project-showcase-count">{selectedIndex + 1} / {active.gallery.length}</span>}
+          <button type="button" className="lab-project-image-zoom" aria-pressed={zoomed} onClick={onToggleZoom}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15.2 15.2 5.8 5.8M7.8 10.5h5.4"/>{!zoomed && <path d="M10.5 7.8v5.4"/>}</svg>
+            {zoomed ? (lang === 'en' ? 'Fit image' : '适应屏幕') : (lang === 'en' ? 'Enlarge' : '放大查看')}
+          </button>
+        </span>
       </figcaption>
     </figure>
     {active.gallery.length > 1 && <div className="lab-project-image-tabs" role="group" aria-label={lang === 'zh' ? '选择项目展示图片' : 'Select project visual'}>
@@ -122,6 +166,23 @@ export default function ExperimentFlip() {
   const [visualIndex, setVisualIndex] = useState(0);
   const [pendingProject, setPendingProject] = useState(null);
   const [pendingImage, setPendingImage] = useState(null);
+  const [zoomed, setZoomed] = useState(false);
+  const zoomedRef = useRef(false);
+  const imageCanvasRef = useRef(null);
+  const toggleImageZoom = () => {
+    zoomedRef.current = !zoomedRef.current;
+    setZoomed(zoomedRef.current);
+    if (zoomedRef.current) requestAnimationFrame(() => requestAnimationFrame(() => {
+      const canvas = imageCanvasRef.current;
+      if (canvas) {
+        // Start at the document's upper-left reading origin. Centering a
+        // magnified screenshot clipped the first words of every line.
+        canvas.scrollLeft = 0;
+        canvas.scrollTop = 0;
+      }
+    }));
+  };
+  const resetImageZoom = () => { zoomedRef.current = false; setZoomed(false); };
   const imageRequestRef = useRef(0);
   const activeIndexRef = useRef(null);
   const triggerRef = useRef(null);
@@ -131,12 +192,14 @@ export default function ExperimentFlip() {
   const active = activeIndex === null ? null : experiments[activeIndex];
   activeIndexRef.current = activeIndex;
   const close = () => {
+    resetImageZoom();
     ++imageRequestRef.current;
     setPendingProject(null);
     setPendingImage(null);
     setActiveIndex(null);
   };
   const openProject = async (index, trigger) => {
+    resetImageZoom();
     triggerRef.current = trigger;
     const request = ++imageRequestRef.current;
     setPendingProject(index);
@@ -148,6 +211,7 @@ export default function ExperimentFlip() {
     setPendingProject(null);
   };
   const changeProject = async next => {
+    resetImageZoom();
     const index = next(activeIndexRef.current);
     const request = ++imageRequestRef.current;
     setPendingProject(index);
@@ -161,6 +225,7 @@ export default function ExperimentFlip() {
   };
   const changeImage = async index => {
     if (!active) return;
+    resetImageZoom();
     const project = activeIndexRef.current;
     const request = ++imageRequestRef.current;
     setPendingImage(index);
@@ -184,7 +249,21 @@ export default function ExperimentFlip() {
       // A touch confirmation sheet can temporarily sit above the project viewer.
       // Its Escape/Tab keys belong to the sheet, not the underlying viewer.
       if (document.querySelector('.external-link-sheet')) return;
-      if (event.key === 'Escape') { event.preventDefault(); close(); return; }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        if (zoomedRef.current) { resetImageZoom(); return; }
+        close(); return;
+      }
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key) && zoomedRef.current) {
+        event.preventDefault();
+        const delta = 88;
+        imageCanvasRef.current?.scrollBy({
+          left: event.key === 'ArrowLeft' ? -delta : event.key === 'ArrowRight' ? delta : 0,
+          top: event.key === 'ArrowUp' ? -delta : event.key === 'ArrowDown' ? delta : 0,
+          behavior: 'instant',
+        });
+        return;
+      }
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         event.preventDefault(); changeProject(i => (i + (event.key === 'ArrowRight' ? 1 : experiments.length - 1)) % experiments.length);
         return;
@@ -253,7 +332,8 @@ export default function ExperimentFlip() {
                 {active.facts.slice(0, 3).map(fact => <span key={pick(fact, lang)}>{pick(fact, lang)}</span>)}
               </div>
             </div>
-            <ProjectShowcase active={active} lang={lang} selectedIndex={visualIndex} onSelect={changeImage} imagePending={pendingImage} />
+            <ProjectShowcase active={active} lang={lang} selectedIndex={visualIndex} onSelect={changeImage}
+              imagePending={pendingImage} zoomed={zoomed} onToggleZoom={toggleImageZoom} canvasRef={imageCanvasRef} />
             <div className="lab-project-footer">
               <div className="lab-project-actions">
                 <a className="lab-project-source" href={active.href} target="_blank" rel="noopener noreferrer" onClick={event => handleSource(event, active)}>

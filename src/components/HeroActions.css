@@ -37,9 +37,7 @@
   transition:
     background-color var(--apple-duration-control) var(--apple-ease),
     border-color var(--apple-duration-control) var(--apple-ease),
-    box-shadow var(--apple-duration-control) var(--apple-ease),
-    color var(--apple-duration-control) var(--apple-ease),
-    transform var(--apple-duration-control) var(--apple-ease);
+    color var(--apple-duration-control) var(--apple-ease);
 }
 
 #top .hero-actions .hero-primary {
@@ -48,12 +46,12 @@
   border-color: transparent;
   background: var(--hero-primary-bg);
   color: #fff;
-  box-shadow: 0 8px 22px rgba(41, 151, 255, .18);
+  box-shadow: none;
 }
 
 #top .hero-actions .hero-primary:hover {
   background: var(--hero-primary-hover-bg);
-  box-shadow: 0 10px 28px rgba(41, 151, 255, .28);
+  box-shadow: none;
 }
 
 #top .hero-actions .hero-secondary {
@@ -62,7 +60,7 @@
   border-color: var(--hero-secondary-border);
   background: var(--hero-secondary-bg);
   color: var(--hero-secondary-color);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .05);
+  box-shadow: none;
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
 }
@@ -73,8 +71,17 @@
   color: #fff;
 }
 
-#top .hero-actions button:hover { transform: translateY(-1px); }
-#top .hero-actions button:active { transform: scale(.98); }
+/* Both calls-to-action share the same calm Apple-style feedback envelope.
+   Color and border carry hover/press; neither button glows, lifts, or zooms. */
+#top .hero-actions button:hover,
+#top .hero-actions button:active { transform: none; }
+#top .hero-actions .hero-primary:active {
+  background: var(--hero-primary-hover-bg);
+}
+#top .hero-actions .hero-secondary:active {
+  border-color: var(--hero-secondary-hover-border);
+  background: var(--hero-secondary-hover-bg);
+}
 #top .hero-actions button:focus-visible {
   outline: 2px solid var(--apple-blue);
   outline-offset: 3px;

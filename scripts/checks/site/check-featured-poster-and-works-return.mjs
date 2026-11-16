@@ -53,7 +53,7 @@ try{
   assert.equal((await label.textContent()).trim(),lang==='en'?'Home':'首页');
   await p.waitForFunction(()=>getComputedStyle(document.querySelector('.library-page-navigation .cinema-player__brand-home')).display!=='none');
   assert.equal(await p.locator('.library-back').count(),0,'Redundant in-page return link remains');
-  assert((await link.getAttribute('href'))==='./index.html','Return target must be homepage Hero, not featured anchor');
+  assert((await link.getAttribute('href'))==='./index.html#top','Explicit Home target must be the Hero');
   await p.evaluate(()=>window.scrollTo(0,Math.floor(document.documentElement.scrollHeight*.75)));
   await p.waitForTimeout(250);
   const geometry=await p.evaluate(()=>{
@@ -66,7 +66,8 @@ try{
   assert(geometry.overflow<2,width+' unexpected horizontal overflow '+geometry.overflow);
   assert(geometry.home[1]+3<=geometry.lang[0],width+' return label overlaps language');
   await Promise.all([p.waitForURL(url=>/index(?:\.html)?/.test(url.pathname)),link.click()]);
-  assert.equal(new URL(p.url()).hash,'','Return must land on homepage Hero, not #projects');
+  assert.equal(new URL(p.url()).hash,'#top','Return must land on #top Hero');
+  assert((await p.evaluate(()=>scrollY))<=3,'Return must show the Hero at scroll 0');
   assert.deepEqual(errors,[]);
   console.log('PASS',width,lang,'fixed home link and return navigation',JSON.stringify(geometry));
   await p.close();

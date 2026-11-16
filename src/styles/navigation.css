@@ -744,3 +744,25 @@ body.mobile-nav-open > header {
     border-top: 1px solid var(--apple-hairline-soft) !important;
   }
 }
+
+/* Editorial mobile menu scrim: resolve the underlying film/text before the
+   nav labels arrive. Preserve all BUCK layout, typography, and = → × motion. */
+@media (max-width: 760px) {
+  #mobile-nav-drawer.mobile-nav-drawer {
+    background: rgba(12, 12, 13, .97) !important;
+    transition: opacity 130ms var(--apple-ease), visibility 0s linear 380ms !important;
+  }
+  #mobile-nav-drawer.mobile-nav-drawer.is-open {
+    transition: opacity 130ms var(--apple-ease), visibility 0s linear 0ms !important;
+  }
+  #mobile-nav-drawer.mobile-nav-drawer.is-closing {
+    transition: opacity 240ms var(--apple-ease), visibility 0s linear 380ms !important;
+  }
+  #library-menu.library-menu::backdrop {
+    background: rgba(12, 12, 13, .97) !important;
+  }
+}
+@media (prefers-reduced-transparency: reduce) and (max-width: 760px) {
+  #mobile-nav-drawer.mobile-nav-drawer,
+  #library-menu.library-menu::backdrop { background: var(--portfolio-modal-solid) !important; }
+}

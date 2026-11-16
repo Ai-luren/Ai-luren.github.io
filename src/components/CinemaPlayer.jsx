@@ -69,6 +69,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [started, setStarted] = useState(false);
   const [playbackFeedback, setPlaybackFeedback] = useState(null);
   const feedbackSequenceRef = useRef(0);
+  const [copiedLink, setCopiedLink] = useState(false);
   const [playBlocked, setPlayBlocked] = useState(false);
   const [fullscreenUnavailable, setFullscreenUnavailable] = useState(false);
   const [nativeFullscreenControls, setNativeFullscreenControls] = useState(false);
@@ -98,6 +99,30 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const secondaryLabel = [PROJECT_CATEGORIES.find(category => category.id === project?.category)?.label[lang], project?.award[lang]].filter(Boolean).join(' · ');
 
   const index = projects.findIndex(item => item.id === project?.id);
+  useEffect(() => { setCopiedLink(false); }, [project?.id]);
+  const copyWorkLink = async () => {
+    if (!project?.id) return;
+    const url = new URL('./works.html', window.location.href);
+    url.search = '';
+    url.hash = '';
+    url.searchParams.set('watch', project.id);
+    const value = url.toString();
+    try {
+      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
+      else {
+        const field = document.createElement('textarea');
+        field.value = value; field.style.position = 'fixed'; field.style.opacity = '0';
+        document.body.appendChild(field); field.select();
+        const copied = document.execCommand('copy'); field.remove();
+        if (!copied) throw new Error('Copy not supported');
+      }
+      setCopiedLink(true);
+    } catch {
+      setCopiedLink(false);
+      // Never claim success when clipboard permission is unavailable.
+      window.prompt(lang === 'en' ? 'Copy this work link' : '复制此作品链接', value);
+    }
+  };
   const stop = () => {
     attemptRef.current++;
     requestedRef.current = false;
@@ -112,6 +137,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     // Source cards are owned by another portal and may lose activeElement
     // during React reconciliation. Preserve the original activation target.
     const trigger = returnFocusRef?.current?.isConnected ? returnFocusRef.current : document.activeElement;
+    const openedByKeyboard = trigger instanceof HTMLElement && trigger.matches(':focus-visible');
     const previousOverflow = document.body.style.overflow;
     const scroll = [window.scrollX, window.scrollY];
     document.body.style.overflow = 'hidden';
@@ -122,7 +148,19 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
         if (!closingRef.current) setMotionVisible(true);
       });
     });
+    // Keep semantic initial focus on Close (Esc/Tab accessibility), but a
+    // mouse-opened or directly shared film must not look "selected" before
+    // any keyboard navigation. Once a real key arrives, normal focus-visible
+    // indicators return. Keyboard-opened cards retain their ring immediately.
+    if (!openedByKeyboard) closeRef.current?.setAttribute('data-initial-auto-focus', '');
+    else closeRef.current?.removeAttribute('data-initial-auto-focus');
     closeRef.current?.focus({ preventScroll: true });
+    const revealKeyboardFocus = event => {
+      if (!event.altKey && !event.metaKey && !event.ctrlKey) {
+        closeRef.current?.removeAttribute('data-initial-auto-focus');
+      }
+    };
+    document.addEventListener('keydown', revealKeyboardFocus, true);
     const pauseWhenHidden = () => { if (document.hidden) videoRef.current?.pause(); };
     const closeForHistory = () => { stop(); onClose(); };
     const stopForPageHide = () => videoRef.current?.pause();
@@ -133,6 +171,8 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       cancelAnimationFrame(entranceFrame);
       window.clearTimeout(closeTimerRef.current);
       document.removeEventListener('visibilitychange', pauseWhenHidden);
+      document.removeEventListener('keydown', revealKeyboardFocus, true);
+      closeRef.current?.removeAttribute('data-initial-auto-focus');
       window.removeEventListener('popstate', closeForHistory);
       window.removeEventListener('pagehide', stopForPageHide);
       if (dialog.open) dialog.close();
@@ -542,7 +582,14 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           <div className="cinema-player__information" ref={informationRef}>
           <div className="cinema-player__caption">
             <h2 id="cinema-player-title">{project.title[lang]}</h2>
-            {secondaryLabel && <p>{secondaryLabel}</p>}
+            <div className="cinema-player__caption-actions">
+              {secondaryLabel && <p>{secondaryLabel}</p>}
+              <button type="button" className="cinema-player__share" onClick={copyWorkLink}
+                aria-label={lang === 'en' ? 'Copy direct link to this work' : '复制当前作品的直达链接'}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+                <span role="status" aria-live="polite">{copiedLink ? (lang === 'en' ? 'Copied' : '已复制') : (lang === 'en' ? 'Copy link' : '复制作品链接')}</span>
+              </button>
+            </div>
           </div>
           {versions.length > 1 && <div key={`version-track-${project.id}`} className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
             {versions.map((version, i) => (

@@ -162,7 +162,7 @@
 .impact-reach-compact-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 4px 16px; }
 .impact-reach-dossier .impact-reach-action {
   display: inline-flex; align-items: center; justify-content: flex-start; gap: 7px;
-  min-width: 0; min-height: 40px; box-sizing: border-box; color: var(--apple-text);
+  min-width: 0; min-height: 44px; box-sizing: border-box; color: var(--apple-text);
   font: 500 12px/1.45 var(--font-body); text-align: left; text-decoration: none;
   white-space: nowrap; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   transition: color var(--apple-duration-control) var(--apple-ease);
@@ -468,3 +468,61 @@
 .impact-profile-pagination-count { min-width: 55px; color: var(--apple-secondary); font: 500 13px/1.5 var(--font-mono); text-align: center; font-variant-numeric: tabular-nums; }
 @media (max-width: 720px) { .impact-profile-pagination { margin-top: 18px; } }
 @media (prefers-reduced-motion: reduce) { .impact-profile-pagination-arrow { transition: none; } }
+
+/* One lightweight gallery affordance, not eight competing hover magnifiers.
+   Existing grid buttons already provide a precise accessible zoom label. */
+.impact-award-enlarge-hint {
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap; color: var(--apple-secondary);
+  font: 500 11px/1.4 var(--font-body); letter-spacing: 0;
+}
+.impact-award-enlarge-hint svg { width: 14px; height: 14px; flex: 0 0 14px; }
+@media (max-width: 420px) {
+  .impact-award-enlarge-hint { font-size: 10px; }
+  .impact-award-enlarge-hint svg { width: 12px; height: 12px; flex-basis: 12px; }
+}
+
+/* Four social accounts are evidentiary screenshots, not four equal-size ads.
+   Keep the readable main proof + QR; use a compact 2x2 jump index on wide
+   desktop, matching the award viewer's quiet selected-thumbnail vocabulary.
+   Tablet / phone keep the established single-account reading experience. */
+.impact-profile-index { display: none; }
+@media (min-width: 1280px) {
+  .impact-profile-dialog { width: min(100%, 1120px); }
+  .impact-profile-dialog-content {
+    grid-template-columns: minmax(0, 1.85fr) minmax(0, .69fr) minmax(0, .72fr);
+    column-gap: clamp(18px, 1.7vw, 26px);
+  }
+  .impact-profile-index { display: block; min-width: 0; align-self: center; }
+  .impact-profile-index-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; margin-bottom: 13px; color: var(--apple-secondary);
+    font: 500 11px/1.5 var(--font-body); letter-spacing: .03em;
+  }
+  .impact-profile-index-head span:last-child { font-variant-numeric: tabular-nums; }
+  .impact-profile-index-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .impact-profile-index-item {
+    min-width: 0; min-height: 44px; padding: 5px;
+    display: flex; flex-direction: column; align-items: stretch;
+    gap: 6px; border-radius: 12px; border: 1px solid var(--portfolio-icon-border);
+    background: var(--portfolio-tile-surface); color: var(--apple-secondary);
+    cursor: pointer; transition: border-color 180ms var(--apple-ease),
+      color 180ms var(--apple-ease), background 180ms var(--apple-ease);
+  }
+  .impact-profile-index-item:hover {
+    border-color: rgba(245,245,247,.52); color: var(--apple-text);
+    background: var(--portfolio-tile-surface-hover);
+  }
+  .impact-profile-index-item[aria-pressed="true"] {
+    border-color: rgba(245,245,247,.76); color: var(--apple-text);
+    background: var(--portfolio-tile-surface-hover);
+  }
+  .impact-profile-index-item:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 3px; }
+  .impact-profile-index-item:disabled { cursor: progress; }
+  .impact-profile-index-preview { display: block; width: 100%; aspect-ratio: 4/5; overflow: hidden; border-radius: 7px; background: #111; }
+  .impact-profile-index-preview img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .impact-profile-index-name { display: block; padding: 0 2px 2px; font: 500 11px/1.4 var(--font-body); text-align: center; overflow-wrap: anywhere; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .impact-profile-index-item { transition: none; }
+}

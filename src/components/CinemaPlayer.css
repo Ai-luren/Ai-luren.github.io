@@ -454,3 +454,34 @@
 @media (prefers-reduced-motion: reduce) {
   .cinema-player__mobile-icon, .cinema-player__seek { transition: none !important; }
 }
+
+/* Share the current film without an extra share sheet, modal, or branded glow.
+   The caption owns this quiet text action in both Featured and All Work. */
+.cinema-player__caption-actions {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
+  column-gap: 14px; row-gap: 1px;
+}
+.cinema-player__caption-actions p { flex: 1 1 auto; min-width: 0; }
+.cinema-player__share {
+  display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px;
+  flex: 0 0 auto; min-height: 44px; min-width: 44px; padding: 0 2px;
+  border: 0; border-radius: 7px; background: transparent;
+  color: var(--apple-secondary); font: 500 12px/1.3 var(--font-body);
+  text-decoration: none; cursor: pointer;
+  transition: color 180ms var(--apple-ease);
+}
+.cinema-player__share svg { width: 14px; height: 14px; }
+.cinema-player__share:hover { color: var(--apple-text); }
+.cinema-player__share:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+@media (max-width: 760px) { .cinema-player__share { font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) { .cinema-player__share { transition: none; } }
+
+/* A direct ?watch URL and pointer-opened viewer programmatically focus Close
+   for accessibility. Suppress only this synthetic initial blue outline;
+   keyboard-opened films and actual Tab navigation retain full focus rings. */
+.cinema-player .cinema-player__close[data-initial-auto-focus]:focus-visible {
+  /* Override the shared !important keyboard ring ONLY during synthetic
+     initial focus. A real keydown removes this attribute synchronously. */
+  outline: none !important;
+  outline-offset: 0 !important;
+}

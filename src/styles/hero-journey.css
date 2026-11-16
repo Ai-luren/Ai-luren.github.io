@@ -168,7 +168,7 @@ html[data-hero-experience="cinematic"] .scroll-rail > span {
   }
 }
 
-/* Editorial titles now share a genuinely reversible scroll-scrub timeline.
+/* Editorial titles reveal once and never replay on reverse scroll.
    The JS writes Y/opacity for chapter-level groups ONLY; no CSS entrance
    transition, no one-shot reveal and no extra animation on card inner text. */
 @media (prefers-reduced-motion: reduce) {

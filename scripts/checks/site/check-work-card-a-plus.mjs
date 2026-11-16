@@ -43,7 +43,10 @@ try {
               Math.abs((bb.top+bb.bottom-icon.top-icon.bottom)/2)<=.65:true,
             path:svg?.querySelector('path')?.getAttribute('d'),
             posterX:im.x,posterY:im.y,posterW:im.width,posterH:im.height,
-            top:box.top,detailBottom:detailBox.bottom
+            top:box.top,detailBottom:detailBox.bottom,
+            titleText:title.textContent?.trim(),titleWrap:getComputedStyle(title).wordBreak,
+            titleMixed:title.classList.contains('comet-archive__title--mixed-latin-cjk'),
+            titleOverflow:title.scrollWidth-title.clientWidth,
           };
         }));
         assert(info.length>=4,tag+': cards missing');
@@ -60,6 +63,14 @@ try {
           assert(item.captionBottom>=7&&item.captionBottom<=19,tag+': oversized card footer '+item.captionBottom);
           assert(item.gap>=3.5&&item.gap<=45,tag+': title/category gap out of range');
           assert(item.badgeCentered,tag+': play SVG off center '+item.cardId);
+          // Short-video feeds benefit from a scannable cover title. Keep
+          // Latin brand + Chinese title as intact semantic units on narrow
+          // two-column cards rather than a lone Chinese glyph on line two.
+          const mixed = lang==='zh' && /^[A-Za-z][A-Za-z0-9.+&-]*\s+[\u3400-\u9fff]/u.test(item.titleText);
+          assert.equal(item.titleMixed,mixed,tag+': mixed-script title class');
+          if(width<=720&&mixed)assert.equal(item.titleWrap,'keep-all',tag+': semantic word grouping');
+          assert(item.titleOverflow<=1,tag+': clipped/overflowing title '+item.cardId);
+
           if(item.path)assert.equal(item.path,'M9 6.5 18 12 9 17.5Z',tag+': play icon geometric centroid changed');
         }
         const columns=pageName==='home'?(width<=720?2:4):(width>=1280?4:width>=900?3:2);

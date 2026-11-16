@@ -7,25 +7,10 @@ import MobileMenuSocialLinks from './MobileMenuSocialLinks.jsx';
 import ExternalLinkSheet, { useTouchExternalLink } from './ExternalLinkSheet.jsx';
 
 export default function LibraryNavigation({ lang }) {
-  // When a visitor came here from the homepage, use the existing history
-  // entry instead of re-opening index.html at the top. This preserves their
-  // exact scroll-controlled film frame and still uses the reverse transition.
-  // Direct entries into the library retain the normal Home link fallback.
-  const returnToPreviousFilm = event => {
-    if (event.button !== 0 || event.metaKey || event.ctrlKey ||
-        event.shiftKey || event.altKey || event.defaultPrevented) return;
-    const api = window.navigation;
-    const entries = api?.entries?.();
-    const previous = entries?.find(item => item.index === api.currentEntry.index - 1);
-    if (!previous?.url) return;
-    try {
-      const target = new URL(previous.url);
-      if (target.origin !== location.origin ||
-          !/(?:\/|\/index\.html)$/.test(target.pathname)) return;
-      event.preventDefault();
-      history.back();
-    } catch { /* Native Home link remains the fallback. */ }
-  };
+  // "Home" is an explicit destination, NOT the browser Back command.
+  // Back/Forward retain native scroll restoration; the Home brand must
+  // consistently open the Hero, regardless of where readers came from.
+  const heroHref = `${HOME_HREF}#top`;
   const [open, setOpen] = useState(false);
   const { pendingLink, closeLink, intercept } = useTouchExternalLink();
   const dialogRef = useRef(null), closeRef = useRef(null), triggerRef = useRef(null);
@@ -54,7 +39,7 @@ export default function LibraryNavigation({ lang }) {
   }, [open]);
   return <>
     <div className="library-page-navigation" style={open?{visibility:'hidden'}:undefined}>
-      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeReturn homeHref={HOME_HREF} onHomeClick={returnToPreviousFilm} label={lang==='en'?'Main navigation':'主导航'}>
+      <CinemaNavigation lang={lang} menu closeRef={triggerRef} onClose={()=>setOpen(true)} homeReturn homeHref={heroHref} label={lang==='en'?'Main navigation':'主导航'}>
         <DesktopPrimaryNavigation page="works" />
       </CinemaNavigation>
     </div>
@@ -65,7 +50,7 @@ export default function LibraryNavigation({ lang }) {
         if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
         else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
       }}>
-      <CinemaNavigation lang={lang} closeRef={closeRef} onClose={()=>setOpen(false)} homeHref={HOME_HREF} onHomeClick={returnToPreviousFilm} label={lang==='en'?'Main navigation':'主导航'}/>
+      <CinemaNavigation lang={lang} closeRef={closeRef} onClose={()=>setOpen(false)} homeHref={heroHref} label={lang==='en'?'Main navigation':'主导航'}/>
       <nav className="shared-menu-links mobile-menu__links" aria-label={lang==='en'?'Main navigation':'主导航'}>
         <ul className="nav-list">
           <li><a href={`${HOME_HREF}#projects`}><span>{lang==='en'?'Featured':'精选作品'}</span></a></li>

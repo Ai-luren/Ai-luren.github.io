@@ -19,13 +19,17 @@ const MOBILE_CATEGORY_LABELS = {
 export default function WorksLibrary() {
   const lang = useLang();
   const [category, setCategory] = useState(() => {
-    const initial = new URLSearchParams(location.search).get('category');
+    const query = new URLSearchParams(location.search);
+    const watchProject = PROJECTS.find(item => item.id === query.get('watch'));
+    if (watchProject) return watchProject.category;
+    const initial = query.get('category');
     return PROJECT_CATEGORIES.some(item => item.id === initial) ? initial : DEFAULT_CATEGORY;
   });
   const [selected, setSelected] = useState(null);
   const cinemaReturnFocusRef = useRef(null);
   const selectionTokenRef = useRef(0);
-  useEffect(() => { selectionTokenRef.current += 1; }, [category]);
+  const initialWatchRef = useRef(new URLSearchParams(location.search).get('watch'));
+
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
   const visible = PROJECTS.filter(project => project.category === category);
   const directProjectId = new URLSearchParams(location.search).get('project');
@@ -74,7 +78,7 @@ export default function WorksLibrary() {
   useEffect(() => {
     const url = new URL(location.href);
     if (category === DEFAULT_CATEGORY) url.searchParams.delete('category'); else url.searchParams.set('category', category);
-    history.replaceState(null, '', url);
+    history.replaceState(history.state, '', url);
   }, [category]);
 
   // The workbench's "view this work" link points to one project, not the
@@ -108,6 +112,95 @@ export default function WorksLibrary() {
     return () => cancelAnimationFrame(frame);
   }, [category]);
 
+  // Shareable playback uses ?watch=ID, separate from Studio's existing
+  // ?project=ID card highlight. The initial link receives a synthetic local
+  // base entry: Back closes the film, Forward reopens it, without leaving the
+  // portfolio or accidentally replaying the background video.
+  useEffect(() => {
+    const initialId = initialWatchRef.current;
+    if (!initialId) return;
+    const project = PROJECTS.find(item => item.id === initialId);
+    if (!project) {
+      const clean = new URL(location.href);
+      clean.searchParams.delete('watch');
+      history.replaceState(history.state, '', clean);
+      initialWatchRef.current = null;
+      return;
+    }
+    if (category !== project.category) { setCategory(project.category); return; }
+    // React StrictMode deliberately replays mount effects. Build this history
+    // pair exactly once, but allow the second effect to restart poster decoding.
+    if (!history.state?.portfolioWatch) {
+      const entry = new URL(location.href);
+      const baseEntry = new URL(entry);
+      baseEntry.searchParams.delete('watch');
+      history.replaceState({ ...history.state, portfolioWatchBase: true }, '', baseEntry);
+      history.pushState({ portfolioWatch: true }, '', entry);
+    }
+    const token = ++selectionTokenRef.current;
+    const trigger = [...document.querySelectorAll('.library-grid .comet-archive__card')]
+      .find(node => node.dataset.projectId === project.id);
+    cinemaReturnFocusRef.current = trigger || null;
+    // After closing a shared film, the exact source card—not the unrelated
+    // first row—must be visible and ready to receive restored keyboard focus.
+    trigger?.scrollIntoView({ block: 'center', behavior: 'instant' });
+    void prepareProjectPoster(project).then(prepared => {
+      if (token === selectionTokenRef.current &&
+          new URLSearchParams(location.search).get('watch') === project.id) {
+        initialWatchRef.current = null;
+        setSelected(prepared);
+      }
+    });
+  }, [category]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const id = new URLSearchParams(location.search).get('watch');
+      const project = PROJECTS.find(item => item.id === id);
+      const token = ++selectionTokenRef.current;
+      if (!project) { setSelected(null); return; }
+      setCategory(project.category);
+      const trigger = [...document.querySelectorAll('.library-grid .comet-archive__card')]
+        .find(node => node.dataset.projectId === project.id);
+      cinemaReturnFocusRef.current = trigger || null;
+      trigger?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      void prepareProjectPoster(project).then(prepared => {
+        if (token === selectionTokenRef.current) setSelected(prepared);
+      });
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  const openSharedWork = (project, trigger) => {
+    const token = ++selectionTokenRef.current;
+    cinemaReturnFocusRef.current = trigger;
+    void prepareProjectPoster(project).then(prepared => {
+      if (token !== selectionTokenRef.current || !trigger?.isConnected) return;
+      const url = new URL(location.href);
+      url.searchParams.set('watch', project.id);
+      history.pushState({ portfolioWatch: true }, '', url);
+      setSelected(prepared);
+    });
+  };
+  const selectSharedWork = project => {
+    if (new URLSearchParams(location.search).has('watch')) {
+      const url = new URL(location.href);
+      url.searchParams.set('watch', project.id);
+      history.replaceState({ ...history.state, portfolioWatch: true }, '', url);
+    }
+    setSelected(project);
+  };
+  const closeSharedWork = () => {
+    if (new URLSearchParams(location.search).has('watch')) {
+      if (history.state?.portfolioWatch) { history.back(); return; }
+      const url = new URL(location.href);
+      url.searchParams.delete('watch');
+      history.replaceState(history.state, '', url);
+    }
+    setSelected(null);
+  };
+
   return <div className="work-library">
     <a className="library-skip" href="#library-main">{lang === 'en' ? 'Skip to work' : '跳到作品'}</a>
     <div className="library-shell">
@@ -120,7 +213,7 @@ export default function WorksLibrary() {
             onPointerEnter={() => warmCategoryFirstRow(item.id)}
             onPointerDownCapture={() => warmCategoryFirstRow(item.id)}
             onFocus={() => warmCategoryFirstRow(item.id)}
-            onClick={() => setCategory(item.id)}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
+            onClick={() => { selectionTokenRef.current++; setCategory(item.id); }}><span className="library-filter-label">{item.label[lang]}</span><span className="library-filter-short">{MOBILE_CATEGORY_LABELS[item.id][lang]}</span><span className="library-filter-count">{PROJECTS.filter(project => project.category === item.id).length}</span></button>)}
         </div>
         <p className="library-category-note" aria-live="polite" aria-atomic="true">
           {activeCategory?.description?.[lang] || '\u00a0'}
@@ -129,15 +222,11 @@ export default function WorksLibrary() {
           coverPriority={project.id === directProjectId || index < firstRowCount ? 'high' : index < firstRowCount * 2 ? 'normal' : 'low'}
           deferUntilNear={index >= firstRowCount * 2 && project.id !== directProjectId} onClick={(event, item) => {
           const trigger = event.target.closest('.comet-archive__card');
-          const token = ++selectionTokenRef.current;
-          cinemaReturnFocusRef.current = trigger;
-          void prepareProjectPoster(item).then(prepared => {
-            if (token === selectionTokenRef.current && trigger?.isConnected) setSelected(prepared);
-          });
+          openSharedWork(item, trigger);
         }} />)}</div>
           : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory(DEFAULT_CATEGORY)}>{lang === 'en' ? 'View commercials' : '查看商业广告'}</button></div>}
       </main>
     </div>
-    <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelected} context="library" onClose={() => setSelected(null)} />
+    <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} returnFocusRef={cinemaReturnFocusRef} onSelect={selectSharedWork} context="library" onClose={closeSharedWork} />
   </div>;
 }

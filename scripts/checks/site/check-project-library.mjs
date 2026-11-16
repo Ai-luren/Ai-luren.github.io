@@ -61,12 +61,15 @@ try {
       await trigger.click();
       await page.waitForSelector('.cinema-player[open]');
       await assertPlayer(page);
-      assert.equal(page.url(), url, 'Project click must not leave the library.');
+      assert.equal(new URL(page.url()).pathname, new URL(url).pathname, 'Project click stays in the library.');
+      assert.equal(new URL(page.url()).searchParams.get('watch'),
+        await trigger.getAttribute('data-project-id'), 'Opening a work creates its share URL');
       assert.equal(await page.evaluate(() => document.activeElement.matches('.cinema-player__close')), true);
       await page.keyboard.press('Tab');
       assert.equal(await page.evaluate(() => !!document.activeElement.closest('.cinema-player')), true);
       await page.keyboard.press('Escape');
       await page.waitForSelector('.cinema-player', { state: 'detached' });
+      assert.equal(new URL(page.url()).searchParams.get('watch'),null,'Closing a work restores base library URL');
       assert.equal(await trigger.evaluate(element => element === document.activeElement), true);
       const langBefore = await page.locator('html').getAttribute('lang');
       await page.locator('.library-page-navigation .cinema-player__language [data-switch-lang="' + (langBefore === 'zh-CN' ? 'en' : 'zh') + '"]').click();
@@ -74,9 +77,10 @@ try {
       assert.equal(await page.locator('.library-back').count(),0,'Redundant in-page back link was removed.');
       const home = page.locator('.library-page-navigation .cinema-player__brand--home-return');
       assert.equal(await home.isVisible(), true, 'Shared home return is present on desktop and mobile.');
-      assert.equal(await home.getAttribute('href'), './index.html');
+      assert.equal(await home.getAttribute('href'), './index.html#top');
       await home.click();
-      assert.equal(new URL(page.url()).hash,'','Home return must open the Hero, not a work section.');
+      assert.equal(new URL(page.url()).hash,'#top','Home return must open the Hero.');
+      assert((await page.evaluate(()=>scrollY))<=3,'Home must open at Hero scroll 0.');
       await page.waitForSelector('.comet-archive__card', { state: 'attached' });
       assert.equal(await page.locator('.comet-archive__card').count(),8);
       await page.locator('#projects').scrollIntoViewIfNeeded();

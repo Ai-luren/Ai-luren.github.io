@@ -1,15 +1,12 @@
 import { initEditorialHeadings } from './editorialHeadings.js';
 
 /**
- * Cinematic Dolly Through — a scroll-scrubbed, reversible foreground layer.
- *
- * Apple-style principle: scrolling IS the timeline, not just a start event.
- * One static grid is the geometry anchor; entire card wrappers move relative
- * to the grid, so scaling a card never changes its own progress calculation.
- *
- * This owns only card-wrapper transforms. Headlines, images, buttons, glass
- * treatments, player state, and the existing film-background parallax keep
- * their original owners. No opacity-0, filter blur, DOM wrappers or pinning.
+ * Apple-inspired editorial entrance for the homepage's work and glass cards.
+ * First appearance moves a few pixels vertically, with NO SCALE or exit.
+ * After a card reaches its reading position it stays stable on reverse scroll.
+ * Apple product storytelling may use reversible demonstrations, but ordinary
+ * archive cards should never resize their artwork or interactive controls.
+ * The independent Hero film retains its continuous scroll story.
  */
 const HOME_TARGETS = [
   ['#projects .comet-card', 'work'],
@@ -17,22 +14,14 @@ const HOME_TARGETS = [
   ['#experiments .flip-experiment', 'panel'],
   ['#profile .closing-card', 'panel'],
 ];
-// Endpoints are intentional design values, not measurements of Apple's site.
-// A card spends the central 48% of its viewport transit at full resolution.
+// Conservative, non-scaling, once-only editorial rise (pixels).
 const PRESETS = Object.freeze({
-  // Camera approaches the card and continues THROUGH it on exit.
-  // Shrinking on both entrance and departure reverses apparent depth and
-  // looks especially wrong when holding ArrowUp. Exit instead advances only
-  // a subtle 1-2% beyond 1:1; the primary interaction remains native scroll.
-  homeDesktop: { enterY: 138, enterScale: .885, exitY: -60, exitScale: 1.02 },
-  homeMobile: { enterY: 84, enterScale: .936, exitY: -36, exitScale: 1.012 },
-  // Interactive information glass must never shrink its 44px touch targets
-  // or shift its horizontal alignment against Expertise headings.
-  panelDesktop: { enterY: 44, enterScale: 1, exitY: -12, exitScale: 1 },
-  panelMobile: { enterY: 30, enterScale: 1, exitY: -8, exitScale: 1 },
+  homeDesktop: { enterY: 30 },
+  homeMobile: { enterY: 22 },
+  panelDesktop: { enterY: 20 },
+  panelMobile: { enterY: 14 },
 });
-const ENTER_END = .33;
-const EXIT_START = .75;
+const ENTER_END = .3;
 const VISIBLE_START = .94; // Card top crossing 94vh starts the scene
 const VISIBLE_END = .12; // Card bottom crossing 12vh finishes the scene
 const clamp = n => Math.max(0, Math.min(1, n));
@@ -65,7 +54,7 @@ export function initCinematicReveals() {
 
   function apply(rec, value, state) {
     const { node } = rec;
-    const signature = state + ':' + Math.round(value.y * 10) + ':' + Math.round(value.scale * 10000);
+    const signature = state + ':' + Math.round(value.y * 10);
     // These data fields describe live scrub progress even during the held
     // reading plateau where no CSS transform needs updating.
     node.dataset.cinematicState = state;
@@ -85,7 +74,7 @@ export function initCinematicReveals() {
     gsap.set(node, {
       x: 0,
       y: value.y,
-      scale: value.scale,
+      scale: 1,
       transformOrigin: '50% 50%',
       force3D: false,
       // No blur, rotationX, alpha, CSS mask or continuous shadow animation.
@@ -129,20 +118,17 @@ export function initCinematicReveals() {
       // full-screen desktop composition or the scroll-driven timeline.
       const viewportFactor = Math.min(1, Math.max(.7, viewport / 820));
       let y = 0;
-      let scale = 1;
       let state = 'reading';
-      if (progress < ENTER_END) {
+      // A revealed card can NEVER reset to an entering or exiting pose.
+      // On upward scroll it moves only with the native document.
+      if (!rec.revealed && progress < ENTER_END - .004) {
         const t = minimumJerk(progress / ENTER_END);
         y = settings.enterY * viewportFactor * (1 - t);
-        scale = settings.enterScale + (1 - settings.enterScale) * t;
         state = 'entering';
-      } else if (progress > EXIT_START) {
-        const t = minimumJerk((progress - EXIT_START) / (1 - EXIT_START));
-        y = settings.exitY * viewportFactor * t;
-        scale = 1 + (settings.exitScale - 1) * t;
-        state = 'exiting';
+      } else {
+        rec.revealed = true;
       }
-      stages.push([rec, { progress, y, scale }, state]);
+      stages.push([rec, { progress, y }, state]);
     }
 
     // WRITE PHASE: one batched pass for transform updates, with each card's
@@ -151,7 +137,10 @@ export function initCinematicReveals() {
   }
 
   function queueUpdate() {
-    if (!frame && !destroyed) frame = requestAnimationFrame(update);
+    // All card entrances are complete: no need to schedule new animation
+    // frames for ordinary scrolling or reversing through settled work.
+    if (!frame && !destroyed && [...records.values()].some(rec => !rec.revealed))
+      frame = requestAnimationFrame(update);
   }
 
   function disposeGrid(grid) {
@@ -189,11 +178,14 @@ export function initCinematicReveals() {
           column: Math.max(0, index) % colCount,
           anchorOffset: node.getBoundingClientRect().top - anchor.getBoundingClientRect().top,
           height: node.offsetHeight,
+          // First viewport and restored scroll positions display without a
+          // mount-frame flash. Otherwise enter once when scrolled into view.
+          revealed: node.getBoundingClientRect().top <= innerHeight * .92,
           transformActive: false, lastSignature: null,
         };
         records.set(node, rec);
         node.dataset.cinematicReveal = kind;
-        node.dataset.cinematicMode = 'dolly-scrub';
+        node.dataset.cinematicMode = 'editorial-once';
         if (kind === 'work') groups.add(anchor);
       }
     }
@@ -301,12 +293,12 @@ export function initCinematicReveals() {
   discover();
 
   window.__cinematicReveal = {
-    page: 'home', source: 'Cinematic Dolly Through / GSAP ScrollTrigger',
+    page: 'home', source: 'Apple-inspired Editorial Reveal / GSAP ScrollTrigger',
     get size() { return records.size; },
     get activeGrids() { return triggers.size; },
     presets: PRESETS,
-    reversible: true,
-    mode: 'scrub',
+    reversible: false,
+    mode: 'entrance-once',
   };
 
   return () => {

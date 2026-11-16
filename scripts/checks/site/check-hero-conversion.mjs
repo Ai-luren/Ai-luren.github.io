@@ -76,7 +76,8 @@ try{
        buttonGeometry:buttons.map(e=>{
          const r=e.getBoundingClientRect(),c=getComputedStyle(e);
          return {x:r.left,y:r.top,right:r.right,width:r.width,height:r.height,
-           fontSize:parseFloat(c.fontSize),fontWeight:c.fontWeight,radius:c.borderTopLeftRadius};
+           fontSize:parseFloat(c.fontSize),fontWeight:c.fontWeight,radius:c.borderTopLeftRadius,
+           boxShadow:c.boxShadow,transform:c.transform,background:c.backgroundColor};
        }),
        buttonGap:parseFloat(getComputedStyle(document.querySelector('#top .hero-actions')).columnGap),
        subtitleColor:getComputedStyle(subtitle).color,
@@ -106,6 +107,22 @@ try{
     assert.equal(a.fontWeight,b.fontWeight,tag+': CTA weights diverged');
     assert.equal(a.fontWeight,'600',tag+': CTA weight should be 600');
     assert.equal(a.radius,b.radius,tag+': CTA rounding diverged');
+    assert.equal(a.boxShadow,'none',tag+': Primary CTA must have no blue glow');
+    assert.equal(b.boxShadow,'none',tag+': Secondary CTA must have no extraneous shadow');
+    assert.equal(a.transform,'none',tag+': Primary CTA cannot lift at rest');
+    assert.equal(b.transform,'none',tag+': Secondary CTA cannot lift at rest');
+    assert.notEqual(a.background,b.background,tag+': Primary/secondary roles must remain distinct');
+    // AA normal-size text: white on an Apple-blue filled control is ≥4.5:1,
+    // including its hover state. Do not regress to bright #2997ff / 3:1.
+    const buttonContrast=async node=>node.evaluate(el=>{
+      const css=getComputedStyle(el);
+      const rgb=value=>(value.match(/[0-9.]+/g)||[]).slice(0,3).map(Number);
+      const lum=color=>rgb(color).map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
+        .reduce((n,v,i)=>n+v*[.2126,.7152,.0722][i],0);
+      const l1=lum(css.color),l2=lum(css.backgroundColor);
+      return (Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05);
+    });
+    assert((await buttonContrast(primary))>=4.5,tag+': primary text contrast below WCAG AA');
     assert(Math.abs(a.y-b.y)<1,tag+': CTA top edges are not aligned');
     assert(a.width>b.width && a.width-b.width<=24,tag+': CTA hierarchy is visually unbalanced');
     assert.equal(found.buttonGap,width<=720?10:12,tag+': inconsistent CTA gap');
@@ -137,7 +154,21 @@ try{
     };
     await checkContrast('normal');
     await secondary.hover();
+    await p.waitForTimeout(220);
     await checkContrast('hover');
+    const hoverSecondary=await secondary.evaluate(el=>({
+      boxShadow:getComputedStyle(el).boxShadow,transform:getComputedStyle(el).transform,
+    }));
+    assert.equal(hoverSecondary.boxShadow,'none',tag+': Secondary hover should not glow');
+    assert.equal(hoverSecondary.transform,'none',tag+': Secondary hover cannot jump');
+    await primary.hover();
+    await p.waitForTimeout(220);
+    const hoverPrimary=await primary.evaluate(el=>({
+      boxShadow:getComputedStyle(el).boxShadow,transform:getComputedStyle(el).transform,
+    }));
+    assert.equal(hoverPrimary.boxShadow,'none',tag+': Primary hover must not glow');
+    assert.equal(hoverPrimary.transform,'none',tag+': Primary hover cannot jump');
+    assert((await buttonContrast(primary))>=4.5,tag+': hover text contrast below WCAG AA');
     await primary.click();
     await p.waitForFunction(()=>location.hash==='#projects');
     assert(await p.locator('#projects .comet-archive__card').first().isVisible(),tag+': projects absent');

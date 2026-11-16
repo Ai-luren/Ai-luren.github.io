@@ -203,3 +203,14 @@
     -webkit-backdrop-filter: none;
   }
 }
+
+/* Mobile two-column editorial typography: English brand names followed by
+   Chinese phrases should wrap at the language boundary, not leave a single
+   orphaned glyph ("告") on a second line. Keep all other titles unchanged. */
+@media (max-width: 720px) {
+  :is(#projects, .work-library) .portfolio-work-card--unified
+  > .comet-archive__title--mixed-latin-cjk {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+}
