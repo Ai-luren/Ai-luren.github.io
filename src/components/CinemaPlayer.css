@@ -455,26 +455,31 @@
   .cinema-player__mobile-icon, .cinema-player__seek { transition: none !important; }
 }
 
-/* Share the current film without an extra share sheet, modal, or branded glow.
-   The caption owns this quiet text action in both Featured and All Work. */
+/* Secondary action inside the caption: portfolio browsing replaces the old
+   copy-link trigger. It deliberately inherits the original ghost-link
+   proportions, keeping the arrow-only work row centered and unmodified. */
 .cinema-player__caption-actions {
   display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
   column-gap: 14px; row-gap: 1px;
 }
 .cinema-player__caption-actions p { flex: 1 1 auto; min-width: 0; }
-.cinema-player__share {
+.cinema-player__directory-trigger {
   display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px;
   flex: 0 0 auto; min-height: 44px; min-width: 44px; padding: 0 2px;
   border: 0; border-radius: 7px; background: transparent;
-  color: var(--apple-secondary); font: 500 12px/1.3 var(--font-body);
-  text-decoration: none; cursor: pointer;
+  color: var(--body-text, var(--apple-secondary));
+  font: 500 var(--project-card-detail-size, 12px)/var(--project-card-detail-line-height, 1.6) var(--font-body);
+  text-decoration: none; cursor: pointer; touch-action: manipulation;
   transition: color 180ms var(--apple-ease);
 }
-.cinema-player__share svg { width: 14px; height: 14px; }
-.cinema-player__share:hover { color: var(--apple-text); }
-.cinema-player__share:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
-@media (max-width: 760px) { .cinema-player__share { font-size: 11px; } }
-@media (prefers-reduced-motion: reduce) { .cinema-player__share { transition: none; } }
+.cinema-player__directory-trigger svg { width: 15px; height: 15px; flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .cinema-player__directory-trigger:hover { color: var(--apple-text); }
+}
+.cinema-player__directory-trigger[aria-expanded="true"] { color: var(--apple-text); }
+.cinema-player__directory-trigger:focus-visible { outline: 2px solid var(--apple-blue); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .cinema-player__directory-trigger { transition: none; } }
 
 /* A direct ?watch URL and pointer-opened viewer programmatically focus Close
    for accessibility. Suppress only this synthetic initial blue outline;

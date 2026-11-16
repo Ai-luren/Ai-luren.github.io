@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { useRef, useState } from 'react';
 import CinemaPlayer from './components/CinemaPlayer.jsx';
-import { FEATURED_PROJECTS } from './data/projects.js';
+import { FEATURED_PROJECTS, PROJECTS } from './data/projects.js';
 import { prepareProjectPoster } from './utils/warmImage.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
 import ImpactEvidence from './components/ImpactEvidence.jsx';
@@ -45,7 +45,7 @@ export default function App() {
       <SiteExternalLinkGuard />
       <AnimatedContent page="home" />
       {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
-      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
+      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       {footerDockRoot && createPortal(<FloatingDock />, footerDockRoot)}
       {mobileMenuSocialRoot && createPortal(<MobileMenuSocialLinks />, mobileMenuSocialRoot)}

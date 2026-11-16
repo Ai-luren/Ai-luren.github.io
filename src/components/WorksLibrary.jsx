@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
-import { PROJECTS, PROJECT_CATEGORIES } from '../data/projects.js';
+import { PROJECTS, PROJECT_CATEGORIES, FEATURED_PROJECTS } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
 import CinemaPlayer from './CinemaPlayer.jsx';
 import LibraryNavigation from './LibraryNavigation.jsx';
@@ -227,6 +227,6 @@ export default function WorksLibrary() {
           : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory(DEFAULT_CATEGORY)}>{lang === 'en' ? 'View commercials' : '查看商业广告'}</button></div>}
       </main>
     </div>
-    <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} returnFocusRef={cinemaReturnFocusRef} onSelect={selectSharedWork} context="library" onClose={closeSharedWork} />
+    <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={selectSharedWork} context="library" onClose={closeSharedWork} />
   </div>;
 }

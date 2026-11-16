@@ -29,6 +29,7 @@
     "check:page-handoff": "node scripts/checks/site/check-page-handoff.mjs",
     "check:cross-page-nav": "node scripts/checks/site/check-cross-page-section-navigation.mjs",
     "check:shareable-works": "node scripts/checks/site/check-shareable-works.mjs",
+    "check:cinema-work-directory": "node scripts/checks/site/check-cinema-work-directory.mjs",
     "check:proof-viewer-polish": "node scripts/checks/site/check-proof-viewer-polish.mjs",
     "check:design-system": "node scripts/checks/site/check-design-system-foundation.mjs",
     "check:cascade-contract": "node scripts/checks/site/check-cascade-contract.mjs",

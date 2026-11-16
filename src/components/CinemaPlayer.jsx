@@ -7,6 +7,7 @@ import {projectVideoVersions,initialProjectPoster} from '../data/version-order.j
 import './CinemaPlayer.css';
 import CinemaNavigation from './CinemaNavigation.jsx';
 import MobilePlaybackControls from './MobilePlaybackControls.jsx';
+import CinemaWorkDirectory, { cinemaDirectoryIcon } from './CinemaWorkDirectory.jsx';
 import {useLocalArtworkRevision,revisionedArtworkUrl,currentLocalArtworkRevision} from '../utils/localPreviewArtwork.js';
 import { warmImage } from '../utils/warmImage.js';
 
@@ -21,7 +22,7 @@ async function readyArtwork(url, deadline = 8000) {
   } finally { window.clearTimeout(timeout); }
 }
 
-export default function CinemaPlayer({ project, projects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
+export default function CinemaPlayer({ project, projects = [], allProjects = [], featuredProjects = [], onSelect, context = 'featured', onClose, returnFocusRef }) {
   const lang = useLang();
   const reducedMotion = useReducedMotion();
   const dialogRef = useRef(null);
@@ -33,6 +34,24 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const navRef = useRef(null);
   const switchingRef = useRef(false);
   const switchFocusRef = useRef(null);
+  const workSwitchTokenRef = useRef(0);
+  const directoryTriggerRef = useRef(null);
+  const directoryPanelRef = useRef(null);
+  const [directoryOpen, setDirectoryOpen] = useState(false);
+  // A true sidecar only when the viewport can fit a legible, centered film
+  // and a catalogue. Narrow windows use a temporary overlay instead.
+  const [directoryDocked, setDirectoryDocked] = useState(() => typeof window !== 'undefined'
+    && window.matchMedia('(min-width: 1320px) and (min-height: 601px)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 1320px) and (min-height: 601px)');
+    const update = () => setDirectoryDocked(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  const initialDirectoryScope = context === 'featured' ? 'featured' : project?.category || 'all';
+  const [directoryScope, setDirectoryScope] = useState(initialDirectoryScope);
+  const [directoryFilter, setDirectoryFilter] = useState(initialDirectoryScope);
+  const [directoryBusyId, setDirectoryBusyId] = useState(null);
   const versionRequestRef = useRef(0);
   const [versionPendingIndex, setVersionPendingIndex] = useState(null);
   // After decoding the incoming poster, briefly dissolve the outgoing image.
@@ -69,7 +88,6 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const [started, setStarted] = useState(false);
   const [playbackFeedback, setPlaybackFeedback] = useState(null);
   const feedbackSequenceRef = useRef(0);
-  const [copiedLink, setCopiedLink] = useState(false);
   const [playBlocked, setPlayBlocked] = useState(false);
   const [fullscreenUnavailable, setFullscreenUnavailable] = useState(false);
   const [nativeFullscreenControls, setNativeFullscreenControls] = useState(false);
@@ -98,31 +116,12 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
   const videoUrl = currentVersion?.videoUrl?.trim();
   const secondaryLabel = [PROJECT_CATEGORIES.find(category => category.id === project?.category)?.label[lang], project?.award[lang]].filter(Boolean).join(' · ');
 
-  const index = projects.findIndex(item => item.id === project?.id);
-  useEffect(() => { setCopiedLink(false); }, [project?.id]);
-  const copyWorkLink = async () => {
-    if (!project?.id) return;
-    const url = new URL('./works.html', window.location.href);
-    url.search = '';
-    url.hash = '';
-    url.searchParams.set('watch', project.id);
-    const value = url.toString();
-    try {
-      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
-      else {
-        const field = document.createElement('textarea');
-        field.value = value; field.style.position = 'fixed'; field.style.opacity = '0';
-        document.body.appendChild(field); field.select();
-        const copied = document.execCommand('copy'); field.remove();
-        if (!copied) throw new Error('Copy not supported');
-      }
-      setCopiedLink(true);
-    } catch {
-      setCopiedLink(false);
-      // Never claim success when clipboard permission is unavailable.
-      window.prompt(lang === 'en' ? 'Copy this work link' : '复制此作品链接', value);
-    }
-  };
+  const catalogAll = allProjects.length ? allProjects : projects;
+  const catalogFeatured = featuredProjects.length ? featuredProjects : projects.filter(item => item.featured);
+  const queueForScope = scope => scope === 'all' ? catalogAll : scope === 'featured' ? catalogFeatured
+    : catalogAll.filter(item => item.category === scope);
+  const activeQueue = queueForScope(directoryScope);
+  const index = activeQueue.findIndex(item => item.id === project?.id);
   const stop = () => {
     attemptRef.current++;
     requestedRef.current = false;
@@ -189,6 +188,25 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     };
   }, [Boolean(project)]);
 
+  // On wide desktops the directory is a NON-MODAL companion to the film.
+  // A/B/C, work arrows, playback and the site navigation stay interactive.
+  // Compact viewports keep the bottom/overlay sheet modal with a focus trap.
+  useEffect(() => {
+    const navigation = navRef.current, layout = layoutRef.current;
+    const modalSheet = directoryOpen && !directoryDocked;
+    if (navigation) navigation.inert = modalSheet;
+    if (layout) layout.inert = modalSheet;
+    let frame;
+    if (directoryOpen) {
+      frame = requestAnimationFrame(() => directoryPanelRef.current?.querySelector('.cinema-directory__close')?.focus({ preventScroll: true }));
+    }
+    return () => {
+      cancelAnimationFrame(frame);
+      if (navigation) navigation.inert = false;
+      if (layout) layout.inert = false;
+    };
+  }, [directoryOpen, directoryDocked]);
+
   useLayoutEffect(() => {
     versionRequestRef.current++;
     setVersionPendingIndex(null);
@@ -227,7 +245,13 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       const horizontalPadding = parseFloat(layoutStyle.paddingLeft) + parseFloat(layoutStyle.paddingRight);
       const verticalPadding = parseFloat(layoutStyle.paddingTop) + parseFloat(layoutStyle.paddingBottom);
       const ratio = dimensions.width / dimensions.height;
-      const maxWidth = Math.max(1, Math.min(980, width - horizontalPadding));
+      // Reserve equal space on BOTH sides of the viewport for a docked list.
+      // This preserves the exact horizontal film center; the old one-sided
+      // padding-right shifted the whole composition abruptly to the left.
+      const sidecar = directoryOpen && directoryDocked
+        ? (directoryPanelRef.current?.getBoundingClientRect().width || 324) + 26 : 0;
+      const maxWidth = Math.max(1, Math.min(980, width - horizontalPadding,
+        sidecar ? width - 2 * sidecar : Infinity));
       const body = bodyRef.current;
       if (mobilePlayback) {
         // Mobile keeps the film's native aspect ratio. On regular-height phones
@@ -292,7 +316,7 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
       window.removeEventListener('orientationchange', fit);
       document.removeEventListener('fullscreenchange', fit);
     };
-  }, [dimensions, lang, project?.id, mobilePlayback]);
+  }, [dimensions, lang, project?.id, mobilePlayback, directoryOpen, directoryDocked]);
 
   // Don't preload neighboring posters while the visitor is about to play a
   // film. On slower networks those image requests compete with the MP4 first
@@ -312,31 +336,80 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     setMotionVisible(false);
     closeTimerRef.current = window.setTimeout(onClose, 220);
   };
-  const switchWork = async nextIndex => {
-    if(nextIndex < 0 || nextIndex >= projects.length || !onSelect || switchingRef.current || closingRef.current) return;
-    const controls=dialogRef.current?.querySelectorAll('.cinema-player__sequence > button');
-    switchFocusRef.current=document.activeElement===controls?.[1]?'next':document.activeElement===controls?.[0]?'previous':null;
+  const closeDirectory = (returnFocus = true) => {
+    // Closing the sheet mid-decode cancels the pending destination rather
+    // than unexpectedly swapping the film after the visitor dismissed it.
+    if (directoryBusyId) {
+      workSwitchTokenRef.current++;
+      switchingRef.current = false;
+      setSwitching(false);
+      setDirectoryBusyId(null);
+    }
+    setDirectoryOpen(false);
+    if (returnFocus) requestAnimationFrame(() => directoryTriggerRef.current?.focus({ preventScroll: true }));
+  };
+  const openDirectory = () => {
+    if (switchingRef.current || closingRef.current) return;
+    // Opening always shows the range the film belongs to. A visitor may
+    // temporarily browse another filter without switching work; reopening
+    // should not silently leave them in that unfinished exploration.
+    setDirectoryFilter(directoryScope);
+    // Wide-screen sidecar behaves like a YouTube playlist: no pause.
+    // On small modal sheets, pause video underneath the temporary overlay.
+    if (!directoryDocked) videoRef.current?.pause();
+    setDirectoryOpen(true);
+  };
+  const switchToProject = async (next, scope = directoryScope, fromDirectory = false) => {
+    if (!next || !onSelect || switchingRef.current || closingRef.current) return;
+    if (fromDirectory && next.id === project?.id) {
+      setDirectoryScope(scope);
+      if (!directoryDocked) closeDirectory();
+      return;
+    }
+    const controls = dialogRef.current?.querySelectorAll('.cinema-player__sequence > button');
+    switchFocusRef.current = fromDirectory ? null
+      : document.activeElement === controls?.[1] ? 'next' : document.activeElement === controls?.[0] ? 'previous' : null;
+    const token = ++workSwitchTokenRef.current;
     switchingRef.current = true;
     setSwitching(true);
-    versionRequestRef.current++; // Cancel any pending A/B poster switch.
+    if (fromDirectory) setDirectoryBusyId(next.id);
+    versionRequestRef.current++; // Cancel pending A/B poster transitions.
     setVersionPendingIndex(null);
     videoRef.current?.pause();
-    const next = projects[nextIndex];
-    // Keep the outgoing frame visible until the incoming poster is decoded.
-    // The old 1.5-second deadline could force a black screen on slow networks.
     let prepared = next;
     try {
+      // Decode the next poster before removing the old frame; no MP4 load.
       if (!await readyArtwork(initialProjectPoster(next))) {
         if (!await readyArtwork(next.cover)) return;
         prepared = { ...next, preparedVersionPosterFallback: true };
       }
-      if (!dialogRef.current?.open || closingRef.current) return;
+      if (token !== workSwitchTokenRef.current || !dialogRef.current?.open || closingRef.current) return;
       stop();
+      if (fromDirectory) {
+        setDirectoryScope(scope);
+        // Desktop sidecar remains available after selecting a work; it is
+        // dismissed explicitly with X/Escape. Mobile/compact sheets close on
+        // selection to restore the entire viewing surface.
+        if (!directoryDocked) {
+          setDirectoryOpen(false);
+          requestAnimationFrame(() => directoryTriggerRef.current?.focus({ preventScroll: true }));
+        }
+      }
       onSelect(prepared);
     } finally {
-      switchingRef.current = false;
-      if (!closingRef.current && dialogRef.current?.open) setSwitching(false);
+      if (token === workSwitchTokenRef.current) {
+        switchingRef.current = false;
+        if (!closingRef.current && dialogRef.current?.open) setSwitching(false);
+        setDirectoryBusyId(null);
+      }
     }
+  };
+  const switchWork = nextIndex => {
+    if (nextIndex < 0 || nextIndex >= activeQueue.length) return;
+    void switchToProject(activeQueue[nextIndex]);
+  };
+  const chooseDirectoryProject = next => {
+    void switchToProject(next, directoryFilter, true);
   };
   const play = async (reload = false) => {
     const video = videoRef.current;
@@ -461,17 +534,17 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
     setVersionPendingIndex(null);
   };
   const focusLastControl = () => {
-    // Wrap keyboard focus to the last available work arrow, or close if the
-    // sequence has no enabled neighbours. No redundant library CTA needed.
+    const trigger = directoryOpen && directoryDocked
+      ? directoryPanelRef.current?.querySelector('.cinema-directory__close') : directoryTriggerRef.current;
     const buttons = dialogRef.current?.querySelectorAll('.cinema-player__sequence > button:not(:disabled)');
-    (buttons?.[buttons.length - 1] || closeRef.current)?.focus();
+    (trigger || buttons?.[buttons.length - 1] || closeRef.current)?.focus();
   };
 
   return createPortal(
-    <dialog className={`cinema-player${motionVisible && !isClosing ? ' is-motion-visible' : ''}${isClosing ? ' is-closing' : ''}`} ref={dialogRef} aria-labelledby="cinema-player-title"
+    <dialog className={`cinema-player${motionVisible && !isClosing ? ' is-motion-visible' : ''}${isClosing ? ' is-closing' : ''}${directoryOpen ? ' is-directory-open' : ''}${directoryOpen && directoryDocked ? ' is-directory-docked' : ''}`} ref={dialogRef} aria-labelledby="cinema-player-title"
       data-project-id={project?.id}
       data-format={dimensions ? (dimensions.width >= dimensions.height ? 'landscape' : 'portrait') : undefined}
-      onCancel={event => { event.preventDefault(); dismiss(); }}>
+      onCancel={event => { event.preventDefault(); if (directoryOpen) closeDirectory(); else dismiss(); }}>
       <span className="cinema-player__focus-guard" tabIndex={0} onFocus={focusLastControl} />
       <CinemaNavigation lang={lang} closeRef={closeRef} navRef={navRef} onClose={dismiss} />
       <div className="cinema-player__layout" ref={layoutRef}>
@@ -584,11 +657,10 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
             <h2 id="cinema-player-title">{project.title[lang]}</h2>
             <div className="cinema-player__caption-actions">
               {secondaryLabel && <p>{secondaryLabel}</p>}
-              <button type="button" className="cinema-player__share" onClick={copyWorkLink}
-                aria-label={lang === 'en' ? 'Copy direct link to this work' : '复制当前作品的直达链接'}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-                <span role="status" aria-live="polite">{copiedLink ? (lang === 'en' ? 'Copied' : '已复制') : (lang === 'en' ? 'Copy link' : '复制作品链接')}</span>
-              </button>
+              <button type="button" ref={directoryTriggerRef} className="cinema-player__directory-trigger"
+                aria-label={lang === 'en' ? 'Browse portfolio works' : '浏览作品目录'}
+                aria-expanded={directoryOpen} aria-controls="cinema-work-directory"
+                onClick={openDirectory}>{cinemaDirectoryIcon}<span>{lang === 'en' ? 'Work Directory' : '作品目录'}</span></button>
             </div>
           </div>
           {versions.length > 1 && <div key={`version-track-${project.id}`} className="cinema-player__versions" role="group" aria-label={lang === 'en' ? 'Video versions' : '视频版本切换'}>
@@ -611,19 +683,24 @@ export default function CinemaPlayer({ project, projects = [], onSelect, context
           <div className="cinema-player__work-nav" role="group" aria-busy={switching} aria-label={lang === 'en' ? 'Work navigation' : '作品切换'}>
             <div className="cinema-player__sequence">
               <button type="button" onClick={event => { if (event.detail > 0) event.currentTarget.blur(); switchWork(index-1); }} disabled={switching || index <= 0}
-                onPointerEnter={() => warmImage(initialProjectPoster(projects[index-1]))}
-                onFocus={() => warmImage(initialProjectPoster(projects[index-1]))}
+                onPointerEnter={() => warmImage(initialProjectPoster(activeQueue[index-1]))}
+                onFocus={() => warmImage(initialProjectPoster(activeQueue[index-1]))}
                 aria-label={lang==='en'?'Previous work':'上一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></button>
-              <span className="cinema-player__count" aria-live="polite">{index+1} / {projects.length}</span>
-              <button type="button" onClick={event => { if (event.detail > 0) event.currentTarget.blur(); switchWork(index+1); }} disabled={switching || index < 0 || index >= projects.length-1}
-                onPointerEnter={() => warmImage(initialProjectPoster(projects[index+1]))}
-                onFocus={() => warmImage(initialProjectPoster(projects[index+1]))}
+              <span className="cinema-player__count" aria-live="polite">{index+1} / {activeQueue.length}</span>
+              <button type="button" onClick={event => { if (event.detail > 0) event.currentTarget.blur(); switchWork(index+1); }} disabled={switching || index < 0 || index >= activeQueue.length-1}
+                onPointerEnter={() => warmImage(initialProjectPoster(activeQueue[index+1]))}
+                onFocus={() => warmImage(initialProjectPoster(activeQueue[index+1]))}
                 aria-label={lang==='en'?'Next work':'下一部'}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m10 5 7 7-7 7"/></svg></button>
             </div>
           </div>
           </div>
         </div>
       </div>
+      {directoryOpen && <CinemaWorkDirectory lang={lang} allProjects={catalogAll} featuredProjects={catalogFeatured}
+        activeProjectId={project.id} scope={directoryScope} filter={directoryFilter}
+        onFilter={setDirectoryFilter} busyProjectId={directoryBusyId} onChoose={chooseDirectoryProject}
+        onClose={closeDirectory} trapFocus={!directoryDocked}
+        panelRef={directoryPanelRef} />}
       <span className="cinema-player__focus-guard" tabIndex={0} onFocus={() => dialogRef.current?.querySelector('.cinema-player__language button')?.focus()} />
     </dialog>, document.body
   );
