@@ -1,27 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="hero-title hero-desc">
-  <title id="hero-title">AI路人 · Ai Luren — AI Video Creator</title>
-  <desc id="hero-desc">Cinematic title card for AI Luren's portfolio of creative commercial films, shorts and visual stories.</desc>
-  <rect width="1200" height="330" rx="18" fill="#0b0c0f"/>
-  <rect x="1" y="1" width="1198" height="328" rx="17" fill="none" stroke="#a5b2c2" stroke-opacity=".35" stroke-width="1.5"/>
-  <path d="M24 1H560" fill="none" stroke="#d7e5f6" stroke-opacity=".25" stroke-width="1.5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="352" viewBox="0 0 1200 352" role="img" aria-labelledby="title desc">
+  <title id="title">AI路人 | AI Video Creator</title>
+  <desc id="desc">A cinematic title card: Ai Luren creates AI-assisted brand commercials, creative shorts and visual storytelling. Three abstract film frames suggest the journey from idea to final cut.</desc>
+  <rect width="1200" height="352" rx="24" fill="#0b0c0f"/>
+  <rect x="1" y="1" width="1198" height="350" rx="23" fill="none" stroke="#596370" stroke-opacity=".55"/>
   <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Microsoft YaHei,sans-serif">
-    <text x="68" y="63" fill="#a1a1a6" font-size="19" font-weight="600" letter-spacing="3">AI VIDEO CREATOR</text>
-    <path d="M68 83H164" stroke="#2997ff" stroke-width="3" stroke-linecap="round"/>
-    <text x="65" y="192" fill="#f5f5f7" font-size="100" font-weight="650">AI路人</text>
-    <text x="70" y="254" fill="#d7d9de" font-size="44" font-weight="500" letter-spacing="1">Ai Luren</text>
-    <path d="M685 53V274" stroke="#a5b2c2" stroke-opacity=".26" stroke-width="1.5"/>
-    <text x="734" y="86" fill="#9ea7b2" font-size="19" font-weight="600" letter-spacing="2">SELECTED FILMS</text>
-    <text x="732" y="142" fill="#f5f5f7" font-size="35" font-weight="600">让创意成为影像</text>
-    <text x="734" y="184" fill="#e6e8eb" font-size="28" font-weight="500">Ideas, Framed in Motion.</text>
-    <g fill="#242a33" fill-opacity=".62" stroke="#b4c4d8" stroke-opacity=".40" stroke-width="1.5">
-      <rect x="735" y="214" width="104" height="53" rx="5"/>
-      <rect x="857" y="214" width="104" height="53" rx="5"/>
-      <rect x="979" y="214" width="104" height="53" rx="5"/>
-      <path d="M749 226h19m-19 29h19m56-29v29M871 226h19m-19 29h19m56-29v29M993 226h19m-19 29h19m56-29v29" fill="none" opacity=".42"/>
+    <text x="64" y="68" fill="#aeb8c6" font-size="22" font-weight="600" letter-spacing="3">AI VIDEO CREATOR  /  PORTFOLIO</text>
+    <text x="58" y="193" fill="#f5f5f7" font-size="110" font-weight="700" letter-spacing="-3">AI路人</text>
+    <text x="64" y="252" fill="#eef0f3" font-size="45" font-weight="550" letter-spacing=".5">Ai Luren</text>
+    <path d="M65 278H183" stroke="#2997ff" stroke-width="4" stroke-linecap="round"/>
+    <text x="64" y="322" fill="#aeb8c6" font-size="22" letter-spacing="1.1">COMMERCIALS  ·  SHORT FILMS  ·  VISUAL STORIES</text>
+    <path d="M703 64V289" stroke="#596370" stroke-opacity=".60" stroke-width="1.5"/>
+    <text x="738" y="88" fill="#abb7c5" font-size="20" font-weight="600" letter-spacing="2">IDEAS, FRAMED IN MOTION</text>
+    <text x="737" y="139" fill="#f5f5f7" font-size="39" font-weight="600">让创意成为影像</text>
+    <g fill="#171d26" stroke="#6e8295" stroke-opacity=".78" stroke-width="1.5">
+      <rect x="739" y="171" width="122" height="85" rx="7"/>
+      <rect x="877" y="171" width="122" height="85" rx="7"/>
+      <rect x="1015" y="171" width="122" height="85" rx="7"/>
     </g>
-    <path d="M788 241l-7-5v10zM910 241l-7-5v10zM1032 241l-7-5v10z" fill="#f5f5f7"/>
-    <path d="M68 287H1131" stroke="#343a42" stroke-width="1.5"/>
-    <text x="69" y="313" fill="#8e99a5" font-size="17" letter-spacing="1.6">COMMERCIALS  /  SHORT FILMS  /  VISUAL STORIES</text>
-    <text x="1132" y="313" fill="#8e99a5" font-size="17" text-anchor="end" letter-spacing="1.5">AILUREN PORTFOLIO</text>
+    <g stroke="#8ca3bc" stroke-opacity=".8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M748 181h12m-12 0v12m104-12h-12m12 0v12M748 246h12m-12 0v-12m104 12h-12m12 0v-12"/>
+      <path d="M886 181h12m-12 0v12m104-12h-12m12 0v12M886 246h12m-12 0v-12m104 12h-12m12 0v-12"/>
+      <path d="M1024 181h12m-12 0v12m104-12h-12m12 0v12M1024 246h12m-12 0v-12m104 12h-12m12 0v-12"/>
+    </g>
+    <circle cx="800" cy="214" r="18" stroke="#d5e4f5" stroke-width="2" fill="none"/>
+    <path d="M792 214h16m-8-8v16" stroke="#d5e4f5" stroke-width="2" stroke-linecap="round"/>
+    <path d="M887 235l30-40 27 26 19-18 26 32" fill="none" stroke="#b7d9f8" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="945" cy="194" r="9" fill="#2997ff" fill-opacity=".75"/>
+    <circle cx="1076" cy="214" r="22" stroke="#d5e4f5" stroke-width="1.8" fill="none"/>
+    <path d="M1071 203l17 11-17 11z" fill="#d5e4f5"/>
+    <path d="M744 279H1128" stroke="#576778" stroke-opacity=".72" stroke-width="1.5"/>
+    <circle cx="800" cy="279" r="4" fill="#2997ff"/>
+    <circle cx="938" cy="279" r="4" fill="#2997ff"/>
+    <circle cx="1076" cy="279" r="4" fill="#2997ff"/>
+    <g font-size="19" fill="#c7d1dd" font-weight="550">
+      <text x="800" y="316" text-anchor="middle">CONCEPT</text>
+      <text x="938" y="316" text-anchor="middle">FRAMES</text>
+      <text x="1076" y="316" text-anchor="middle">FINAL CUT</text>
+    </g>
   </g>
 </svg>
