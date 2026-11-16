@@ -43,10 +43,13 @@ try {
       top:image.getBoundingClientRect().top,
     })));
   assert.equal(initialHome.length, 8, 'Mobile Featured displays eight cards in one 2x4 grid');
-  // Prefetch covers 1100px ahead of view so rapid swipes and section links
-  // rarely expose an empty card. Still defer art truly far from the viewport.
-  assert(initialHome.every(item => !item.loaded || item.top <= 852 + 1100 + 24),
-    'Only covers within the 1100px preload margin may request imagery');
+  // First mobile row must have image URLs at initial React render. Waiting for
+  // IntersectionObserver leaves black cards on fast Hero-to-Works navigation.
+  assert(initialHome.slice(0,2).every(item => item.loaded),
+    'First mobile Featured row must be requested on mount');
+  // Additional rows retain the bounded ahead-of-scroll prefetch strategy.
+  assert(initialHome.slice(2).every(item => !item.loaded || item.top <= 852 + 1100 + 24),
+    'Deferred covers must stay within the 1100px preload margin');
   assert(await page.locator('#impact-awards .impact-award-grid-card img')
     .evaluateAll(images => images.every(image => !image.hasAttribute('src'))),
   'Distant award thumbnails must not compete with Hero');
@@ -129,8 +132,10 @@ try {
     assert.equal(initial.length, 8);
     const rootMargin = 1100;
     const windowHeight = desktop.viewportSize().height;
-    assert(initial.every(image => image.top <= windowHeight + rootMargin || !image.loaded),
-      'Desktop Featured must defer covers beyond the approaching viewport');
+    assert(initial.slice(0,4).every(image => image.loaded),
+      'Desktop first Featured row must start loading at React mount');
+    assert(initial.slice(4).every(image => image.top <= windowHeight + rootMargin || !image.loaded),
+      'Desktop other rows must defer beyond the approaching viewport');
     await desktop.locator('#projects .comet-archive__cover').first().scrollIntoViewIfNeeded();
     await desktop.waitForFunction(() => [...document.querySelectorAll('#projects .comet-archive__cover')]
       .slice(0, 4).every(image => image.complete && image.naturalWidth > 0));

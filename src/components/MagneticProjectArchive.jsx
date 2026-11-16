@@ -93,7 +93,9 @@ export default function MagneticProjectArchive({ onSelect }) {
           onPointerUp={stopDragging} onPointerCancel={stopDragging}>
           {FEATURED_PROJECTS.map((project, index) => (
             <ProjectCard key={project.id} project={project} lang={lang}
-              onClick={handleCardClick} coverPriority={index < 4 ? 'normal' : 'low'} deferUntilNear />
+              onClick={handleCardClick}
+              coverPriority={index < (isMobile ? 2 : 4) ? (isMobile ? 'high' : 'normal') : 'low'}
+              deferUntilNear={index >= (isMobile ? 2 : 4)} />
           ))}
         </div>
       </div>
