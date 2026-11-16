@@ -1846,9 +1846,10 @@
       var scrubState = false;
       var ACTIVE_SCROLL_WINDOW = 160;
       var mobileScrub = window.matchMedia('(max-width: 760px)').matches;
-      // Phone browsers struggle to seek an inter-frame-compressed film during
-      // rapid swipes. The default 30s forward/reverse mobile cut has matching
-      // endpoint frames and loops without the visible 15s hard reset.
+      // C: pre-rendered, forward-only mobile Hero with an optical cross-dissolve
+      // between the original film's end and start. A single 13.83s MP4 keeps
+      // mobile hardware decoding continuous without per-scroll video seeks.
+      // Keep the existing source filename for stable references and rollback.
       // Explicit ?heroMode=scrub uses the original 15s footage and scroll
       // timeline instead. Desktop always keeps exact scroll-driven playback.
       var mobileScrollRequested = mobileScrub &&
@@ -1861,7 +1862,7 @@
         if (mobileSource) mobileSource.setAttribute('src', originalMobileSource);
       }
       var mobileContinuousVideo = mobileScrub && !reduced && !mobileScrollRequested;
-      document.documentElement.dataset.mobileFilmMode = mobileContinuousVideo ? 'pingpong' : 'scrub';
+      document.documentElement.dataset.mobileFilmMode = mobileContinuousVideo ? 'dissolve' : 'scrub';
       function startMobilePlayback() {
         if (!mobileContinuousVideo || document.hidden || body.classList.contains('cinema-open')) return;
         video.muted = true;

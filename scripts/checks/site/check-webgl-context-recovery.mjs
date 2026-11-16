@@ -62,8 +62,8 @@ try {
       assert(data.poster === null || data.poster === '', width + 'px: native poster duplicates the responsive first-frame layer');
       assert(data.backgroundPoster.includes(poster), width + 'px: wrong first-frame still');
       assert(data.src.includes(version), width + 'px: wrong film source ' + data.src);
-      assert(data.duration >= (width <= 760 ? 29.9 : 14.8) && data.duration <= (width <= 760 ? 30.1 : 15.3),
-        width + 'px: unexpected mobile ping-pong / desktop scrub film duration ' + data.duration);
+      assert(data.duration >= (width <= 760 ? 13.7 : 14.8) && data.duration <= (width <= 760 ? 13.9 : 15.3),
+        width + 'px: unexpected mobile optical dissolve / desktop scrub film duration ' + data.duration);
       assert.equal(data.overflow, 0, width + 'px: horizontal overflow');
 
       await page.evaluate(() => scrollTo({
