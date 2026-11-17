@@ -611,6 +611,6 @@ export async function createCoverStudio({ projectRoot = path.resolve(TOOL_DIR, '
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const app = await createCoverStudio({ port: Number(process.env.COVER_STUDIO_PORT || 5190) });
-  console.log(`本地作品工作台：${app.url}\n仅本地运行，关闭此终端进程即可停止。`);
+  console.log(`作品管理工作台：${app.url}\n仅本地运行，关闭此终端进程即可停止。`);
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, async () => { await app.close(); process.exit(0); });
 }

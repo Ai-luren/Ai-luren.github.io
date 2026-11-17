@@ -1,77 +1,81 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，商业影像、创意短片与电影化视觉叙事作品集" />
+  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，AI 商业广告、叙事短片与视觉实验作品集">
 </p>
 
 <p align="center">
-  用 AI 影像探索品牌表达、镜头语言与情绪叙事。<br>
-  AI-assisted commercials, creative shorts and cinematic visual storytelling.
+  <strong>以镜头讲述创意，以影像建立情绪。</strong><br>
+  AI-assisted commercials, creative films & visual storytelling.
 </p>
 
 <p align="center">
-  <a href="https://ailuren.netlify.app/"><strong>观看作品集 / Watch Films</strong></a>
-  &nbsp; · &nbsp;
-  <a href="https://ailuren.netlify.app/works.html">全部作品 / All Work</a>
-  &nbsp; · &nbsp;
+  <a href="https://ailuren.netlify.app/"><strong>进入作品集 / Enter Portfolio</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://ai-luren.github.io/">GitHub Pages 镜像 / Mirror</a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
   <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
 </p>
 
 ---
 
-## 精选影像 / Selected Films
+## 01 / 精选影像 · Selected Films
 
-四部来自当前精选名单的真实影像封面。点击进入网站可观看完整影片、原始画幅与不同创意版本。
-
-Four works from the current featured collection. Watch the films and alternate cuts on the [portfolio website](https://ailuren.netlify.app/#projects).
+<sub>**EIGHT SELECTED WORKS** &nbsp;—&nbsp; AI COMMERCIALS / NARRATIVE / PRODUCT / VISUALS</sub>
 
 <p align="center">
-  <img src="./assets/images/project-covers/commercial/FormFunk Creative Commercial.webp" width="49%" alt="FormFunk 餐具创意广告 Demo：青花纹理餐盘与人物创意海报">
-  <img src="./assets/images/project-covers/short-film/The Kennel Between Us.webp" width="49%" alt="《犬舍挪了，紫苏香了》AI 漫剧：南方乡村人物群像封面">
+  <a href="https://ai-luren.github.io/works.html?watch=19"><img src="./assets/images/project-covers/commercial/FormFunk Creative Commercial.webp" width="23%" alt="01 — FormFunk 餐具创意广告，独立制作 Demo"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=20"><img src="./assets/images/project-covers/short-film/The Kennel Between Us.webp" width="23%" alt="02 — 犬舍挪了，紫苏香了，AI 漫剧"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=17"><img src="./assets/images/project-covers/commercial/MEXC No More Waiting.webp" width="23%" alt="03 — MEXC No More Waiting，独立创意 Demo"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=15"><img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="23%" alt="04 — 最难的告别，AI 情绪叙事"></a>
 </p>
-<p align="center"><sub>FORMFUNK · Creative Commercial Demo &nbsp; / &nbsp; THE KENNEL BETWEEN US · AI Narrative</sub></p>
 
 <p align="center">
-  <img src="./assets/images/project-covers/commercial/MEXC No More Waiting.webp" width="49%" alt="MEXC 不用等了创意广告 Demo：邮轮甲板人物与船长">
-  <img src="./assets/images/project-covers/visual/The Hardest Goodbye.webp" width="49%" alt="《最难的告别》AI 情绪叙事短片：持枪人物特写">
+  <a href="https://ai-luren.github.io/works.html?watch=01"><img src="./assets/images/project-covers/commercial/Watsons Brand Commercial.webp" width="23%" alt="05 — 屈臣氏品牌广告"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=16"><img src="./assets/images/project-covers/commercial/MEXC Member Perks.webp" width="23%" alt="06 — MEXC 会员权益创意广告 Demo"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=18"><img src="./assets/images/project-covers/social/FormFunk Product Film.webp" width="23%" alt="07 — FormFunk 餐具美学短片 Demo"></a>
+  <a href="https://ai-luren.github.io/works.html?watch=02"><img src="./assets/images/project-covers/commercial/Lenovo Brand Commercial.webp" width="23%" alt="08 — 联想品牌广告"></a>
 </p>
-<p align="center"><sub>MEXC · No More Waiting Demo &nbsp; / &nbsp; THE HARDEST GOODBYE · AI Short Film</sub></p>
 
-<p align="center"><a href="https://ailuren.netlify.app/#projects"><strong>浏览精选影像 / Explore Selected Films</strong></a></p>
+<p align="center"><sub>01—08 / 点击封面进入对应影片 · Click a cover to explore the film</sub></p>
 
-<sub>作品说明：FormFunk 与 MEXC 为独立创意测试 / Demo，不代表品牌正式委托或官方发布。项目更新可能早于网站生产部署。</sub>
+<p align="center"><a href="https://ailuren.netlify.app/works.html"><strong>浏览全部作品 / Explore All Work</strong></a></p>
 
-## 创作方向 / Creative Practice
+<sub>部分作品为自主制作的创意测试（包括 FormFunk、MEXC Demo），不代表品牌正式委托或官方发布。封面对应真实项目，完整影片及 A/B 版本请以作品集页面为准。</sub>
 
-- **品牌与商业影像 / Commercial Films** — AI TVC、品牌创意与文旅宣传片。
-- **创意短片 / Creative Shorts** — 人物、情绪、故事与概念叙事。
-- **产品与社媒影像 / Product & Social Films** — 产品表达、海外生活场景及多画幅内容。
-- **视觉实验 / Visual Experiments** — 影像风格、镜头语言与视觉特效探索。
+## 02 / 创作方向 · Creative Practice
 
-作品集支持分类浏览、中英双语、原始视频画幅与同一作品的多版本切换。
+**Commercial Films** &nbsp; 品牌广告、产品 TVC 与文旅影像
+**Narrative Films** &nbsp; AI 漫剧、人物故事与情绪叙事
+**Product & Social** &nbsp; 海外产品广告、场景短片与多画幅内容
+**Visual Studies** &nbsp; 镜头语言、视觉风格与创意特效实验
 
-## 荣誉与展映 / Recognition
+从视觉构思、AI 画面生成到最终成片，关注镜头、节奏、人物一致性与电影感表达。
 
-收录获奖、入围与公开展映记录，包括 Midjourney 官方优秀作品、美图未来 AI 设计大赛年度入围、联想 AI 创作先锋奖、海螺 AI LED 大屏展映，以及可灵、中国联通和 Pollo.ai 相关创作活动。各种记录按实际性质分别标注。
+## 03 / 荣誉与展映 · Recognition
+
+作品曾获创作赛事与平台展示机会，包括 Midjourney 官方优秀作品、美图未来 AI 设计大赛年度入围、联想 AI 创作先锋奖与海螺 AI LED 大屏展映等。获奖、入围与平台展示分别标注，不混为同类荣誉。
 
 [查看荣誉与证明 / View Recognition](https://ailuren.netlify.app/#impact-awards)
 
-## 影像之外 / Creative Tools
+## 04 / 影像之外 · Creative Tools
 
-围绕日常 AI 影像创作与内容工作流开发的小工具：
+日常创作中开发的小工具与开源项目：
 
-- [Ainews-to-Feishu](https://github.com/Ai-luren/Ainews-to-Feishu) — AI 资讯整理及飞书同步。
-- [Ailuren-illustrations](https://github.com/Ai-luren/Ailuren-illustrations) — 文章配图工具。
-- [Image Comparison](https://github.com/Ai-luren/Image-comparison) — [在线图像对比](https://ai-luren.github.io/Image-comparison/)。
-
-## 关于网站 / Behind the Portfolio
-
-这是**个人 AI 视频作品集**，不是在线 AI 视频生成工具。前端基于 Vite、React、Motion 和 GSAP / ScrollTrigger；背景影像采用浏览器原生视频（桌面滚动驱动、手机往返循环），当前公开版不启用旧 WebGL 后处理。
-
-- **电影化浏览 / Cinematic Viewing**：八件精选影像、按分类浏览的完整作品库、原始比例播放器、同一作品 A/B/C 创意版本、双语导航与作品目录。D+ 玻璃根据阅读密度调整透景强度。
-- **本地作品工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
-- **媒体边界**：原始作品 MP4 不随 Git 提交。本地开发使用本地原片；正式网站使用已配置的线上视频地址。没有原片的克隆环境无法完整验证视频播放。
+[Ainews-to-Feishu](https://github.com/Ai-luren/Ainews-to-Feishu) · AI 资讯整理与飞书同步
+[Ailuren-illustrations](https://github.com/Ai-luren/Ailuren-illustrations) · 文章配图工具
+[Image Comparison](https://github.com/Ai-luren/Image-comparison) · [在线图片对比](https://ai-luren.github.io/Image-comparison/)
 
 <details>
-<summary><strong>本地运行 / Run Locally</strong></summary>
+<summary><strong>关于这个网站 / Behind the Portfolio</strong></summary>
+
+<br>
+
+这是个人 AI 视频作品集，不是在线 AI 视频生成工具。使用 Vite、React、Motion 和 GSAP / ScrollTrigger，呈现原始比例影像、双语界面、多版本播放器与滚动驱动的电影化浏览。
+
+- **桌面 Hero**：原生视频按滚动位置驱动；手机使用 C 版正向光学溶接循环。
+- **作品管理工作台**：`portfolio-workbench/` 在本机管理作品顺序、版本、3:4 封面与各版原比例海报，不随网站部署。
+- **媒体边界**：作品原片不进入公开 Git 仓库（Hero 背景例外）；公开播放器仅在主动播放后请求 ImageKit。没有本地原片的克隆环境不能完整验证视频播放。
+
+### 本地运行 / Run Locally
 
 Node.js `^20.19.0` 或 `>=22.12.0`：
 
@@ -80,54 +84,32 @@ npm ci
 npm run dev
 ```
 
-网站：首页 <http://127.0.0.1:5174/> · 作品库 <http://127.0.0.1:5174/works.html>
+首页：<http://127.0.0.1:5174/> · 作品库：<http://127.0.0.1:5174/works.html>
 
-本地作品工作台（需要 FFmpeg / FFprobe）：
+作品管理工作台需要 FFmpeg / FFprobe，运行 `npm run workbench`，打开 <http://127.0.0.1:5190/>。
 
-```bash
-npm run workbench
-```
-
-工作台：<http://127.0.0.1:5190/>。更改工作台服务代码后需重启；`npm run covers` 是兼容别名。
-
-</details>
-
-<details>
-<summary><strong>项目结构与测试 / Structure & Checks</strong></summary>
-
-```text
-index.html · works.html      首页与完整作品库
-src/                         React 组件、国际化与作品数据
-assets/                      封面、海报与网站素材
-portfolio-workbench/         本地作品工作台（不部署）
-scripts/checks/              网站及工作台回归测试
-docs/                        设计规范与维护指南
-```
+### 构建与验证 / Build & Checks
 
 ```bash
-npm run build                   # 生产构建
-npm run check:plan              # 只读查看测试覆盖与重复检查
-npm run check:smoke             # 基础构建、目录与媒体安全
-npm run check:project           # 网站与工作台核心回归（非全部深测）
-npm run check:cinema-controls   # 手机播放器交互
-npm run check:cinema-local      # 本地视频缓冲与防黑屏
-npm run check:cinema-version-motion # A/B 版本切换动画
-npm run check:workbench-core    # 工作台核心回归
-npm run check:i18n              # 中英文界面
+npm run build
+npm run check:plan
+npm run check:project
 ```
 
-维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
+`check:project` 是网站与工作台核心快速回归，**不等同于全量深度测试**。更多入口见 [测试与回归维护](./docs/测试与回归维护.md)。
+
+工程交接：[ARCHITECTURE](./ARCHITECTURE.md) · [设计规范](./docs/设计规范.md) · [作品库维护](./docs/作品库维护.md) · [工作台使用指南](./docs/作品管理工作台使用指南.md) · [AGENTS](./AGENTS.md)。
 
 </details>
 
 ---
 
 <p align="center">
-  <a href="https://ailuren.netlify.app/"><strong>完整作品集 / Full Portfolio</strong></a>
-  &nbsp; · &nbsp;
-  <a href="https://ailuren.netlify.app/#profile">联系合作 / Contact</a>
-  &nbsp; · &nbsp;
-  <a href="./LICENSE">MIT License</a>
+  <a href="https://ailuren.netlify.app/"><strong>WATCH THE FILMS</strong></a>
+  &nbsp;&nbsp; · &nbsp;&nbsp;
+  <a href="https://ailuren.netlify.app/#profile">LET'S COLLABORATE</a>
+  &nbsp;&nbsp; · &nbsp;&nbsp;
+  <a href="./LICENSE">MIT LICENSE</a>
 </p>
 
-<p align="center"><sub>AI路人 · Ai Luren · AI Video Creator</sub></p>
+<p align="center"><sub>AI路人 / Ai Luren &nbsp; · &nbsp; AI Video Creator</sub></p>

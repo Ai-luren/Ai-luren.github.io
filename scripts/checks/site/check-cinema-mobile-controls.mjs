@@ -133,19 +133,31 @@ try {
     await page.waitForTimeout(210); // Menu entrance is a 180ms scale transition.
     const menuColors=await rateMenu.evaluate(el=>{
       const r=el.getBoundingClientRect(),bar=el.closest('.cinema-player__mobile-controls').getBoundingClientRect();
-      return {bg:getComputedStyle(el).backgroundColor, gradient:getComputedStyle(el).backgroundImage, border:getComputedStyle(el).borderTopColor,width:r.width,height:r.height,left:r.left,right:r.right,
+      const css=getComputedStyle(el);
+      // Resolve the responsive D+ token, not the desktop-only .33 alpha.
+      const sample=document.createElement('span');
+      sample.style.cssText='position:fixed;visibility:hidden;pointer-events:none';
+      sample.style.backgroundColor=css.getPropertyValue('--portfolio-glass-surface').trim();
+      document.body.append(sample);
+      const expectedBg=getComputedStyle(sample).backgroundColor;
+      sample.remove();
+      return {bg:css.backgroundColor, expectedBg,
+        blurToken:css.getPropertyValue('--portfolio-glass-control-blur').trim(),
+        gradient:css.backgroundImage, border:css.borderTopColor,width:r.width,height:r.height,left:r.left,right:r.right,
         centerOffset:Math.abs((r.left+r.right)/2-(bar.left+bar.right)/2),barTop:bar.top,menuBottom:r.bottom,
         all44:[...el.querySelectorAll('button')].every(b=>b.getBoundingClientRect().height>=44)};
     });
-    assert.equal(menuColors.bg,'rgba(24, 26, 31, 0.33)','Rate menu uses D+ shared substrate');
+    assert.equal(menuColors.bg,menuColors.expectedBg,'Rate menu uses responsive D+ shared substrate');
     assert(menuColors.gradient.includes('linear-gradient'),'Rate menu uses static reading protection over the same D+ substrate');
     assert.equal(menuColors.border,'rgba(227, 237, 250, 0.35)','Rate menu uses D+ optical rim');
     const glassEffect=await rateMenu.evaluate(element=>({
       blur:getComputedStyle(element).backdropFilter,
       webkitBlur:getComputedStyle(element).webkitBackdropFilter,
     }));
-    assert(glassEffect.blur.includes('blur(8px)') || glassEffect.webkitBlur.includes('blur(8px)'),
-      'Speed menu must actually blur behind its translucent glass material');
+    // On touch screens the shared glass blur intentionally becomes `none`
+    // to protect 24fps mobile film decode. Other breakpoints preserve blur.
+    assert(glassEffect.blur===menuColors.blurToken || glassEffect.webkitBlur===menuColors.blurToken,
+      'Speed menu must respect the responsive D+ blur token');
     assert(menuColors.all44 && menuColors.width>=250,'All four speed choices fit in one 44px horizontal row');
     assert(menuColors.height<65,'Speed menu must be a compact floating pill, never a tall stack');
     assert(menuColors.centerOffset<1,'Speed menu must be visually centered across the video controls');
