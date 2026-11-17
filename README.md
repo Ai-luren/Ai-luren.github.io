@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，AI 商业广告、叙事短片与视觉实验作品集">
+  <img src="./assets/readme/hero.webp" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，AI 商业广告、叙事短片与视觉实验作品集">
 </p>
 
 <p align="center">
@@ -8,11 +8,20 @@
 </p>
 
 <p align="center">
-  <a href="https://ailuren.netlify.app/"><strong>进入作品集 / Enter Portfolio</strong></a>
+  <a href="https://ai-luren.github.io/"><strong>进入作品集 / Enter Portfolio</strong></a>
   &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://ai-luren.github.io/">GitHub Pages 镜像 / Mirror</a>
-  &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://ailuren.netlify.app/#profile">合作联系 / Contact</a>
+  <a href="https://ai-luren.github.io/#profile">合作联系 / Contact</a>
+</p>
+
+<p align="center"><sub>在线作品集 / LIVE PORTFOLIO · DEPLOYMENT MIRRORS</sub></p>
+<p align="center">
+  <a href="https://ai-luren.github.io/">GitHub Pages</a>
+  &nbsp;·&nbsp;
+  <a href="https://ailuren.pages.dev/">Cloudflare Pages</a>
+  &nbsp;·&nbsp;
+  <a href="https://ailuren.vercel.app/">Vercel</a>
+  &nbsp;·&nbsp;
+  <a href="https://ailuren.netlify.app/">Netlify</a>
 </p>
 
 ---
@@ -37,7 +46,7 @@
 
 <p align="center"><sub>01—08 / 点击封面进入对应影片 · Click a cover to explore the film</sub></p>
 
-<p align="center"><a href="https://ailuren.netlify.app/works.html"><strong>浏览全部作品 / Explore All Work</strong></a></p>
+<p align="center"><a href="https://ai-luren.github.io/works.html"><strong>浏览全部作品 / Explore All Work</strong></a></p>
 
 <sub>部分作品为自主制作的创意测试（包括 FormFunk、MEXC Demo），不代表品牌正式委托或官方发布。封面对应真实项目，完整影片及 A/B 版本请以作品集页面为准。</sub>
 
@@ -54,7 +63,7 @@
 
 作品曾获创作赛事与平台展示机会，包括 Midjourney 官方优秀作品、美图未来 AI 设计大赛年度入围、联想 AI 创作先锋奖与海螺 AI LED 大屏展映等。获奖、入围与平台展示分别标注，不混为同类荣誉。
 
-[查看荣誉与证明 / View Recognition](https://ailuren.netlify.app/#impact-awards)
+[查看荣誉与证明 / View Recognition](https://ai-luren.github.io/#impact-awards)
 
 ## 04 / 影像之外 · Creative Tools
 
@@ -105,9 +114,9 @@ npm run check:project
 ---
 
 <p align="center">
-  <a href="https://ailuren.netlify.app/"><strong>WATCH THE FILMS</strong></a>
+  <a href="https://ai-luren.github.io/"><strong>WATCH THE FILMS</strong></a>
   &nbsp;&nbsp; · &nbsp;&nbsp;
-  <a href="https://ailuren.netlify.app/#profile">LET'S COLLABORATE</a>
+  <a href="https://ai-luren.github.io/#profile">LET'S COLLABORATE</a>
   &nbsp;&nbsp; · &nbsp;&nbsp;
   <a href="./LICENSE">MIT LICENSE</a>
 </p>
