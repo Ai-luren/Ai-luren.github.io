@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./assets/readme/hero.svg" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，AI 商业广告、叙事短片与视觉实验作品集">
+  <img src="./assets/readme/hero.webp" width="100%" alt="AI路人 · Ai Luren — AI Video Creator，AI 商业广告、叙事短片与视觉实验作品集">
 </p>
 
 <p align="center">
