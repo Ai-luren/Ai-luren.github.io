@@ -38,7 +38,7 @@ for(const area of ['site','workbench']){
   }
 }
 assert(count>=89,`Expected 89+ regression scripts, found ${count}`);
-for(const file of ['README.md','AGENTS.md','docs/交接说明.md']){
+for(const file of ['README.md','AGENTS.md','ARCHITECTURE.md']){
  const text=fs.readFileSync(at(file),'utf8');
  assert(text.includes('portfolio-workbench/'),`${file} missing current workbench path`);
  assert(!text.includes('tools/cover-studio/'),`${file} still references removed nested path`);

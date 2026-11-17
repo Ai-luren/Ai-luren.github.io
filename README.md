@@ -74,7 +74,7 @@ Four works from the current featured collection. Watch the films and alternate c
 这是**个人 AI 视频作品集**，不是在线 AI 视频生成工具。前端基于 Vite、React、Motion 和 GSAP / ScrollTrigger；背景影像采用浏览器原生视频（桌面滚动驱动、手机 C 版正向光学溶接循环），当前公开版不启用旧 WebGL 后处理。
 
 - **电影化浏览 / Cinematic Viewing**：八件精选影像、按分类浏览的完整作品库、原始比例播放器、同一作品 A/B/C 创意版本、双语导航与作品目录。D+ 玻璃根据阅读密度调整透景强度。
-- **本地作品工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
+- **作品管理工作台 / Local Studio**：管理视频版本、作品排序、3:4 封面与原比例播放器海报；仅在本机运行，不随网站部署。
 - **媒体边界**：作品原片 MP4 不随 Git 提交（Hero 背景 MP4 例外）。本地开发使用本地原片，公开播放器按用户点击才请求 ImageKit。没有原片的克隆环境无法完整验证作品视频播放。
 
 <details>
@@ -89,7 +89,7 @@ npm run dev
 
 网站：首页 <http://127.0.0.1:5174/> · 作品库 <http://127.0.0.1:5174/works.html>
 
-本地作品工作台（需要 FFmpeg / FFprobe）：
+作品管理工作台（需要 FFmpeg / FFprobe）：
 
 ```bash
 npm run workbench
@@ -106,7 +106,7 @@ npm run workbench
 index.html · works.html      首页与完整作品库
 src/                         React 组件、国际化与作品数据
 assets/                      封面、海报与网站素材
-portfolio-workbench/         本地作品工作台（不部署）
+portfolio-workbench/         作品管理工作台（不部署）
 scripts/checks/              网站及工作台回归测试
 docs/                        设计规范与维护指南
 ```
@@ -123,9 +123,9 @@ npm run check:workbench-core    # 工作台核心回归
 npm run check:i18n              # 中英文界面
 ```
 
-开发者接手：[工程架构](./ARCHITECTURE.md) · [作品数据字典](./docs/作品数据字典.md) · [历史代码待清理清单](./docs/历史代码待清理清单.md)。
+开发者接手：[工程架构](./ARCHITECTURE.md) · [作品数据字典](./docs/作品库维护.md#作品数据模型与读写契约) · [历史代码待清理清单](./docs/历史代码待清理清单.md)。
 
-维护文档：[文档索引](./docs/文档索引.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/本地封面工作台使用教程.md) · [AGENTS](./AGENTS.md)。
+维护文档：[文档索引](./ARCHITECTURE.md) · [设计规范](./docs/设计规范.md) · [测试与回归](./docs/测试与回归维护.md) · [作品库维护](./docs/作品库维护.md) · [工作台教程](./docs/作品管理工作台使用指南.md) · [AGENTS](./AGENTS.md)。
 
 </details>
 
