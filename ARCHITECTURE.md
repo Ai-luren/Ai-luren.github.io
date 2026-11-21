@@ -38,10 +38,10 @@ Node.js 运行版本：^20.19.0 或 >=22.12.0；Vite 相对资源路径支持 Gi
 
 | 需求 | 先看这里 | 注意边界 |
 | --- | --- | --- |
-| 首页 Hero 播放、手机 C 循环、滚动 seek | `index.html` 的 `#hero-video` 初始化；`src/utils/heroImmersivePreview.js`；`src/styles/hero-journey.css` | 首页原生脚本与 React 并行；`portfolio:react-ready` 通知布局可重新定位，**不是所有功能都由 React 接管** |
+| 首页 Hero 播放、手机 E（C 溶接）循环、滚动 seek | `index.html` 的 `#hero-video` 初始化；`src/utils/heroImmersivePreview.js`；`src/styles/hero-journey.css` | 首页原生脚本与 React 并行；`portfolio:react-ready` 通知布局可重新定位，**不是所有功能都由 React 接管** |
 | 首页精选 | `src/components/MagneticProjectArchive.jsx`、`ProjectCard.jsx`；`src/data/projects.js` | 当前精选名单以 `project-order.json.featured` 为准，不读取旧条目上的 `featured` 当成最终真值 |
 | 作品库筛选和分享 | `src/components/WorksLibrary.jsx` | `?watch=ID` 开作品海报、不自动播；`?project=ID` 是工作台的定位高亮；返回历史需专项测试 |
-| 作品播放器和目录 | `CinemaPlayer.jsx`、`CinemaWorkDirectory.jsx`、`MobilePlaybackControls.jsx`、`src/data/version-order.js` | `main` 是版本身份，不一定是首个显示版本；按点击才请求作品 MP4 |
+| 作品播放器和目录 | `lazyCinemaPlayer.js`、`CinemaPlayer.jsx`、`CinemaWorkDirectory.jsx`、`MobilePlaybackControls.jsx`、`src/data/version-order.js` | 首屏不加载影院 JS/CSS，卡片 hover／触摸／聚焦时预热；`main` 是版本身份，不一定是首个显示版本，视频仍只在主动播放后请求 |
 | 荣誉、社交与 AI 实验室 | `ImpactEvidence.jsx`、`ExperimentFlip.jsx`、`ExternalLinkSheet.jsx` | React Portal、弹窗、焦点和浏览器历史相互作用 |
 | 视觉与玻璃 | `src/styles/card-surfaces.css`、`apple-system.css`、`navigation.css` 及各组件 CSS；首页内嵌样式 | 遵循 [设计规范](docs/设计规范.md)；先搜索最终选择器及覆盖层，不批量删 `!important` |
 | 新作品/版本、排序、归档 | `portfolio-workbench/server.mjs` 路由 → `project-publisher.mjs`、`project-versions.mjs`、`project-order.mjs`、`project-archive.mjs` | 工作台修改磁盘 JSON 和素材；有确认、历史和异常回滚，不直接上传 ImageKit/发布站点 |
@@ -54,8 +54,8 @@ Node.js 运行版本：^20.19.0 或 >=22.12.0；Vite 相对资源路径支持 Gi
 2. **浏览器历史不是一个人的职责**：`index.html` 控制首页导航与定位；`WorksLibrary.jsx` 处理作品 URL；`CinemaPlayer.jsx` 还监听 `popstate`。修改返回/关闭行为，必须一起回归。
 3. **工作台依赖公开作品数据**：`server.mjs` 的 `projects()` 通过 Vite `ssrLoadModule('/src/data/projects.js')` 读取最终作品清单，而不是复制一份单独的数据库。改变数据导出契约也会影响工作台。
 4. **开发与生产视频来源不同**：`projects.js` 在 Vite 开发模式取本地 `assets/videos/works/`，构建后走已登记的 ImageKit URL；视频路径、封面和海报分别维护。
-5. **云端 Hero Range 兼容**：Cloudflare `*.pages.dev` 的桌面/手机 scrub 源按条件指向 GitHub Pages **同文件 hash** 的 MP4，以支持 HTTP 206；手机 C 自动循环仍来自当前网站。PR 单独更新 Hero hash 时，镜像在 main 部署前可能缺失，见 [交接说明](ARCHITECTURE.md)。
-6. **部署有不同生产入口**：GitHub Actions `.github/workflows/deploy-pages.yml` 仅在 `main` 更新时发布 GitHub Pages；其他平台的 Git 自动部署与具体状态以平台检查记录为准。合并 `main` 会触发多个平台，不是一次无成本操作。
+5. **云端 Hero Range 兼容**：Cloudflare `*.pages.dev` 的桌面/手机 scrub 源按条件指向 GitHub Pages **同文件 hash** 的 MP4，以支持 HTTP 206；手机 E（继承 C 光学溶接）自动循环仍来自当前网站。PR 单独更新 Hero hash 时，镜像在 main 部署前可能缺失，见 [交接说明](ARCHITECTURE.md)。
+6. **部署有不同生产入口**：GitHub Actions `.github/workflows/deploy-pages.yml` 仅在 `main` 更新时发布 GitHub Pages；其他平台的 Git 自动部署与具体状态以平台检查记录为准。合并 `main` 会触发多个平台，不是一次无成本操作。Netlify 的 `netlify.toml` 仅为 Vite 指纹路径 `/assets/*` 配置一年 immutable 缓存；HTML、无指纹的 vendor 等路径继续使用默认重验证策略。
 
 ## 修改前的检查顺序
 
@@ -104,21 +104,21 @@ Cloudflare Pages 静态 MP4 对 HTTP Range 请求返回 `200`，桌面滚动驱�
 - `src/main.jsx` 先挂载 React（Hero 标题已有 HTML 静态兜底），GSAP 和滚动增强异步初始化，不得阻塞精选、文字或章节导航。
 - `src/App.jsx` 将交互组件挂到首页预留节点：
   - `#projects-react-root` → `MagneticProjectArchive`，读取共享作品数据中的 8 件精选作品。
-  - `CinemaPlayer` → 首页影院播放器，按当前精选顺序切换作品。
+  - `CinemaPlayer` → 经 `src/components/lazyCinemaPlayer.js` 按需下载／挂载，按当前精选顺序切换作品。卡片 hover、触摸、键盘聚焦预热 JS/CSS，打开前先解码海报。
   - `#recognition-react-root` → `ImpactEvidence`，包含 8 张获奖图片网格与查看器、AI 平台展示和自媒体账号资料弹窗。自媒体使用单色平台标识，AI 平台展示使用彩色品牌标识。
   - `#footer-dock-react-root` → `FloatingDock`，提供复制操作、社交入口及粗指针下的 `ExternalLinkSheet` 确认。
   - `#experiments-react-root` → `ExperimentFlip` 三个站内项目详情，真实示例图片放在 `assets/images/lab/`，具体素材/外链/回归说明见 [AI 实验室与外链维护](docs/AI实验室与外链维护.md)；另有 `#hero-actions-react-root`、`#hero-title-react-root` 的 Hero 交互。
   - 当前正式 Hero 只用原生视频加静态首帧；旧 `VideoPostProcess` / WebGL 后处理不挂载到 App。
 - `works.html` 是独立的第二个 Vite 构建入口；`src/works-main.jsx` 挂载 `WorksLibrary`，按当前筛选结果切换作品并共用影院播放器。 分享链接 `?watch=ID` 会预先打开对应作品的静态海报但不自动播放，工作台 `?project=ID` 只用于高亮定位；播放器的浏览器 Back/Forward 状态由 `WorksLibrary` 管理。
 - 首页和作品库保持独立 HTML 入口，`pagePrefetch.js` 仅预热另一页面的 HTML/JS/CSS 而不预取作品 MP4；原生 View Transition 在两页之间使用约 300ms 无模糊的透明度交接，取消旧 660ms 模糊和虚假百分比进度条。浏览器不支持时照常导航。Hero 的滚动提示与 2px 阅读进度线保留；浏览器 Back/Forward 和深链锚点尊重原生恢复与用户输入，回归 `check:page-handoff` / `check:cross-page-nav`。
-- 作品库首排图片由 `vite.config.js` 根据作品顺序及分类生成 HTML 预加载候选，并按断点只激活真正首排；React 的首两排会立即挂载图片，其余进入 1100px 观察器预取距离后才设置 `src` 并转为 `loading="eager"`，避免原生 lazy 和 JS 延后加载叠加。分类按钮在指针或焦点意图时预热首排，工作台更换封面后需要重新构建。回归 `npm run check:image-loading`。
-- 首页精选固定八件：手机 2×4 完整展示，桌面四列；首行在 React 挂载时即请求封面，其他卡片由 1100px 观察器决定挂载，接近视口时立即 eager 解码，避免黑色空卡。获奖八张缩略图也提前预热，作品 MP4 仍必须用户主动点击播放才请求，影院先解码静态海报。三个电影穿行间隔由 `index.html` 初始解析提供，`heroImmersivePreview.js` 只复用；三个 React 门户的 `:empty` 临时高度为初次深链保留空间，禁止挂载后才插入大段占位。
+- 作品库首排由 `vite.config.js` 根据作品顺序、分类和屏宽生成 HTML 预加载候选，只激活当前分类首排；正常网络下 React 首两排立即挂载，其余在观察器范围内才设置 `src` 并转为 `loading="eager"`。3G／省流量模式仅首排立即请求。预取距离：桌面 700px、手机 ≤720px 520px、弱网 350px，避免原生 lazy 与 JS 延后加载叠加。分类 hover／聚焦预热下一分类首排，工作台更换封面后需重新构建。回归 `npm run check:image-loading`。
+- 首页精选固定八件：手机 2×4 完整展示，桌面四列；首行在 React 挂载时即请求封面，其他卡片由桌面 700px／手机 520px／弱网 350px 观察器决定挂载，接近视口时立即 eager 解码，避免黑色空卡。获奖八张缩略图也提前预热，作品 MP4 仍必须用户主动点击播放才请求，影院先解码静态海报。三个电影穿行间隔由 `index.html` 初始解析提供，`heroImmersivePreview.js` 只复用；三个 React 门户的 `:empty` 临时高度为初次深链保留空间，禁止挂载后才插入大段占位。
 - `src/data/projects.js` 汇总原有作品和工作台的 `auto-projects.json`；`project-order.json` 的 `featured` 控制固定八件精选名单，`all` 独立控制完整库顺序，手机八件同屏页面自然滚动，不再有四件一页的旧分页。作品内 A/B/C 顺序见 `project-version-order.json`；归档和媒体元数据分别见 `archive-state.json`、`project-video-metadata.json`。
 - `src/styles/navigation.css` 提供作品库、影院和奖项查看器共用的导航规则；作品库普通页左侧为 A+ 圆形箭头 +「首页 / Home」，指向 `./index.html#top` Hero 首屏，桌面中央的「精选作品 / Featured」另跳 `#projects`；详情查看器仍使用创作者头像。基础视觉 Token 在 `src/styles/card-surfaces.css` 与 `src/styles/apple-system.css`。
 
 ## 媒体路径、工作台安全与首帧
 
-- 桌面 Hero：`assets/videos/hero/hero.mp4`。
+- 桌面 Hero：`assets/videos/hero/hero.mp4`（D 版 H.264，1920×1080／24fps／1 秒 GOP，约 11.88MB；滚动逻辑不变）。
 - 手机 Hero（≤760px）：默认 `assets/videos/hero/hero-mobile-pingpong.mp4`（约 13.83s / 24fps / 540×1170，已选 E「原始母片重制 / C 光学溶接」：前向播放，在首尾约 1.21s 交叉融合成单条 MP4，约 3.90MB；历史文件名保留用于兼容），`?heroMode=scrub` 或静音自动播放被拒绝则使用原 `hero-mobile.mp4`（约 15.04s / 24fps / 480×1040，沿用旧分辨率）按滚动进度定位；桌面保持 `hero.mp4` 滚动定位。
 - 作品列表 3:4 封面：`assets/images/project-covers/<category>/<English Title>.webp`，按四分类英文目录存放；替换前备份旧图。
 - 原比例播放器海报：`assets/images/player-posters/<category>/<MP4 English Stem>.webp`；实际显示宽高与海报映射见 `src/data/project-video-metadata.json`。
