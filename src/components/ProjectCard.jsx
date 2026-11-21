@@ -21,7 +21,7 @@ const renderTitle = (raw) => {
   );
 };
 
-export default function ProjectCard({ project, lang, onClick, coverPriority = 'auto', deferUntilNear = false }) {
+export default function ProjectCard({ project, lang, onClick, coverPriority = 'auto', deferUntilNear = false, onViewerIntent }) {
   const cardRef = useRef(null);
   const [coverNear, setCoverNear] = useState(!deferUntilNear);
   useEffect(() => {
@@ -43,10 +43,14 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
     }, { rootMargin: (() => {
       // Keep the first Featured row immediate. Fetch later rows ahead of
       // scrolling, but avoid competing with the Hero film on slow connections.
-      // Safari has no Network Information API, so use a safe default there.
+      // Keep the entire visible first row eager. On phones only, a slightly
+      // shorter second-row lookahead saves Hero bandwidth without delaying
+      // cards until they touch the screen. Desktop retains its larger margin.
+      // Safari has no Network Information API, so use a conservative default.
       const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       const constrained = connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType || '');
-      return constrained ? '350px 0px' : '700px 0px';
+      if (constrained) return '350px 0px';
+      return matchMedia('(max-width: 720px)').matches ? '520px 0px' : '700px 0px';
     })() });
     observer.observe(cardRef.current);
     return () => observer.disconnect();
@@ -67,9 +71,9 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
     : (lang === 'en' ? 'Pending upload' : '待上传');
   return (
     <CometCard className="comet-archive__item" enableTilt={false}
-      onPointerEnter={() => warmImage(initialProjectPoster(project) || cover)}
-      onPointerDownCapture={() => warmImage(initialProjectPoster(project) || cover)}
-      onFocusCapture={() => warmImage(initialProjectPoster(project) || cover)}
+      onPointerEnter={() => { onViewerIntent?.(); warmImage(initialProjectPoster(project) || cover); }}
+      onPointerDownCapture={() => { onViewerIntent?.(); warmImage(initialProjectPoster(project) || cover); }}
+      onFocusCapture={() => { onViewerIntent?.(); warmImage(initialProjectPoster(project) || cover); }}
       onClick={event => onClick(event, project)}>
       <button ref={cardRef} type="button" className="comet-archive__card portfolio-work-card--unified" data-project-id={project.id} aria-haspopup="dialog"
         aria-label={[project.title[lang], detail, status].filter(Boolean).join(' · ')}

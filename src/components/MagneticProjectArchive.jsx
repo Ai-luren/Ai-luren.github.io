@@ -8,7 +8,7 @@ import { WORKS_HREF } from '../navigation/links.js';
 // The same eight Featured works are always visible. On phones the two-column
 // editorial grid scrolls naturally (four rows); no hidden page, arrow or extra
 // glass shell. Desktop keeps the existing four-column card system.
-export default function MagneticProjectArchive({ onSelect }) {
+export default function MagneticProjectArchive({ onSelect, onViewerIntent }) {
   const archiveRef = useRef(null);
   const dragState = useRef({ active: false, startX: 0, startScrollLeft: 0, moved: false });
   const [canScroll, setCanScroll] = useState(false);
@@ -93,7 +93,7 @@ export default function MagneticProjectArchive({ onSelect }) {
           onPointerUp={stopDragging} onPointerCancel={stopDragging}>
           {FEATURED_PROJECTS.map((project, index) => (
             <ProjectCard key={project.id} project={project} lang={lang}
-              onClick={handleCardClick}
+              onClick={handleCardClick} onViewerIntent={onViewerIntent}
               coverPriority={index < (isMobile ? 2 : 4) ? (isMobile ? 'high' : 'normal') : index < (isMobile ? 4 : 8) ? 'normal' : 'low'}
               deferUntilNear={index >= (isMobile ? 2 : 4)} />
           ))}
