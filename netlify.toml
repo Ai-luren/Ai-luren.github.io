@@ -17,3 +17,11 @@ publish = "dist"
   #  publish = "dist" # Folder with the static content for _redirect file
 
   ## more info on configuring this file: https://ntl.fyi/file-based-build-config
+
+# Vite fingerprints every file in /assets/ (including Hero MP4s and WebP
+# covers). Reuse these exact immutable bytes on repeat visits; keep HTML,
+# vendor files and other unhashed paths on Netlify's default revalidation.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

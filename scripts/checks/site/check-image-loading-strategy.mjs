@@ -48,8 +48,8 @@ try {
   assert(initialHome.slice(0,2).every(item => item.loaded),
     'First mobile Featured row must be requested on mount');
   // Additional rows retain the bounded ahead-of-scroll prefetch strategy.
-  assert(initialHome.slice(2).every(item => !item.loaded || item.top <= 852 + 1100 + 24),
-    'Deferred covers must stay within the 1100px preload margin');
+  assert(initialHome.slice(2).every(item => !item.loaded || item.top <= 852 + 520 + 24),
+    'Deferred covers must stay within the mobile 520px preload margin');
   assert(await page.locator('#impact-awards .impact-award-grid-card img')
     .evaluateAll(images => images.every(image => !image.hasAttribute('src'))),
   'Distant award thumbnails must not compete with Hero');
@@ -122,7 +122,7 @@ try {
     await desktop.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
     await desktop.locator('#projects .comet-archive__cover').first().waitFor({ state: 'attached' });
     await desktop.waitForTimeout(350);
-    // The same bounded 1100px look-ahead works on desktop: no unrelated
+    // A bounded 700px look-ahead works on desktop: no unrelated
     // offscreen artwork burst, but cards have time to decode before arrival.
     const initial = await desktop.locator('#projects .comet-archive__cover')
       .evaluateAll(images => images.map(image => {
@@ -130,7 +130,7 @@ try {
         return { loaded: image.hasAttribute('src'), top: rect.top, bottom: rect.bottom };
       }));
     assert.equal(initial.length, 8);
-    const rootMargin = 1100;
+    const rootMargin = 700;
     const windowHeight = desktop.viewportSize().height;
     assert(initial.slice(0,4).every(image => image.loaded),
       'Desktop first Featured row must start loading at React mount');
@@ -141,6 +141,31 @@ try {
       .slice(0, 4).every(image => image.complete && image.naturalWidth > 0));
     console.log('PASS desktop Featured: far covers deferred, first-row covers decoded on approach');
   } finally { await desktop.close(); }
+  // Slow links / Data Saver should keep the immediately visible first row,
+  // while later Featured cards wait until the visitor approaches the gallery.
+  // No media requests may escape the protected context.
+  const slow = await context.newPage();
+  slow.on('pageerror', error => errors.push(error.message));
+  try {
+    await slow.addInitScript(() => {
+      Object.defineProperty(navigator, 'connection', {
+        configurable: true,
+        value: { effectiveType: '3g', saveData: true },
+      });
+    });
+    await slow.goto(new URL('index.html', base).href, { waitUntil: 'domcontentloaded' });
+    await slow.locator('#projects .comet-archive__cover').first().waitFor({ state: 'attached' });
+    await slow.waitForTimeout(350);
+    const slowFirstPaint = await slow.locator('#projects .comet-archive__cover')
+      .evaluateAll(images => images.map(image => image.hasAttribute('src')));
+    assert(slowFirstPaint.slice(0, 2).every(Boolean), 'Slow network: first Featured row loads immediately');
+    assert(slowFirstPaint.slice(2).every(loaded => !loaded),
+      'Slow network: distant Featured rows do not contend with initial Hero requests');
+    await slow.locator('#projects .comet-archive__cover').nth(2).scrollIntoViewIfNeeded();
+    await slow.waitForFunction(() => [...document.querySelectorAll('#projects .comet-archive__cover')]
+      .slice(2, 4).every(image => image.complete && image.naturalWidth > 0));
+    console.log('PASS slow/Data Saver homepage: first row immediate, further rows load on approach');
+  } finally { await slow.close(); }
   assert.deepEqual(errors, [], 'No page errors');
   console.log('IMAGE_LOADING_STRATEGY_PASS');
 } finally {

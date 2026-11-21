@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
-import { useRef, useState } from 'react';
-import CinemaPlayer from './components/CinemaPlayer.jsx';
+import { lazy, Suspense, useRef, useState } from 'react';
+import { loadCinemaPlayer, warmCinemaPlayer } from './components/lazyCinemaPlayer.js';
 import { FEATURED_PROJECTS, PROJECTS } from './data/projects.js';
 import { prepareProjectPoster } from './utils/warmImage.js';
 import MagneticProjectArchive from './components/MagneticProjectArchive.jsx';
@@ -18,6 +18,9 @@ import './styles/apple-system.css';
 import './navigation/inputModality.js';
 import './styles/navigation.css';
 
+// Keep React.lazy identity stable across page renders and project switching.
+const CinemaPlayer = lazy(loadCinemaPlayer);
+
 export default function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const cinemaReturnFocusRef = useRef(null);
@@ -26,7 +29,7 @@ export default function App() {
     const token = ++selectionTokenRef.current;
     if (!trigger?.isConnected) return;
     cinemaReturnFocusRef.current = trigger;
-    const prepared = await prepareProjectPoster(project);
+    const [prepared] = await Promise.all([prepareProjectPoster(project), loadCinemaPlayer()]);
     // A second click or a swipe may have superseded this image request.
     if (token !== selectionTokenRef.current || !trigger.isConnected) return;
     setSelectedProject(prepared);
@@ -44,8 +47,10 @@ export default function App() {
     <>
       <SiteExternalLinkGuard />
       <AnimatedContent page="home" />
-      {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} />, projectArchiveRoot)}
-      <CinemaPlayer key={selectedProject ? 'open' : 'closed'} project={selectedProject} projects={FEATURED_PROJECTS} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
+      {projectArchiveRoot && createPortal(<MagneticProjectArchive onSelect={selectFeaturedProject} onViewerIntent={warmCinemaPlayer} />, projectArchiveRoot)}
+      {selectedProject && <Suspense fallback={null}>
+        <CinemaPlayer key="open" project={selectedProject} projects={FEATURED_PROJECTS} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={setSelectedProject} onClose={() => setSelectedProject(null)} />
+      </Suspense>}
       {impactEvidenceRoot && createPortal(<ImpactEvidence />, impactEvidenceRoot)}
       {footerDockRoot && createPortal(<FloatingDock />, footerDockRoot)}
       {mobileMenuSocialRoot && createPortal(<MobileMenuSocialLinks />, mobileMenuSocialRoot)}

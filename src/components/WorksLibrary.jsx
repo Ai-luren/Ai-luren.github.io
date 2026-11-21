@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useLang } from '../i18n/index.js';
 import { PROJECTS, PROJECT_CATEGORIES, FEATURED_PROJECTS } from '../data/projects.js';
 import ProjectCard from './ProjectCard.jsx';
-import CinemaPlayer from './CinemaPlayer.jsx';
+import { loadCinemaPlayer, warmCinemaPlayer } from './lazyCinemaPlayer.js';
 import LibraryNavigation from './LibraryNavigation.jsx';
 import { prepareProjectPoster, warmImage } from '../utils/warmImage.js';
 import './WorksLibrary.css';
@@ -15,6 +15,8 @@ const MOBILE_CATEGORY_LABELS = {
   social: { zh: '海外产品', en: 'Product Ads' },
   visual: { zh: '视觉实验', en: 'Visuals' },
 };
+
+const CinemaPlayer = lazy(loadCinemaPlayer);
 
 export default function WorksLibrary() {
   const lang = useLang();
@@ -29,6 +31,10 @@ export default function WorksLibrary() {
   const cinemaReturnFocusRef = useRef(null);
   const selectionTokenRef = useRef(0);
   const initialWatchRef = useRef(new URLSearchParams(location.search).get('watch'));
+  useEffect(() => {
+    if (initialWatchRef.current) warmCinemaPlayer();
+  }, []);
+
 
   const activeCategory = PROJECT_CATEGORIES.find(item => item.id === category);
   const visible = PROJECTS.filter(project => project.category === category);
@@ -38,6 +44,11 @@ export default function WorksLibrary() {
   const columnsForViewport = () => matchMedia('(min-width: 1280px)').matches ? 4
     : matchMedia('(min-width: 900px)').matches ? 3 : 2;
   const [firstRowCount, setFirstRowCount] = useState(columnsForViewport);
+  const constrainedConnection = Boolean(
+    navigator.connection?.saveData ||
+    /^(slow-2g|2g|3g)$/.test(navigator.connection?.effectiveType || '')
+  );
+
   useEffect(() => {
     const update = () => setFirstRowCount(columnsForViewport());
     window.addEventListener('resize', update, { passive: true });
@@ -219,14 +230,17 @@ export default function WorksLibrary() {
           {activeCategory?.description?.[lang] || '\u00a0'}
         </p>
         {visible.length ? <div className="library-grid" role="list" aria-label={lang === 'en' ? 'All projects' : '全部项目'}>{visible.map((project, index) => <ProjectCard key={project.id} project={project} lang={lang}
-          coverPriority={project.id === directProjectId || index < firstRowCount ? 'high' : index < firstRowCount * 2 ? 'normal' : 'low'}
-          deferUntilNear={index >= firstRowCount * 2 && project.id !== directProjectId} onClick={(event, item) => {
+          coverPriority={project.id === directProjectId || index < firstRowCount ? 'high' : index < firstRowCount * 2 && !constrainedConnection ? 'normal' : 'low'}
+          deferUntilNear={index >= firstRowCount * (constrainedConnection ? 1 : 2) && project.id !== directProjectId}
+          onViewerIntent={warmCinemaPlayer} onClick={(event, item) => {
           const trigger = event.target.closest('.comet-archive__card');
           openSharedWork(item, trigger);
         }} />)}</div>
           : <div className="library-empty"><p>{lang === 'en' ? 'No work in this category yet.' : '该分类暂未收录作品'}</p><button type="button" onClick={() => setCategory(DEFAULT_CATEGORY)}>{lang === 'en' ? 'View commercials' : '查看商业广告'}</button></div>}
       </main>
     </div>
-    <CinemaPlayer key={selected ? 'open' : 'closed'} project={selected} projects={visible} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={selectSharedWork} context="library" onClose={closeSharedWork} />
+    {selected && <Suspense fallback={null}>
+      <CinemaPlayer key="open" project={selected} projects={visible} allProjects={PROJECTS} featuredProjects={FEATURED_PROJECTS} returnFocusRef={cinemaReturnFocusRef} onSelect={selectSharedWork} context="library" onClose={closeSharedWork} />
+    </Suspense>}
   </div>;
 }

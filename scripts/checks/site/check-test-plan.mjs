@@ -33,6 +33,21 @@ assert.deepEqual(quick.all, [...quick.smoke, ...quick.workbench],
 assert.deepEqual(deep.all, [...deep.site, ...deep.workbench],
   'Combined deep plan must preserve site-then-workbench order');
 
+// Guard the smoke/deep split: sampled cases must not replace full matrices.
+for (const name of ['curated-order','featured-hover-menu','shared-mobile-menu']) {
+  const short='check:'+name+'-smoke';
+  const full='check:'+name;
+  const modulePath=directTestModules(scripts[full] || '')[0];
+  assert.equal(directTestModules(scripts[short] || '')[0],modulePath);
+  assert(scripts[short].endsWith(' --smoke'),short+': missing explicit smoke flag');
+  assert(quick.smoke.includes(short)&&!quick.smoke.includes(full),
+    name+': quick plan should only call sampled variant');
+  assert(deep.site.some(spec=>spec[0]==='npm'&&spec[2]===full),
+    name+': full matrix missing from deep plan');
+  assert(!deep.site.some(spec=>spec[0]==='npm'&&spec[2]===short),
+    name+': do not run sampled variant inside deep plan');
+}
+
 // Detect accidental duplicate execution of the same test file, including
 // separate npm aliases for one test and scripts inside composite npm commands.
 const pathsByArea = {};

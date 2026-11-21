@@ -42,10 +42,17 @@ const awards={
  zh:['MJ 官方优秀作品','未来AI设计大赛','联想AI比赛','海螺AI动物跳水','无限剧场小赛','海纳星火计划','海纳星火计划','影视级特效小赛'],
  en:['Featured by Midjourney','Future AI Design Contest','Lenovo AI Competition','Hailuo AI Animal Diving','Infinite Theater Contest','Spark of Haina Program','Spark of Haina Program','Cinematic Effects Contest']
 };
-const shotdir='.audit/curated-order/shots';mkdirSync(shotdir,{recursive:true});
+// Daily Smoke samples phone, breakpoint, desktop and both languages.
+// The default deep run preserves all original 6 widths x 2 languages.
+const smoke=process.argv.includes('--smoke');
+const matrix=smoke
+  ? [[320,'zh'],[390,'en'],[721,'zh'],[1440,'en']]
+  : [320,390,720,721,1024,1440].flatMap(w=>['zh','en'].map(lang=>[w,lang]));
+const shotdir='.audit/curated-order/shots';
+if(!smoke)mkdirSync(shotdir,{recursive:true});
 let passed=0;
 try{
- for(const width of [320,390,720,721,1024,1440])for(const lang of ['zh','en']){
+ for(const [width,lang] of matrix){
   const tag=width+' '+lang;
   const page=await createSafePage(browser,{viewport:{width,height:900}});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -86,7 +93,7 @@ try{
    assert.equal((await page.locator('.cinema-player__count').textContent()).trim(),'1 / 8',tag+': featured viewer counter');
    await page.locator('.cinema-player__work-nav button').last().evaluate(e=>e.click());
    await page.waitForFunction(expected=>document.querySelector('#cinema-player-title')?.textContent?.trim()===expected,featured[lang][1],{timeout:8000});
-   if([390,1440].includes(width)){
+   if(!smoke && [390,1440].includes(width)){
      await page.locator('.cinema-player__close').first().evaluate(e=>e.click());
      await page.locator('#projects').scrollIntoViewIfNeeded();await page.waitForTimeout(400);
      await page.screenshot({path:`${shotdir}/featured-${width}-${lang}.jpg`,type:'jpeg',quality:80});
@@ -109,4 +116,4 @@ try{
   }finally{await page.close();}
  }
 }finally{await browser.close();}
-console.log('PASS curated display order:',passed,'width / language combinations');
+console.log('PASS curated display order:',passed,'width / language combinations',smoke?'(smoke)':'(deep)');

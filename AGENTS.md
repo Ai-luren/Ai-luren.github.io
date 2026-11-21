@@ -20,10 +20,10 @@
 
 ## 当前产品不可破坏的契约
 
-- **Hero 与首帧**：桌面视频按滚动 seek；≤760px 手机用 13.83s C 版正向光学溶接循环，?heroMode=scrub 使用旧滚动片。Cloudflare *.pages.dev 的 seek 源使用 GitHub Pages 同 hash MP4 以支持 206；改 Hero hash 前必须先考虑镜像可用性。详见 [播放器媒体维护](docs/播放器媒体维护.md)。
+- **Hero 与首帧**：桌面视频按滚动 seek；≤760px 手机用 13.83s E 高清重制版（继承 C 正向光学溶接）循环，?heroMode=scrub 使用旧滚动片。Cloudflare *.pages.dev 的 seek 源使用 GitHub Pages 同 hash MP4 以支持 206；改 Hero hash 前必须先考虑镜像可用性。详见 [播放器媒体维护](docs/播放器媒体维护.md)。
 - **静态 HTML + React**：保留首页原始电影穿行间隔和 Portal :empty 首帧高度，防止深链/刷新时 CLS、Hero 闪烁与黑边；不恢复退役 WebGL、CRT 扫描线或全局遮罩。
 - **作品身份和导航**：精选为 project-order.json.featured 中 8 件独立名单，all 顺序独立；移动端连续 2×4 展示而不是分页。浏览器 history.scrollRestoration=auto；不通过 load/pageshow 强制回顶。作品库 ?watch=ID 打开海报而非自动播放，?project=ID 仅工作台高亮。
-- **视频媒体**：3:4 作品卡封面与每条视频原比例海报分开保存；版本 main 表示身份，不保证默认排第一。影片 MP4 按点击才加载（正式 ImageKit tr:orig-true、preload=none）。本地更名需原子更新本地 MP4、两类图及 JSON，不能改变已上传 ImageKit URL。
+- **视频媒体**：3:4 作品卡封面与每条视频原比例海报分开保存；版本 main 表示身份，不保证默认排第一。`CinemaPlayer` 由 `lazyCinemaPlayer.js` 按意图加载 JS/CSS，首次页面渲染不得静态导入；影片 MP4 仍只在用户点击播放后加载（正式 ImageKit tr:orig-true、preload=none）。本地更名需原子更新本地 MP4、两类图及 JSON，不能改变已上传 ImageKit URL。
 - **用户界面**：两页导航断点、焦点与语言切换、作品目录、影院动作、D+ Glass、动效数值以 [设计规范](docs/设计规范.md) 和 [播放器媒体维护](docs/播放器媒体维护.md) 为准；不得靠在 CSS 末尾叠加 !important 补丁解决旧规则。
 - **作品管理工作台**：>=921px Mac 桌面；左侧本地视频/逐帧/选帧，右侧「作品管理」及「封面与海报」；更名、版本、排序、归档须有期待旧值校验、草稿保护、修订历史。版本归档至少留一条可用视频；精选作品先退出精选才能整部归档。
 

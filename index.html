@@ -1905,7 +1905,7 @@
             video.loop = false;
             video.pause();
             // Switch back to the ORIGINAL 15s asset before seeking. Seeking
-            // the 30s ping-pong timeline would no longer match document scroll.
+            // the 13.83s optical-dissolve loop would not match document scroll.
             var fallbackSource = video.querySelector('source[media]');
             if (fallbackSource) fallbackSource.setAttribute('src', originalMobileSource);
             lastProgress = -1;
