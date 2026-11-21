@@ -20,7 +20,7 @@
 
 ## 当前产品不可破坏的契约
 
-- **Hero 与首帧**：桌面视频按滚动 seek；≤760px 手机用 13.83s C 版正向光学溶接循环，?heroMode=scrub 使用旧滚动片。Cloudflare *.pages.dev 的 seek 源使用 GitHub Pages 同 hash MP4 以支持 206；改 Hero hash 前必须先考虑镜像可用性。详见 [播放器媒体维护](docs/播放器媒体维护.md)。
+- **Hero 与首帧**：桌面视频按滚动 seek；≤760px 手机用 13.83s E 高清重制版（继承 C 正向光学溶接）循环，?heroMode=scrub 使用旧滚动片。Cloudflare *.pages.dev 的 seek 源使用 GitHub Pages 同 hash MP4 以支持 206；改 Hero hash 前必须先考虑镜像可用性。详见 [播放器媒体维护](docs/播放器媒体维护.md)。
 - **静态 HTML + React**：保留首页原始电影穿行间隔和 Portal :empty 首帧高度，防止深链/刷新时 CLS、Hero 闪烁与黑边；不恢复退役 WebGL、CRT 扫描线或全局遮罩。
 - **作品身份和导航**：精选为 project-order.json.featured 中 8 件独立名单，all 顺序独立；移动端连续 2×4 展示而不是分页。浏览器 history.scrollRestoration=auto；不通过 load/pageshow 强制回顶。作品库 ?watch=ID 打开海报而非自动播放，?project=ID 仅工作台高亮。
 - **视频媒体**：3:4 作品卡封面与每条视频原比例海报分开保存；版本 main 表示身份，不保证默认排第一。影片 MP4 按点击才加载（正式 ImageKit tr:orig-true、preload=none）。本地更名需原子更新本地 MP4、两类图及 JSON，不能改变已上传 ImageKit URL。
