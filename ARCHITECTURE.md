@@ -69,7 +69,7 @@ Node.js 运行版本：^20.19.0 或 >=22.12.0；Vite 相对资源路径支持 Gi
 
 - `.cover-studio/`、`assets/videos/works/`、本地历史和备份：有实际素材与恢复职责。
 - `AI Short Flims`：拼写有误但历史路径已被多个模块使用；不可直接重命名。
-- `hero-mobile-pingpong.mp4`：文件名历史遗留，当前内容是正向 C 光学溶接。
+- `hero-mobile-pingpong.mp4`：文件名历史遗留，当前内容是 E 版原始母片重制，沿用 C 光学溶接。
 - 看似没被主入口引用的 WebGL / Hero 评审模块：只记入 [历史代码待清理清单](docs/历史代码待清理清单.md)，先核验所有入口和回归，再决定是否删除。
 
 后续维护使用本文文末的职责导航，不必逐份阅读历史文档。
@@ -92,7 +92,7 @@ Node.js 运行版本：^20.19.0 或 >=22.12.0；Vite 相对资源路径支持 Gi
 
 ### Cloudflare Pages 的桌面 Hero 兼容
 
-Cloudflare Pages 静态 MP4 对 HTTP Range 请求返回 `200`，桌面滚动驱动视频无法可靠跳帧。当前 `index.html` 仅在 `*.pages.dev` 域名下，将 **桌面** `hero-<hash>.mp4` 的视频源切换至 `https://ai-luren.github.io/assets/hero-<hash>.mp4`；后者支持 `206 Partial Content`。手机 C 版 `hero-mobile-pingpong` 仍直接在 Cloudflare 正向循环；手机 `?heroMode=scrub` 与自动播放失败回退也使用支持 Range 的原片镜像。Netlify、Vercel 与 GitHub Pages 的原有视频引用不改变。
+Cloudflare Pages 静态 MP4 对 HTTP Range 请求返回 `200`，桌面滚动驱动视频无法可靠跳帧。当前 `index.html` 仅在 `*.pages.dev` 域名下，将 **桌面** `hero-<hash>.mp4` 的视频源切换至 `https://ai-luren.github.io/assets/hero-<hash>.mp4`；后者支持 `206 Partial Content`。手机 E 版 `hero-mobile-pingpong`（沿用 C 溶接）仍直接在 Cloudflare 正向循环；手机 `?heroMode=scrub` 与自动播放失败回退也使用支持 Range 的原片镜像。Netlify、Vercel 与 GitHub Pages 的原有视频引用不改变。
 
 **发布顺序约束：** GitHub Pages 只从 `main` 构建。若 PR 单独修改 Hero 视频，新的 Vite 文件 hash 尚未在 GitHub Pages 发布，Cloudflare 分支 Preview 的桌面视频镜像可能暂时 404；不要把它误诊为新脚本故障。需要同时更新 Hero 时，先安排镜像资源发布与校验，或在本地用媒体替身测试；绝不通过反复在线加载 MP4 探测。当前补丁的域名条件只覆盖 `*.pages.dev`，将来自定义 Cloudflare 域名前要单独复核。
 

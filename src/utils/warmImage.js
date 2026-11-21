@@ -38,8 +38,10 @@ export function warmImage(src) {
 export const warmImages = (sources) => Promise.all(sources.map(warmImage));
 
 // Only start distant gallery assets when the user approaches that section;
-// do not compete with the Hero video on the first network burst.
-export function warmNear(element, sources, margin = '1100px') {
+// do not compete with the Hero video on the first network burst. This is a
+// generic default: the social/profile cards explicitly request 850px, while
+// ProjectCard uses its own responsive 700px / 520px / 350px policy.
+export function warmNear(element, sources, margin = '700px') {
   if (!element) return () => {};
   if (typeof IntersectionObserver === 'undefined') {
     sources.forEach(warmImage);
