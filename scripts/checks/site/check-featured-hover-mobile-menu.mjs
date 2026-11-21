@@ -6,7 +6,9 @@
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright-core';
 import {createSafePage,getSafeMediaReport} from '../../lib/safe-media.mjs';
+import {assertMobileMenuContract} from '../../lib/mobile-menu-contract.mjs';
 
+const smoke=process.argv.includes('--smoke');
 let browser=await chromium.launch({headless:true,executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'});
 const base=process.env.PORTFOLIO_URL||'http://127.0.0.1:5174/';
 try {
@@ -54,9 +56,14 @@ try {
   assert(looks.every(x=>x.border===looks[0].border&&x.shadow===looks[0].shadow),'Home and All Work hover must be pixel-equivalent');
   console.log('PASS featured + library hover matches in zh/en, no expanding black overlay');
 
-  const menuCases=[{w:320,h:568},{w:320,h:700},{w:360,h:740},{w:390,h:844},{w:393,h:852},{w:430,h:932},{w:744,h:760}];
+  // Deep retains the seven original viewports x both languages.
+  // Smoke samples a short phone, a common phone and the mobile boundary.
+  const menuCases=smoke
+    ? [[320,568,'zh'],[390,844,'en'],[744,760,'zh']]
+    : [{w:320,h:568},{w:320,h:700},{w:360,h:740},{w:390,h:844},{w:393,h:852},{w:430,h:932},{w:744,h:760}]
+      .flatMap(({w,h})=>['zh','en'].map(lang=>[w,h,lang]));
   let menuDone=0;
-  for(const {w,h} of menuCases) for(const lang of ['zh','en']){
+  for(const [w,h,lang] of menuCases){
     // Short browser sessions avoid accumulating WebGL/hero-video contexts in
     // one Chromium process across 14 separate mobile homepage navigations.
     if(menuDone && menuDone%4===0){await browser.close();browser=await chromium.launch({headless:true,executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'});}
@@ -75,23 +82,21 @@ try {
       const drawer=document.querySelector('#mobile-nav-drawer'),header=document.querySelector('body > header');
       return {bg:getComputedStyle(drawer).backgroundColor,menuLinks:[...drawer.querySelectorAll('#mobile-primary-nav a')].map(el=>({...box(el),text:el.textContent.trim(),font:parseFloat(getComputedStyle(el).fontSize)})),
         footer:box(drawer.querySelector('.mobile-nav-drawer-foot')),footerText:drawer.querySelector('.mobile-nav-drawer-foot').innerText,
+        socialHeading:drawer.querySelector('.mobile-menu__social-label').innerText,
+        socialCount:drawer.querySelectorAll('.mobile-menu__social-list a').length,
         header:box(header),headerVisible:getComputedStyle(header).visibility==='visible',
         backgroundOverflow:document.documentElement.scrollWidth-innerWidth,
         pageHeight:innerHeight,drawerScroll:drawer.scrollHeight,drawerClient:drawer.clientHeight,
         active:document.body.classList.contains('mobile-nav-open')};
     });
     assert(info.active,`${w} ${lang}: menu is open`);
-    assert(info.headerVisible,`${w} ${lang}: original navigation must stay visible`);
-    assert.equal(info.bg,'rgba(12, 12, 13, 0.97)',`${w} ${lang}: current early-opaque mobile menu scrim`);
-    assert.equal(info.menuLinks.length,4,`${w} ${lang}: main navigation must stay at four links`);
+    assertMobileMenuContract({
+      label:w+' '+lang+' home',lang,width:w,height:h,overlay:info.bg,
+      links:info.menuLinks,socialCount:info.socialCount,socialHeading:info.socialHeading,
+      headerVisible:info.headerVisible,horizontalOverflow:info.backgroundOverflow,footer:info.footer,
+    });
     assert(info.menuLinks.every(l=>l.font>=29.5&&l.height>=58&&l.left>=0&&l.right<=w),`${w} ${lang}: menu typography/touch targets fit`);
-    assert(info.menuLinks.every((l,i)=>i===0||l.top>=info.menuLinks[i-1].bottom),`${w} ${lang}: no nav overlap`);
-    assert(info.footer.top>=info.menuLinks.at(-1).bottom+8,`${w} ${lang}: footer must follow navigation`);
-    assert(info.footer.bottom<=h-8,`${w} ${lang}: small screens must not hide footer`);
-    assert(info.backgroundOverflow<=2,`${w} ${lang}: no horizontal overflow`);
     assert(Math.abs(info.header.left-old.left)<1&&Math.abs(info.header.width-old.width)<1,`${w} ${lang}: persistent glass header not shifted`);
-    assert(info.footerText.includes(lang==='zh'?'社交平台':'Social'),`${w} ${lang}: social heading localizes`);
-    assert(await p.locator('#mobile-nav-drawer .mobile-menu__social-list a').count()===4,`${w} ${lang}: four social links rendered`);
     assert(!info.footerText.includes('2024-2026'),`${w} ${lang}: copyright intentionally removed`);
     assert.deepEqual(errors,[],`${w} ${lang}: no JS errors`);
     assert.equal(getSafeMediaReport(p).urls.length,0);
@@ -106,7 +111,7 @@ try {
   // scenes are intentionally expensive and unrelated to drawer typography.
   await browser.close();
   browser=await chromium.launch({headless:true,executablePath:'/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge'});
-  for(const lang of ['zh','en']){
+  for(const lang of (smoke?['zh']:['zh','en'])){
     const p=await createSafePage(browser,{viewport:{width:390,height:844},isMobile:true,hasTouch:true});
     try{
       await p.addInitScript(l=>localStorage.setItem('ailuren-lang',l),lang);

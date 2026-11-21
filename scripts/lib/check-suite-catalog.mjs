@@ -3,7 +3,7 @@
 export const quickSuites = Object.freeze({
   smoke: Object.freeze([
     'build', 'check:repo-layout', 'check:plan', 'check:asset-catalog', 'check:local-audit-cache',
-    'check:curated-order', 'check:featured-hover-menu', 'check:shared-mobile-menu',
+    'check:curated-order-smoke', 'check:featured-hover-menu-smoke', 'check:shared-mobile-menu-smoke',
     'check:media-safety', 'check:image-loading', 'check:cascade-contract',
     'check:cinema-fullscreen', 'check:cinema-controls', 'check:cinema-nav-duration',
     'check:cinema-version-motion',
@@ -40,6 +40,9 @@ const excludeSite = new Set([
   // Direct aliases are useful for targeted debugging, but these exact test
   // files already run within the deep check:motion-polish composite.
   'check:animated-content', 'check:editorial-motion',
+  // Daily sampled aliases run these modules; deep executes the originals fully.
+  'check:curated-order-smoke', 'check:featured-hover-menu-smoke',
+  'check:shared-mobile-menu-smoke',
 ]);
 const excludeWorkbench = new Set([
   'check:workbench-core', 'check:workbench-full',

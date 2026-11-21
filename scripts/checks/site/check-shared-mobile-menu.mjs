@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright-core';
 import { createSafePage, getSafeMediaReport } from '../../lib/safe-media.mjs';
 import { MOBILE_MENU_SOCIAL_PROFILES } from '../../../src/navigation/socialProfiles.js';
+import { assertMobileMenuContract } from '../../lib/mobile-menu-contract.mjs';
 
+const smoke=process.argv.includes('--smoke');
 const BASE=process.env.PORTFOLIO_URL||'http://127.0.0.1:5174/';
 const executablePath='/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge';
 let browser=await chromium.launch({executablePath,headless:true});
@@ -43,28 +45,32 @@ async function load(kind,width,height,lang){
       socialLinks:[...social.querySelectorAll('a')].map(a=>({text:a.innerText,href:a.href,r:box(a),font:getComputedStyle(a).fontSize})),
       copyrightRemoved:foot.querySelector('.mobile-menu__copyright')===null,
       pageOverflow:document.documentElement.scrollWidth-innerWidth,
-      footerInView:box(foot).bottom<=innerHeight-8,
       headerVisible:getComputedStyle(head).visibility==='visible',
       disabledSearch:root.querySelector('input[type=search]')===null};
   },{kind,container});
-  assert.equal(data.menuItems.length,4,kind+': precisely four main links');
-  assert.equal(data.socialLinks.length,4,kind+': precisely four social links');
+  assertMobileMenuContract({
+    label:kind+' '+width+' '+lang,lang,width,height,overlay:data.overlay,
+    links:data.menuItems.map(item=>item.r),socialCount:data.socialLinks.length,
+    socialHeading:data.socialHeading,headerVisible:data.headerVisible,
+    horizontalOverflow:data.pageOverflow,footer:data.footer,
+  });
   assert.deepEqual(data.socialLinks.map(l=>l.href),MOBILE_MENU_SOCIAL_PROFILES.map(l=>l.href),kind+': social links from canonical data');
   assert.deepEqual(data.menuItems.map(x=>x.text),lang==='en'?['Featured','Expertise','Contact','All Work']:['精选作品','专业实力','联系','全部作品']);
   assert.deepEqual(data.socialLinks.map(l=>l.text),MOBILE_MENU_SOCIAL_PROFILES.map(l=>l[lang]));
-  assert.equal(data.socialHeading,lang==='en'?'Social':'社交平台');
-  assert.equal(data.overlay,'rgba(12, 12, 13, 0.97)',kind+': matching early-opaque menu scrim');
   assert.equal(data.headerBackground,'rgba(24, 26, 31, 0.72)',kind+': same menu header surface');
-  assert(data.headerVisible&&data.disabledSearch&&data.pageOverflow<=2,kind+': no overflow/search and header visible');
-  assert(data.menuItems.every((x,i,arr)=>x.r.left>=0&&x.r.right<=width&&(i===0||x.r.top>=arr[i-1].r.bottom)));
+  assert(data.disabledSearch,kind+': search must stay removed');
   assert(data.socialLinks.every(x=>x.r.left>=0&&x.r.right<=width&&x.r.height>=43.9),kind+': social hit areas visible');
-  assert(data.footer.top>=data.menuItems.at(-1).r.bottom+8,kind+': bottom social block does not overlap menu');
-  assert(data.footerInView&&data.copyrightRemoved,kind+': mobile menu no longer displays an unnecessary copyright line');
+  assert(data.copyrightRemoved,kind+': copyright must remain removed');
   return {page,data,errors:errs,kind,container};
 }
 try{
   let count=0;
-  for(const {width,height} of [{width:320,height:568},{width:393,height:852},{width:760,height:844}])for(const lang of ['zh','en']){
+  // Deep keeps Home/Works comparison for all 3 original widths x 2 languages.
+  const menuCases=smoke
+    ? [[320,568,'zh'],[760,844,'en']]
+    : [{width:320,height:568},{width:393,height:852},{width:760,height:844}]
+      .flatMap(({width,height})=>['zh','en'].map(lang=>[width,height,lang]));
+  for(const [width,height,lang] of menuCases){
     if(count&&count%2===0){await browser.close();browser=await chromium.launch({executablePath,headless:true});}
     const home=await load('home',width,height,lang);
     const works=await load('works',width,height,lang);
@@ -95,7 +101,9 @@ try{
     count++;
   }
   await browser.close();browser=await chromium.launch({executablePath,headless:true});
-  for(const kind of ['home','works'])for(const lang of ['zh','en']){
+  const socialCases=smoke?[['home','zh'],['works','en']]
+    : ['home','works'].flatMap(kind=>['zh','en'].map(lang=>[kind,lang]));
+  for(const [kind,lang] of socialCases){
     const {page,container}=await load(kind,390,844,lang);
     const social=page.locator(container+' .mobile-menu__social-list a').filter({hasText:'GitHub'});
     await social.tap();
