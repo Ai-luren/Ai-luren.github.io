@@ -40,7 +40,14 @@ export default function ProjectCard({ project, lang, onClick, coverPriority = 'a
         setCoverNear(true);
         observer.disconnect();
       }
-    }, { rootMargin: '1100px 0px' });
+    }, { rootMargin: (() => {
+      // Keep the first Featured row immediate. Fetch later rows ahead of
+      // scrolling, but avoid competing with the Hero film on slow connections.
+      // Safari has no Network Information API, so use a safe default there.
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const constrained = connection?.saveData || /^(slow-2g|2g|3g)$/.test(connection?.effectiveType || '');
+      return constrained ? '350px 0px' : '700px 0px';
+    })() });
     observer.observe(cardRef.current);
     return () => observer.disconnect();
   }, [deferUntilNear]);
